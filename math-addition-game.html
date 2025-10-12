@@ -3,160 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Fun for Kids!</title>
+    <title>Math Addition Game!</title>
     <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            background: linear-gradient(135deg, #4a6fa5 0%, #2c3e50 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            color: #2d3436;
-            cursor: default;
+            overflow: hidden;
+            outline: none;
+            position: relative;
+            padding: 20px;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
+        body::before {
+            content: '⭐';
+            position: absolute;
+            font-size: 2em;
+            animation: float 3s ease-in-out infinite;
+            top: 10%;
+            left: 10%;
+            opacity: 0.4;
         }
 
-        .level-display {
-            font-size: 28px;
-            font-weight: bold;
-            color: #fff;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            padding: 15px 25px;
+        body::after {
+            content: '⚡';
+            position: absolute;
+            font-size: 2.5em;
+            animation: float 4s ease-in-out infinite;
+            bottom: 10%;
+            right: 10%;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(8deg); }
+        }
+
+        .star-decoration {
+            position: absolute;
+            font-size: 1.5em;
+            animation: twinkle 2s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.15); }
+        }
+
+        .container {
+            background: linear-gradient(135deg, #2d3548 0%, #3d4963 100%);
             border-radius: 30px;
-            margin-bottom: 15px;
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
-        }
-
-        .game-container {
-            background: linear-gradient(145deg, #ffffff, #f8f9fa);
-            border-radius: 25px;
-            padding: 50px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            padding: 30px 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 6px rgba(74, 111, 165, 0.3);
             text-align: center;
             max-width: 900px;
-            width: 100%;
-            border: 3px solid rgba(255,255,255,0.2);
+            width: 90%;
+            outline: none;
+            border: 6px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            max-height: 95vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            background: linear-gradient(45deg, #5dade2, #4a6fa5, #52be80, #48c9b0, #5dade2);
+            border-radius: 36px;
+            z-index: -1;
+            animation: rainbow 3s linear infinite;
+            background-size: 300% 300%;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        h1 {
+            color: #5dade2;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px #4a6fa5, 4px 4px 0px #52be80;
+            animation: titleBounce 2s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .level-info {
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #5499c7, #5dade2);
+            color: white;
+            margin: 0 auto 20px auto;
+            font-weight: bold;
+            padding: 10px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            box-shadow: 0 6px 15px rgba(84, 153, 199, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .shapes-container {
             display: flex;
             justify-content: center;
-            align-items: flex-end;
-            margin-bottom: 40px;
-            min-height: 160px;
-            gap: 30px;
-        }
-
-        .shapes-group {
-            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            gap: 20px;
             flex-wrap: wrap;
-            justify-content: center;
-            max-width: 280px;
-            min-width: 140px;
-            gap: 8px;
         }
 
         .number-with-shapes {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
+        }
+
+        .shapes-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 200px;
+            min-height: 60px;
+            gap: 6px;
+            align-items: center;
         }
 
         .shape {
-            width: 35px;
-            height: 35px;
-            margin: 3px;
-            display: inline-block;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: transform 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: dotPop 0.5s ease-out;
         }
 
-        .shape:hover {
-            transform: scale(1.1);
+        @keyframes dotPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
 
-        .red-dot {
-            background: linear-gradient(135deg, #ff6b6b, #e55353);
-        }
         .blue-dot {
-            background: linear-gradient(135deg, #4ecdc4, #44a08d);
-        }
-        .green-dot {
-            background: linear-gradient(135deg, #96d38c, #82c366);
-        }
-        .orange-dot {
-            background: linear-gradient(135deg, #ffa726, #ff8f00);
-        }
-        .purple-dot {
-            background: linear-gradient(135deg, #bb6bd9, #8e44ad);
+            background: linear-gradient(135deg, #5499c7, #5dade2);
         }
 
-        .equation {
-            font-size: 80px;
-            font-weight: bold;
-            margin: 30px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
+        .green-dot {
+            background: linear-gradient(135deg, #52be80, #45b39d);
         }
 
         .number {
-            color: #2d3436;
+            font-size: 4em;
+            font-weight: 900;
+            color: white;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+            animation: numberPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes numberPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .operator {
-            color: #e17055;
+            font-size: 4em;
+            font-weight: 900;
+            color: #48c9b0;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+            animation: operatorGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes operatorGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
         }
 
         .input-container {
             display: inline-flex;
-            gap: 5px;
+            gap: 8px;
         }
 
         .digit-input {
-            width: 90px;
-            height: 100px;
-            font-size: 75px;
+            width: 80px;
+            height: 90px;
+            font-size: 4em;
             text-align: center;
-            border: 4px solid #ddd;
-            border-radius: 15px;
+            border: 5px solid #5499c7;
+            border-radius: 20px;
             outline: none;
-            font-weight: bold;
-            background: linear-gradient(145deg, #f8f9fa, #ffffff);
+            font-weight: 900;
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
             caret-color: transparent;
             cursor: default;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
         }
 
         .digit-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
-            transform: scale(1.05);
+            border-color: #5dade2;
+            box-shadow: 0 0 25px rgba(93, 173, 226, 0.6);
+            transform: scale(1.08);
         }
 
         .digit-input.correct {
-            background: linear-gradient(145deg, #d4edda, #c3e6cb);
-            border-color: #28a745;
-            color: #155724;
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            background: linear-gradient(135deg, #52be80, #45b39d);
+            border-color: #229954;
+            color: white;
+            box-shadow: 0 8px 25px rgba(82, 190, 128, 0.5);
         }
 
         .digit-input.wrong {
-            background: linear-gradient(145deg, #f8d7da, #f5c6cb);
-            border-color: #dc3545;
-            color: #721c24;
-            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+            background: linear-gradient(135deg, #e67e22, #d68910);
+            border-color: #ba4a00;
+            color: white;
+            box-shadow: 0 8px 25px rgba(214, 137, 16, 0.5);
+        }
+
+        .celebration-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: 900;
+            z-index: 1000;
+            animation: celebrate 1.5s, rainbow 2s linear infinite;
+            pointer-events: none;
+            background: linear-gradient(135deg, #52be80 0%, #5499c7 25%, #48c9b0 75%, #52be80 100%);
+            padding: 30px 50px;
+            border-radius: 35px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.6), 0 0 80px rgba(82, 190, 128, 0.6);
+            border: 8px solid #2d3548;
+            background-size: 300% 300%;
+            color: white;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+        }
+
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); opacity: 1; }
+            70% { transform: translate(-50%, -50%) scale(1.05) rotate(-5deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
         }
 
         .celebration {
@@ -166,14 +292,13 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1000;
+            z-index: 999;
         }
 
         .confetti {
             position: absolute;
             width: 10px;
             height: 10px;
-            background: #f39c12;
             animation: confetti-fall 3s linear forwards;
         }
 
@@ -188,14 +313,42 @@
             }
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        .progress {
+            font-size: 1.4em;
+            background: linear-gradient(135deg, #7d3c98, #9b59b6);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 20px;
+            box-shadow: 0 6px 15px rgba(125, 60, 152, 0.4);
+            font-weight: bold;
         }
 
-        .shake {
-            animation: shake 0.5s ease-in-out;
+        .instructions {
+            font-size: 1.1em;
+            color: white;
+            margin-top: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #48c9b0, #45b39d);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(72, 201, 176, 0.4);
+            font-weight: bold;
+        }
+
+        .congrats {
+            font-size: 2em;
+            background: linear-gradient(135deg, #52be80, #5499c7, #48c9b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbowText 2s linear infinite, pulse 1s infinite;
+            font-weight: 900;
+        }
+
+        @keyframes rainbowText {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
         }
 
         @keyframes bounce {
@@ -206,74 +359,39 @@
         .bounce {
             animation: bounce 0.5s ease-in-out 3;
         }
-
-        .next-button {
-            background: linear-gradient(135deg, #00b894, #00a085);
-            color: white;
-            border: none;
-            padding: 18px 35px;
-            font-size: 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            margin-top: 25px;
-            font-weight: bold;
-            display: none;
-            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .next-button:hover {
-            background: linear-gradient(135deg, #00a085, #00896b);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(0, 184, 148, 0.4);
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 12px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 6px;
-            margin: 20px 0;
-            overflow: hidden;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00b894, #00cec9, #74b9ff);
-            width: 0%;
-            transition: width 0.5s ease;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="level-display">Level <span id="current-level">1</span></div>
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
-        </div>
-    </div>
+    <!-- Floating decorations -->
+    <div class="star-decoration" style="top: 5%; left: 15%;">🚀</div>
+    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">⚡</div>
+    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">⚽</div>
+    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">🏀</div>
+    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🎮</div>
+    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🦖</div>
 
-    <div class="game-container" id="game-container">
+    <div class="container" id="game-container">
+        <h1>🎮 Math Addition! 🚀</h1>
+        <div class="level-info" id="level-info">Level 1</div>
+
         <div class="shapes-container" id="shapes-container">
             <div class="number-with-shapes">
                 <div class="shapes-group" id="shapes-left"></div>
-                <span class="number" id="num1" style="font-size: 110px; font-weight: bold; color: #2d3436; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">3</span>
+                <span class="number" id="num1">3</span>
             </div>
-            <span class="operator" style="font-size: 110px; color: #ff6b6b; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">+</span>
+            <span class="operator">+</span>
             <div class="number-with-shapes">
                 <div class="shapes-group" id="shapes-right"></div>
-                <span class="number" id="num2" style="font-size: 110px; font-weight: bold; color: #2d3436; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">2</span>
+                <span class="number" id="num2">2</span>
             </div>
-            <span class="operator" style="font-size: 110px; color: #ff6b6b; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">=</span>
+            <span class="operator">=</span>
             <div class="input-container" id="input-container">
-                <input type="text" class="digit-input" id="digit1" maxlength="1">
+                <input type="text" class="digit-input" id="digit0" maxlength="1">
             </div>
         </div>
 
-        <button class="next-button" id="next-button">Next Problem! 🎉</button>
+        <div class="progress" id="progress">Correct answers: 0 / 5</div>
+        <div class="instructions">Type the answer on your keyboard! 🎯</div>
     </div>
 
     <div class="celebration" id="celebration"></div>
@@ -286,9 +404,17 @@
                 this.previousProblem = null;
                 this.correctAnswer = 0;
                 this.answersInLevel = 0;
-                this.answersNeededPerLevel = 50; // 10x longer levels
+                this.answersNeededPerLevel = 5; // 5 correct answers to level up
 
-                this.shapes = ['red-dot', 'blue-dot', 'green-dot', 'orange-dot', 'purple-dot'];
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                const messages = [
+                    "Awesome! 🎉", "Great job! ⭐", "Perfect! 🌟",
+                    "Amazing! 🎊", "Wonderful! 🎈", "Fantastic! 🌈",
+                    "Super! 🚀", "Brilliant! ✨"
+                ];
+                this.messages = messages;
+
                 this.init();
             }
 
@@ -296,6 +422,58 @@
                 this.generateProblem();
                 this.setupEventListeners();
                 this.updateProgress();
+            }
+
+            playCelebrationSound() {
+                const now = this.audioContext.currentTime;
+
+                // Create a fun ascending tone sequence
+                const frequencies = [523.25, 659.25, 783.99]; // C, E, G notes
+
+                frequencies.forEach((freq, index) => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+
+                    const startTime = now + index * 0.1;
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.3);
+                });
+            }
+
+            playErrorSound() {
+                const now = this.audioContext.currentTime;
+
+                // Create a descending "wrong" sound
+                const frequencies = [400, 300, 200]; // Descending tones
+
+                frequencies.forEach((freq, index) => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sawtooth';
+
+                    const startTime = now + index * 0.08;
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.2, startTime + 0.03);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.2);
+                });
             }
 
             generateProblem() {
@@ -332,11 +510,6 @@
                             num2 = Math.floor(Math.random() * 19) + 1; // 1-19
                             break;
                     }
-
-                    // Sometimes swap the numbers for variety (except we want to keep it simple for now)
-                    // if (Math.random() > 0.5) {
-                    //     [num1, num2] = [num2, num1];
-                    // }
 
                     attempts++;
                 } while (
@@ -390,24 +563,24 @@
                 shapesLeft.innerHTML = '';
                 shapesRight.innerHTML = '';
 
-                // Generate red dots for first number
+                // Generate blue dots for first number
                 for (let i = 0; i < this.currentProblem.num1; i++) {
                     const shape = document.createElement('div');
-                    shape.className = 'shape red-dot';
+                    shape.className = 'shape blue-dot';
                     shapesLeft.appendChild(shape);
                 }
 
-                // Generate blue dots for second number
+                // Generate green dots for second number
                 for (let i = 0; i < this.currentProblem.num2; i++) {
                     const shape = document.createElement('div');
-                    shape.className = 'shape blue-dot';
+                    shape.className = 'shape green-dot';
                     shapesRight.appendChild(shape);
                 }
             }
 
             handleInput(e, position) {
                 const value = e.target.value;
-                const input = e.target; // Store reference to avoid null errors
+                const input = e.target;
 
                 if (!/^\d$/.test(value)) {
                     input.value = '';
@@ -428,9 +601,14 @@
                     // Check if complete answer is correct
                     this.checkCompleteAnswer();
                 } else {
+                    // Wrong digit - reset counter and play error sound
+                    this.answersInLevel = 0;
+                    this.updateProgress();
+
                     input.classList.remove('correct');
                     input.classList.add('wrong');
                     this.shakeEquation();
+                    this.playErrorSound();
 
                     // Clear any existing timeout
                     if (this.clearWrongTimeout) {
@@ -439,7 +617,7 @@
 
                     // Auto-clear wrong answer after 0.5 seconds
                     this.clearWrongTimeout = setTimeout(() => {
-                        if (input && input.parentNode && document.contains(input)) { // Check if element still exists
+                        if (input && input.parentNode && document.contains(input)) {
                             input.value = '';
                             input.classList.remove('wrong');
                             input.focus();
@@ -472,8 +650,8 @@
                 });
 
                 if (allFilled && parseInt(userAnswer) === this.correctAnswer) {
-                    this.celebrate();
                     this.answersInLevel++;
+                    this.celebrate();
 
                     setTimeout(() => {
                         if (this.answersInLevel >= this.answersNeededPerLevel) {
@@ -491,19 +669,34 @@
                     clearTimeout(this.clearWrongTimeout);
                 }
 
+                this.playCelebrationSound();
+
                 const gameContainer = document.getElementById('game-container');
                 gameContainer.classList.add('bounce');
+
+                // Show celebration message
+                const msg = this.messages[Math.floor(Math.random() * this.messages.length)];
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration-overlay';
+                celebration.textContent = msg;
+                document.body.appendChild(celebration);
+
+                setTimeout(() => {
+                    celebration.remove();
+                }, 1500);
 
                 this.createConfetti();
 
                 setTimeout(() => {
                     gameContainer.classList.remove('bounce');
                 }, 1500);
+
+                this.updateProgress();
             }
 
             createConfetti() {
                 const celebration = document.getElementById('celebration');
-                const colors = ['#ff6b6b', '#4ecdc4', '#96d38c', '#ffa726', '#bb6bd9', '#667eea'];
+                const colors = ['#5dade2', '#52be80', '#48c9b0', '#5499c7', '#45b39d', '#4a6fa5'];
 
                 for (let i = 0; i < 50; i++) {
                     const confetti = document.createElement('div');
@@ -530,20 +723,31 @@
             levelUp() {
                 this.level++;
                 this.answersInLevel = 0;
-                document.getElementById('current-level').textContent = this.level;
+                document.getElementById('level-info').textContent = `Level ${this.level}`;
                 this.updateProgress();
+
+                // Show level up celebration
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration-overlay';
+                celebration.innerHTML = `<div class="congrats">Level ${this.level} Unlocked! 🎊</div>`;
+                document.body.appendChild(celebration);
+
+                setTimeout(() => {
+                    celebration.remove();
+                }, 2000);
 
                 // Show celebration for level up
                 this.createConfetti();
+                this.playCelebrationSound();
 
                 setTimeout(() => {
                     this.generateProblem();
-                }, 1000);
+                }, 2500);
             }
 
             updateProgress() {
-                const progress = (this.answersInLevel / this.answersNeededPerLevel) * 100;
-                document.getElementById('progress-fill').style.width = progress + '%';
+                const progress = document.getElementById('progress');
+                progress.textContent = `Correct answers: ${this.answersInLevel} / ${this.answersNeededPerLevel}`;
             }
 
             setupGlobalKeyboard() {
@@ -594,19 +798,21 @@
             }
 
             setupEventListeners() {
-                document.getElementById('next-button').addEventListener('click', () => {
-                    this.generateProblem();
-                    document.getElementById('next-button').style.display = 'none';
-                });
-
                 // Setup global keyboard handling
                 this.setupGlobalKeyboard();
             }
         }
 
-        // Start the game when page loads
+        // Ensure the page is always ready to receive keypresses
         window.addEventListener('load', () => {
+            document.body.setAttribute('tabindex', '0');
+            document.body.focus();
             new MathGame();
+        });
+
+        // Refocus body if focus is lost
+        document.addEventListener('click', () => {
+            document.body.focus();
         });
     </script>
 </body>
