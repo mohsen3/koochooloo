@@ -12,270 +12,304 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            transition: transform 0.1s;
+        }
+
+        body.shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
         }
 
         .game-container {
             background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 800px;
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
             width: 100%;
-        }
-
-        h1 {
-            text-align: center;
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-
-        .score-board {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .score-item {
             text-align: center;
         }
 
-        .score-label {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 5px;
-        }
-
-        .score-value {
-            font-size: 2em;
+        .level-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.5em;
             font-weight: bold;
-            color: #667eea;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .question-container {
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 20px;
+            height: 30px;
+            margin: 20px auto;
+            max-width: 400px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(79, 172, 254, 0.5);
+        }
+
+        .question {
+            font-size: 2.5em;
+            color: #333;
+            margin: 30px 0;
+            font-weight: bold;
+        }
+
+        .numbers-container {
             display: flex;
             justify-content: space-around;
-            align-items: center;
-            margin: 40px 0;
-            gap: 20px;
+            align-items: flex-end;
+            margin: 50px 0;
+            gap: 40px;
         }
 
         .number-box {
             flex: 1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .number {
-            font-size: 4em;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 15px;
+            max-width: 400px;
         }
 
         .dots-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 8px;
-            margin-top: 15px;
+            gap: 15px;
+            margin-bottom: 30px;
+            min-height: 200px;
+            align-content: flex-end;
         }
 
         .dot {
-            width: 20px;
-            height: 20px;
-            background: white;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 50%;
-            opacity: 0.9;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            animation: popIn 0.3s ease;
         }
 
-        .vs-symbol {
-            font-size: 2em;
-            color: #667eea;
+        @keyframes popIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .number {
+            font-size: 8em;
             font-weight: bold;
-        }
-
-        .buttons-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-
-        .answer-btn {
-            padding: 20px 40px;
-            font-size: 1.5em;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            min-width: 120px;
-        }
-
-        .answer-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .answer-btn:active {
-            transform: translateY(-1px);
-        }
-
-        .btn-less {
-            background: #ff6b6b;
-            color: white;
-        }
-
-        .btn-equal {
-            background: #ffd93d;
-            color: #333;
-        }
-
-        .btn-greater {
-            background: #51cf66;
-            color: white;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
         }
 
         .feedback {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 1.3em;
-            font-weight: bold;
-            min-height: 30px;
-            transition: all 0.3s ease;
-        }
-
-        .feedback.correct {
-            color: #51cf66;
-        }
-
-        .feedback.incorrect {
-            color: #ff6b6b;
-        }
-
-        .new-game-btn {
-            display: block;
-            margin: 30px auto 0;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            background: #667eea;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
             color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
+            padding: 50px 80px;
+            border-radius: 30px;
+            font-size: 4em;
+            font-weight: bold;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            opacity: 0;
             transition: all 0.3s ease;
         }
 
-        .new-game-btn:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
+        .feedback.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
         }
 
-        @media (max-width: 600px) {
-            .game-container {
-                padding: 20px;
-            }
+        .feedback .relation {
+            font-size: 1.5em;
+            margin-top: 20px;
+            color: #fff;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
 
-            h1 {
-                font-size: 1.8em;
+        .feedback.level-up {
+            background: linear-gradient(135deg, #ffd93d 0%, #f5a623 100%);
+            color: #333;
+        }
+
+        .instructions {
+            font-size: 1.3em;
+            color: #666;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f9ff;
+            border-radius: 15px;
+            border: 3px dashed #4facfe;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 30px;
             }
 
             .number {
-                font-size: 3em;
-            }
-
-            .answer-btn {
-                padding: 15px 25px;
-                font-size: 1.2em;
+                font-size: 5em;
             }
 
             .dot {
-                width: 15px;
-                height: 15px;
+                width: 30px;
+                height: 30px;
+            }
+
+            .question {
+                font-size: 1.8em;
+            }
+
+            .feedback {
+                font-size: 2.5em;
+                padding: 30px 50px;
             }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>Greater Than / Less Than</h1>
-        <p class="subtitle">Compare the numbers and choose the correct symbol!</p>
+        <div class="level-badge" id="levelBadge">Level 1</div>
 
-        <div class="score-board">
-            <div class="score-item">
-                <div class="score-label">Score</div>
-                <div class="score-value" id="score">0</div>
-            </div>
-            <div class="score-item">
-                <div class="score-label">Questions</div>
-                <div class="score-value" id="total">0</div>
-            </div>
-            <div class="score-item">
-                <div class="score-label">Accuracy</div>
-                <div class="score-value" id="accuracy">0%</div>
-            </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
         </div>
 
-        <div class="question-container">
+        <div class="question" id="question">Which one is larger?</div>
+
+        <div class="numbers-container">
             <div class="number-box">
-                <div class="number" id="number1">5</div>
                 <div class="dots-container" id="dots1"></div>
+                <div class="number" id="number1">5</div>
             </div>
-            <div class="vs-symbol">?</div>
             <div class="number-box">
-                <div class="number" id="number2">3</div>
                 <div class="dots-container" id="dots2"></div>
+                <div class="number" id="number2">3</div>
             </div>
         </div>
 
-        <div class="buttons-container">
-            <button class="answer-btn btn-less" onclick="checkAnswer('less')">
-                &lt;
-            </button>
-            <button class="answer-btn btn-equal" onclick="checkAnswer('equal')">
-                =
-            </button>
-            <button class="answer-btn btn-greater" onclick="checkAnswer('greater')">
-                &gt;
-            </button>
+        <div class="instructions" id="instructions">
+            Press the number key for your answer!
         </div>
+    </div>
 
-        <div class="feedback" id="feedback"></div>
-
-        <button class="new-game-btn" onclick="newQuestion()">Next Question</button>
+    <div class="feedback" id="feedback">
+        <div id="feedbackText">Correct!</div>
+        <div class="relation" id="relation"></div>
     </div>
 
     <script>
-        let score = 0;
-        let totalQuestions = 0;
+        let level = 1;
+        let correctStreak = 0;
         let num1, num2;
+        let questionType = 'larger'; // 'larger', 'smaller', or 'equal'
+        let correctAnswer;
+        let waitingForNext = false;
 
-        function generateNumbers() {
-            // Generate random numbers between 1 and 10
-            num1 = Math.floor(Math.random() * 10) + 1;
-            num2 = Math.floor(Math.random() * 10) + 1;
+        function generateDots(containerId, count) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    container.appendChild(dot);
+                }, i * 50);
+            }
+        }
+
+        function generateQuestion() {
+            waitingForNext = false;
+
+            // Level 1: Only ask for larger number, numbers are always different
+            if (level === 1) {
+                do {
+                    num1 = Math.floor(Math.random() * 9) + 1;
+                    num2 = Math.floor(Math.random() * 9) + 1;
+                } while (num1 === num2);
+
+                questionType = 'larger';
+                document.getElementById('question').textContent = 'Which one is larger?';
+                correctAnswer = Math.max(num1, num2).toString();
+            }
+            // Level 2: Ask for larger or smaller, numbers are always different
+            else if (level === 2) {
+                do {
+                    num1 = Math.floor(Math.random() * 9) + 1;
+                    num2 = Math.floor(Math.random() * 9) + 1;
+                } while (num1 === num2);
+
+                questionType = Math.random() < 0.5 ? 'larger' : 'smaller';
+
+                if (questionType === 'larger') {
+                    document.getElementById('question').textContent = 'Which one is larger?';
+                    correctAnswer = Math.max(num1, num2).toString();
+                } else {
+                    document.getElementById('question').textContent = 'Which one is smaller?';
+                    correctAnswer = Math.min(num1, num2).toString();
+                }
+            }
+            // Level 3: Can ask for larger, smaller, or equal
+            else {
+                // 30% chance of equal numbers
+                if (Math.random() < 0.3) {
+                    num1 = Math.floor(Math.random() * 9) + 1;
+                    num2 = num1;
+                    questionType = 'equal';
+                    document.getElementById('question').textContent = 'Are they equal? (Press = or the number)';
+                    correctAnswer = '=';
+                } else {
+                    do {
+                        num1 = Math.floor(Math.random() * 9) + 1;
+                        num2 = Math.floor(Math.random() * 9) + 1;
+                    } while (num1 === num2);
+
+                    questionType = Math.random() < 0.5 ? 'larger' : 'smaller';
+
+                    if (questionType === 'larger') {
+                        document.getElementById('question').textContent = 'Which one is larger?';
+                        correctAnswer = Math.max(num1, num2).toString();
+                    } else {
+                        document.getElementById('question').textContent = 'Which one is smaller?';
+                        correctAnswer = Math.min(num1, num2).toString();
+                    }
+                }
+            }
 
             // Display numbers
             document.getElementById('number1').textContent = num1;
@@ -285,69 +319,141 @@
             generateDots('dots1', num1);
             generateDots('dots2', num2);
 
-            // Clear feedback
-            document.getElementById('feedback').textContent = '';
-            document.getElementById('feedback').className = 'feedback';
+            // Update progress bar
+            updateProgressBar();
         }
 
-        function generateDots(containerId, count) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-
-            for (let i = 0; i < count; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'dot';
-                container.appendChild(dot);
-            }
+        function updateProgressBar() {
+            const progress = (correctStreak / 5) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
         }
 
-        function checkAnswer(userAnswer) {
-            let correctAnswer;
+        function updateLevelBadge() {
+            document.getElementById('levelBadge').textContent = `Level ${level}`;
+        }
 
-            if (num1 < num2) {
-                correctAnswer = 'less';
-            } else if (num1 === num2) {
-                correctAnswer = 'equal';
+        function updateInstructions() {
+            const instructions = document.getElementById('instructions');
+            if (level === 1) {
+                instructions.textContent = 'Press the number key for your answer! Get 5 in a row to level up!';
+            } else if (level === 2) {
+                instructions.textContent = 'Read carefully - sometimes larger, sometimes smaller!';
             } else {
-                correctAnswer = 'greater';
+                instructions.textContent = 'Watch out for equal numbers - press = when they\'re the same!';
+            }
+        }
+
+        function getRelationSymbol() {
+            if (num1 > num2) return '>';
+            if (num1 < num2) return '<';
+            return '=';
+        }
+
+        function showFeedback(isCorrect, relation) {
+            const feedback = document.getElementById('feedback');
+            const feedbackText = document.getElementById('feedbackText');
+            const relationEl = document.getElementById('relation');
+
+            if (isCorrect) {
+                const messages = [
+                    'Awesome!',
+                    'Great job!',
+                    'Perfect!',
+                    'Excellent!',
+                    'You got it!',
+                    'Fantastic!',
+                    'Well done!'
+                ];
+                feedbackText.textContent = messages[Math.floor(Math.random() * messages.length)];
+                relationEl.textContent = relation;
+                feedback.className = 'feedback show';
+
+                if (correctStreak === 4) { // About to level up
+                    feedback.classList.add('level-up');
+                    feedbackText.textContent = `Level ${level} Complete!`;
+                }
             }
 
-            totalQuestions++;
-            const feedbackEl = document.getElementById('feedback');
+            setTimeout(() => {
+                feedback.className = 'feedback';
+                if (isCorrect) {
+                    waitingForNext = true;
+                    setTimeout(() => {
+                        generateQuestion();
+                    }, 500);
+                }
+            }, 1500);
+        }
 
-            if (userAnswer === correctAnswer) {
-                score++;
-                feedbackEl.textContent = '✓ Correct! Great job!';
-                feedbackEl.className = 'feedback correct';
+        function wrongAnswer() {
+            // Shake the screen
+            document.body.classList.add('shake');
+            setTimeout(() => {
+                document.body.classList.remove('shake');
+            }, 500);
+
+            // Reset streak
+            correctStreak = 0;
+            updateProgressBar();
+        }
+
+        function handleKeyPress(event) {
+            if (waitingForNext) return;
+
+            const key = event.key;
+
+            // Check if it's a valid answer
+            if (level < 3 && key >= '1' && key <= '9') {
+                checkAnswer(key);
+            } else if (level === 3 && ((key >= '1' && key <= '9') || key === '=')) {
+                checkAnswer(key);
+            }
+        }
+
+        function checkAnswer(answer) {
+            const relation = `${num1} ${getRelationSymbol()} ${num2}`;
+
+            // For level 3, also accept the correct number for equal questions
+            let isAnswerCorrect = false;
+            if (questionType === 'equal') {
+                isAnswerCorrect = (answer === '=' || answer === num1.toString());
             } else {
-                const symbols = {
-                    'less': '<',
-                    'equal': '=',
-                    'greater': '>'
-                };
-                feedbackEl.textContent = `✗ Incorrect. ${num1} ${symbols[correctAnswer]} ${num2}`;
-                feedbackEl.className = 'feedback incorrect';
+                isAnswerCorrect = (answer === correctAnswer);
             }
 
-            updateScore();
+            if (isAnswerCorrect) {
+                correctStreak++;
+
+                // Check if level up
+                if (correctStreak === 5) {
+                    showFeedback(true, relation);
+                    setTimeout(() => {
+                        if (level < 3) {
+                            level++;
+                            correctStreak = 0;
+                            updateLevelBadge();
+                            updateInstructions();
+                            updateProgressBar();
+                        } else {
+                            correctStreak = 0;
+                            updateProgressBar();
+                        }
+                    }, 2000);
+                } else {
+                    showFeedback(true, relation);
+                }
+            } else {
+                wrongAnswer();
+            }
         }
 
-        function updateScore() {
-            document.getElementById('score').textContent = score;
-            document.getElementById('total').textContent = totalQuestions;
-
-            const accuracy = totalQuestions > 0
-                ? Math.round((score / totalQuestions) * 100)
-                : 0;
-            document.getElementById('accuracy').textContent = accuracy + '%';
-        }
-
-        function newQuestion() {
-            generateNumbers();
-        }
+        // Add global keypress listener
+        document.addEventListener('keydown', handleKeyPress);
 
         // Initialize game
-        generateNumbers();
+        updateLevelBadge();
+        updateInstructions();
+        generateQuestion();
     </script>
 </body>
 </html>
