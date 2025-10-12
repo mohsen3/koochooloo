@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counting Fruits - Koochooloo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            user-select: none;
+            position: relative;
+        }
+
+        .main-wrapper {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: backgroundMove 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes backgroundMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+
+        .level-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+
+        .progress {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .progress-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            border: 2px solid white;
+            transition: background 0.3s;
+        }
+
+        .progress-dot.correct {
+            background: #4ade80;
+        }
+
+        .game-container {
+            position: relative;
+            width: 80vw;
+            max-width: 1000px;
+            height: 60vh;
+            max-height: 600px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 250, 240, 0.95));
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 40px;
+            gap: 20px;
+            border: 3px solid rgba(255,255,255,0.5);
+        }
+
+        .emoji {
+            font-size: 80px;
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+            transition: transform 0.2s;
+        }
+
+        .emoji:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .question {
+            position: absolute;
+            bottom: 80px;
+            font-size: 36px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 120px;
+            z-index: 1000;
+            animation: celebrate 1s ease-out forwards;
+        }
+
+        @keyframes celebrate {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5) rotate(180deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(360deg);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-20px); }
+            75% { transform: translateX(20px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        .move {
+            animation: move 4s linear infinite;
+        }
+
+        @keyframes move {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(50px, -30px); }
+            50% { transform: translate(-30px, 40px); }
+            75% { transform: translate(40px, 30px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .level-complete {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .level-complete.show {
+            display: flex;
+        }
+
+        .level-complete-content {
+            background: white;
+            padding: 60px;
+            border-radius: 30px;
+            text-align: center;
+            animation: celebrate 1s ease-out;
+        }
+
+        .level-complete-content h2 {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .level-complete-content p {
+            font-size: 32px;
+            color: #333;
+        }
+
+        .number-display {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 200px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 20px rgba(0,0,0,0.5), 0 0 40px rgba(102,126,234,0.8);
+            z-index: 500;
+            pointer-events: none;
+            animation: numberPop 0.5s ease-out forwards;
+        }
+
+        @keyframes numberPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.3) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 0.9;
+            }
+        }
+
+        .sparkle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sparkleFloat 1s ease-out forwards;
+            z-index: 499;
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">🎮 Counting Game</div>
+    <div class="level-info">Level <span id="current-level">1</span></div>
+    <div class="progress" id="progress"></div>
+    <div class="question" id="question">How many objects? Press the number!</div>
+
+    <div class="main-wrapper">
+        <div class="game-container" id="game-container"></div>
+    </div>
+
+    <div class="level-complete" id="level-complete">
+        <div class="level-complete-content">
+            <h2>🎉 Level Complete! 🎉</h2>
+            <p>Moving to Level <span id="next-level">2</span>!</p>
+        </div>
+    </div>
+
+    <script>
+        const gameState = {
+            level: 1,
+            correctAnswers: 0,
+            currentAnswer: 0,
+            maxLevel: 10
+        };
+
+        const emojis = ['🍎', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍑', '🥝',
+                        '🥑', '🍍', '🥭', '🍈', '🫐', '🍏', '🥥', '🍐', '🥕', '🌽'];
+
+        const celebrationEmojis = ['🎉', '🎊', '⭐', '✨', '🌟', '💫', '🏆'];
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(frequency, duration, type = 'sine') {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playCorrectSound() {
+            playSound(523.25, 0.2); // C5
+            setTimeout(() => playSound(659.25, 0.2), 100); // E5
+            setTimeout(() => playSound(783.99, 0.3), 200); // G5
+        }
+
+        function playWrongSound() {
+            playSound(200, 0.1, 'square');
+            setTimeout(() => playSound(150, 0.2, 'square'), 100);
+        }
+
+        function playLevelUpSound() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => playSound(523.25 + (i * 100), 0.15), i * 100);
+            }
+        }
+
+        function getLevelConfig(level) {
+            if (level <= 2) {
+                return { min: 1, max: 5, moving: false };
+            } else if (level <= 4) {
+                return { min: 3, max: 7, moving: false };
+            } else if (level <= 6) {
+                return { min: 5, max: 10, moving: false };
+            } else if (level <= 8) {
+                return { min: 1, max: 10, moving: true };
+            } else {
+                return { min: 5, max: 15, moving: true };
+            }
+        }
+
+        function updateProgress() {
+            const progressDiv = document.getElementById('progress');
+            progressDiv.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                if (i < gameState.correctAnswers) {
+                    dot.classList.add('correct');
+                }
+                progressDiv.appendChild(dot);
+            }
+        }
+
+        function generateQuestion() {
+            const config = getLevelConfig(gameState.level);
+            const count = Math.floor(Math.random() * (config.max - config.min + 1)) + config.min;
+            gameState.currentAnswer = count;
+
+            const container = document.getElementById('game-container');
+            container.innerHTML = '';
+
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+
+            for (let i = 0; i < count; i++) {
+                const emojiDiv = document.createElement('div');
+                emojiDiv.className = 'emoji';
+                if (config.moving) {
+                    emojiDiv.classList.add('move');
+                    emojiDiv.style.animationDelay = `${Math.random() * 2}s`;
+                }
+                emojiDiv.style.animationDelay = `${Math.random() * 3}s`;
+                emojiDiv.textContent = emoji;
+                container.appendChild(emojiDiv);
+            }
+
+            updateProgress();
+            document.getElementById('current-level').textContent = gameState.level;
+        }
+
+        function showCelebration() {
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration';
+            celebration.textContent = celebrationEmojis[Math.floor(Math.random() * celebrationEmojis.length)];
+            document.body.appendChild(celebration);
+
+            playCorrectSound();
+
+            setTimeout(() => {
+                celebration.remove();
+            }, 1000);
+        }
+
+        function shakeScreen() {
+            const container = document.getElementById('game-container');
+            container.classList.add('shake');
+            playWrongSound();
+
+            setTimeout(() => {
+                container.classList.remove('shake');
+            }, 500);
+        }
+
+        function showLevelComplete() {
+            const modal = document.getElementById('level-complete');
+            document.getElementById('next-level').textContent = gameState.level + 1;
+            modal.classList.add('show');
+
+            playLevelUpSound();
+
+            setTimeout(() => {
+                modal.classList.remove('show');
+                gameState.level++;
+                gameState.correctAnswers = 0;
+
+                if (gameState.level > gameState.maxLevel) {
+                    showGameComplete();
+                } else {
+                    generateQuestion();
+                }
+            }, 2000);
+        }
+
+        function showGameComplete() {
+            const container = document.getElementById('game-container');
+            container.innerHTML = '<div style="font-size: 48px; text-align: center;">🏆<br>You completed all levels!<br>🎉</div>';
+            document.getElementById('question').textContent = 'Great job! Refresh to play again!';
+        }
+
+        function showNumberDisplay(number) {
+            const display = document.createElement('div');
+            display.className = 'number-display';
+            display.textContent = number;
+            document.body.appendChild(display);
+
+            // Create sparkles
+            for (let i = 0; i < 12; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 100 + Math.random() * 50;
+                sparkle.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+                sparkle.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
+                sparkle.style.left = '50%';
+                sparkle.style.top = '50%';
+                document.body.appendChild(sparkle);
+
+                setTimeout(() => sparkle.remove(), 1000);
+            }
+
+            setTimeout(() => display.remove(), 800);
+        }
+
+        function handleKeyPress(event) {
+            const key = event.key;
+
+            // Accept number keys (0-9 on main keyboard and numpad)
+            if (key >= '0' && key <= '9') {
+                const number = parseInt(key);
+                showNumberDisplay(number);
+                playSound(300 + (number * 50), 0.1);
+                setTimeout(() => checkAnswer(number), 400);
+            }
+        }
+
+        function checkAnswer(answer) {
+            if (answer === gameState.currentAnswer) {
+                showCelebration();
+                gameState.correctAnswers++;
+
+                if (gameState.correctAnswers >= 5) {
+                    showLevelComplete();
+                } else {
+                    setTimeout(generateQuestion, 1000);
+                }
+            } else {
+                shakeScreen();
+                gameState.correctAnswers = 0;
+                updateProgress();
+            }
+        }
+
+        // Initialize game
+        document.addEventListener('keydown', handleKeyPress);
+        generateQuestion();
+    </script>
+</body>
+</html>

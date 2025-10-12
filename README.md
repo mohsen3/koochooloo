@@ -14,7 +14,10 @@ Koochooloo provides fun, easy-to-use educational games built with HTML and JavaS
 
 ## Games
 
-More games coming soon!
+### Counting Fruits
+Learn to count from 1-15 with animated fruits! Progress through 10 levels of increasing difficulty.
+- **Play:** [counting-fruits.html](counting-fruits.html)
+- **Features:** 10 progressive levels, moving objects, celebration animations, sound effects
 
 ## Usage
 
