@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Greater Than / Less Than Game</title>
+    <title>Number Game</title>
     <style>
         * {
             margin: 0;
@@ -11,15 +11,16 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
             font-family: 'Comic Sans MS', 'Arial', sans-serif;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            transition: transform 0.1s;
+        }
+
+        body {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            position: relative;
         }
 
         body.shake {
@@ -32,82 +33,129 @@
             20%, 40%, 60%, 80% { transform: translateX(10px); }
         }
 
+        /* Floating decorative elements */
+        .decoration {
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.3;
+            animation: float 20s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
         .game-container {
-            background: white;
-            border-radius: 30px;
-            padding: 50px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
-            max-width: 1000px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90vw;
+            max-width: 1100px;
+            height: 90vh;
+            max-height: 800px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 75%, #4facfe 100%);
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-inner {
             width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #5a7fc9 0%, #4a6ba8 100%);
+            border-radius: 32px;
+            padding: 3vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .title {
             text-align: center;
+            font-size: 4em;
+            font-weight: bold;
+            color: #ffd93d;
+            text-shadow: 3px 3px 0px #ff6b6b, 6px 6px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2vh;
         }
 
         .level-badge {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
-            padding: 15px 30px;
+            padding: 1.5vh 4vh;
             border-radius: 50px;
-            font-size: 1.5em;
+            font-size: 2em;
             font-weight: bold;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin: 0 auto 2vh;
+            display: block;
+            width: fit-content;
         }
 
-        .progress-bar {
-            background: #e0e0e0;
-            border-radius: 20px;
-            height: 30px;
-            margin: 20px auto;
-            max-width: 400px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .progress-fill {
-            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-            height: 100%;
-            transition: width 0.3s ease;
-            border-radius: 20px;
-            box-shadow: 0 2px 5px rgba(79, 172, 254, 0.5);
+        .question-box {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+            border-radius: 25px;
+            padding: 2.5vh;
+            text-align: center;
+            margin-bottom: 3vh;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
         .question {
             font-size: 2.5em;
-            color: #333;
-            margin: 30px 0;
+            color: white;
             font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         .numbers-container {
             display: flex;
-            justify-content: space-around;
-            align-items: flex-end;
-            margin: 50px 0;
-            gap: 40px;
+            justify-content: center;
+            align-items: stretch;
+            gap: 3vw;
+            margin-bottom: 3vh;
+            flex: 1;
+            max-height: 35vh;
         }
 
         .number-box {
             flex: 1;
-            max-width: 400px;
+            max-width: 45%;
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            border-radius: 25px;
+            padding: 3vh 2vw;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .number-box:hover {
+            transform: scale(1.05);
         }
 
         .dots-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            min-height: 200px;
-            align-content: flex-end;
+            gap: 1vh;
+            margin-bottom: 2vh;
+            min-height: 12vh;
+            align-content: center;
         }
 
         .dot {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 3.5vh;
+            height: 3.5vh;
+            background: #667eea;
             border-radius: 50%;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
             animation: popIn 0.3s ease;
         }
 
@@ -125,11 +173,47 @@
         .number {
             font-size: 8em;
             font-weight: bold;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+            color: #2c3e50;
+            text-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-box {
+            background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+            border-radius: 25px;
+            padding: 2vh;
+            text-align: center;
+            margin-bottom: 2vh;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-text {
+            font-size: 2em;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .instructions-box {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+            border-radius: 25px;
+            padding: 2vh;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .instructions {
+            font-size: 1.6em;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            margin-bottom: 0.5vh;
+        }
+
+        .instructions-sub {
+            font-size: 1.3em;
+            color: #ffe4b3;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         .feedback {
@@ -139,14 +223,15 @@
             transform: translate(-50%, -50%) scale(0);
             background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
             color: white;
-            padding: 50px 80px;
+            padding: 5vh 8vw;
             border-radius: 30px;
             font-size: 4em;
             font-weight: bold;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
             z-index: 1000;
             opacity: 0;
             transition: all 0.3s ease;
+            text-align: center;
         }
 
         .feedback.show {
@@ -156,7 +241,7 @@
 
         .feedback .relation {
             font-size: 1.5em;
-            margin-top: 20px;
+            margin-top: 2vh;
             color: #fff;
             text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
@@ -166,64 +251,78 @@
             color: #333;
         }
 
-        .instructions {
-            font-size: 1.3em;
-            color: #666;
-            margin-top: 30px;
-            padding: 20px;
-            background: #f0f9ff;
-            border-radius: 15px;
-            border: 3px dashed #4facfe;
-        }
-
         @media (max-width: 768px) {
-            .game-container {
-                padding: 30px;
+            .title {
+                font-size: 2.5em;
             }
 
             .number {
                 font-size: 5em;
             }
 
-            .dot {
-                width: 30px;
-                height: 30px;
-            }
-
             .question {
                 font-size: 1.8em;
             }
 
+            .dot {
+                width: 3vh;
+                height: 3vh;
+            }
+
             .feedback {
                 font-size: 2.5em;
-                padding: 30px 50px;
+                padding: 3vh 6vw;
+            }
+
+            .instructions {
+                font-size: 1.2em;
+            }
+
+            .instructions-sub {
+                font-size: 1em;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Decorative elements -->
+    <div class="decoration" style="top: 10%; left: 5%;">⭐</div>
+    <div class="decoration" style="top: 20%; right: 8%; animation-delay: -5s;">🚀</div>
+    <div class="decoration" style="bottom: 15%; left: 10%; animation-delay: -10s;">⚡</div>
+    <div class="decoration" style="bottom: 25%; right: 12%; animation-delay: -7s;">🏀</div>
+    <div class="decoration" style="top: 40%; left: 3%; animation-delay: -3s;">🎯</div>
+    <div class="decoration" style="bottom: 40%; right: 5%; animation-delay: -8s;">⭐</div>
+
     <div class="game-container">
-        <div class="level-badge" id="levelBadge">Level 1</div>
-
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-
-        <div class="question" id="question">Which one is larger?</div>
-
-        <div class="numbers-container">
-            <div class="number-box">
-                <div class="dots-container" id="dots1"></div>
-                <div class="number" id="number1">5</div>
+        <div class="game-inner">
+            <div>
+                <div class="title">🎯 Number Game! 🚀</div>
+                <div class="level-badge" id="levelBadge">Level 1</div>
             </div>
-            <div class="number-box">
-                <div class="dots-container" id="dots2"></div>
-                <div class="number" id="number2">3</div>
-            </div>
-        </div>
 
-        <div class="instructions" id="instructions">
-            Press the number key for your answer!
+            <div class="question-box">
+                <div class="question" id="question">Which one is LARGER?</div>
+            </div>
+
+            <div class="numbers-container">
+                <div class="number-box" onclick="clickNumber(1)">
+                    <div class="dots-container" id="dots1"></div>
+                    <div class="number" id="number1">5</div>
+                </div>
+                <div class="number-box" onclick="clickNumber(2)">
+                    <div class="dots-container" id="dots2"></div>
+                    <div class="number" id="number2">3</div>
+                </div>
+            </div>
+
+            <div class="progress-box">
+                <div class="progress-text" id="progress">Correct answers: 0 / 5</div>
+            </div>
+
+            <div class="instructions-box">
+                <div class="instructions">Press the number on your keyboard or click!</div>
+                <div class="instructions-sub" id="instructionsSub">Level 1: Press the LARGER number!</div>
+            </div>
         </div>
     </div>
 
@@ -236,7 +335,7 @@
         let level = 1;
         let correctStreak = 0;
         let num1, num2;
-        let questionType = 'larger'; // 'larger', 'smaller', or 'equal'
+        let questionType = 'larger';
         let correctAnswer;
         let waitingForNext = false;
 
@@ -264,7 +363,7 @@
                 } while (num1 === num2);
 
                 questionType = 'larger';
-                document.getElementById('question').textContent = 'Which one is larger?';
+                document.getElementById('question').textContent = 'Which one is LARGER?';
                 correctAnswer = Math.max(num1, num2).toString();
             }
             // Level 2: Ask for larger or smaller, numbers are always different
@@ -277,10 +376,10 @@
                 questionType = Math.random() < 0.5 ? 'larger' : 'smaller';
 
                 if (questionType === 'larger') {
-                    document.getElementById('question').textContent = 'Which one is larger?';
+                    document.getElementById('question').textContent = 'Which one is LARGER?';
                     correctAnswer = Math.max(num1, num2).toString();
                 } else {
-                    document.getElementById('question').textContent = 'Which one is smaller?';
+                    document.getElementById('question').textContent = 'Which one is SMALLER?';
                     correctAnswer = Math.min(num1, num2).toString();
                 }
             }
@@ -291,7 +390,7 @@
                     num1 = Math.floor(Math.random() * 9) + 1;
                     num2 = num1;
                     questionType = 'equal';
-                    document.getElementById('question').textContent = 'Are they equal? (Press = or the number)';
+                    document.getElementById('question').textContent = 'Are they EQUAL?';
                     correctAnswer = '=';
                 } else {
                     do {
@@ -302,10 +401,10 @@
                     questionType = Math.random() < 0.5 ? 'larger' : 'smaller';
 
                     if (questionType === 'larger') {
-                        document.getElementById('question').textContent = 'Which one is larger?';
+                        document.getElementById('question').textContent = 'Which one is LARGER?';
                         correctAnswer = Math.max(num1, num2).toString();
                     } else {
-                        document.getElementById('question').textContent = 'Which one is smaller?';
+                        document.getElementById('question').textContent = 'Which one is SMALLER?';
                         correctAnswer = Math.min(num1, num2).toString();
                     }
                 }
@@ -319,13 +418,12 @@
             generateDots('dots1', num1);
             generateDots('dots2', num2);
 
-            // Update progress bar
-            updateProgressBar();
+            // Update progress
+            updateProgress();
         }
 
-        function updateProgressBar() {
-            const progress = (correctStreak / 5) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
+        function updateProgress() {
+            document.getElementById('progress').textContent = `Correct answers: ${correctStreak} / 5`;
         }
 
         function updateLevelBadge() {
@@ -333,13 +431,13 @@
         }
 
         function updateInstructions() {
-            const instructions = document.getElementById('instructions');
+            const instructionsSub = document.getElementById('instructionsSub');
             if (level === 1) {
-                instructions.textContent = 'Press the number key for your answer! Get 5 in a row to level up!';
+                instructionsSub.textContent = 'Level 1: Press the LARGER number!';
             } else if (level === 2) {
-                instructions.textContent = 'Read carefully - sometimes larger, sometimes smaller!';
+                instructionsSub.textContent = 'Level 2: Read carefully - larger OR smaller!';
             } else {
-                instructions.textContent = 'Watch out for equal numbers - press = when they\'re the same!';
+                instructionsSub.textContent = 'Level 3: Watch for equals - press = when same!';
             }
         }
 
@@ -368,7 +466,7 @@
                 relationEl.textContent = relation;
                 feedback.className = 'feedback show';
 
-                if (correctStreak === 4) { // About to level up
+                if (correctStreak === 4) {
                     feedback.classList.add('level-up');
                     feedbackText.textContent = `Level ${level} Complete!`;
                 }
@@ -386,15 +484,26 @@
         }
 
         function wrongAnswer() {
-            // Shake the screen
             document.body.classList.add('shake');
             setTimeout(() => {
                 document.body.classList.remove('shake');
             }, 500);
 
-            // Reset streak
             correctStreak = 0;
-            updateProgressBar();
+            updateProgress();
+        }
+
+        function clickNumber(boxNumber) {
+            if (waitingForNext) return;
+
+            let clickedNumber;
+            if (boxNumber === 1) {
+                clickedNumber = num1.toString();
+            } else {
+                clickedNumber = num2.toString();
+            }
+
+            checkAnswer(clickedNumber);
         }
 
         function handleKeyPress(event) {
@@ -402,7 +511,6 @@
 
             const key = event.key;
 
-            // Check if it's a valid answer
             if (level < 3 && key >= '1' && key <= '9') {
                 checkAnswer(key);
             } else if (level === 3 && ((key >= '1' && key <= '9') || key === '=')) {
@@ -413,7 +521,6 @@
         function checkAnswer(answer) {
             const relation = `${num1} ${getRelationSymbol()} ${num2}`;
 
-            // For level 3, also accept the correct number for equal questions
             let isAnswerCorrect = false;
             if (questionType === 'equal') {
                 isAnswerCorrect = (answer === '=' || answer === num1.toString());
@@ -424,7 +531,6 @@
             if (isAnswerCorrect) {
                 correctStreak++;
 
-                // Check if level up
                 if (correctStreak === 5) {
                     showFeedback(true, relation);
                     setTimeout(() => {
@@ -433,10 +539,10 @@
                             correctStreak = 0;
                             updateLevelBadge();
                             updateInstructions();
-                            updateProgressBar();
+                            updateProgress();
                         } else {
                             correctStreak = 0;
-                            updateProgressBar();
+                            updateProgress();
                         }
                     }, 2000);
                 } else {
@@ -447,10 +553,8 @@
             }
         }
 
-        // Add global keypress listener
         document.addEventListener('keydown', handleKeyPress);
 
-        // Initialize game
         updateLevelBadge();
         updateInstructions();
         generateQuestion();
