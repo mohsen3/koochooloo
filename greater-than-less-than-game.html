@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greater Than / Less Than Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .question-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            gap: 20px;
+        }
+
+        .number-box {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .number {
+            font-size: 4em;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .dots-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .dot {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.9;
+        }
+
+        .vs-symbol {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .answer-btn {
+            padding: 20px 40px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .answer-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .answer-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-less {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-equal {
+            background: #ffd93d;
+            color: #333;
+        }
+
+        .btn-greater {
+            background: #51cf66;
+            color: white;
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+            min-height: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .feedback.correct {
+            color: #51cf66;
+        }
+
+        .feedback.incorrect {
+            color: #ff6b6b;
+        }
+
+        .new-game-btn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .new-game-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .number {
+                font-size: 3em;
+            }
+
+            .answer-btn {
+                padding: 15px 25px;
+                font-size: 1.2em;
+            }
+
+            .dot {
+                width: 15px;
+                height: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Greater Than / Less Than</h1>
+        <p class="subtitle">Compare the numbers and choose the correct symbol!</p>
+
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Score</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Questions</div>
+                <div class="score-value" id="total">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Accuracy</div>
+                <div class="score-value" id="accuracy">0%</div>
+            </div>
+        </div>
+
+        <div class="question-container">
+            <div class="number-box">
+                <div class="number" id="number1">5</div>
+                <div class="dots-container" id="dots1"></div>
+            </div>
+            <div class="vs-symbol">?</div>
+            <div class="number-box">
+                <div class="number" id="number2">3</div>
+                <div class="dots-container" id="dots2"></div>
+            </div>
+        </div>
+
+        <div class="buttons-container">
+            <button class="answer-btn btn-less" onclick="checkAnswer('less')">
+                &lt;
+            </button>
+            <button class="answer-btn btn-equal" onclick="checkAnswer('equal')">
+                =
+            </button>
+            <button class="answer-btn btn-greater" onclick="checkAnswer('greater')">
+                &gt;
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <button class="new-game-btn" onclick="newQuestion()">Next Question</button>
+    </div>
+
+    <script>
+        let score = 0;
+        let totalQuestions = 0;
+        let num1, num2;
+
+        function generateNumbers() {
+            // Generate random numbers between 1 and 10
+            num1 = Math.floor(Math.random() * 10) + 1;
+            num2 = Math.floor(Math.random() * 10) + 1;
+
+            // Display numbers
+            document.getElementById('number1').textContent = num1;
+            document.getElementById('number2').textContent = num2;
+
+            // Generate dots
+            generateDots('dots1', num1);
+            generateDots('dots2', num2);
+
+            // Clear feedback
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+        }
+
+        function generateDots(containerId, count) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            for (let i = 0; i < count; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                container.appendChild(dot);
+            }
+        }
+
+        function checkAnswer(userAnswer) {
+            let correctAnswer;
+
+            if (num1 < num2) {
+                correctAnswer = 'less';
+            } else if (num1 === num2) {
+                correctAnswer = 'equal';
+            } else {
+                correctAnswer = 'greater';
+            }
+
+            totalQuestions++;
+            const feedbackEl = document.getElementById('feedback');
+
+            if (userAnswer === correctAnswer) {
+                score++;
+                feedbackEl.textContent = '✓ Correct! Great job!';
+                feedbackEl.className = 'feedback correct';
+            } else {
+                const symbols = {
+                    'less': '<',
+                    'equal': '=',
+                    'greater': '>'
+                };
+                feedbackEl.textContent = `✗ Incorrect. ${num1} ${symbols[correctAnswer]} ${num2}`;
+                feedbackEl.className = 'feedback incorrect';
+            }
+
+            updateScore();
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = totalQuestions;
+
+            const accuracy = totalQuestions > 0
+                ? Math.round((score / totalQuestions) * 100)
+                : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        function newQuestion() {
+            generateNumbers();
+        }
+
+        // Initialize game
+        generateNumbers();
+    </script>
+</body>
+</html>

@@ -19,6 +19,11 @@ Learn to count from 1-15 with animated fruits! Progress through 10 levels of inc
 - **Play:** [counting-fruits.html](counting-fruits.html)
 - **Features:** 10 progressive levels, moving objects, celebration animations, sound effects
 
+### Greater Than / Less Than
+Compare numbers and learn greater than, less than, and equal concepts through interactive gameplay!
+- **Play:** [greater-than-less-than-game.html](greater-than-less-than-game.html)
+- **Features:** Visual dot representation, score tracking, accuracy percentage, immediate feedback, colorful kid-friendly design
+
 ## Usage
 
 Simply open any HTML file in a web browser to play. No installation required.
