@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Fun for Kids!</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #2d3436;
+            cursor: default;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .level-display {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            padding: 15px 25px;
+            border-radius: 30px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        .game-container {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .shapes-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 40px;
+            min-height: 160px;
+            gap: 30px;
+        }
+
+        .shapes-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 280px;
+            min-width: 140px;
+            gap: 8px;
+        }
+
+        .number-with-shapes {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .shape {
+            width: 35px;
+            height: 35px;
+            margin: 3px;
+            display: inline-block;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .shape:hover {
+            transform: scale(1.1);
+        }
+
+        .red-dot {
+            background: linear-gradient(135deg, #ff6b6b, #e55353);
+        }
+        .blue-dot {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        }
+        .green-dot {
+            background: linear-gradient(135deg, #96d38c, #82c366);
+        }
+        .orange-dot {
+            background: linear-gradient(135deg, #ffa726, #ff8f00);
+        }
+        .purple-dot {
+            background: linear-gradient(135deg, #bb6bd9, #8e44ad);
+        }
+
+        .equation {
+            font-size: 80px;
+            font-weight: bold;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .number {
+            color: #2d3436;
+        }
+
+        .operator {
+            color: #e17055;
+        }
+
+        .input-container {
+            display: inline-flex;
+            gap: 5px;
+        }
+
+        .digit-input {
+            width: 90px;
+            height: 100px;
+            font-size: 75px;
+            text-align: center;
+            border: 4px solid #ddd;
+            border-radius: 15px;
+            outline: none;
+            font-weight: bold;
+            background: linear-gradient(145deg, #f8f9fa, #ffffff);
+            caret-color: transparent;
+            cursor: default;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .digit-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+        }
+
+        .digit-input.correct {
+            background: linear-gradient(145deg, #d4edda, #c3e6cb);
+            border-color: #28a745;
+            color: #155724;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .digit-input.wrong {
+            background: linear-gradient(145deg, #f8d7da, #f5c6cb);
+            border-color: #dc3545;
+            color: #721c24;
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f39c12;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .bounce {
+            animation: bounce 0.5s ease-in-out 3;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            font-size: 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 25px;
+            font-weight: bold;
+            display: none;
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .next-button:hover {
+            background: linear-gradient(135deg, #00a085, #00896b);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 184, 148, 0.4);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 6px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b894, #00cec9, #74b9ff);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="level-display">Level <span id="current-level">1</span></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <div class="game-container" id="game-container">
+        <div class="shapes-container" id="shapes-container">
+            <div class="number-with-shapes">
+                <div class="shapes-group" id="shapes-left"></div>
+                <span class="number" id="num1" style="font-size: 110px; font-weight: bold; color: #2d3436; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">3</span>
+            </div>
+            <span class="operator" style="font-size: 110px; color: #ff6b6b; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">+</span>
+            <div class="number-with-shapes">
+                <div class="shapes-group" id="shapes-right"></div>
+                <span class="number" id="num2" style="font-size: 110px; font-weight: bold; color: #2d3436; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">2</span>
+            </div>
+            <span class="operator" style="font-size: 110px; color: #ff6b6b; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">=</span>
+            <div class="input-container" id="input-container">
+                <input type="text" class="digit-input" id="digit1" maxlength="1">
+            </div>
+        </div>
+
+        <button class="next-button" id="next-button">Next Problem! 🎉</button>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        class MathGame {
+            constructor() {
+                this.level = 1;
+                this.currentProblem = {};
+                this.previousProblem = null;
+                this.correctAnswer = 0;
+                this.answersInLevel = 0;
+                this.answersNeededPerLevel = 50; // 10x longer levels
+
+                this.shapes = ['red-dot', 'blue-dot', 'green-dot', 'orange-dot', 'purple-dot'];
+                this.init();
+            }
+
+            init() {
+                this.generateProblem();
+                this.setupEventListeners();
+                this.updateProgress();
+            }
+
+            generateProblem() {
+                // Clean up any existing timeouts
+                if (this.clearWrongTimeout) {
+                    clearTimeout(this.clearWrongTimeout);
+                }
+
+                let num1, num2;
+                let attempts = 0;
+                const maxAttempts = 20;
+
+                do {
+                    // Calculate which number pattern we're on (1, 2, 3, 4...)
+                    const baseNumber = Math.floor((this.level - 1) / 3) + 1;
+                    // Calculate which range pattern (0, 1, 2 for small, medium, large ranges)
+                    const rangePattern = (this.level - 1) % 3;
+
+                    // Always put the base number first for consistency
+                    num1 = baseNumber;
+
+                    switch(rangePattern) {
+                        case 0: // Small range
+                            if (baseNumber === 1) {
+                                num2 = Math.floor(Math.random() * 5) + 1; // 1-5
+                            } else {
+                                num2 = Math.floor(Math.random() * 4) + 1; // 1-4 for 2+, 3+, 4+
+                            }
+                            break;
+                        case 1: // Medium range
+                            num2 = Math.floor(Math.random() * 9) + 1; // 1-9
+                            break;
+                        case 2: // Large range
+                            num2 = Math.floor(Math.random() * 19) + 1; // 1-19
+                            break;
+                    }
+
+                    // Sometimes swap the numbers for variety (except we want to keep it simple for now)
+                    // if (Math.random() > 0.5) {
+                    //     [num1, num2] = [num2, num1];
+                    // }
+
+                    attempts++;
+                } while (
+                    this.previousProblem &&
+                    this.previousProblem.num1 === num1 &&
+                    this.previousProblem.num2 === num2 &&
+                    attempts < maxAttempts
+                );
+
+                // Store previous problem to avoid repeats
+                this.previousProblem = { num1, num2 };
+                this.currentProblem = { num1, num2 };
+                this.correctAnswer = num1 + num2;
+
+                this.displayProblem();
+                this.generateShapes();
+            }
+
+            displayProblem() {
+                document.getElementById('num1').textContent = this.currentProblem.num1;
+                document.getElementById('num2').textContent = this.currentProblem.num2;
+
+                const inputContainer = document.getElementById('input-container');
+                inputContainer.innerHTML = '';
+
+                const answerLength = this.correctAnswer.toString().length;
+                for (let i = 0; i < answerLength; i++) {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'digit-input';
+                    input.maxLength = 1;
+                    input.id = `digit${i}`;
+                    input.addEventListener('input', (e) => this.handleInput(e, i));
+                    input.addEventListener('keydown', (e) => this.handleKeydown(e, i));
+                    inputContainer.appendChild(input);
+                }
+
+                // Set focus to first input
+                setTimeout(() => {
+                    document.getElementById('digit0').focus();
+                }, 100);
+
+                // Setup global keyboard listener
+                this.setupGlobalKeyboard();
+            }
+
+            generateShapes() {
+                const shapesLeft = document.getElementById('shapes-left');
+                const shapesRight = document.getElementById('shapes-right');
+
+                shapesLeft.innerHTML = '';
+                shapesRight.innerHTML = '';
+
+                // Generate red dots for first number
+                for (let i = 0; i < this.currentProblem.num1; i++) {
+                    const shape = document.createElement('div');
+                    shape.className = 'shape red-dot';
+                    shapesLeft.appendChild(shape);
+                }
+
+                // Generate blue dots for second number
+                for (let i = 0; i < this.currentProblem.num2; i++) {
+                    const shape = document.createElement('div');
+                    shape.className = 'shape blue-dot';
+                    shapesRight.appendChild(shape);
+                }
+            }
+
+            handleInput(e, position) {
+                const value = e.target.value;
+                const input = e.target; // Store reference to avoid null errors
+
+                if (!/^\d$/.test(value)) {
+                    input.value = '';
+                    return;
+                }
+
+                const correctDigit = this.correctAnswer.toString()[position];
+                if (value === correctDigit) {
+                    input.classList.remove('wrong');
+                    input.classList.add('correct');
+
+                    // Move to next input if available
+                    const nextInput = document.getElementById(`digit${position + 1}`);
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+
+                    // Check if complete answer is correct
+                    this.checkCompleteAnswer();
+                } else {
+                    input.classList.remove('correct');
+                    input.classList.add('wrong');
+                    this.shakeEquation();
+
+                    // Clear any existing timeout
+                    if (this.clearWrongTimeout) {
+                        clearTimeout(this.clearWrongTimeout);
+                    }
+
+                    // Auto-clear wrong answer after 0.5 seconds
+                    this.clearWrongTimeout = setTimeout(() => {
+                        if (input && input.parentNode && document.contains(input)) { // Check if element still exists
+                            input.value = '';
+                            input.classList.remove('wrong');
+                            input.focus();
+                        }
+                    }, 500);
+                }
+            }
+
+            handleKeydown(e, position) {
+                if (e.key === 'Backspace' && e.target.value === '') {
+                    const prevInput = document.getElementById(`digit${position - 1}`);
+                    if (prevInput) {
+                        prevInput.focus();
+                        prevInput.select();
+                    }
+                }
+            }
+
+            checkCompleteAnswer() {
+                const inputs = document.querySelectorAll('.digit-input');
+                let userAnswer = '';
+                let allFilled = true;
+
+                inputs.forEach(input => {
+                    if (input.value === '') {
+                        allFilled = false;
+                    } else {
+                        userAnswer += input.value;
+                    }
+                });
+
+                if (allFilled && parseInt(userAnswer) === this.correctAnswer) {
+                    this.celebrate();
+                    this.answersInLevel++;
+
+                    setTimeout(() => {
+                        if (this.answersInLevel >= this.answersNeededPerLevel) {
+                            this.levelUp();
+                        } else {
+                            this.generateProblem();
+                        }
+                    }, 2000);
+                }
+            }
+
+            celebrate() {
+                // Clear any pending timeouts
+                if (this.clearWrongTimeout) {
+                    clearTimeout(this.clearWrongTimeout);
+                }
+
+                const gameContainer = document.getElementById('game-container');
+                gameContainer.classList.add('bounce');
+
+                this.createConfetti();
+
+                setTimeout(() => {
+                    gameContainer.classList.remove('bounce');
+                }, 1500);
+            }
+
+            createConfetti() {
+                const celebration = document.getElementById('celebration');
+                const colors = ['#ff6b6b', '#4ecdc4', '#96d38c', '#ffa726', '#bb6bd9', '#667eea'];
+
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    celebration.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }
+            }
+
+            shakeEquation() {
+                const container = document.getElementById('shapes-container');
+                container.classList.add('shake');
+                setTimeout(() => {
+                    container.classList.remove('shake');
+                }, 500);
+            }
+
+            levelUp() {
+                this.level++;
+                this.answersInLevel = 0;
+                document.getElementById('current-level').textContent = this.level;
+                this.updateProgress();
+
+                // Show celebration for level up
+                this.createConfetti();
+
+                setTimeout(() => {
+                    this.generateProblem();
+                }, 1000);
+            }
+
+            updateProgress() {
+                const progress = (this.answersInLevel / this.answersNeededPerLevel) * 100;
+                document.getElementById('progress-fill').style.width = progress + '%';
+            }
+
+            setupGlobalKeyboard() {
+                // Remove any existing global keyboard listener
+                if (this.globalKeyboardHandler) {
+                    document.removeEventListener('keydown', this.globalKeyboardHandler);
+                }
+
+                this.globalKeyboardHandler = (e) => {
+                    // Only handle number keys
+                    if (/^[0-9]$/.test(e.key)) {
+                        e.preventDefault();
+
+                        // Find the first empty input or the currently focused input
+                        const inputs = document.querySelectorAll('.digit-input');
+                        let targetInput = null;
+
+                        // Check if any input is currently focused
+                        const focusedInput = document.activeElement;
+                        if (focusedInput && focusedInput.classList.contains('digit-input')) {
+                            targetInput = focusedInput;
+                        } else {
+                            // Find first empty input
+                            for (let input of inputs) {
+                                if (input.value === '') {
+                                    targetInput = input;
+                                    break;
+                                }
+                            }
+                            // If no empty inputs, use the first one
+                            if (!targetInput && inputs.length > 0) {
+                                targetInput = inputs[0];
+                            }
+                        }
+
+                        if (targetInput) {
+                            targetInput.value = e.key;
+                            targetInput.focus();
+
+                            // Trigger the input event manually
+                            const inputEvent = new Event('input', { bubbles: true });
+                            targetInput.dispatchEvent(inputEvent);
+                        }
+                    }
+                };
+
+                document.addEventListener('keydown', this.globalKeyboardHandler);
+            }
+
+            setupEventListeners() {
+                document.getElementById('next-button').addEventListener('click', () => {
+                    this.generateProblem();
+                    document.getElementById('next-button').style.display = 'none';
+                });
+
+                // Setup global keyboard handling
+                this.setupGlobalKeyboard();
+            }
+        }
+
+        // Start the game when page loads
+        window.addEventListener('load', () => {
+            new MathGame();
+        });
+    </script>
+</body>
+</html>

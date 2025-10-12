@@ -24,6 +24,11 @@ Compare numbers and learn greater than, less than, and equal concepts through in
 - **Play:** [greater-than-less-than-game.html](greater-than-less-than-game.html)
 - **Features:** Visual dot representation, score tracking, accuracy percentage, immediate feedback, colorful kid-friendly design
 
+### Math Addition Game
+Learn addition with visual dot representations! Practice adding numbers with progressive difficulty levels.
+- **Play:** [math-addition-game.html](math-addition-game.html)
+- **Features:** Visual dot counting, progressive levels (50 problems per level), digit-by-digit input, immediate feedback, confetti celebrations, touch-friendly design
+
 ## Usage
 
 Simply open any HTML file in a web browser to play. No installation required.
