@@ -27,7 +27,12 @@ Compare numbers and learn greater than, less than, and equal concepts through in
 ### Math Addition Game
 Learn addition with visual dot representations! Practice adding numbers with progressive difficulty levels.
 - **Play:** [math-addition-game.html](math-addition-game.html)
-- **Features:** Visual dot counting, progressive levels (50 problems per level), digit-by-digit input, immediate feedback, confetti celebrations, touch-friendly design
+- **Features:** Visual dot counting, progressive levels (5 correct answers per level), digit-by-digit input, immediate feedback with sounds, confetti celebrations, boy-themed design
+
+### English Words Typing Tutor
+Practice typing 300 common English words with progressive difficulty! Words get longer and more complex as you advance.
+- **Play:** [english-words.html](english-words.html)
+- **Features:** 300 word progression, text-to-speech pronunciation, hidden letter challenges, immediate feedback, progress tracking, boy-themed design
 
 ## Usage
 
