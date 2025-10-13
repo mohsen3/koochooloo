@@ -6,7 +6,7 @@
     <title>تایپینگ فارسی برای کودکان</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazir:wght@400;700&display=swap');
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -23,35 +23,111 @@
             padding: 20px;
             outline: none;
             tabindex: 0;
-        }
-
-        .game-container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 800px;
-            width: 100%;
-            text-align: center;
+            overflow: hidden;
             position: relative;
         }
 
+        body::before {
+            content: '⭐';
+            position: absolute;
+            font-size: 2em;
+            animation: float 3s ease-in-out infinite;
+            top: 10%;
+            left: 10%;
+            opacity: 0.4;
+        }
+
+        body::after {
+            content: '⚡';
+            position: absolute;
+            font-size: 2.5em;
+            animation: float 4s ease-in-out infinite;
+            bottom: 10%;
+            right: 10%;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(8deg); }
+        }
+
+        .star-decoration {
+            position: absolute;
+            font-size: 1.5em;
+            animation: twinkle 2s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.15); }
+        }
+
+        .game-container {
+            background: linear-gradient(135deg, #2d3548 0%, #3d4963 100%);
+            border-radius: 30px;
+            padding: 40px 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 6px rgba(74, 111, 165, 0.3);
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            border: 6px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            background: linear-gradient(45deg, #5dade2, #4a6fa5, #52be80, #48c9b0, #5dade2);
+            border-radius: 36px;
+            z-index: -1;
+            animation: rainbow 3s linear infinite;
+            background-size: 300% 300%;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .title {
-            color: #4a5568;
-            font-size: 24px;
-            margin-bottom: 30px;
+            color: #5dade2;
+            font-size: 2.5em;
+            margin-bottom: 15px;
             font-weight: 700;
+            text-shadow: 2px 2px 0px #4a6fa5, 4px 4px 0px #52be80;
+            animation: titleBounce 2s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
 
         .word-display {
-            font-size: 200px;
+            font-size: 180px;
             font-weight: 700;
             margin: 40px 0;
-            min-height: 240px;
+            min-height: 220px;
             display: flex;
             justify-content: center;
             align-items: center;
             direction: rtl;
+            animation: wordPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes wordPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
         }
 
         .letter {
@@ -60,16 +136,25 @@
         }
 
         .letter.default {
-            color: #cbd5e0;
+            color: #9fa8da;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.2);
         }
 
         .letter.correct {
-            color: #48bb78;
-            text-shadow: 0 0 10px rgba(72, 187, 120, 0.5);
+            color: #52be80;
+            text-shadow: 0 0 20px rgba(82, 190, 128, 0.8), 3px 3px 0px rgba(0,0,0,0.3);
+            animation: letterPop 0.4s ease-out;
+        }
+
+        @keyframes letterPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
         }
 
         .letter.incorrect {
-            color: #f56565;
+            color: #e67e22;
+            text-shadow: 0 0 20px rgba(230, 126, 34, 0.8), 3px 3px 0px rgba(0,0,0,0.3);
             animation: shake 0.5s ease-in-out;
         }
 
@@ -95,14 +180,21 @@
         }
 
         .progress {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: #667eea;
+            font-size: 1.4em;
+            background: linear-gradient(135deg, #52be80, #45b39d);
             color: white;
-            padding: 8px 15px;
-            border-radius: 15px;
-            font-size: 14px;
+            margin: 20px auto 0 auto;
+            font-weight: bold;
+            padding: 12px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            box-shadow: 0 6px 15px rgba(82, 190, 128, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .celebration {
@@ -112,12 +204,14 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1000;
+            z-index: 999;
         }
 
         .confetti {
             position: absolute;
-            animation: confetti-fall 3s ease-out forwards;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s linear forwards;
         }
 
         .success-message {
@@ -125,15 +219,19 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #48bb78;
+            background: linear-gradient(135deg, #52be80 0%, #5499c7 25%, #48c9b0 75%, #52be80 100%);
             color: white;
-            padding: 20px 40px;
-            border-radius: 20px;
-            font-size: 24px;
-            font-weight: 700;
-            z-index: 1001;
-            animation: success-bounce 1s ease-out forwards;
+            padding: 30px 50px;
+            border-radius: 35px;
+            font-size: 3em;
+            font-weight: 900;
+            z-index: 1000;
+            animation: celebrate 1.5s, rainbow 2s linear infinite;
             display: none;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.6), 0 0 80px rgba(82, 190, 128, 0.6);
+            border: 8px solid #2d3548;
+            background-size: 300% 300%;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
         }
 
         .error-warning {
@@ -141,61 +239,92 @@
             top: 30%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #f56565;
+            background: linear-gradient(135deg, #e67e22, #d68910);
             color: white;
-            padding: 15px 30px;
-            border-radius: 15px;
-            font-size: 20px;
+            padding: 20px 40px;
+            border-radius: 25px;
+            font-size: 1.8em;
             font-weight: 700;
-            z-index: 1001;
+            z-index: 1000;
             animation: error-shake 0.5s ease-out forwards;
             display: none;
+            box-shadow: 0 15px 40px rgba(230, 126, 34, 0.6);
+            border: 5px solid #2d3548;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
         }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
         }
 
         @keyframes confetti-fall {
             0% {
-                transform: translateY(-100vh) rotateZ(0deg);
+                transform: translateY(-100vh) rotate(0deg);
                 opacity: 1;
             }
             100% {
-                transform: translateY(100vh) rotateZ(720deg);
+                transform: translateY(100vh) rotate(720deg);
                 opacity: 0;
             }
         }
 
-        @keyframes success-bounce {
-            0% { transform: translate(-50%, -50%) scale(0); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
-            100% { transform: translate(-50%, -50%) scale(1); }
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); opacity: 1; }
+            70% { transform: translate(-50%, -50%) scale(1.05) rotate(-5deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
         }
 
         @keyframes error-shake {
             0%, 100% { transform: translate(-50%, -50%); }
-            25% { transform: translate(-55%, -50%); }
-            75% { transform: translate(-45%, -50%); }
+            10%, 30%, 50%, 70%, 90% { transform: translate(-55%, -50%); }
+            20%, 40%, 60%, 80% { transform: translate(-45%, -50%); }
         }
 
         .instructions {
-            color: #718096;
-            font-size: 16px;
-            margin-bottom: 20px;
+            color: white;
+            font-size: 1.1em;
+            margin-top: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #48c9b0, #45b39d);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(72, 201, 176, 0.4);
+            font-weight: bold;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .bounce {
+            animation: bounce 0.5s ease-in-out 3;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1 class="title">بازی تایپینگ فارسی</h1>
-        <div class="instructions">شروع به تایپ کنید</div>
-        
+    <!-- Floating decorations -->
+    <div class="star-decoration" style="top: 5%; left: 15%;">🚀</div>
+    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">📚</div>
+    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">⌨️</div>
+    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">✨</div>
+    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🎮</div>
+    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🌟</div>
+
+    <div class="game-container" id="game-container">
+        <h1 class="title">🎮 بازی تایپینگ فارسی 🚀</h1>
+
         <div class="word-display" id="wordDisplay"></div>
-        
+
         <div class="progress" id="progress">کلمه 1 از 100</div>
+
+        <div class="instructions">شروع به تایپ کنید! 🎯</div>
     </div>
 
     <div class="celebration" id="celebration"></div>
@@ -242,8 +371,13 @@
         }
 
         function showError() {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.classList.add('shake');
+
             errorWarning.style.display = 'block';
+
             setTimeout(() => {
+                gameContainer.classList.remove('shake');
                 errorWarning.style.display = 'none';
             }, 800);
         }
@@ -306,18 +440,16 @@
         }
 
         function createConfetti() {
-            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#98d8c8'];
-            
-            for (let i = 0; i < 30; i++) {
+            const colors = ['#5dade2', '#52be80', '#48c9b0', '#5499c7', '#45b39d', '#4a6fa5'];
+
+            for (let i = 0; i < 50; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
                 confetti.style.left = Math.random() * 100 + '%';
                 confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.width = '10px';
-                confetti.style.height = '10px';
-                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
                 celebration.appendChild(confetti);
-                
+
                 setTimeout(() => {
                     confetti.remove();
                 }, 3000);
@@ -325,17 +457,24 @@
         }
 
         function showSuccess() {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.classList.add('bounce');
+
             successMessage.style.display = 'block';
             createConfetti();
-            
+
+            setTimeout(() => {
+                gameContainer.classList.remove('bounce');
+            }, 1500);
+
             setTimeout(() => {
                 successMessage.style.display = 'none';
                 currentWordIndex++;
-                
+
                 if (currentWordIndex >= words.length) {
                     currentWordIndex = 0; // Reset to start
                 }
-                
+
                 showWord();
             }, 2000);
         }
