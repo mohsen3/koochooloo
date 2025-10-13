@@ -35,9 +35,9 @@ Practice typing 300 common English words with progressive difficulty! Words get 
 - **Features:** 300 word progression, text-to-speech pronunciation, hidden letter challenges, immediate feedback, progress tracking, boy-themed design
 
 ### Farsi Typing Game
-Learn to type 100 Farsi words with progressive difficulty! Practice Persian typing from simple to complex words.
+Learn to type 175 Farsi words with progressive difficulty! Practice Persian typing with toddler-friendly vocabulary.
 - **Play:** [farsi-words.html](farsi-words.html)
-- **Features:** 100 word progression (simple to complex), character-by-character validation, immediate error feedback, confetti celebration, supports ا for آ input
+- **Features:** 175 toddler-appropriate words organized in 9 levels, includes animals, fruits, colors, family, nature, foods, insects and birds, character-by-character validation, Persian-style sound effects, immediate feedback, confetti celebration, supports ا for آ input
 
 ## Usage
 
