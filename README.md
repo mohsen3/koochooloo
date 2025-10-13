@@ -34,6 +34,11 @@ Practice typing 300 common English words with progressive difficulty! Words get 
 - **Play:** [english-words.html](english-words.html)
 - **Features:** 300 word progression, text-to-speech pronunciation, hidden letter challenges, immediate feedback, progress tracking, boy-themed design
 
+### Farsi Typing Game
+Learn to type 100 Farsi words with progressive difficulty! Practice Persian typing from simple to complex words.
+- **Play:** [farsi-words.html](farsi-words.html)
+- **Features:** 100 word progression (simple to complex), character-by-character validation, immediate error feedback, confetti celebration, supports ا for آ input
+
 ## Usage
 
 Simply open any HTML file in a web browser to play. No installation required.

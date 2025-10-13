@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تایپینگ فارسی برای کودکان</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazir:wght@400;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Vazir', 'Koodak', 'B Koodak', 'Tahoma', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            outline: none;
+            tabindex: 0;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .title {
+            color: #4a5568;
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .word-display {
+            font-size: 200px;
+            font-weight: 700;
+            margin: 40px 0;
+            min-height: 240px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            direction: rtl;
+        }
+
+        .letter {
+            display: inline;
+            transition: all 0.3s ease;
+        }
+
+        .letter.default {
+            color: #cbd5e0;
+        }
+
+        .letter.correct {
+            color: #48bb78;
+            text-shadow: 0 0 10px rgba(72, 187, 120, 0.5);
+        }
+
+        .letter.incorrect {
+            color: #f56565;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .input-area {
+            margin: 30px 0;
+        }
+
+        .typing-input {
+            font-size: 24px;
+            padding: 15px 20px;
+            border: 3px solid #e2e8f0;
+            border-radius: 10px;
+            outline: none;
+            width: 300px;
+            text-align: center;
+            font-family: 'Vazir', 'Koodak', 'B Koodak', 'Tahoma', sans-serif;
+            direction: rtl;
+        }
+
+        .typing-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .progress {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: absolute;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #48bb78;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: 700;
+            z-index: 1001;
+            animation: success-bounce 1s ease-out forwards;
+            display: none;
+        }
+
+        .error-warning {
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #f56565;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: 700;
+            z-index: 1001;
+            animation: error-shake 0.5s ease-out forwards;
+            display: none;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotateZ(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotateZ(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes success-bounce {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @keyframes error-shake {
+            0%, 100% { transform: translate(-50%, -50%); }
+            25% { transform: translate(-55%, -50%); }
+            75% { transform: translate(-45%, -50%); }
+        }
+
+        .instructions {
+            color: #718096;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="title">بازی تایپینگ فارسی</h1>
+        <div class="instructions">شروع به تایپ کنید</div>
+        
+        <div class="word-display" id="wordDisplay"></div>
+        
+        <div class="progress" id="progress">کلمه 1 از 100</div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+    <div class="success-message" id="successMessage">آفرین! 🎉</div>
+    <div class="error-warning" id="errorWarning">حرف اشتباه!</div>
+
+    <script>
+        const words = [
+            // ساده ترین کلمات (1-20)
+            "من", "تو", "او", "ما", "شما", "آنها", "بله", "نه", "خوب", "بد",
+            "آب", "نان", "شیر", "مادر", "پدر", "خانه", "مدرسه", "کتاب", "قلم", "میز",
+            
+            // کلمات ساده (21-40)
+            "دوست", "معلم", "دانش", "علم", "کار", "بازی", "غذا", "لباس", "کفش", "چشم",
+            "دست", "پا", "سر", "دل", "عشق", "امید", "خوشی", "غم", "رنگ", "آسمان",
+            
+            // کلمات متوسط (41-60)
+            "خورشید", "ماه", "ستاره", "زمین", "درخت", "گل", "پرنده", "گربه", "سگ", "ماهی",
+            "کوه", "دریا", "رودخانه", "باغ", "پارک", "راه", "ماشین", "هواپیما", "قطار", "دوچرخه",
+            
+            // کلمات متوسط به سخت (61-80)
+            "کتابخانه", "بیمارستان", "دانشگاه", "فروشگاه", "رستوران", "سینما", "موزه", "باغ‌وحش", "ورزشگاه", "تئاتر",
+            "داستان", "شعر", "موسیقی", "نقاشی", "عکس", "فیلم", "بازیگر", "خواننده", "نویسنده", "شاعر",
+            
+            // کلمات سخت (81-100)
+            "مسئولیت", "آزادی", "عدالت", "صداقت", "دوستی", "محبت", "احترام", "تلاش", "موفقیت", "پیروزی",
+            "دانشمند", "پژوهشگر", "مهندس", "پزشک", "وکیل", "معمار", "هنرمند", "ورزشکار", "کارآفرین", "رهبر"
+        ];
+
+        let currentWordIndex = 0;
+        let currentWord = '';
+        let typedText = '';
+
+        const wordDisplay = document.getElementById('wordDisplay');
+        const progress = document.getElementById('progress');
+        const celebration = document.getElementById('celebration');
+        const successMessage = document.getElementById('successMessage');
+        const errorWarning = document.getElementById('errorWarning');
+
+        function normalizeChar(char) {
+            // Accept ا for آ
+            if (char === 'ا') return 'آ';
+            return char;
+        }
+
+        function showError() {
+            errorWarning.style.display = 'block';
+            setTimeout(() => {
+                errorWarning.style.display = 'none';
+            }, 800);
+        }
+
+        function initGame() {
+            currentWordIndex = 0;
+            showWord();
+            
+            // Ensure the body is focused so keyboard events work
+            document.body.focus();
+        }
+
+        function showWord() {
+            currentWord = words[currentWordIndex];
+            typedText = '';
+            updateWordDisplay();
+            updateProgress();
+        }
+
+        function updateWordDisplay() {
+            const correctPart = currentWord.substring(0, typedText.length);
+            let remainingPart = currentWord.substring(typedText.length);
+            
+            // Check if current typing is correct so far
+            const isCorrectSoFar = currentWord.startsWith(typedText);
+            
+            let html = '';
+            if (typedText.length > 0) {
+                if (isCorrectSoFar) {
+                    html += `<span class="letter correct">${correctPart}</span>`;
+                } else {
+                    // Show the correct part in green and incorrect part in red
+                    let correctLength = 0;
+                    for (let i = 0; i < Math.min(typedText.length, currentWord.length); i++) {
+                        if (typedText[i] === currentWord[i]) {
+                            correctLength++;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (correctLength > 0) {
+                        html += `<span class="letter correct">${currentWord.substring(0, correctLength)}</span>`;
+                    }
+                    if (correctLength < typedText.length) {
+                        html += `<span class="letter incorrect">${currentWord.substring(correctLength, typedText.length)}</span>`;
+                    }
+                    remainingPart = currentWord.substring(typedText.length);
+                }
+            }
+            
+            if (remainingPart) {
+                html += `<span class="letter default">${remainingPart}</span>`;
+            }
+            
+            wordDisplay.innerHTML = html;
+        }
+
+        function updateProgress() {
+            progress.textContent = `کلمه ${currentWordIndex + 1} از ${words.length}`;
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#98d8c8'];
+            
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                celebration.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+        }
+
+        function showSuccess() {
+            successMessage.style.display = 'block';
+            createConfetti();
+            
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+                currentWordIndex++;
+                
+                if (currentWordIndex >= words.length) {
+                    currentWordIndex = 0; // Reset to start
+                }
+                
+                showWord();
+            }, 2000);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            // Handle backspace
+            if (e.key === 'Backspace') {
+                e.preventDefault();
+                if (typedText.length > 0) {
+                    typedText = typedText.slice(0, -1);
+                    updateWordDisplay();
+                }
+                return;
+            }
+            
+            // Handle regular characters
+            if (e.key.length === 1) {
+                e.preventDefault();
+                
+                // Get the expected character at current position
+                const expectedChar = currentWord[typedText.length];
+                const normalizedTypedChar = normalizeChar(e.key);
+                const normalizedExpectedChar = normalizeChar(expectedChar);
+                
+                // Check if the typed character matches the expected character
+                if (normalizedTypedChar === normalizedExpectedChar) {
+                    // Correct character - advance cursor
+                    typedText += expectedChar; // Use the original expected character to maintain word integrity
+                    updateWordDisplay();
+                    
+                    // Check if word is completed correctly
+                    if (typedText === currentWord) {
+                        showSuccess();
+                    }
+                } else {
+                    // Incorrect character - show error and don't advance cursor
+                    showError();
+                }
+            }
+        });
+
+        // Initialize the game
+        initGame();
+
+        // Ensure focus when page loads
+        window.addEventListener('load', function() {
+            document.body.focus();
+        });
+
+        // Re-focus if user clicks somewhere
+        document.addEventListener('click', function() {
+            document.body.focus();
+        });
+    </script>
+</body>
+</html>
