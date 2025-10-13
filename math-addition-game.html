@@ -224,10 +224,12 @@
 
         .input-container {
             display: flex;
+            flex-direction: row;
             gap: 10px;
             justify-content: center;
             align-items: center;
-            min-width: 120px;
+            flex-wrap: nowrap;
+            flex-shrink: 0;
         }
 
         .digit-input {
@@ -245,6 +247,7 @@
             cursor: default;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .digit-input:focus {
@@ -464,7 +467,7 @@
 
                 let num1, num2;
                 let attempts = 0;
-                const maxAttempts = 20;
+                const maxAttempts = 50;
 
                 do {
                     // Generate random numbers between 1 and current score
@@ -474,8 +477,12 @@
                     attempts++;
                 } while (
                     this.previousProblem &&
-                    this.previousProblem.num1 === num1 &&
-                    this.previousProblem.num2 === num2 &&
+                    (
+                        // Avoid exact repeat (e.g., 2+3 then 2+3)
+                        (this.previousProblem.num1 === num1 && this.previousProblem.num2 === num2) ||
+                        // Avoid commutative repeat (e.g., 2+3 then 3+2)
+                        (this.previousProblem.num1 === num2 && this.previousProblem.num2 === num1)
+                    ) &&
                     attempts < maxAttempts
                 );
 
