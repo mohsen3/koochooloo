@@ -459,9 +459,23 @@
             });
         }
 
+        // Helper function to check if a character is any type of space
+        function isAnySpace(char) {
+            // Regular space, half-space (ZWNJ), NBSP, thin space, etc.
+            return char === ' ' || char === '\u200C' || char === '\u00A0' ||
+                   char === '\u2009' || char === '\u202F' || /\s/.test(char);
+        }
+
+        // Remove all spaces from a string for comparison
+        function removeSpaces(str) {
+            return str.replace(/[\s\u200C\u00A0\u2009\u202F]/g, '');
+        }
+
         function normalizeChar(char) {
             // Accept ا for آ
             if (char === 'ا') return 'آ';
+            // Normalize all space types to regular space
+            if (isAnySpace(char)) return ' ';
             return char;
         }
 
@@ -588,22 +602,70 @@
                 }
                 return;
             }
-            
+
             // Handle regular characters
             if (e.key.length === 1) {
                 e.preventDefault();
-                
+
                 // Get the expected character at current position
-                const expectedChar = currentWord[typedText.length];
+                let expectedChar = currentWord[typedText.length];
                 const normalizedTypedChar = normalizeChar(e.key);
                 const normalizedExpectedChar = normalizeChar(expectedChar);
-                
-                // Check if the typed character matches the expected character
+
+                // If user typed a space and the expected character is a space, accept it
+                if (isAnySpace(e.key) && isAnySpace(expectedChar)) {
+                    typedText += expectedChar;
+                    updateWordDisplay();
+
+                    // Check if word is completed correctly
+                    if (typedText === currentWord) {
+                        showSuccess();
+                    }
+                    return;
+                }
+
+                // If user typed a non-space but expected a space, skip the space(s)
+                if (!isAnySpace(e.key) && isAnySpace(expectedChar)) {
+                    // Skip all consecutive spaces in the word
+                    let nextPos = typedText.length;
+                    while (nextPos < currentWord.length && isAnySpace(currentWord[nextPos])) {
+                        typedText += currentWord[nextPos];
+                        nextPos++;
+                    }
+
+                    // Now check if the typed character matches the next non-space character
+                    expectedChar = currentWord[typedText.length];
+                    if (expectedChar && normalizedTypedChar === normalizeChar(expectedChar)) {
+                        typedText += expectedChar;
+                        updateWordDisplay();
+
+                        // Check if word is completed correctly
+                        if (typedText === currentWord) {
+                            showSuccess();
+                        }
+                        return;
+                    } else if (!expectedChar) {
+                        // We've reached the end
+                        updateWordDisplay();
+                        if (typedText === currentWord) {
+                            showSuccess();
+                        }
+                        return;
+                    } else {
+                        // Wrong character after skipping spaces
+                        // Undo the space skipping
+                        typedText = typedText.substring(0, typedText.length - nextPos + typedText.length - (nextPos - typedText.length));
+                        showError();
+                        return;
+                    }
+                }
+
+                // Normal character matching (both non-space or user typed space when not expected)
                 if (normalizedTypedChar === normalizedExpectedChar) {
                     // Correct character - advance cursor
                     typedText += expectedChar; // Use the original expected character to maintain word integrity
                     updateWordDisplay();
-                    
+
                     // Check if word is completed correctly
                     if (typedText === currentWord) {
                         showSuccess();
