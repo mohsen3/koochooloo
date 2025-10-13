@@ -22,6 +22,7 @@
             outline: none;
             position: relative;
             padding: 20px;
+            transition: background 1s ease;
         }
 
         body::before {
@@ -135,6 +136,7 @@
             display: inline-block;
             box-shadow: 0 6px 15px rgba(82, 190, 128, 0.4);
             animation: pulse 2s ease-in-out infinite;
+            transition: background 0.8s ease, box-shadow 0.8s ease;
         }
 
         @keyframes pulse {
@@ -149,7 +151,7 @@
             align-items: flex-end;
             margin: 25px 0;
             gap: 20px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
         }
 
         .number-with-shapes {
@@ -694,6 +696,103 @@
             updateScore() {
                 const scoreInfo = document.getElementById('score-info');
                 scoreInfo.textContent = `Score: ${this.score}`;
+                this.updateTheme();
+            }
+
+            updateTheme() {
+                const score = this.score;
+
+                // Define color themes based on score ranges
+                let bgGradient, scoreGradient, borderGradient, shadowColor;
+
+                if (score <= 5) {
+                    // Blue theme (default)
+                    bgGradient = 'linear-gradient(135deg, #4a6fa5 0%, #2c3e50 100%)';
+                    scoreGradient = 'linear-gradient(135deg, #52be80, #45b39d)';
+                    borderGradient = 'linear-gradient(45deg, #5dade2, #4a6fa5, #52be80, #48c9b0, #5dade2)';
+                    shadowColor = 'rgba(82, 190, 128, 0.4)';
+                } else if (score <= 10) {
+                    // Purple theme
+                    bgGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    scoreGradient = 'linear-gradient(135deg, #9b59b6, #8e44ad)';
+                    borderGradient = 'linear-gradient(45deg, #bb6bd9, #9b59b6, #e67e22, #f39c12, #bb6bd9)';
+                    shadowColor = 'rgba(155, 89, 182, 0.4)';
+                } else if (score <= 15) {
+                    // Orange/Warm theme
+                    bgGradient = 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)';
+                    scoreGradient = 'linear-gradient(135deg, #e67e22, #d35400)';
+                    borderGradient = 'linear-gradient(45deg, #f39c12, #e67e22, #e74c3c, #c0392b, #f39c12)';
+                    shadowColor = 'rgba(230, 126, 34, 0.4)';
+                } else if (score <= 20) {
+                    // Pink/Magenta theme
+                    bgGradient = 'linear-gradient(135deg, #e91e63 0%, #9c27b0 100%)';
+                    scoreGradient = 'linear-gradient(135deg, #f06292, #e91e63)';
+                    borderGradient = 'linear-gradient(45deg, #e91e63, #9c27b0, #673ab7, #3f51b5, #e91e63)';
+                    shadowColor = 'rgba(233, 30, 99, 0.4)';
+                } else {
+                    // Rainbow/Multi-color theme for high scores
+                    bgGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)';
+                    scoreGradient = 'linear-gradient(135deg, #f093fb, #f5576c)';
+                    borderGradient = 'linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c, #feca57, #667eea)';
+                    shadowColor = 'rgba(245, 87, 108, 0.4)';
+                }
+
+                // Apply theme
+                document.body.style.background = bgGradient;
+                const scoreInfo = document.getElementById('score-info');
+                scoreInfo.style.background = scoreGradient;
+                scoreInfo.style.boxShadow = `0 6px 15px ${shadowColor}`;
+
+                // Update container border using style injection
+                let styleEl = document.getElementById('dynamic-theme-style');
+                if (!styleEl) {
+                    styleEl = document.createElement('style');
+                    styleEl.id = 'dynamic-theme-style';
+                    document.head.appendChild(styleEl);
+                }
+                styleEl.textContent = `.container::before { background: ${borderGradient}; }`;
+
+                // Add more floating decorations as score increases
+                this.updateFloatingDecorations();
+            }
+
+            updateFloatingDecorations() {
+                // Remove old dynamic decorations
+                document.querySelectorAll('.dynamic-decoration').forEach(el => el.remove());
+
+                // Add more decorations based on score
+                const decorationSets = [
+                    ['🌟', '💫', '✨', '⭐'],  // Score 6-10
+                    ['🔥', '💥', '⚡', '🌈'],  // Score 11-15
+                    ['🎯', '🏆', '👑', '💎'],  // Score 16-20
+                    ['🦄', '🌠', '🎨', '🎪']   // Score 21+
+                ];
+
+                const baseDecorations = 6; // Initial decorations
+                const additionalSets = Math.floor((this.score - 1) / 5); // One new set every 5 points
+
+                for (let setIndex = 0; setIndex < additionalSets && setIndex < decorationSets.length; setIndex++) {
+                    const emojiSet = decorationSets[setIndex];
+                    emojiSet.forEach((emoji, index) => {
+                        const decoration = document.createElement('div');
+                        decoration.className = 'star-decoration dynamic-decoration';
+                        decoration.textContent = emoji;
+
+                        // Position randomly
+                        const positions = [
+                            { top: '20%', left: '80%' },
+                            { top: '70%', right: '80%' },
+                            { top: '40%', left: '25%' },
+                            { top: '85%', left: '50%' }
+                        ];
+
+                        const pos = positions[index];
+                        Object.assign(decoration.style, pos);
+                        decoration.style.animationDelay = `${(setIndex * 4 + index) * 0.3}s`;
+
+                        document.body.appendChild(decoration);
+                    });
+                }
             }
 
             setupGlobalKeyboard() {
