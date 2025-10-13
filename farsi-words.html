@@ -367,13 +367,13 @@
         // Initialize Audio Context for sound effects
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        // Persian-style success sound using Dastgah Shur scale
+        // Persian-style success sound - bright and celebratory
         function playSuccessSound() {
             const now = audioContext.currentTime;
 
-            // Persian modal scale (simplified Dastgah Shur) - ascending celebratory pattern
-            // Using frequencies that evoke Middle Eastern music
-            const frequencies = [440, 495, 554.37, 659.25]; // A, B half-flat, C#, E (Persian-inspired intervals)
+            // Bright ascending major arpeggio with Persian flavor
+            // C major triad ascending: C, E, G, high C - universally positive sound
+            const frequencies = [523.25, 659.25, 783.99, 1046.50]; // C, E, G, C
 
             frequencies.forEach((freq, index) => {
                 const oscillator = audioContext.createOscillator();
@@ -385,32 +385,35 @@
                 oscillator.frequency.value = freq;
                 oscillator.type = 'sine'; // Smooth, melodic tone
 
-                const startTime = now + index * 0.12;
+                const startTime = now + index * 0.08; // Faster for excitement
                 gainNode.gain.setValueAtTime(0, startTime);
-                gainNode.gain.linearRampToValueAtTime(0.25, startTime + 0.05);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.35);
+                gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.02);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.25);
 
                 oscillator.start(startTime);
-                oscillator.stop(startTime + 0.35);
+                oscillator.stop(startTime + 0.25);
             });
 
-            // Add a bell-like harmonic for celebration
-            const bellOsc = audioContext.createOscillator();
-            const bellGain = audioContext.createGain();
+            // Add sparkle with higher harmonics
+            const sparkleFreqs = [1318.51, 1567.98]; // E and G high octave
+            sparkleFreqs.forEach((freq, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
 
-            bellOsc.connect(bellGain);
-            bellGain.connect(audioContext.destination);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
 
-            bellOsc.frequency.value = 880; // Higher octave
-            bellOsc.type = 'triangle';
+                oscillator.frequency.value = freq;
+                oscillator.type = 'triangle';
 
-            const bellStart = now + 0.3;
-            bellGain.gain.setValueAtTime(0, bellStart);
-            bellGain.gain.linearRampToValueAtTime(0.15, bellStart + 0.05);
-            bellGain.gain.exponentialRampToValueAtTime(0.01, bellStart + 0.5);
+                const startTime = now + 0.25 + index * 0.05;
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(0.2, startTime + 0.02);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
 
-            bellOsc.start(bellStart);
-            bellOsc.stop(bellStart + 0.5);
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.3);
+            });
         }
 
         // Persian-style error sound - descending pattern
