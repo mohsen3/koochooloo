@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koochooloo - Educational Games for Kids</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            background: linear-gradient(135deg, #4a6fa5 0%, #2c3e50 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '⭐';
+            position: absolute;
+            font-size: 2em;
+            animation: float 3s ease-in-out infinite;
+            top: 10%;
+            left: 10%;
+            opacity: 0.4;
+        }
+
+        body::after {
+            content: '⚡';
+            position: absolute;
+            font-size: 2.5em;
+            animation: float 4s ease-in-out infinite;
+            bottom: 10%;
+            right: 10%;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(8deg); }
+        }
+
+        .star-decoration {
+            position: absolute;
+            font-size: 1.5em;
+            animation: twinkle 2s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.15); }
+        }
+
+        .container {
+            background: linear-gradient(135deg, #2d3548 0%, #3d4963 100%);
+            border-radius: 30px;
+            padding: 40px 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 6px rgba(74, 111, 165, 0.3);
+            text-align: center;
+            max-width: 1000px;
+            width: 100%;
+            border: 6px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            background: linear-gradient(45deg, #5dade2, #4a6fa5, #52be80, #48c9b0, #5dade2);
+            border-radius: 36px;
+            z-index: -1;
+            animation: rainbow 3s linear infinite;
+            background-size: 300% 300%;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            color: #5dade2;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0px #4a6fa5, 4px 4px 0px #52be80;
+            animation: titleBounce 2s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .subtitle {
+            color: white;
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            border-radius: 20px;
+            padding: 30px 25px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(82, 190, 128, 0.4);
+            border-color: #52be80;
+        }
+
+        .game-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            animation: iconFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .game-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #5dade2;
+        }
+
+        .game-description {
+            font-size: 1em;
+            opacity: 0.85;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: white;
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+
+        .footer a {
+            color: #5dade2;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #52be80;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .subtitle {
+                font-size: 1.1em;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating decorations -->
+    <div class="star-decoration" style="top: 5%; left: 15%;">🚀</div>
+    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">⚡</div>
+    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">⚽</div>
+    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">🏀</div>
+    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🎮</div>
+    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🦖</div>
+
+    <div class="container">
+        <h1>🎮 Koochooloo Games 🚀</h1>
+        <p class="subtitle">Fun Educational Games for Kids!</p>
+
+        <div class="games-grid">
+            <a href="counting-fruits.html" class="game-card">
+                <div class="game-icon">🍎</div>
+                <div class="game-title">Counting Fruits</div>
+                <div class="game-description">
+                    Learn to count from 1 to 10 with colorful fruits!
+                </div>
+            </a>
+
+            <a href="match-game.html" class="game-card">
+                <div class="game-icon">🎯</div>
+                <div class="game-title">Match Game</div>
+                <div class="game-description">
+                    Match numbers with corresponding dot patterns in a fun no-scroll viewport.
+                </div>
+            </a>
+
+            <a href="greater-than-less-than-game.html" class="game-card">
+                <div class="game-icon">⚖️</div>
+                <div class="game-title">Greater Than / Less Than</div>
+                <div class="game-description">
+                    Compare numbers and learn greater than, less than concepts!
+                </div>
+            </a>
+
+            <a href="math-addition-game.html" class="game-card">
+                <div class="game-icon">➕</div>
+                <div class="game-title">Math Addition</div>
+                <div class="game-description">
+                    Practice addition with adaptive difficulty and visual dots!
+                </div>
+            </a>
+
+            <a href="english-words.html" class="game-card">
+                <div class="game-icon">⌨️</div>
+                <div class="game-title">Typing Tutor</div>
+                <div class="game-description">
+                    Learn to type 300 common English words with pronunciation!
+                </div>
+            </a>
+        </div>
+
+        <div class="footer">
+            Made with ❤️ for kids everywhere |
+            <a href="https://github.com/mohsen3/koochooloo" target="_blank">View on GitHub</a>
+        </div>
+    </div>
+</body>
+</html>
