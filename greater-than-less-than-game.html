@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
-            background: linear-gradient(135deg, #4a6fa5 0%, #2c3e50 100%);
+            background: linear-gradient(135deg, #a8e6cf 0%, #ffd3b6 50%, #ffaaa5 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -63,10 +63,10 @@
         }
 
         .container {
-            background: linear-gradient(135deg, #2d3548 0%, #3d4963 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #fff5f7 100%);
             border-radius: 30px;
             padding: 25px 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 6px rgba(74, 111, 165, 0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 6px rgba(255, 107, 157, 0.3);
             text-align: center;
             max-width: 850px;
             width: 90%;
@@ -87,7 +87,7 @@
             left: -6px;
             right: -6px;
             bottom: -6px;
-            background: linear-gradient(45deg, #5dade2, #4a6fa5, #e67e22, #48c9b0, #5dade2);
+            background: linear-gradient(45deg, #ff6b9d, #c44569, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff6b9d);
             border-radius: 36px;
             z-index: -1;
             animation: rainbow 3s linear infinite;
@@ -111,10 +111,10 @@
         }
 
         h1 {
-            color: #5dade2;
+            color: #ff6b9d;
             font-size: 2.5em;
             margin-bottom: 15px;
-            text-shadow: 2px 2px 0px #4a6fa5, 4px 4px 0px #e67e22;
+            text-shadow: 2px 2px 0px #ffa45b, 4px 4px 0px #ffd93d;
             animation: titleBounce 2s ease-in-out infinite;
             letter-spacing: 2px;
         }
@@ -126,14 +126,14 @@
 
         .level-info {
             font-size: 1.5em;
-            background: linear-gradient(135deg, #5499c7, #5dade2);
+            background: linear-gradient(135deg, #ff6b9d, #ffa45b);
             color: white;
             margin: 0 auto 20px auto;
             font-weight: bold;
             padding: 10px 30px;
             border-radius: 50px;
             display: inline-block;
-            box-shadow: 0 6px 15px rgba(84, 153, 199, 0.4);
+            box-shadow: 0 6px 15px rgba(255, 107, 157, 0.4);
             animation: pulse 2s ease-in-out infinite;
         }
 
@@ -142,11 +142,11 @@
             color: white;
             margin-bottom: 25px;
             font-weight: bold;
-            background: linear-gradient(135deg, #d68910, #e67e22);
+            background: linear-gradient(135deg, #ffa45b, #ffd93d);
             padding: 15px 30px;
             border-radius: 25px;
             display: inline-block;
-            box-shadow: 0 8px 20px rgba(214, 137, 16, 0.4);
+            box-shadow: 0 8px 20px rgba(255, 164, 91, 0.4);
             animation: wiggle 3s ease-in-out infinite;
         }
 
@@ -166,19 +166,19 @@
 
         .number-box {
             flex: 1;
-            background: linear-gradient(135deg, #52be80 0%, #45b39d 100%);
+            background: linear-gradient(135deg, #6bcf7f 0%, #4fa3d1 100%);
             border-radius: 25px;
             padding: 20px;
             cursor: pointer;
             transition: all 0.3s;
-            border: 5px solid #229954;
-            box-shadow: 0 12px 30px rgba(82, 190, 128, 0.4);
+            border: 5px solid #6bcf7f;
+            box-shadow: 0 12px 30px rgba(107, 207, 127, 0.4);
             position: relative;
         }
 
         .number-box:hover {
             transform: scale(1.08) rotate(2deg);
-            box-shadow: 0 15px 35px rgba(82, 190, 128, 0.5);
+            box-shadow: 0 15px 35px rgba(107, 207, 127, 0.5);
         }
 
         .number-box::before {
@@ -208,9 +208,9 @@
         .dot {
             width: 35px;
             height: 35px;
-            background: linear-gradient(135deg, #5499c7, #5dade2);
+            background: linear-gradient(135deg, #4fa3d1, #ff9ff3);
             border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(84, 153, 199, 0.4);
+            box-shadow: 0 4px 12px rgba(79, 163, 209, 0.4);
             animation: dotPop 0.5s ease-out;
         }
 
@@ -223,8 +223,8 @@
         .number {
             font-size: 6em;
             font-weight: 900;
-            color: #2d3548;
-            text-shadow: 3px 3px 0px rgba(255,255,255,0.3);
+            color: #ffffff;
+            text-shadow: 3px 3px 0px rgba(255,107,157,0.3);
             animation: numberPulse 1.5s ease-in-out infinite;
         }
 
@@ -245,13 +245,13 @@
         }
 
         .correct {
-            color: #52be80;
+            color: #6bcf7f;
             animation: bounce 0.6s;
         }
 
         .relation {
             font-size: 2em;
-            color: #5dade2;
+            color: #ff6b9d;
             margin-top: 8px;
             animation: scaleIn 0.5s;
         }
@@ -277,11 +277,11 @@
             z-index: 1000;
             animation: celebrate 1.5s;
             pointer-events: none;
-            background: linear-gradient(135deg, #52be80 0%, #5499c7 25%, #e67e22 50%, #48c9b0 75%, #52be80 100%);
+            background: linear-gradient(135deg, #ff6b9d 0%, #ffa45b 25%, #ffd93d 50%, #6bcf7f 75%, #4fa3d1 100%);
             padding: 40px 60px;
             border-radius: 35px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.6), 0 0 80px rgba(82, 190, 128, 0.6);
-            border: 8px solid #2d3548;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.3), 0 0 80px rgba(255, 107, 157, 0.6);
+            border: 8px solid #ffffff;
             background-size: 300% 300%;
             animation: celebrate 1.5s, rainbow 2s linear infinite;
         }
@@ -295,13 +295,13 @@
 
         .progress {
             font-size: 1.4em;
-            background: linear-gradient(135deg, #7d3c98, #9b59b6);
+            background: linear-gradient(135deg, #ff9ff3, #c44569);
             color: white;
             padding: 12px 25px;
             border-radius: 50px;
             display: inline-block;
             margin-top: 15px;
-            box-shadow: 0 6px 15px rgba(125, 60, 152, 0.4);
+            box-shadow: 0 6px 15px rgba(255, 159, 243, 0.4);
             font-weight: bold;
         }
 
@@ -310,16 +310,16 @@
             color: white;
             margin-top: 20px;
             padding: 18px;
-            background: linear-gradient(135deg, #ba4a00, #d68910);
+            background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
             border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(186, 74, 0, 0.4);
+            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.4);
             font-weight: bold;
         }
 
         #levelHint {
             display: block;
             margin-top: 8px;
-            color: #f9e79f;
+            color: #ffd93d;
             font-size: 1em;
             animation: blink 2s ease-in-out infinite;
         }
@@ -331,7 +331,7 @@
 
         .congrats {
             font-size: 3em;
-            background: linear-gradient(135deg, #52be80, #5499c7, #e67e22, #48c9b0);
+            background: linear-gradient(135deg, #ff6b9d, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -592,7 +592,7 @@
             } else {
                 // Wrong answer - stay on the same question
                 correctCount = 0;
-                feedback.innerHTML = '<div style="color: #e67e22; font-size: 2.2em;">Try again! 💪</div>';
+                feedback.innerHTML = '<div style="color: #ff9ff3; font-size: 2.2em;">Try again! 💪</div>';
                 document.getElementById('gameContainer').classList.add('shake');
                 setTimeout(() => {
                     document.getElementById('gameContainer').classList.remove('shake');
