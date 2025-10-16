@@ -301,16 +301,27 @@
             }
 
             setupEventListeners() {
-                // Touch events
-                this.canvas.addEventListener('touchstart', (e) => this.startDrawing(e), { passive: false });
-                this.canvas.addEventListener('touchmove', (e) => this.draw(e), { passive: false });
-                this.canvas.addEventListener('touchend', (e) => this.stopDrawing(e), { passive: false });
+                // Use Pointer Events API which handles touch, pen, and mouse uniformly
+                // This ensures Apple Pencil works correctly on iPad
+                if (window.PointerEvent) {
+                    this.canvas.addEventListener('pointerdown', (e) => this.startDrawing(e));
+                    this.canvas.addEventListener('pointermove', (e) => this.draw(e));
+                    this.canvas.addEventListener('pointerup', (e) => this.stopDrawing(e));
+                    this.canvas.addEventListener('pointercancel', (e) => this.stopDrawing(e));
+                    this.canvas.addEventListener('pointerleave', (e) => this.stopDrawing(e));
+                } else {
+                    // Fallback for older browsers
+                    // Touch events
+                    this.canvas.addEventListener('touchstart', (e) => this.startDrawing(e), { passive: false });
+                    this.canvas.addEventListener('touchmove', (e) => this.draw(e), { passive: false });
+                    this.canvas.addEventListener('touchend', (e) => this.stopDrawing(e), { passive: false });
 
-                // Mouse events
-                this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
-                this.canvas.addEventListener('mousemove', (e) => this.draw(e));
-                this.canvas.addEventListener('mouseup', (e) => this.stopDrawing(e));
-                this.canvas.addEventListener('mouseleave', (e) => this.stopDrawing(e));
+                    // Mouse events
+                    this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
+                    this.canvas.addEventListener('mousemove', (e) => this.draw(e));
+                    this.canvas.addEventListener('mouseup', (e) => this.stopDrawing(e));
+                    this.canvas.addEventListener('mouseleave', (e) => this.stopDrawing(e));
+                }
             }
 
             getCoordinates(e) {
@@ -318,6 +329,7 @@
                 const scaleX = this.canvas.width / rect.width;
                 const scaleY = this.canvas.height / rect.height;
 
+                // Handle touch events (for older browsers without Pointer Events)
                 if (e.touches) {
                     e.preventDefault();
                     return {
@@ -325,6 +337,9 @@
                         y: (e.touches[0].clientY - rect.top) * scaleY
                     };
                 }
+
+                // Handle pointer and mouse events
+                // Pointer events work for touch, pen (Apple Pencil), and mouse
                 return {
                     x: (e.clientX - rect.left) * scaleX,
                     y: (e.clientY - rect.top) * scaleY
@@ -332,6 +347,9 @@
             }
 
             startDrawing(e) {
+                // Prevent default to avoid scrolling/zooming while drawing
+                e.preventDefault();
+
                 this.drawing = true;
                 this.penLifted = false;
                 const coords = this.getCoordinates(e);
@@ -343,6 +361,9 @@
 
             draw(e) {
                 if (!this.drawing) return;
+
+                // Prevent default to avoid scrolling/zooming while drawing
+                e.preventDefault();
 
                 const coords = this.getCoordinates(e);
                 this.currentPath.push(coords);
