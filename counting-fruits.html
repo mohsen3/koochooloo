@@ -130,7 +130,7 @@
 
         .question {
             position: absolute;
-            bottom: 140px;
+            bottom: 80px;
             font-size: 36px;
             color: white;
             font-weight: bold;
@@ -142,12 +142,12 @@
 
         .input-container {
             position: absolute;
-            bottom: 40px;
+            bottom: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, 50%);
             display: flex;
             gap: 10px;
-            z-index: 100;
+            z-index: 200;
         }
 
         .digit-input {
@@ -324,10 +324,11 @@
     <div class="level-info">Level <span id="current-level">1</span></div>
     <div class="progress" id="progress"></div>
     <div class="question" id="question">How many objects? Type the number!</div>
-    <div class="input-container" id="input-container"></div>
 
     <div class="main-wrapper">
-        <div class="game-container" id="game-container"></div>
+        <div class="game-container" id="game-container">
+            <div class="input-container" id="input-container"></div>
+        </div>
     </div>
 
     <div class="level-complete" id="level-complete">
