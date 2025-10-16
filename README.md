@@ -39,6 +39,11 @@ Learn to type 175 Farsi words with progressive difficulty! Practice Persian typi
 - **Play:** [farsi-words.html](farsi-words.html)
 - **Features:** 175 toddler-appropriate words organized in 9 levels, includes animals, fruits, colors, family, nature, foods, insects and birds, character-by-character validation, Persian-style sound effects, immediate feedback, confetti celebration, supports ا for آ input
 
+### Shape Tracing Game
+Trace shapes with your finger or mouse to improve drawing and fine motor skills! Features adaptive difficulty that adjusts to your child's skill level.
+- **Play:** [shape-tracing-game.html](shape-tracing-game.html)
+- **Features:** 8 different shapes (line, triangle, square, rectangle, cross, star, circle), adaptive difficulty (scores 1-100), dynamic tolerance adjustment, touch and mouse support, Apple Pencil compatible, background guide dots, elegant minimal design, auto-clear when too messy, celebration animations
+
 ## Usage
 
 Simply open any HTML file in a web browser to play. No installation required.
