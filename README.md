@@ -44,6 +44,11 @@ Trace shapes with your finger or mouse to improve drawing and fine motor skills!
 - **Play:** [shape-tracing-game.html](shape-tracing-game.html)
 - **Features:** 8 different shapes (line, triangle, square, rectangle, cross, star, circle), adaptive difficulty (scores 1-100), dynamic tolerance adjustment, touch and mouse support, Apple Pencil compatible, background guide dots, elegant minimal design, auto-clear when too messy, celebration animations
 
+### Addition Table
+Master addition tables from 0 to 100! Practice completing full addition tables with progressive levels.
+- **Play:** [addition-table.html](addition-table.html)
+- **Features:** Progressive levels (0+0 through 100+9), two-column layout with 10 equations per level, real-time validation with color feedback (green for correct, red for wrong), automatic focus management, keyboard-friendly input, celebration animations on level completion, confetti effects
+
 ## Usage
 
 Simply open any HTML file in a web browser to play. No installation required.
