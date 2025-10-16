@@ -130,7 +130,7 @@
 
         .question {
             position: absolute;
-            bottom: 80px;
+            bottom: 140px;
             font-size: 36px;
             color: white;
             font-weight: bold;
@@ -138,6 +138,53 @@
             width: 100%;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             z-index: 100;
+        }
+
+        .input-container {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .digit-input {
+            width: 80px;
+            height: 90px;
+            font-size: 4em;
+            text-align: center;
+            border: 5px solid #4fa3d1;
+            border-radius: 20px;
+            outline: none;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff5f7, #ffffff);
+            color: #ff6b9d;
+            caret-color: transparent;
+            cursor: default;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .digit-input:focus {
+            border-color: #ff6b9d;
+            box-shadow: 0 0 25px rgba(255, 107, 157, 0.6);
+            transform: scale(1.08);
+        }
+
+        .digit-input.correct {
+            background: linear-gradient(135deg, #6bcf7f, #4fa3d1);
+            border-color: #6bcf7f;
+            color: white;
+            box-shadow: 0 8px 25px rgba(107, 207, 127, 0.5);
+        }
+
+        .digit-input.wrong {
+            background: linear-gradient(135deg, #ff9ff3, #feca57);
+            border-color: #ff9ff3;
+            color: white;
+            box-shadow: 0 8px 25px rgba(255, 159, 243, 0.5);
         }
 
         .celebration {
@@ -276,7 +323,8 @@
     <div class="header">🎮 Counting Game</div>
     <div class="level-info">Level <span id="current-level">1</span></div>
     <div class="progress" id="progress"></div>
-    <div class="question" id="question">How many objects? Press the number!</div>
+    <div class="question" id="question">How many objects? Type the number!</div>
+    <div class="input-container" id="input-container"></div>
 
     <div class="main-wrapper">
         <div class="game-container" id="game-container"></div>
@@ -294,7 +342,9 @@
             level: 1,
             correctAnswers: 0,
             currentAnswer: 0,
-            maxLevel: 10
+            maxLevel: 10,
+            clearWrongTimeout: null,
+            globalKeyboardHandler: null
         };
 
         const emojis = ['🍎', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍑', '🥝',
@@ -367,6 +417,11 @@
         }
 
         function generateQuestion() {
+            // Clean up any existing timeouts
+            if (gameState.clearWrongTimeout) {
+                clearTimeout(gameState.clearWrongTimeout);
+            }
+
             const config = getLevelConfig(gameState.level);
             const count = Math.floor(Math.random() * (config.max - config.min + 1)) + config.min;
             gameState.currentAnswer = count;
@@ -390,6 +445,8 @@
 
             updateProgress();
             document.getElementById('current-level').textContent = gameState.level;
+            createDigitInputs();
+            setupGlobalKeyboard();
         }
 
         function showCelebration() {
@@ -442,62 +499,169 @@
             document.getElementById('question').textContent = 'Great job! Refresh to play again!';
         }
 
-        function showNumberDisplay(number) {
-            const display = document.createElement('div');
-            display.className = 'number-display';
-            display.textContent = number;
-            document.body.appendChild(display);
+        function createDigitInputs() {
+            const inputContainer = document.getElementById('input-container');
+            inputContainer.innerHTML = '';
 
-            // Create sparkles
-            for (let i = 0; i < 12; i++) {
-                const sparkle = document.createElement('div');
-                sparkle.className = 'sparkle';
-                const angle = (i / 12) * Math.PI * 2;
-                const distance = 100 + Math.random() * 50;
-                sparkle.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
-                sparkle.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
-                sparkle.style.left = '50%';
-                sparkle.style.top = '50%';
-                document.body.appendChild(sparkle);
+            // Determine number of digits needed
+            const answerLength = gameState.currentAnswer.toString().length;
 
-                setTimeout(() => sparkle.remove(), 1000);
+            for (let i = 0; i < answerLength; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'digit-input';
+                input.maxLength = 1;
+                input.id = `digit${i}`;
+                input.inputMode = 'numeric';
+                input.pattern = '[0-9]*';
+                input.addEventListener('input', (e) => handleInput(e, i));
+                input.addEventListener('keydown', (e) => handleKeydown(e, i));
+                inputContainer.appendChild(input);
             }
 
-            setTimeout(() => display.remove(), 800);
+            // Set focus to first input
+            setTimeout(() => {
+                const firstInput = document.getElementById('digit0');
+                if (firstInput) firstInput.focus();
+            }, 100);
         }
 
-        function handleKeyPress(event) {
-            const key = event.key;
+        function handleInput(e, position) {
+            const value = e.target.value;
+            const input = e.target;
 
-            // Accept number keys (0-9 on main keyboard and numpad)
-            if (key >= '0' && key <= '9') {
-                const number = parseInt(key);
-                showNumberDisplay(number);
-                playSound(300 + (number * 50), 0.1);
-                setTimeout(() => checkAnswer(number), 400);
+            if (!/^\d$/.test(value)) {
+                input.value = '';
+                return;
+            }
+
+            const correctDigit = gameState.currentAnswer.toString()[position];
+            if (value === correctDigit) {
+                input.classList.remove('wrong');
+                input.classList.add('correct');
+
+                // Move to next input if available
+                const nextInput = document.getElementById(`digit${position + 1}`);
+                if (nextInput) {
+                    nextInput.focus();
+                }
+
+                // Check if complete answer is correct
+                checkCompleteAnswer();
+            } else {
+                input.classList.remove('correct');
+                input.classList.add('wrong');
+                shakeScreen();
+
+                // Clear any existing timeout
+                if (gameState.clearWrongTimeout) {
+                    clearTimeout(gameState.clearWrongTimeout);
+                }
+
+                // Auto-clear wrong answer after 0.5 seconds
+                gameState.clearWrongTimeout = setTimeout(() => {
+                    if (input && input.parentNode && document.contains(input)) {
+                        input.value = '';
+                        input.classList.remove('wrong');
+                        input.focus();
+                    }
+                }, 500);
             }
         }
 
-        function checkAnswer(answer) {
-            if (answer === gameState.currentAnswer) {
+        function handleKeydown(e, position) {
+            if (e.key === 'Backspace' && e.target.value === '') {
+                const prevInput = document.getElementById(`digit${position - 1}`);
+                if (prevInput) {
+                    prevInput.focus();
+                    prevInput.select();
+                }
+            }
+        }
+
+        function checkCompleteAnswer() {
+            const inputs = document.querySelectorAll('.digit-input');
+            let userAnswer = '';
+            let allFilled = true;
+
+            inputs.forEach(input => {
+                if (input.value === '') {
+                    allFilled = false;
+                } else {
+                    userAnswer += input.value;
+                }
+            });
+
+            if (allFilled && parseInt(userAnswer) === gameState.currentAnswer) {
                 showCelebration();
                 gameState.correctAnswers++;
 
                 if (gameState.correctAnswers >= 5) {
-                    showLevelComplete();
+                    setTimeout(showLevelComplete, 1000);
                 } else {
                     setTimeout(generateQuestion, 1000);
                 }
-            } else {
-                shakeScreen();
-                gameState.correctAnswers = 0;
-                updateProgress();
             }
         }
 
+        function setupGlobalKeyboard() {
+            // Remove any existing global keyboard listener
+            if (gameState.globalKeyboardHandler) {
+                document.removeEventListener('keydown', gameState.globalKeyboardHandler);
+            }
+
+            gameState.globalKeyboardHandler = (e) => {
+                // Only handle number keys
+                if (/^[0-9]$/.test(e.key)) {
+                    e.preventDefault();
+
+                    // Find the first empty input or the currently focused input
+                    const inputs = document.querySelectorAll('.digit-input');
+                    let targetInput = null;
+
+                    // Check if any input is currently focused
+                    const focusedInput = document.activeElement;
+                    if (focusedInput && focusedInput.classList.contains('digit-input')) {
+                        targetInput = focusedInput;
+                    } else {
+                        // Find first empty input
+                        for (let input of inputs) {
+                            if (input.value === '') {
+                                targetInput = input;
+                                break;
+                            }
+                        }
+                        // If no empty inputs, use the first one
+                        if (!targetInput && inputs.length > 0) {
+                            targetInput = inputs[0];
+                        }
+                    }
+
+                    if (targetInput) {
+                        targetInput.value = e.key;
+                        targetInput.focus();
+
+                        // Trigger the input event manually
+                        const inputEvent = new Event('input', { bubbles: true });
+                        targetInput.dispatchEvent(inputEvent);
+                    }
+                }
+            };
+
+            document.addEventListener('keydown', gameState.globalKeyboardHandler);
+        }
+
         // Initialize game
-        document.addEventListener('keydown', handleKeyPress);
-        generateQuestion();
+        window.addEventListener('load', () => {
+            document.body.setAttribute('tabindex', '0');
+            document.body.focus();
+            generateQuestion();
+        });
+
+        // Refocus body if focus is lost
+        document.addEventListener('click', () => {
+            document.body.focus();
+        });
     </script>
 </body>
 </html>
