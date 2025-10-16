@@ -142,12 +142,22 @@
             color: white;
             margin-bottom: 25px;
             font-weight: bold;
-            background: linear-gradient(135deg, #ffa45b, #ffd93d);
+            background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
             padding: 15px 30px;
             border-radius: 25px;
             display: inline-block;
-            box-shadow: 0 8px 20px rgba(255, 164, 91, 0.4);
+            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.4);
             animation: wiggle 3s ease-in-out infinite;
+        }
+
+        .more-text {
+            color: #6bcf7f;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+
+        .less-text {
+            color: #ff6b9d;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
         }
 
         @keyframes wiggle {
@@ -158,22 +168,53 @@
 
         .numbers-container {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
             align-items: flex-start;
             margin-bottom: 25px;
-            gap: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+            max-width: 100%;
         }
 
         .number-box {
-            flex: 1;
             background: linear-gradient(135deg, #6bcf7f 0%, #4fa3d1 100%);
             border-radius: 25px;
-            padding: 20px;
+            padding: 15px;
             cursor: pointer;
             transition: all 0.3s;
             border: 5px solid #6bcf7f;
             box-shadow: 0 12px 30px rgba(107, 207, 127, 0.4);
             position: relative;
+            min-width: 120px;
+            max-width: 180px;
+        }
+
+        /* Responsive sizing based on number of boxes */
+        .numbers-container[data-count="2"] .number-box {
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .numbers-container[data-count="3"] .number-box {
+            flex: 0 1 calc(33% - 15px);
+            max-width: 200px;
+        }
+
+        .numbers-container[data-count="4"] .number-box {
+            flex: 0 1 calc(25% - 15px);
+            max-width: 160px;
+        }
+
+        .numbers-container[data-count="6"] .number-box {
+            flex: 0 1 calc(33% - 15px);
+            max-width: 140px;
+            padding: 10px;
+        }
+
+        .numbers-container[data-count="8"] .number-box {
+            flex: 0 1 calc(25% - 15px);
+            max-width: 120px;
+            padding: 8px;
         }
 
         .number-box:hover {
@@ -199,19 +240,30 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-            min-height: 70px;
+            gap: 6px;
+            margin-bottom: 15px;
+            min-height: 50px;
             align-items: center;
         }
 
         .dot {
-            width: 35px;
-            height: 35px;
+            width: 25px;
+            height: 25px;
             background: linear-gradient(135deg, #4fa3d1, #ff9ff3);
             border-radius: 50%;
             box-shadow: 0 4px 12px rgba(79, 163, 209, 0.4);
             animation: dotPop 0.5s ease-out;
+        }
+
+        /* Hide dots for many numbers to save space */
+        .numbers-container[data-count="6"] .dots,
+        .numbers-container[data-count="8"] .dots {
+            display: none;
+        }
+
+        .numbers-container[data-count="6"] .number,
+        .numbers-container[data-count="8"] .number {
+            font-size: 4em;
         }
 
         @keyframes dotPop {
@@ -364,16 +416,7 @@
         <div class="level-info" id="levelInfo">Level 1</div>
         <div class="question" id="question">Which one is LARGER?</div>
         
-        <div class="numbers-container">
-            <div class="number-box" id="leftBox" onclick="selectNumber('left')">
-                <div class="dots" id="leftDots"></div>
-                <div class="number" id="leftNumber"></div>
-            </div>
-            <div class="number-box" id="rightBox" onclick="selectNumber('right')">
-                <div class="dots" id="rightDots"></div>
-                <div class="number" id="rightNumber"></div>
-            </div>
-        </div>
+        <div class="numbers-container" id="numbersContainer"></div>
 
         <div class="feedback" id="feedback"></div>
         <div class="progress" id="progress">Correct answers: 0 / 5</div>
@@ -387,10 +430,18 @@
     <script>
         let level = 1;
         let correctCount = 0;
-        let leftNum = 0;
-        let rightNum = 0;
-        let questionType = 'larger'; // 'larger', 'smaller', or 'equal'
+        let numbers = [];
+        let questionType = 'more'; // 'more' or 'less'
         let waitingForNext = false;
+
+        // Level configuration: number of boxes to show
+        function getNumberCount(level) {
+            if (level <= 2) return 2;
+            if (level <= 4) return 3;
+            if (level <= 6) return 4;
+            if (level <= 8) return 6;
+            return 8;
+        }
 
         const messages = [
             "Awesome! 🎉", "Great job! ⭐", "Perfect! 🌟", 
@@ -446,129 +497,116 @@
         function generateNumbers() {
             waitingForNext = false;
             document.getElementById('feedback').innerHTML = '';
-            
-            if (level === 3 && Math.random() < 0.3) {
-                // 30% chance of equal numbers in level 3
-                leftNum = Math.floor(Math.random() * 9) + 1;
-                rightNum = leftNum;
-                questionType = 'equal';
-            } else {
-                do {
-                    leftNum = Math.floor(Math.random() * 9) + 1;
-                    rightNum = Math.floor(Math.random() * 9) + 1;
-                } while (leftNum === rightNum);
-                
-                if (level >= 2) {
-                    questionType = Math.random() < 0.5 ? 'larger' : 'smaller';
-                } else {
-                    questionType = 'larger';
+
+            const count = getNumberCount(level);
+            numbers = [];
+
+            // Generate unique random numbers
+            const used = new Set();
+            while (numbers.length < count) {
+                const num = Math.floor(Math.random() * 15) + 1;
+                if (!used.has(num)) {
+                    numbers.push(num);
+                    used.add(num);
                 }
+            }
+
+            // Randomly choose more or less after level 1
+            if (level >= 2) {
+                questionType = Math.random() < 0.5 ? 'more' : 'less';
+            } else {
+                questionType = 'more';
             }
 
             updateDisplay();
         }
 
         function updateDisplay() {
-            document.getElementById('leftNumber').textContent = leftNum;
-            document.getElementById('rightNumber').textContent = rightNum;
-            
-            createDots('leftDots', leftNum);
-            createDots('rightDots', rightNum);
-            
-            if (questionType === 'equal') {
-                document.getElementById('question').textContent = 'Are they EQUAL?';
-            } else if (questionType === 'larger') {
-                document.getElementById('question').textContent = 'Which one is LARGER?';
+            const container = document.getElementById('numbersContainer');
+            const count = numbers.length;
+
+            // Set data-count for CSS styling
+            container.setAttribute('data-count', count);
+            container.innerHTML = '';
+
+            // Create number boxes
+            numbers.forEach((num, index) => {
+                const box = document.createElement('div');
+                box.className = 'number-box';
+                box.onclick = () => selectNumber(num);
+
+                const dotsDiv = document.createElement('div');
+                dotsDiv.className = 'dots';
+                for (let i = 0; i < num; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    dotsDiv.appendChild(dot);
+                }
+
+                const numberDiv = document.createElement('div');
+                numberDiv.className = 'number';
+                numberDiv.textContent = num;
+
+                box.appendChild(dotsDiv);
+                box.appendChild(numberDiv);
+                container.appendChild(box);
+            });
+
+            // Update question with colored text
+            const questionEl = document.getElementById('question');
+            if (questionType === 'more') {
+                questionEl.innerHTML = 'Which has <span class="more-text">MORE</span>?';
             } else {
-                document.getElementById('question').textContent = 'Which one is SMALLER?';
+                questionEl.innerHTML = 'Which has <span class="less-text">LESS</span>?';
             }
-            
+
             document.getElementById('levelInfo').textContent = `Level ${level}`;
             document.getElementById('progress').textContent = `Correct answers: ${correctCount} / 5`;
-            
+
             // Update hint
             const hint = document.getElementById('levelHint');
-            if (level === 3) {
-                hint.textContent = "Level 3: Press the number or '=' for equal!";
-            } else if (level === 2) {
-                hint.textContent = "Level 2: Press the number that matches!";
+            if (questionType === 'more') {
+                hint.textContent = `Level ${level}: Click or type the number with MORE!`;
             } else {
-                hint.textContent = "Level 1: Press the LARGER number!";
+                hint.textContent = `Level ${level}: Click or type the number with LESS!`;
             }
         }
 
-        function createDots(containerId, count) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            for (let i = 0; i < count; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'dot';
-                container.appendChild(dot);
-            }
-        }
-
-        function selectNumber(side) {
+        function selectNumber(selectedNum) {
             if (waitingForNext) return;
-            
+
             let correct = false;
-            
-            if (questionType === 'equal') {
-                // Wrong - they clicked a number when they should press '='
-                correct = false;
-            } else if (questionType === 'larger') {
-                correct = (side === 'left' && leftNum > rightNum) || 
-                         (side === 'right' && rightNum > leftNum);
-            } else { // smaller
-                correct = (side === 'left' && leftNum < rightNum) || 
-                         (side === 'right' && rightNum < leftNum);
+
+            if (questionType === 'more') {
+                const max = Math.max(...numbers);
+                correct = (selectedNum === max);
+            } else { // less
+                const min = Math.min(...numbers);
+                correct = (selectedNum === min);
             }
-            
-            handleAnswer(correct);
+
+            handleAnswer(correct, selectedNum);
         }
 
-        function checkNumberPress(pressedNum) {
+        function handleAnswer(correct, selectedNum) {
             if (waitingForNext) return;
-            
-            let correct = false;
-            
-            if (questionType === 'equal') {
-                // They pressed a number instead of '='
-                correct = false;
-            } else if (questionType === 'larger') {
-                const larger = Math.max(leftNum, rightNum);
-                correct = (pressedNum === larger);
-            } else { // smaller
-                const smaller = Math.min(leftNum, rightNum);
-                correct = (pressedNum === smaller);
-            }
-            
-            handleAnswer(correct);
-        }
 
-        function handleAnswer(correct) {
-            if (waitingForNext) return;
-            
             const feedback = document.getElementById('feedback');
-            
+
             if (correct) {
                 waitingForNext = true;
                 correctCount++;
                 const msg = messages[Math.floor(Math.random() * messages.length)];
-                
-                let relation = '';
-                if (questionType === 'equal') {
-                    relation = `${leftNum} = ${rightNum}`;
-                } else if (leftNum > rightNum) {
-                    relation = `${leftNum} > ${rightNum}`;
-                } else {
-                    relation = `${leftNum} < ${rightNum}`;
-                }
-                
+
+                // Show the correct answer
+                const correctAnswer = questionType === 'more' ? Math.max(...numbers) : Math.min(...numbers);
+                const relation = `${correctAnswer} is ${questionType}!`;
+
                 showCelebration(msg, relation);
                 feedback.innerHTML = `<div class="correct">${msg}</div><div class="relation">${relation}</div>`;
-                
+
                 if (correctCount >= 5) {
-                    if (level < 3) {
+                    if (level < 10) {
                         level++;
                         correctCount = 0;
                         setTimeout(() => {
@@ -587,7 +625,7 @@
                 } else {
                     setTimeout(generateNumbers, 2000);
                 }
-                
+
                 updateDisplay();
             } else {
                 // Wrong answer - stay on the same question
@@ -606,29 +644,15 @@
         // Keyboard controls - capture phase to ensure it works everywhere
         document.addEventListener('keydown', (e) => {
             if (waitingForNext) return;
-            
-            // Prevent default behavior for game keys
-            if ((e.key >= '1' && e.key <= '9') || e.key === '=' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+
+            // Handle number keys (0-9)
+            if (e.key >= '0' && e.key <= '9') {
                 e.preventDefault();
-            }
-            
-            // Handle number keys
-            if (e.key >= '1' && e.key <= '9') {
                 const pressedNum = parseInt(e.key);
-                checkNumberPress(pressedNum);
-            }
-            // Handle arrow keys for clicking boxes
-            else if (e.key === 'ArrowLeft') {
-                selectNumber('left');
-            } else if (e.key === 'ArrowRight') {
-                selectNumber('right');
-            } 
-            // Handle equals sign
-            else if (e.key === '=' && level === 3) {
-                if (questionType === 'equal') {
-                    handleAnswer(true);
-                } else {
-                    handleAnswer(false);
+
+                // Check if this number exists in the current numbers array
+                if (numbers.includes(pressedNum)) {
+                    selectNumber(pressedNum);
                 }
             }
         }, true); // Use capture phase
