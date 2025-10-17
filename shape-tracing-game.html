@@ -182,7 +182,7 @@
 
     <div class="container">
         <h1>✏️ Shape Tracing</h1>
-        <div class="instructions">Trace the dotted shape!</div>
+        <div class="instructions" id="instructions">Trace the dotted shape!</div>
 
         <div class="canvas-container">
             <canvas id="canvas" width="600" height="400"></canvas>
@@ -211,53 +211,67 @@
                 this.consecutiveSuccesses = 0;
                 this.consecutiveFailures = 0;
 
-                // Shape definitions (relative to canvas size)
-                this.shapes = [
+                // Level progression: 5 shapes, 10 letters, then words
+                this.levels = [];
+
+                // Levels 1-5: Basic shapes
+                this.levels.push(
                     {
                         name: 'Line',
+                        category: 'shape',
                         type: 'line',
                         points: [[150, 200], [450, 200]]
                     },
                     {
-                        name: 'Diagonal Line',
-                        type: 'line',
-                        points: [[150, 300], [450, 100]]
-                    },
-                    {
                         name: 'Triangle',
+                        category: 'shape',
                         type: 'polygon',
                         points: [[300, 100], [450, 300], [150, 300], [300, 100]]
                     },
                     {
                         name: 'Square',
+                        category: 'shape',
                         type: 'polygon',
                         points: [[200, 150], [400, 150], [400, 350], [200, 350], [200, 150]]
                     },
                     {
-                        name: 'Rectangle',
-                        type: 'polygon',
-                        points: [[150, 200], [450, 200], [450, 300], [150, 300], [150, 200]]
-                    },
-                    {
-                        name: 'Cross',
-                        type: 'multiline',
-                        paths: [
-                            [[300, 100], [300, 350]],
-                            [[150, 225], [450, 225]]
-                        ]
-                    },
-                    {
-                        name: 'Star',
-                        type: 'polygon',
-                        points: this.generateStarPoints(300, 200, 5, 80, 40)
-                    },
-                    {
                         name: 'Circle',
+                        category: 'shape',
                         type: 'circle',
                         center: [300, 200],
                         radius: 100
+                    },
+                    {
+                        name: 'Star',
+                        category: 'shape',
+                        type: 'polygon',
+                        points: this.generateStarPoints(300, 200, 5, 80, 40)
                     }
-                ];
+                );
+
+                // Levels 6-15: Letters (uppercase)
+                const letters = ['A', 'B', 'C', 'D', 'E', 'L', 'O', 'T', 'I', 'H'];
+                letters.forEach(letter => {
+                    this.levels.push({
+                        name: letter,
+                        category: 'letter',
+                        type: 'letter',
+                        letter: letter
+                    });
+                });
+
+                // Levels 16+: Simple words
+                const words = ['CAT', 'DOG', 'BAT', 'HAT', 'BED', 'HIT', 'HOT', 'COT'];
+                words.forEach(word => {
+                    this.levels.push({
+                        name: word,
+                        category: 'word',
+                        type: 'word',
+                        word: word
+                    });
+                });
+
+                this.shapes = this.levels; // Keep compatibility
 
                 this.init();
             }
@@ -276,6 +290,79 @@
                 }
                 points.push(points[0]); // Close the shape
                 return points;
+            }
+
+            getLetterPaths(letter) {
+                // Simple letter path definitions (uppercase, multiline format)
+                const letterPaths = {
+                    'A': [
+                        [[250, 320], [300, 150], [350, 320]],
+                        [[270, 250], [330, 250]]
+                    ],
+                    'B': [
+                        [[250, 150], [250, 320]],
+                        [[250, 150], [320, 150], [340, 170], [340, 200], [320, 220], [250, 220]],
+                        [[250, 220], [330, 220], [350, 240], [350, 280], [330, 300], [250, 320]]
+                    ],
+                    'C': [
+                        [[350, 180], [330, 160], [280, 150], [250, 170], [240, 200], [240, 270], [250, 300], [280, 320], [330, 310], [350, 290]]
+                    ],
+                    'D': [
+                        [[250, 150], [250, 320]],
+                        [[250, 150], [310, 150], [350, 180], [360, 220], [360, 250], [350, 290], [310, 320], [250, 320]]
+                    ],
+                    'E': [
+                        [[350, 150], [250, 150], [250, 320], [350, 320]],
+                        [[250, 235], [330, 235]]
+                    ],
+                    'G': [
+                        [[350, 180], [330, 160], [280, 150], [250, 170], [240, 200], [240, 270], [250, 300], [280, 320], [330, 310], [350, 290], [350, 235], [305, 235]]
+                    ],
+                    'H': [
+                        [[250, 150], [250, 320]],
+                        [[250, 235], [350, 235]],
+                        [[350, 150], [350, 320]]
+                    ],
+                    'I': [
+                        [[260, 150], [340, 150]],
+                        [[300, 150], [300, 320]],
+                        [[260, 320], [340, 320]]
+                    ],
+                    'L': [
+                        [[250, 150], [250, 320], [350, 320]]
+                    ],
+                    'O': [
+                        [[300, 150], [260, 160], [240, 190], [240, 280], [260, 310], [300, 320], [340, 310], [360, 280], [360, 190], [340, 160], [300, 150]]
+                    ],
+                    'T': [
+                        [[220, 150], [380, 150]],
+                        [[300, 150], [300, 320]]
+                    ]
+                };
+                return letterPaths[letter] || [];
+            }
+
+            getWordPaths(word) {
+                // Generate paths for a word by placing letters side by side
+                const letterSpacing = 90;
+                const startX = 300 - (word.length * letterSpacing / 2);
+                const paths = [];
+
+                for (let i = 0; i < word.length; i++) {
+                    const letter = word[i];
+                    const letterPaths = this.getLetterPaths(letter);
+                    const offsetX = startX + i * letterSpacing - 300;
+
+                    letterPaths.forEach(path => {
+                        const transformedPath = path.map(point => [
+                            point[0] + offsetX,
+                            point[1]
+                        ]);
+                        paths.push(transformedPath);
+                    });
+                }
+
+                return paths;
             }
 
             init() {
@@ -408,7 +495,19 @@
 
             drawCurrentShape() {
                 const shape = this.shapes[this.currentShapeIndex];
-                document.getElementById('shape-indicator').textContent = `Shape: ${shape.name}`;
+
+                // Update instructions based on category
+                const instructions = document.getElementById('instructions');
+                if (shape.category === 'shape') {
+                    instructions.textContent = 'Trace the dotted shape!';
+                    document.getElementById('shape-indicator').textContent = `Shape: ${shape.name}`;
+                } else if (shape.category === 'letter') {
+                    instructions.textContent = 'Trace the letter!';
+                    document.getElementById('shape-indicator').textContent = `Letter: ${shape.name}`;
+                } else if (shape.category === 'word') {
+                    instructions.textContent = 'Trace the word!';
+                    document.getElementById('shape-indicator').textContent = `Word: ${shape.name}`;
+                }
 
                 this.ctx.save();
                 this.ctx.setLineDash([10, 10]);
@@ -417,7 +516,29 @@
                 this.ctx.lineCap = 'round';
                 this.ctx.lineJoin = 'round';
 
-                if (shape.type === 'circle') {
+                if (shape.type === 'letter') {
+                    // Draw letter
+                    const paths = this.getLetterPaths(shape.letter);
+                    paths.forEach(path => {
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(path[0][0], path[0][1]);
+                        for (let i = 1; i < path.length; i++) {
+                            this.ctx.lineTo(path[i][0], path[i][1]);
+                        }
+                        this.ctx.stroke();
+                    });
+                } else if (shape.type === 'word') {
+                    // Draw word
+                    const paths = this.getWordPaths(shape.word);
+                    paths.forEach(path => {
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(path[0][0], path[0][1]);
+                        for (let i = 1; i < path.length; i++) {
+                            this.ctx.lineTo(path[i][0], path[i][1]);
+                        }
+                        this.ctx.stroke();
+                    });
+                } else if (shape.type === 'circle') {
                     this.ctx.beginPath();
                     this.ctx.arc(shape.center[0], shape.center[1], shape.radius, 0, Math.PI * 2);
                     this.ctx.stroke();
@@ -493,76 +614,151 @@
                     threshold = 20 - exponentialFactor * 17; // 20px to 3px
                 }
 
-                // Flatten all shape points
-                let shapePoints = [];
-                if (shape.type === 'circle') {
-                    // Sample more points for circles at higher difficulties
-                    const numSamples = Math.min(50 + Math.floor(this.difficultyScore / 2), 100);
-                    for (let i = 0; i < numSamples; i++) {
-                        const angle = (i / numSamples) * Math.PI * 2;
-                        shapePoints.push({
-                            x: shape.center[0] + shape.radius * Math.cos(angle),
-                            y: shape.center[1] + shape.radius * Math.sin(angle)
-                        });
-                    }
-                } else if (shape.type === 'multiline') {
-                    shape.paths.forEach(path => {
-                        // Sample points along each line segment
-                        for (let i = 0; i < path.length - 1; i++) {
-                            const samplesPerSegment = Math.max(10, Math.floor(this.difficultyScore / 5));
-                            for (let j = 0; j <= samplesPerSegment; j++) {
-                                const t = j / samplesPerSegment;
-                                shapePoints.push({
-                                    x: path[i][0] + (path[i+1][0] - path[i][0]) * t,
-                                    y: path[i][1] + (path[i+1][1] - path[i][1]) * t
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    // Sample points along polygon edges
-                    for (let i = 0; i < shape.points.length - 1; i++) {
-                        const samplesPerSegment = Math.max(10, Math.floor(this.difficultyScore / 5));
+                // Get shape segments (for multi-stroke shapes like letters)
+                const shapeSegments = this.getShapeSegments(shape);
+
+                // BIDIRECTIONAL VALIDATION:
+                // 1. Check that each segment of the shape is covered by drawing (forward check)
+                // 2. Check that drawn points are actually near the shape (reverse check)
+
+                // Forward check: verify each segment is covered
+                for (let segment of shapeSegments) {
+                    const samplesPerSegment = Math.max(10, Math.floor(this.difficultyScore / 5));
+                    let segmentPoints = [];
+
+                    for (let i = 0; i < segment.length - 1; i++) {
                         for (let j = 0; j <= samplesPerSegment; j++) {
                             const t = j / samplesPerSegment;
-                            shapePoints.push({
-                                x: shape.points[i][0] + (shape.points[i+1][0] - shape.points[i][0]) * t,
-                                y: shape.points[i][1] + (shape.points[i+1][1] - shape.points[i][1]) * t
+                            segmentPoints.push({
+                                x: segment[i][0] + (segment[i+1][0] - segment[i][0]) * t,
+                                y: segment[i][1] + (segment[i+1][1] - segment[i][1]) * t
                             });
                         }
                     }
+
+                    // Count coverage for this specific segment
+                    let coveredPoints = 0;
+                    segmentPoints.forEach(sp => {
+                        const isCovered = this.drawnPaths.some(path => {
+                            return path.some(dp => {
+                                const dist = Math.sqrt(Math.pow(sp.x - dp.x, 2) + Math.pow(sp.y - dp.y, 2));
+                                return dist < threshold;
+                            });
+                        });
+                        if (isCovered) coveredPoints++;
+                    });
+
+                    const segmentCoverage = coveredPoints / segmentPoints.length;
+
+                    // Each segment must be individually covered
+                    // Require high coverage per segment to ensure all parts are drawn
+                    let requiredSegmentCoverage;
+                    if (this.difficultyScore <= 50) {
+                        requiredSegmentCoverage = 0.70 + (this.difficultyScore / 50) * 0.10; // 70% to 80%
+                    } else {
+                        const progressAbove50 = (this.difficultyScore - 50) / 50;
+                        const exponentialFactor = Math.pow(progressAbove50, 1.5);
+                        requiredSegmentCoverage = 0.80 + exponentialFactor * 0.17; // 80% to 97%
+                    }
+
+                    if (segmentCoverage < requiredSegmentCoverage) {
+                        return false; // This segment is not sufficiently covered
+                    }
                 }
 
-                // Count how many shape points are covered by drawn paths
-                let coveredPoints = 0;
-                shapePoints.forEach(sp => {
-                    const isCovered = this.drawnPaths.some(path => {
-                        return path.some(dp => {
-                            const dist = Math.sqrt(Math.pow(sp.x - dp.x, 2) + Math.pow(sp.y - dp.y, 2));
-                            return dist < threshold;
+                // Reverse check: verify drawn points are actually on the shape
+                // Sample all drawn points and check if they're near the shape
+                let drawnPointsOnShape = 0;
+                let totalDrawnPoints = 0;
+
+                this.drawnPaths.forEach(path => {
+                    path.forEach(dp => {
+                        totalDrawnPoints++;
+
+                        // Check if this drawn point is near any segment
+                        const isNearShape = shapeSegments.some(segment => {
+                            return this.isPointNearSegment(dp, segment, threshold);
                         });
+
+                        if (isNearShape) drawnPointsOnShape++;
                     });
-                    if (isCovered) coveredPoints++;
                 });
 
-                const coverage = coveredPoints / shapePoints.length;
+                const drawnAccuracy = drawnPointsOnShape / totalDrawnPoints;
 
-                // Dynamic coverage requirement with exponential scaling
-                // Score 30: 65% coverage required (baseline)
-                // Score 50: 75% coverage required
-                // Score 70: 85% coverage required
-                // Score 90: 92% coverage required
-                // Score 100: 97% coverage required (almost perfect)
-                let requiredCoverage;
+                // Require that most drawn points are actually on the shape
+                // This prevents random scribbling
+                let requiredAccuracy;
                 if (this.difficultyScore <= 50) {
-                    requiredCoverage = 0.65 + (this.difficultyScore / 50) * 0.10; // 65% to 75%
+                    requiredAccuracy = 0.60 + (this.difficultyScore / 50) * 0.15; // 60% to 75%
                 } else {
                     const progressAbove50 = (this.difficultyScore - 50) / 50;
                     const exponentialFactor = Math.pow(progressAbove50, 1.5);
-                    requiredCoverage = 0.75 + exponentialFactor * 0.22; // 75% to 97%
+                    requiredAccuracy = 0.75 + exponentialFactor * 0.20; // 75% to 95%
                 }
 
-                return coverage > requiredCoverage;
+                return drawnAccuracy >= requiredAccuracy;
+            }
+
+            getShapeSegments(shape) {
+                // Returns array of segments (each segment is an array of [x,y] points)
+                const segments = [];
+
+                if (shape.type === 'circle') {
+                    // Sample points around the circle
+                    const numSamples = Math.min(50 + Math.floor(this.difficultyScore / 2), 100);
+                    const circlePoints = [];
+                    for (let i = 0; i <= numSamples; i++) {
+                        const angle = (i / numSamples) * Math.PI * 2;
+                        circlePoints.push([
+                            shape.center[0] + shape.radius * Math.cos(angle),
+                            shape.center[1] + shape.radius * Math.sin(angle)
+                        ]);
+                    }
+                    segments.push(circlePoints);
+                } else if (shape.type === 'letter') {
+                    const paths = this.getLetterPaths(shape.letter);
+                    paths.forEach(path => segments.push(path));
+                } else if (shape.type === 'word') {
+                    const paths = this.getWordPaths(shape.word);
+                    paths.forEach(path => segments.push(path));
+                } else if (shape.type === 'multiline') {
+                    shape.paths.forEach(path => segments.push(path));
+                } else {
+                    // Single polygon
+                    segments.push(shape.points);
+                }
+
+                return segments;
+            }
+
+            isPointNearSegment(point, segment, threshold) {
+                // Check if point is near any part of the segment
+                for (let i = 0; i < segment.length - 1; i++) {
+                    const dist = this.distanceToLineSegment(
+                        point,
+                        {x: segment[i][0], y: segment[i][1]},
+                        {x: segment[i+1][0], y: segment[i+1][1]}
+                    );
+                    if (dist < threshold) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            distanceToLineSegment(p, v, w) {
+                // Distance from point p to line segment vw
+                const l2 = Math.pow(v.x - w.x, 2) + Math.pow(v.y - w.y, 2);
+                if (l2 === 0) return Math.sqrt(Math.pow(p.x - v.x, 2) + Math.pow(p.y - v.y, 2));
+
+                let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+                t = Math.max(0, Math.min(1, t));
+
+                const projX = v.x + t * (w.x - v.x);
+                const projY = v.y + t * (w.y - v.y);
+
+                return Math.sqrt(Math.pow(p.x - projX, 2) + Math.pow(p.y - projY, 2));
             }
 
             calculateShapeLength(shape) {
@@ -570,6 +766,24 @@
 
                 if (shape.type === 'circle') {
                     length = 2 * Math.PI * shape.radius;
+                } else if (shape.type === 'letter') {
+                    const paths = this.getLetterPaths(shape.letter);
+                    paths.forEach(path => {
+                        for (let i = 0; i < path.length - 1; i++) {
+                            const dx = path[i+1][0] - path[i][0];
+                            const dy = path[i+1][1] - path[i][1];
+                            length += Math.sqrt(dx * dx + dy * dy);
+                        }
+                    });
+                } else if (shape.type === 'word') {
+                    const paths = this.getWordPaths(shape.word);
+                    paths.forEach(path => {
+                        for (let i = 0; i < path.length - 1; i++) {
+                            const dx = path[i+1][0] - path[i][0];
+                            const dy = path[i+1][1] - path[i][1];
+                            length += Math.sqrt(dx * dx + dy * dy);
+                        }
+                    });
                 } else if (shape.type === 'multiline') {
                     shape.paths.forEach(path => {
                         for (let i = 0; i < path.length - 1; i++) {
