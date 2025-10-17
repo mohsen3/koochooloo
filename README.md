@@ -47,7 +47,7 @@ Trace shapes, letters, and words with your finger or mouse to improve drawing an
 ### Farsi Tracing Game
 Practice Farsi letters and words through tracing! Complete Farsi interface with Persian letters and toddler-friendly vocabulary.
 - **Play:** [farsi-tracing-game.html](farsi-tracing-game.html)
-- **Features:** 23 progressive levels (5 shapes, 10 Farsi letters, 8 simple Farsi words), Farsi interface with Persian numbers, bidirectional validation, adaptive difficulty, RTL text support, touch and Apple Pencil compatible
+- **Features:** 18 progressive levels (10 Farsi letters, 8 simple Farsi words), pen stroke-based letter paths, Farsi interface with Persian numbers, bidirectional validation, adaptive difficulty, RTL text support, touch and Apple Pencil compatible
 
 ### Addition Table
 Master addition tables from 0 to 100! Practice completing full addition tables with progressive levels.

@@ -182,13 +182,13 @@
 
     <div class="container">
         <h1>✏️ بازی ردیابی فارسی</h1>
-        <div class="instructions" id="instructions">شکل نقطه‌چین را دنبال کن!</div>
+        <div class="instructions" id="instructions">حرف را دنبال کن!</div>
 
         <div class="canvas-container">
             <canvas id="canvas" width="600" height="400"></canvas>
         </div>
 
-        <div class="shape-indicator" id="shape-indicator">شکل: خط</div>
+        <div class="shape-indicator" id="shape-indicator">حرف: ا</div>
         <div class="score-info" id="score-info">امتیاز: ۳۰</div>
     </div>
 
@@ -211,45 +211,10 @@
                 this.consecutiveSuccesses = 0;
                 this.consecutiveFailures = 0;
 
-                // Level progression: 5 shapes, 10 letters, then words
+                // Level progression: 10 letters, then words
                 this.levels = [];
 
-                // Levels 1-5: Basic shapes
-                this.levels.push(
-                    {
-                        name: 'خط',
-                        category: 'shape',
-                        type: 'line',
-                        points: [[150, 200], [450, 200]]
-                    },
-                    {
-                        name: 'مثلث',
-                        category: 'shape',
-                        type: 'polygon',
-                        points: [[300, 100], [450, 300], [150, 300], [300, 100]]
-                    },
-                    {
-                        name: 'مربع',
-                        category: 'shape',
-                        type: 'polygon',
-                        points: [[200, 150], [400, 150], [400, 350], [200, 350], [200, 150]]
-                    },
-                    {
-                        name: 'دایره',
-                        category: 'shape',
-                        type: 'circle',
-                        center: [300, 200],
-                        radius: 100
-                    },
-                    {
-                        name: 'ستاره',
-                        category: 'shape',
-                        type: 'polygon',
-                        points: this.generateStarPoints(300, 200, 5, 80, 40)
-                    }
-                );
-
-                // Levels 6-15: Farsi Letters
+                // Levels 1-10: Farsi Letters
                 const letters = ['ا', 'ب', 'پ', 'د', 'م', 'ن', 'و', 'ل', 'ر', 'س'];
                 letters.forEach(letter => {
                     this.levels.push({
@@ -260,7 +225,7 @@
                     });
                 });
 
-                // Levels 16+: Simple Farsi words
+                // Levels 11+: Simple Farsi words
                 const words = ['بابا', 'ماما', 'آب', 'نان', 'سیب', 'گل', 'پا', 'دست'];
                 words.forEach(word => {
                     this.levels.push({
@@ -506,10 +471,7 @@
 
                 // Update instructions based on category
                 const instructions = document.getElementById('instructions');
-                if (shape.category === 'shape') {
-                    instructions.textContent = 'شکل نقطه‌چین را دنبال کن!';
-                    document.getElementById('shape-indicator').textContent = `شکل: ${shape.name}`;
-                } else if (shape.category === 'letter') {
+                if (shape.category === 'letter') {
                     instructions.textContent = 'حرف را دنبال کن!';
                     document.getElementById('shape-indicator').textContent = `حرف: ${shape.name}`;
                 } else if (shape.category === 'word') {
