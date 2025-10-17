@@ -39,10 +39,15 @@ Learn to type 175 Farsi words with progressive difficulty! Practice Persian typi
 - **Play:** [farsi-words.html](farsi-words.html)
 - **Features:** 175 toddler-appropriate words organized in 9 levels, includes animals, fruits, colors, family, nature, foods, insects and birds, character-by-character validation, Persian-style sound effects, immediate feedback, confetti celebration, supports ا for آ input
 
-### Shape Tracing Game
-Trace shapes with your finger or mouse to improve drawing and fine motor skills! Features adaptive difficulty that adjusts to your child's skill level.
-- **Play:** [shape-tracing-game.html](shape-tracing-game.html)
-- **Features:** 8 different shapes (line, triangle, square, rectangle, cross, star, circle), adaptive difficulty (scores 1-100), dynamic tolerance adjustment, touch and mouse support, Apple Pencil compatible, background guide dots, elegant minimal design, auto-clear when too messy, celebration animations
+### Tracing Game
+Trace shapes, letters, and words with your finger or mouse to improve drawing and fine motor skills! Features progressive levels and adaptive difficulty that adjusts to your child's skill level.
+- **Play:** [tracing-game.html](tracing-game.html)
+- **Features:** 23 progressive levels (5 shapes, 10 letters, 8 simple words), bidirectional validation for accurate tracing, adaptive difficulty (scores 1-100), dynamic tolerance adjustment, touch and mouse support, Apple Pencil compatible, background guide dots, elegant minimal design, auto-clear when too messy, celebration animations
+
+### Farsi Tracing Game
+Practice Farsi letters and words through tracing! Complete Farsi interface with Persian letters and toddler-friendly vocabulary.
+- **Play:** [farsi-tracing-game.html](farsi-tracing-game.html)
+- **Features:** 23 progressive levels (5 shapes, 10 Farsi letters, 8 simple Farsi words), Farsi interface with Persian numbers, bidirectional validation, adaptive difficulty, RTL text support, touch and Apple Pencil compatible
 
 ### Addition Table
 Master addition tables from 0 to 100! Practice completing full addition tables with progressive levels.

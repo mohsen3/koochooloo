@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بازی ردیابی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazir', 'Tahoma', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e6f5ff 0%, #f0f8ff 50%, #fafcff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* Background dots pattern */
+        .dots-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(79, 163, 209, 0.15);
+            border-radius: 50%;
+        }
+
+        .container {
+            background: linear-gradient(135deg, #ffffff 0%, #fafcff 100%);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 900px;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+            border: 4px solid rgba(79, 163, 209, 0.2);
+        }
+
+        h1 {
+            color: #4fa3d1;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px rgba(255,164,91,0.2);
+            letter-spacing: 1px;
+        }
+
+        .instructions {
+            font-size: 1em;
+            color: #6bcf7f;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border: 3px solid rgba(79, 163, 209, 0.2);
+        }
+
+        canvas {
+            display: block;
+            border-radius: 15px;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        .celebration-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: 900;
+            z-index: 1000;
+            animation: celebrate 1s ease-out;
+            pointer-events: none;
+            background: linear-gradient(135deg, #6bcf7f 0%, #4fa3d1 100%);
+            padding: 30px 50px;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 6px solid #ffffff;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-10deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.15) rotate(5deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 2s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .shape-indicator {
+            font-size: 1.2em;
+            color: #4fa3d1;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .score-info {
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #ff6b9d, #ffa45b);
+            color: white;
+            margin: 15px auto 0 auto;
+            font-weight: bold;
+            padding: 10px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            box-shadow: 0 6px 15px rgba(255, 107, 157, 0.4);
+            animation: scoreFloat 2s ease-in-out infinite;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        @keyframes scoreFloat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background dots -->
+    <div class="dots-background" id="dots-background"></div>
+
+    <div class="container">
+        <h1>✏️ بازی ردیابی فارسی</h1>
+        <div class="instructions" id="instructions">شکل نقطه‌چین را دنبال کن!</div>
+
+        <div class="canvas-container">
+            <canvas id="canvas" width="600" height="400"></canvas>
+        </div>
+
+        <div class="shape-indicator" id="shape-indicator">شکل: خط</div>
+        <div class="score-info" id="score-info">امتیاز: ۳۰</div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        class TracingGame {
+            constructor() {
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.drawing = false;
+                this.currentPath = [];
+                this.drawnPaths = [];
+                this.currentShapeIndex = 0;
+                this.penLifted = true;
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                // Difficulty scoring system
+                this.difficultyScore = 30.0; // Internal floating point score (1-100)
+                this.consecutiveSuccesses = 0;
+                this.consecutiveFailures = 0;
+
+                // Level progression: 5 shapes, 10 letters, then words
+                this.levels = [];
+
+                // Levels 1-5: Basic shapes
+                this.levels.push(
+                    {
+                        name: 'خط',
+                        category: 'shape',
+                        type: 'line',
+                        points: [[150, 200], [450, 200]]
+                    },
+                    {
+                        name: 'مثلث',
+                        category: 'shape',
+                        type: 'polygon',
+                        points: [[300, 100], [450, 300], [150, 300], [300, 100]]
+                    },
+                    {
+                        name: 'مربع',
+                        category: 'shape',
+                        type: 'polygon',
+                        points: [[200, 150], [400, 150], [400, 350], [200, 350], [200, 150]]
+                    },
+                    {
+                        name: 'دایره',
+                        category: 'shape',
+                        type: 'circle',
+                        center: [300, 200],
+                        radius: 100
+                    },
+                    {
+                        name: 'ستاره',
+                        category: 'shape',
+                        type: 'polygon',
+                        points: this.generateStarPoints(300, 200, 5, 80, 40)
+                    }
+                );
+
+                // Levels 6-15: Farsi Letters
+                const letters = ['ا', 'ب', 'پ', 'د', 'م', 'ن', 'و', 'ل', 'ر', 'س'];
+                letters.forEach(letter => {
+                    this.levels.push({
+                        name: letter,
+                        category: 'letter',
+                        type: 'letter',
+                        letter: letter
+                    });
+                });
+
+                // Levels 16+: Simple Farsi words
+                const words = ['بابا', 'ماما', 'آب', 'نان', 'سیب', 'گل', 'پا', 'دست'];
+                words.forEach(word => {
+                    this.levels.push({
+                        name: word,
+                        category: 'word',
+                        type: 'word',
+                        word: word
+                    });
+                });
+
+                this.shapes = this.levels; // Keep compatibility
+
+                this.init();
+            }
+
+            generateStarPoints(cx, cy, spikes, outerRadius, innerRadius) {
+                const points = [];
+                const step = Math.PI / spikes;
+
+                for (let i = 0; i < 2 * spikes; i++) {
+                    const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                    const angle = i * step - Math.PI / 2;
+                    points.push([
+                        cx + radius * Math.cos(angle),
+                        cy + radius * Math.sin(angle)
+                    ]);
+                }
+                points.push(points[0]); // Close the shape
+                return points;
+            }
+
+            getLetterPaths(letter) {
+                // Farsi letter path definitions (isolated form, simplified)
+                const letterPaths = {
+                    'ا': [ // Alef - straight vertical line
+                        [[300, 150], [300, 320]]
+                    ],
+                    'ب': [ // Be - bottom curve with dot below
+                        [[250, 280], [280, 300], [320, 300], [350, 280]],
+                        [[300, 320], [300, 330]] // dot
+                    ],
+                    'پ': [ // Pe - bottom curve with 3 dots below
+                        [[250, 280], [280, 300], [320, 300], [350, 280]],
+                        [[280, 320], [280, 330]], // left dot
+                        [[300, 320], [300, 330]], // middle dot
+                        [[320, 320], [320, 330]]  // right dot
+                    ],
+                    'د': [ // Dal - curved arc
+                        [[250, 250], [270, 240], [300, 235], [330, 240], [350, 250], [350, 280], [340, 300], [320, 310], [280, 310], [260, 300], [250, 280]]
+                    ],
+                    'م': [ // Mim - circular with small tail
+                        [[300, 150], [260, 160], [240, 190], [240, 260], [260, 290], [300, 300], [340, 290], [360, 260], [360, 190], [340, 160], [300, 150]],
+                        [[300, 300], [300, 320]] // tail
+                    ],
+                    'ن': [ // Nun - like be with dot above
+                        [[250, 280], [280, 300], [320, 300], [350, 280]],
+                        [[300, 260], [300, 270]] // dot above
+                    ],
+                    'و': [ // Vav - small circle/oval
+                        [[280, 220], [260, 240], [260, 280], [280, 300], [320, 300], [340, 280], [340, 240], [320, 220], [280, 220]]
+                    ],
+                    'ل': [ // Lam - tall vertical with curve at bottom
+                        [[300, 150], [300, 280], [310, 300], [330, 310], [350, 310]]
+                    ],
+                    'ر': [ // Re - small curve
+                        [[280, 250], [300, 240], [320, 250], [330, 270], [330, 290], [320, 310], [300, 320], [280, 320]]
+                    ],
+                    'س': [ // Sin - wavy line with 3 teeth
+                        [[250, 280], [270, 260], [290, 280], [310, 260], [330, 280], [350, 260]]
+                    ],
+                    'گ': [ // Gaf - like kaf
+                        [[300, 150], [300, 230]],
+                        [[250, 230], [350, 230]],
+                        [[280, 300], [320, 300]],
+                        [[300, 170], [300, 180]] // line above
+                    ],
+                    'ت': [ // Te - like be with 2 dots above
+                        [[250, 280], [280, 300], [320, 300], [350, 280]],
+                        [[285, 260], [285, 270]], // left dot
+                        [[315, 260], [315, 270]]  // right dot
+                    ],
+                    'س': [ // Sin - wavy
+                        [[250, 280], [270, 260], [290, 280], [310, 260], [330, 280], [350, 260]]
+                    ],
+                    'آ': [ // Alef with hamza - vertical line with hamza on top
+                        [[300, 170], [300, 320]],
+                        [[295, 150], [300, 155], [305, 150]] // hamza
+                    ]
+                };
+                return letterPaths[letter] || [];
+            }
+
+            getWordPaths(word) {
+                // Generate paths for a word by placing letters side by side
+                const letterSpacing = 90;
+                const startX = 300 - (word.length * letterSpacing / 2);
+                const paths = [];
+
+                for (let i = 0; i < word.length; i++) {
+                    const letter = word[i];
+                    const letterPaths = this.getLetterPaths(letter);
+                    const offsetX = startX + i * letterSpacing - 300;
+
+                    letterPaths.forEach(path => {
+                        const transformedPath = path.map(point => [
+                            point[0] + offsetX,
+                            point[1]
+                        ]);
+                        paths.push(transformedPath);
+                    });
+                }
+
+                return paths;
+            }
+
+            init() {
+                this.createBackgroundDots();
+                this.setupEventListeners();
+                this.drawCurrentShape();
+                this.updateScoreDisplay();
+            }
+
+            createBackgroundDots() {
+                const dotsContainer = document.getElementById('dots-background');
+                const spacing = 30;
+
+                for (let x = spacing; x < window.innerWidth; x += spacing) {
+                    for (let y = spacing; y < window.innerHeight; y += spacing) {
+                        const dot = document.createElement('div');
+                        dot.className = 'dot';
+                        dot.style.left = x + 'px';
+                        dot.style.top = y + 'px';
+                        dotsContainer.appendChild(dot);
+                    }
+                }
+            }
+
+            setupEventListeners() {
+                // Use Pointer Events API which handles touch, pen, and mouse uniformly
+                // This ensures Apple Pencil works correctly on iPad
+                if (window.PointerEvent) {
+                    this.canvas.addEventListener('pointerdown', (e) => this.startDrawing(e));
+                    this.canvas.addEventListener('pointermove', (e) => this.draw(e));
+                    this.canvas.addEventListener('pointerup', (e) => this.stopDrawing(e));
+                    this.canvas.addEventListener('pointercancel', (e) => this.stopDrawing(e));
+                    this.canvas.addEventListener('pointerleave', (e) => this.stopDrawing(e));
+                } else {
+                    // Fallback for older browsers
+                    // Touch events
+                    this.canvas.addEventListener('touchstart', (e) => this.startDrawing(e), { passive: false });
+                    this.canvas.addEventListener('touchmove', (e) => this.draw(e), { passive: false });
+                    this.canvas.addEventListener('touchend', (e) => this.stopDrawing(e), { passive: false });
+
+                    // Mouse events
+                    this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
+                    this.canvas.addEventListener('mousemove', (e) => this.draw(e));
+                    this.canvas.addEventListener('mouseup', (e) => this.stopDrawing(e));
+                    this.canvas.addEventListener('mouseleave', (e) => this.stopDrawing(e));
+                }
+            }
+
+            getCoordinates(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+
+                // Handle touch events (for older browsers without Pointer Events)
+                if (e.touches) {
+                    e.preventDefault();
+                    return {
+                        x: (e.touches[0].clientX - rect.left) * scaleX,
+                        y: (e.touches[0].clientY - rect.top) * scaleY
+                    };
+                }
+
+                // Handle pointer and mouse events
+                // Pointer events work for touch, pen (Apple Pencil), and mouse
+                return {
+                    x: (e.clientX - rect.left) * scaleX,
+                    y: (e.clientY - rect.top) * scaleY
+                };
+            }
+
+            startDrawing(e) {
+                // Prevent default to avoid scrolling/zooming while drawing
+                e.preventDefault();
+
+                this.drawing = true;
+                this.penLifted = false;
+                const coords = this.getCoordinates(e);
+                this.currentPath = [coords];
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(coords.x, coords.y);
+            }
+
+            draw(e) {
+                if (!this.drawing) return;
+
+                // Prevent default to avoid scrolling/zooming while drawing
+                e.preventDefault();
+
+                const coords = this.getCoordinates(e);
+                this.currentPath.push(coords);
+
+                this.ctx.lineTo(coords.x, coords.y);
+                this.ctx.strokeStyle = '#4fa3d1';
+                this.ctx.lineWidth = 4;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+                this.ctx.stroke();
+            }
+
+            stopDrawing(e) {
+                if (!this.drawing) return;
+
+                this.drawing = false;
+                this.penLifted = true;
+
+                if (this.currentPath.length > 0) {
+                    this.drawnPaths.push([...this.currentPath]);
+                    this.currentPath = [];
+                }
+
+                // Check if tracing is valid
+                if (this.isTracingValid()) {
+                    this.onSuccess();
+                    this.celebrate();
+                    setTimeout(() => {
+                        this.nextShape();
+                    }, 1500);
+                } else if (this.isCanvasTooMessy()) {
+                    // Failed attempt - canvas is too messy
+                    this.onFailure();
+                    // Clear canvas if too messy and pen is lifted
+                    setTimeout(() => {
+                        if (this.penLifted) {
+                            this.clearCanvas();
+                        }
+                    }, 100);
+                }
+            }
+
+            drawCurrentShape() {
+                const shape = this.shapes[this.currentShapeIndex];
+
+                // Update instructions based on category
+                const instructions = document.getElementById('instructions');
+                if (shape.category === 'shape') {
+                    instructions.textContent = 'شکل نقطه‌چین را دنبال کن!';
+                    document.getElementById('shape-indicator').textContent = `شکل: ${shape.name}`;
+                } else if (shape.category === 'letter') {
+                    instructions.textContent = 'حرف را دنبال کن!';
+                    document.getElementById('shape-indicator').textContent = `حرف: ${shape.name}`;
+                } else if (shape.category === 'word') {
+                    instructions.textContent = 'کلمه را دنبال کن!';
+                    document.getElementById('shape-indicator').textContent = `کلمه: ${shape.name}`;
+                }
+
+                this.ctx.save();
+                this.ctx.setLineDash([10, 10]);
+                this.ctx.strokeStyle = 'rgba(79, 163, 209, 0.4)';
+                this.ctx.lineWidth = 3;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+
+                if (shape.type === 'letter') {
+                    // Draw letter
+                    const paths = this.getLetterPaths(shape.letter);
+                    paths.forEach(path => {
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(path[0][0], path[0][1]);
+                        for (let i = 1; i < path.length; i++) {
+                            this.ctx.lineTo(path[i][0], path[i][1]);
+                        }
+                        this.ctx.stroke();
+                    });
+                } else if (shape.type === 'word') {
+                    // Draw word
+                    const paths = this.getWordPaths(shape.word);
+                    paths.forEach(path => {
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(path[0][0], path[0][1]);
+                        for (let i = 1; i < path.length; i++) {
+                            this.ctx.lineTo(path[i][0], path[i][1]);
+                        }
+                        this.ctx.stroke();
+                    });
+                } else if (shape.type === 'circle') {
+                    this.ctx.beginPath();
+                    this.ctx.arc(shape.center[0], shape.center[1], shape.radius, 0, Math.PI * 2);
+                    this.ctx.stroke();
+                } else if (shape.type === 'multiline') {
+                    shape.paths.forEach(path => {
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(path[0][0], path[0][1]);
+                        for (let i = 1; i < path.length; i++) {
+                            this.ctx.lineTo(path[i][0], path[i][1]);
+                        }
+                        this.ctx.stroke();
+                    });
+                } else {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(shape.points[0][0], shape.points[0][1]);
+                    for (let i = 1; i < shape.points.length; i++) {
+                        this.ctx.lineTo(shape.points[i][0], shape.points[i][1]);
+                    }
+                    this.ctx.stroke();
+                }
+
+                this.ctx.restore();
+            }
+
+            isTracingValid() {
+                const shape = this.shapes[this.currentShapeIndex];
+
+                // Calculate expected shape length
+                let expectedLength = this.calculateShapeLength(shape);
+
+                // Calculate total drawn length
+                let totalDrawnLength = 0;
+                this.drawnPaths.forEach(path => {
+                    for (let i = 1; i < path.length; i++) {
+                        const dx = path[i].x - path[i-1].x;
+                        const dy = path[i].y - path[i-1].y;
+                        totalDrawnLength += Math.sqrt(dx * dx + dy * dy);
+                    }
+                });
+
+                // Penalty for excessive drawing (duplicate traces, long unnecessary lines)
+                // At score 30: allow up to 2.5x the shape length
+                // At score 50+: exponentially stricter
+                let maxAllowedLength;
+                if (this.difficultyScore <= 50) {
+                    // Linear scaling for scores 1-50
+                    maxAllowedLength = expectedLength * (3.0 - (this.difficultyScore / 50) * 0.5);
+                } else {
+                    // Exponential scaling for scores 50-100
+                    const progressAbove50 = (this.difficultyScore - 50) / 50; // 0 to 1
+                    maxAllowedLength = expectedLength * (2.5 - progressAbove50 * 1.3);
+                }
+
+                // Fail if drawing is too long (too messy, duplicate traces)
+                if (totalDrawnLength > maxAllowedLength) {
+                    return false;
+                }
+
+                // Dynamic tolerance based on difficulty score with exponential curve
+                // Score 30: 35px tolerance (keep baseline)
+                // Score 50: 20px tolerance
+                // Score 70: 12px tolerance
+                // Score 90: 6px tolerance
+                // Score 100: 3px tolerance (almost impossible)
+                let threshold;
+                if (this.difficultyScore <= 50) {
+                    // Linear from score 1-50
+                    threshold = 50 - (this.difficultyScore / 50) * 30; // 50px to 20px
+                } else {
+                    // Exponential curve from 50-100
+                    const progressAbove50 = (this.difficultyScore - 50) / 50; // 0 to 1
+                    const exponentialFactor = Math.pow(progressAbove50, 1.8); // More aggressive curve
+                    threshold = 20 - exponentialFactor * 17; // 20px to 3px
+                }
+
+                // Get shape segments (for multi-stroke shapes like letters)
+                const shapeSegments = this.getShapeSegments(shape);
+
+                // BIDIRECTIONAL VALIDATION:
+                // 1. Check that each segment of the shape is covered by drawing (forward check)
+                // 2. Check that drawn points are actually near the shape (reverse check)
+
+                // Forward check: verify each segment is covered
+                for (let segment of shapeSegments) {
+                    const samplesPerSegment = Math.max(10, Math.floor(this.difficultyScore / 5));
+                    let segmentPoints = [];
+
+                    for (let i = 0; i < segment.length - 1; i++) {
+                        for (let j = 0; j <= samplesPerSegment; j++) {
+                            const t = j / samplesPerSegment;
+                            segmentPoints.push({
+                                x: segment[i][0] + (segment[i+1][0] - segment[i][0]) * t,
+                                y: segment[i][1] + (segment[i+1][1] - segment[i][1]) * t
+                            });
+                        }
+                    }
+
+                    // Count coverage for this specific segment
+                    let coveredPoints = 0;
+                    segmentPoints.forEach(sp => {
+                        const isCovered = this.drawnPaths.some(path => {
+                            return path.some(dp => {
+                                const dist = Math.sqrt(Math.pow(sp.x - dp.x, 2) + Math.pow(sp.y - dp.y, 2));
+                                return dist < threshold;
+                            });
+                        });
+                        if (isCovered) coveredPoints++;
+                    });
+
+                    const segmentCoverage = coveredPoints / segmentPoints.length;
+
+                    // Each segment must be individually covered
+                    // Require high coverage per segment to ensure all parts are drawn
+                    let requiredSegmentCoverage;
+                    if (this.difficultyScore <= 50) {
+                        requiredSegmentCoverage = 0.70 + (this.difficultyScore / 50) * 0.10; // 70% to 80%
+                    } else {
+                        const progressAbove50 = (this.difficultyScore - 50) / 50;
+                        const exponentialFactor = Math.pow(progressAbove50, 1.5);
+                        requiredSegmentCoverage = 0.80 + exponentialFactor * 0.17; // 80% to 97%
+                    }
+
+                    if (segmentCoverage < requiredSegmentCoverage) {
+                        return false; // This segment is not sufficiently covered
+                    }
+                }
+
+                // Reverse check: verify drawn points are actually on the shape
+                // Sample all drawn points and check if they're near the shape
+                let drawnPointsOnShape = 0;
+                let totalDrawnPoints = 0;
+
+                this.drawnPaths.forEach(path => {
+                    path.forEach(dp => {
+                        totalDrawnPoints++;
+
+                        // Check if this drawn point is near any segment
+                        const isNearShape = shapeSegments.some(segment => {
+                            return this.isPointNearSegment(dp, segment, threshold);
+                        });
+
+                        if (isNearShape) drawnPointsOnShape++;
+                    });
+                });
+
+                const drawnAccuracy = drawnPointsOnShape / totalDrawnPoints;
+
+                // Require that most drawn points are actually on the shape
+                // This prevents random scribbling
+                let requiredAccuracy;
+                if (this.difficultyScore <= 50) {
+                    requiredAccuracy = 0.60 + (this.difficultyScore / 50) * 0.15; // 60% to 75%
+                } else {
+                    const progressAbove50 = (this.difficultyScore - 50) / 50;
+                    const exponentialFactor = Math.pow(progressAbove50, 1.5);
+                    requiredAccuracy = 0.75 + exponentialFactor * 0.20; // 75% to 95%
+                }
+
+                return drawnAccuracy >= requiredAccuracy;
+            }
+
+            getShapeSegments(shape) {
+                // Returns array of segments (each segment is an array of [x,y] points)
+                const segments = [];
+
+                if (shape.type === 'circle') {
+                    // Sample points around the circle
+                    const numSamples = Math.min(50 + Math.floor(this.difficultyScore / 2), 100);
+                    const circlePoints = [];
+                    for (let i = 0; i <= numSamples; i++) {
+                        const angle = (i / numSamples) * Math.PI * 2;
+                        circlePoints.push([
+                            shape.center[0] + shape.radius * Math.cos(angle),
+                            shape.center[1] + shape.radius * Math.sin(angle)
+                        ]);
+                    }
+                    segments.push(circlePoints);
+                } else if (shape.type === 'letter') {
+                    const paths = this.getLetterPaths(shape.letter);
+                    paths.forEach(path => segments.push(path));
+                } else if (shape.type === 'word') {
+                    const paths = this.getWordPaths(shape.word);
+                    paths.forEach(path => segments.push(path));
+                } else if (shape.type === 'multiline') {
+                    shape.paths.forEach(path => segments.push(path));
+                } else {
+                    // Single polygon
+                    segments.push(shape.points);
+                }
+
+                return segments;
+            }
+
+            isPointNearSegment(point, segment, threshold) {
+                // Check if point is near any part of the segment
+                for (let i = 0; i < segment.length - 1; i++) {
+                    const dist = this.distanceToLineSegment(
+                        point,
+                        {x: segment[i][0], y: segment[i][1]},
+                        {x: segment[i+1][0], y: segment[i+1][1]}
+                    );
+                    if (dist < threshold) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            distanceToLineSegment(p, v, w) {
+                // Distance from point p to line segment vw
+                const l2 = Math.pow(v.x - w.x, 2) + Math.pow(v.y - w.y, 2);
+                if (l2 === 0) return Math.sqrt(Math.pow(p.x - v.x, 2) + Math.pow(p.y - v.y, 2));
+
+                let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+                t = Math.max(0, Math.min(1, t));
+
+                const projX = v.x + t * (w.x - v.x);
+                const projY = v.y + t * (w.y - v.y);
+
+                return Math.sqrt(Math.pow(p.x - projX, 2) + Math.pow(p.y - projY, 2));
+            }
+
+            calculateShapeLength(shape) {
+                let length = 0;
+
+                if (shape.type === 'circle') {
+                    length = 2 * Math.PI * shape.radius;
+                } else if (shape.type === 'letter') {
+                    const paths = this.getLetterPaths(shape.letter);
+                    paths.forEach(path => {
+                        for (let i = 0; i < path.length - 1; i++) {
+                            const dx = path[i+1][0] - path[i][0];
+                            const dy = path[i+1][1] - path[i][1];
+                            length += Math.sqrt(dx * dx + dy * dy);
+                        }
+                    });
+                } else if (shape.type === 'word') {
+                    const paths = this.getWordPaths(shape.word);
+                    paths.forEach(path => {
+                        for (let i = 0; i < path.length - 1; i++) {
+                            const dx = path[i+1][0] - path[i][0];
+                            const dy = path[i+1][1] - path[i][1];
+                            length += Math.sqrt(dx * dx + dy * dy);
+                        }
+                    });
+                } else if (shape.type === 'multiline') {
+                    shape.paths.forEach(path => {
+                        for (let i = 0; i < path.length - 1; i++) {
+                            const dx = path[i+1][0] - path[i][0];
+                            const dy = path[i+1][1] - path[i][1];
+                            length += Math.sqrt(dx * dx + dy * dy);
+                        }
+                    });
+                } else {
+                    for (let i = 0; i < shape.points.length - 1; i++) {
+                        const dx = shape.points[i+1][0] - shape.points[i][0];
+                        const dy = shape.points[i+1][1] - shape.points[i][1];
+                        length += Math.sqrt(dx * dx + dy * dy);
+                    }
+                }
+
+                return length;
+            }
+
+            isCanvasTooMessy() {
+                // Count total drawn points
+                let totalPoints = 0;
+                this.drawnPaths.forEach(path => {
+                    totalPoints += path.length;
+                });
+
+                // Consider messy if more than 300 points drawn
+                return totalPoints > 300;
+            }
+
+            clearCanvas() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.drawnPaths = [];
+                this.drawCurrentShape();
+            }
+
+            nextShape() {
+                this.currentShapeIndex = (this.currentShapeIndex + 1) % this.shapes.length;
+                this.clearCanvas();
+            }
+
+            playCelebrationSound() {
+                const now = this.audioContext.currentTime;
+                const frequencies = [523.25, 659.25, 783.99];
+
+                frequencies.forEach((freq, index) => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+
+                    const startTime = now + index * 0.1;
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.3);
+                });
+            }
+
+            celebrate() {
+                this.playCelebrationSound();
+
+                const messages = ["عالی! ✨", "آفرین! ⭐", "فوق‌العاده! 🎉", "بی‌نظیر! 🌟"];
+                const msg = messages[Math.floor(Math.random() * messages.length)];
+
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration-overlay';
+                celebration.textContent = msg;
+                document.body.appendChild(celebration);
+
+                setTimeout(() => {
+                    celebration.remove();
+                }, 1500);
+
+                this.createConfetti();
+
+                const container = document.querySelector('.container');
+                container.classList.add('pulse');
+                setTimeout(() => {
+                    container.classList.remove('pulse');
+                }, 500);
+            }
+
+            createConfetti() {
+                const celebration = document.getElementById('celebration');
+                const colors = ['#4fa3d1', '#6bcf7f', '#ffa45b', '#ff6b9d', '#ffd93d'];
+
+                for (let i = 0; i < 40; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.3 + 's';
+                    celebration.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 2000);
+                }
+            }
+
+            onSuccess() {
+                // Increase difficulty when kid succeeds
+                this.consecutiveSuccesses++;
+                this.consecutiveFailures = 0;
+
+                // Increase score based on consecutive successes
+                // First success: +2 points
+                // Second consecutive: +3 points
+                // Third+ consecutive: +4 points
+                let increment = 2;
+                if (this.consecutiveSuccesses >= 3) {
+                    increment = 4;
+                } else if (this.consecutiveSuccesses >= 2) {
+                    increment = 3;
+                }
+
+                this.difficultyScore = Math.min(100, this.difficultyScore + increment);
+                this.updateScoreDisplay();
+            }
+
+            onFailure() {
+                // Decrease difficulty when kid fails
+                this.consecutiveFailures++;
+                this.consecutiveSuccesses = 0;
+
+                // Decrease score based on consecutive failures
+                // First failure: -3 points
+                // Second consecutive: -4 points
+                // Third+ consecutive: -5 points
+                let decrement = 3;
+                if (this.consecutiveFailures >= 3) {
+                    decrement = 5;
+                } else if (this.consecutiveFailures >= 2) {
+                    decrement = 4;
+                }
+
+                this.difficultyScore = Math.max(1, this.difficultyScore - decrement);
+                this.updateScoreDisplay();
+            }
+
+            toPersianNumber(num) {
+                const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+                return num.toString().replace(/\d/g, x => persianDigits[parseInt(x)]);
+            }
+
+            updateScoreDisplay() {
+                const scoreInfo = document.getElementById('score-info');
+                const displayScore = Math.round(this.difficultyScore);
+                scoreInfo.textContent = `امتیاز: ${this.toPersianNumber(displayScore)}`;
+
+                // Update color based on difficulty level
+                if (displayScore >= 70) {
+                    scoreInfo.style.background = 'linear-gradient(135deg, #c44569, #ff6b9d)';
+                    scoreInfo.style.boxShadow = '0 6px 15px rgba(196, 69, 105, 0.4)';
+                } else if (displayScore >= 50) {
+                    scoreInfo.style.background = 'linear-gradient(135deg, #ffa45b, #ffd93d)';
+                    scoreInfo.style.boxShadow = '0 6px 15px rgba(255, 164, 91, 0.4)';
+                } else {
+                    scoreInfo.style.background = 'linear-gradient(135deg, #ff6b9d, #ffa45b)';
+                    scoreInfo.style.boxShadow = '0 6px 15px rgba(255, 107, 157, 0.4)';
+                }
+            }
+        }
+
+        window.addEventListener('load', () => {
+            new TracingGame();
+        });
+    </script>
+</body>
+</html>
