@@ -293,95 +293,61 @@
             }
 
             getLetterPaths(letter) {
-                // Use canvas-based text rendering to extract accurate letter outlines
-                // Create temporary canvas for text measurement
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = 600;
-                tempCanvas.height = 400;
-                const tempCtx = tempCanvas.getContext('2d');
-
-                // Use large Farsi font for clear rendering
-                tempCtx.font = 'bold 200px Vazir, Tahoma, Arial';
-                tempCtx.textAlign = 'center';
-                tempCtx.textBaseline = 'middle';
-
-                // Draw the letter
-                tempCtx.fillText(letter, 300, 235);
-
-                // Get image data to find letter boundaries
-                const imageData = tempCtx.getImageData(0, 0, 600, 400);
-                const pixels = imageData.data;
-
-                // Find bounding box of the letter
-                let minX = 600, maxX = 0, minY = 400, maxY = 0;
-                for (let y = 0; y < 400; y++) {
-                    for (let x = 0; x < 600; x++) {
-                        const alpha = pixels[(y * 600 + x) * 4 + 3];
-                        if (alpha > 128) {
-                            minX = Math.min(minX, x);
-                            maxX = Math.max(maxX, x);
-                            minY = Math.min(minY, y);
-                            maxY = Math.max(maxY, y);
-                        }
-                    }
-                }
-
-                // Extract outline points by sampling the edges
-                const paths = [];
-                const sampleDensity = 3; // Sample every N pixels
-
-                // Create a single path following the outline
-                const outlinePoints = [];
-
-                // Sample top edge
-                for (let x = minX; x <= maxX; x += sampleDensity) {
-                    for (let y = minY; y <= maxY; y++) {
-                        const alpha = pixels[(y * 600 + x) * 4 + 3];
-                        if (alpha > 128) {
-                            outlinePoints.push([x, y]);
-                            break;
-                        }
-                    }
-                }
-
-                // Sample right edge
-                for (let y = minY; y <= maxY; y += sampleDensity) {
-                    for (let x = maxX; x >= minX; x--) {
-                        const alpha = pixels[(y * 600 + x) * 4 + 3];
-                        if (alpha > 128) {
-                            outlinePoints.push([x, y]);
-                            break;
-                        }
-                    }
-                }
-
-                // Sample bottom edge
-                for (let x = maxX; x >= minX; x -= sampleDensity) {
-                    for (let y = maxY; y >= minY; y--) {
-                        const alpha = pixels[(y * 600 + x) * 4 + 3];
-                        if (alpha > 128) {
-                            outlinePoints.push([x, y]);
-                            break;
-                        }
-                    }
-                }
-
-                // Sample left edge
-                for (let y = maxY; y >= minY; y -= sampleDensity) {
-                    for (let x = minX; x <= maxX; x++) {
-                        const alpha = pixels[(y * 600 + x) * 4 + 3];
-                        if (alpha > 128) {
-                            outlinePoints.push([x, y]);
-                            break;
-                        }
-                    }
-                }
-
-                if (outlinePoints.length > 0) {
-                    paths.push(outlinePoints);
-                }
-
-                return paths;
+                // Farsi letter pen stroke definitions (how you actually write them)
+                // Each path represents a pen stroke, not an outline
+                const letterPaths = {
+                    'ا': [ // Alef - single vertical stroke from top to bottom
+                        [[300, 150], [300, 320]]
+                    ],
+                    'ب': [ // Be - curved base + dot below (larger dot)
+                        [[350, 260], [330, 270], [300, 275], [270, 270], [250, 260]],
+                        [[300, 300], [305, 300], [305, 305], [300, 305], [300, 300]] // larger filled dot
+                    ],
+                    'پ': [ // Pe - curved base + 3 dots below (larger dots)
+                        [[350, 260], [330, 270], [300, 275], [270, 270], [250, 260]],
+                        [[270, 300], [275, 300], [275, 305], [270, 305], [270, 300]], // left dot
+                        [[298, 300], [303, 300], [303, 305], [298, 305], [298, 300]], // middle dot
+                        [[326, 300], [331, 300], [331, 305], [326, 305], [326, 300]]  // right dot
+                    ],
+                    'د': [ // Dal - curved stroke from right to left
+                        [[350, 240], [340, 250], [320, 260], [300, 265], [280, 268], [260, 268], [245, 265], [235, 258], [230, 245]]
+                    ],
+                    'م': [ // Mim - circular stroke
+                        [[340, 200], [360, 220], [365, 250], [360, 280], [340, 300], [310, 310], [280, 310], [250, 300], [235, 280], [230, 250], [235, 220], [255, 200], [285, 190], [315, 190], [340, 200]]
+                    ],
+                    'ن': [ // Nun - curved base + dot above (larger dot)
+                        [[350, 260], [330, 270], [300, 275], [270, 270], [250, 260]],
+                        [[300, 230], [305, 230], [305, 235], [300, 235], [300, 230]] // larger filled dot above
+                    ],
+                    'و': [ // Vav - small oval/circle
+                        [[300, 220], [280, 225], [265, 240], [265, 265], [280, 285], [300, 290], [320, 285], [335, 265], [335, 240], [320, 225], [300, 220]]
+                    ],
+                    'ل': [ // Lam - tall vertical with curve at bottom
+                        [[290, 150], [290, 270], [295, 285], [305, 295], [320, 300], [340, 300]]
+                    ],
+                    'ر': [ // Re - curved stroke swooping down
+                        [[280, 240], [290, 235], [310, 235], [330, 242], [345, 255], [350, 275], [345, 295], [330, 310], [310, 315], [290, 315]]
+                    ],
+                    'س': [ // Sin - three connected humps (written right to left)
+                        [[350, 270], [340, 255], [330, 250], [315, 255], [305, 270], [295, 275], [280, 270], [270, 255], [260, 250], [245, 255], [235, 270]]
+                    ],
+                    'گ': [ // Gaf - like 'ک' with line above
+                        [[260, 180], [340, 180]], // top line
+                        [[300, 180], [300, 240]], // vertical stroke
+                        [[240, 240], [360, 240]], // horizontal base
+                        [[300, 240], [300, 280], [310, 295], [330, 300]]  // descender
+                    ],
+                    'ت': [ // Te - curved base + 2 dots above (larger dots)
+                        [[350, 260], [330, 270], [300, 275], [270, 270], [250, 260]],
+                        [[280, 230], [285, 230], [285, 235], [280, 235], [280, 230]], // left dot
+                        [[315, 230], [320, 230], [320, 235], [315, 235], [315, 230]]  // right dot
+                    ],
+                    'آ': [ // Alef with hamza on top
+                        [[300, 170], [300, 320]], // vertical line
+                        [[295, 145], [300, 140], [305, 145], [305, 155], [295, 155], [295, 145]] // hamza (larger)
+                    ]
+                };
+                return letterPaths[letter] || [];
             }
 
             getWordPaths(word) {
