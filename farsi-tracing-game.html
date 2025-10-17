@@ -293,64 +293,95 @@
             }
 
             getLetterPaths(letter) {
-                // Farsi letter path definitions (isolated form, simplified)
-                const letterPaths = {
-                    'ا': [ // Alef - straight vertical line
-                        [[300, 150], [300, 320]]
-                    ],
-                    'ب': [ // Be - bottom curve with dot below
-                        [[250, 280], [280, 300], [320, 300], [350, 280]],
-                        [[300, 320], [300, 330]] // dot
-                    ],
-                    'پ': [ // Pe - bottom curve with 3 dots below
-                        [[250, 280], [280, 300], [320, 300], [350, 280]],
-                        [[280, 320], [280, 330]], // left dot
-                        [[300, 320], [300, 330]], // middle dot
-                        [[320, 320], [320, 330]]  // right dot
-                    ],
-                    'د': [ // Dal - curved arc
-                        [[250, 250], [270, 240], [300, 235], [330, 240], [350, 250], [350, 280], [340, 300], [320, 310], [280, 310], [260, 300], [250, 280]]
-                    ],
-                    'م': [ // Mim - circular with small tail
-                        [[300, 150], [260, 160], [240, 190], [240, 260], [260, 290], [300, 300], [340, 290], [360, 260], [360, 190], [340, 160], [300, 150]],
-                        [[300, 300], [300, 320]] // tail
-                    ],
-                    'ن': [ // Nun - like be with dot above
-                        [[250, 280], [280, 300], [320, 300], [350, 280]],
-                        [[300, 260], [300, 270]] // dot above
-                    ],
-                    'و': [ // Vav - small circle/oval
-                        [[280, 220], [260, 240], [260, 280], [280, 300], [320, 300], [340, 280], [340, 240], [320, 220], [280, 220]]
-                    ],
-                    'ل': [ // Lam - tall vertical with curve at bottom
-                        [[300, 150], [300, 280], [310, 300], [330, 310], [350, 310]]
-                    ],
-                    'ر': [ // Re - small curve
-                        [[280, 250], [300, 240], [320, 250], [330, 270], [330, 290], [320, 310], [300, 320], [280, 320]]
-                    ],
-                    'س': [ // Sin - wavy line with 3 teeth
-                        [[250, 280], [270, 260], [290, 280], [310, 260], [330, 280], [350, 260]]
-                    ],
-                    'گ': [ // Gaf - like kaf
-                        [[300, 150], [300, 230]],
-                        [[250, 230], [350, 230]],
-                        [[280, 300], [320, 300]],
-                        [[300, 170], [300, 180]] // line above
-                    ],
-                    'ت': [ // Te - like be with 2 dots above
-                        [[250, 280], [280, 300], [320, 300], [350, 280]],
-                        [[285, 260], [285, 270]], // left dot
-                        [[315, 260], [315, 270]]  // right dot
-                    ],
-                    'س': [ // Sin - wavy
-                        [[250, 280], [270, 260], [290, 280], [310, 260], [330, 280], [350, 260]]
-                    ],
-                    'آ': [ // Alef with hamza - vertical line with hamza on top
-                        [[300, 170], [300, 320]],
-                        [[295, 150], [300, 155], [305, 150]] // hamza
-                    ]
-                };
-                return letterPaths[letter] || [];
+                // Use canvas-based text rendering to extract accurate letter outlines
+                // Create temporary canvas for text measurement
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = 600;
+                tempCanvas.height = 400;
+                const tempCtx = tempCanvas.getContext('2d');
+
+                // Use large Farsi font for clear rendering
+                tempCtx.font = 'bold 200px Vazir, Tahoma, Arial';
+                tempCtx.textAlign = 'center';
+                tempCtx.textBaseline = 'middle';
+
+                // Draw the letter
+                tempCtx.fillText(letter, 300, 235);
+
+                // Get image data to find letter boundaries
+                const imageData = tempCtx.getImageData(0, 0, 600, 400);
+                const pixels = imageData.data;
+
+                // Find bounding box of the letter
+                let minX = 600, maxX = 0, minY = 400, maxY = 0;
+                for (let y = 0; y < 400; y++) {
+                    for (let x = 0; x < 600; x++) {
+                        const alpha = pixels[(y * 600 + x) * 4 + 3];
+                        if (alpha > 128) {
+                            minX = Math.min(minX, x);
+                            maxX = Math.max(maxX, x);
+                            minY = Math.min(minY, y);
+                            maxY = Math.max(maxY, y);
+                        }
+                    }
+                }
+
+                // Extract outline points by sampling the edges
+                const paths = [];
+                const sampleDensity = 3; // Sample every N pixels
+
+                // Create a single path following the outline
+                const outlinePoints = [];
+
+                // Sample top edge
+                for (let x = minX; x <= maxX; x += sampleDensity) {
+                    for (let y = minY; y <= maxY; y++) {
+                        const alpha = pixels[(y * 600 + x) * 4 + 3];
+                        if (alpha > 128) {
+                            outlinePoints.push([x, y]);
+                            break;
+                        }
+                    }
+                }
+
+                // Sample right edge
+                for (let y = minY; y <= maxY; y += sampleDensity) {
+                    for (let x = maxX; x >= minX; x--) {
+                        const alpha = pixels[(y * 600 + x) * 4 + 3];
+                        if (alpha > 128) {
+                            outlinePoints.push([x, y]);
+                            break;
+                        }
+                    }
+                }
+
+                // Sample bottom edge
+                for (let x = maxX; x >= minX; x -= sampleDensity) {
+                    for (let y = maxY; y >= minY; y--) {
+                        const alpha = pixels[(y * 600 + x) * 4 + 3];
+                        if (alpha > 128) {
+                            outlinePoints.push([x, y]);
+                            break;
+                        }
+                    }
+                }
+
+                // Sample left edge
+                for (let y = maxY; y >= minY; y -= sampleDensity) {
+                    for (let x = minX; x <= maxX; x++) {
+                        const alpha = pixels[(y * 600 + x) * 4 + 3];
+                        if (alpha > 128) {
+                            outlinePoints.push([x, y]);
+                            break;
+                        }
+                    }
+                }
+
+                if (outlinePoints.length > 0) {
+                    paths.push(outlinePoints);
+                }
+
+                return paths;
             }
 
             getWordPaths(word) {
