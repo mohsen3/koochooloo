@@ -618,25 +618,33 @@
                     wordSpan.className = 'word';
 
                     if (blankPositions.includes(wordIndex)) {
-                        // This word has blanks - choose 2-3 random characters
-                        const numBlanks = Math.min(Math.max(2, Math.floor(word.length / 2)), 3);
+                        // Strip punctuation to get the letters only
+                        const punctuation = /[!?.,'";:]/g;
+                        const hasPunctuation = punctuation.test(word);
+                        const cleanWord = word.replace(punctuation, '');
+                        const punctuationMatch = word.match(punctuation);
+
+                        // For short words (2-3 letters), use 1 blank; otherwise use 2-3 blanks
+                        const numBlanks = cleanWord.length <= 3 ? 1 : Math.min(Math.max(2, Math.floor(cleanWord.length / 2)), 3);
                         const blankIndices = [];
 
-                        while (blankIndices.length < numBlanks) {
-                            const idx = Math.floor(Math.random() * word.length);
+                        // Only select indices from the clean word (no punctuation)
+                        while (blankIndices.length < numBlanks && blankIndices.length < cleanWord.length) {
+                            const idx = Math.floor(Math.random() * cleanWord.length);
                             if (!blankIndices.includes(idx)) {
                                 blankIndices.push(idx);
                             }
                         }
                         blankIndices.sort((a, b) => a - b);
 
-                        for (let i = 0; i < word.length; i++) {
+                        // Render the word with blanks
+                        for (let i = 0; i < cleanWord.length; i++) {
                             if (blankIndices.includes(i)) {
                                 const input = document.createElement('input');
                                 input.type = 'text';
                                 input.className = 'char-input';
                                 input.maxLength = 1;
-                                input.dataset.expected = word[i].toLowerCase();
+                                input.dataset.expected = cleanWord[i].toLowerCase();
                                 input.dataset.lineIndex = lineIndex;
                                 input.dataset.wordIndex = wordIndex;
                                 input.dataset.charIndex = i;
@@ -648,9 +656,16 @@
                                 wordSpan.appendChild(input);
                             } else {
                                 const charSpan = document.createElement('span');
-                                charSpan.textContent = word[i];
+                                charSpan.textContent = cleanWord[i];
                                 wordSpan.appendChild(charSpan);
                             }
+                        }
+
+                        // Add punctuation at the end if it exists
+                        if (hasPunctuation && punctuationMatch) {
+                            const punctSpan = document.createElement('span');
+                            punctSpan.textContent = punctuationMatch.join('');
+                            wordSpan.appendChild(punctSpan);
                         }
                     } else {
                         wordSpan.textContent = word;
