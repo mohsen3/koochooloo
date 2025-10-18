@@ -15,12 +15,14 @@
             font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
             background: linear-gradient(135deg, #a8e6cf 0%, #ffd3b6 50%, #ffaaa5 100%);
             min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             position: relative;
+            padding: 10px;
         }
 
         body::before {
@@ -192,15 +194,34 @@
         .main-container {
             background: linear-gradient(135deg, #ffffff 0%, #fff5f7 100%);
             border-radius: 30px;
-            padding: 40px 60px;
+            padding: 20px 40px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 6px rgba(255, 107, 157, 0.3);
             text-align: center;
             max-width: 90vw;
-            min-height: 400px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
             outline: none;
             border: 6px solid transparent;
             background-clip: padding-box;
             position: relative;
+        }
+
+        .main-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .main-container::-webkit-scrollbar-track {
+            background: rgba(255, 182, 193, 0.2);
+            border-radius: 10px;
+        }
+
+        .main-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #ff6b9d, #ffa45b);
+            border-radius: 10px;
+        }
+
+        .main-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #ff5588, #ff9944);
         }
 
         .main-container::before {
@@ -219,8 +240,8 @@
 
         h1 {
             color: #ff6b9d;
-            font-size: 2.5em;
-            margin-bottom: 20px;
+            font-size: 2em;
+            margin-bottom: 10px;
             text-shadow: 2px 2px 0px #ffa45b, 4px 4px 0px #ffd93d;
             animation: titleBounce 2s ease-in-out infinite;
             letter-spacing: 2px;
@@ -228,17 +249,17 @@
 
         @keyframes titleBounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-5px); }
         }
 
         .greeting {
             color: white;
-            font-size: 1.5em;
-            margin-bottom: 30px;
+            font-size: 1.2em;
+            margin-bottom: 15px;
             background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
-            padding: 15px 35px;
-            border-radius: 25px;
-            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.4);
+            padding: 10px 25px;
+            border-radius: 20px;
+            box-shadow: 0 6px 15px rgba(79, 163, 209, 0.4);
             font-weight: bold;
             display: inline-block;
             animation: greetingPulse 2s ease-in-out infinite;
@@ -246,24 +267,24 @@
 
         @keyframes greetingPulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.03); }
         }
 
         .conversation-container {
-            font-size: clamp(24px, 4vw, 36px);
-            line-height: 1.8;
+            font-size: clamp(20px, 3.5vw, 30px);
+            line-height: 1.6;
             text-align: left;
             max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
             color: #333;
         }
 
         .conversation-line {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             display: flex;
             align-items: flex-start;
-            animation: slideIn 0.5s ease-out;
+            animation: slideIn 0.4s ease-out;
         }
 
         @keyframes slideIn {
@@ -294,25 +315,20 @@
         }
 
         .speaker {
-            font-size: 2em;
-            margin: 0 10px;
+            font-size: 1.5em;
+            margin: 0 8px;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-            animation: bounce 1s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+            flex-shrink: 0;
         }
 
         .bubble {
             background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
-            border-radius: 20px;
-            padding: 15px 25px;
-            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.3);
+            border-radius: 15px;
+            padding: 10px 18px;
+            box-shadow: 0 6px 15px rgba(79, 163, 209, 0.3);
             position: relative;
             max-width: 80%;
-            border: 3px solid rgba(79, 163, 209, 0.2);
+            border: 2px solid rgba(79, 163, 209, 0.2);
         }
 
         .conversation-line:nth-child(even) .bubble {
@@ -325,17 +341,17 @@
             position: absolute;
             width: 0;
             height: 0;
-            border: 10px solid transparent;
-            top: 15px;
+            border: 8px solid transparent;
+            top: 10px;
         }
 
         .conversation-line:nth-child(odd) .bubble::before {
-            left: -20px;
+            left: -16px;
             border-right-color: rgba(79, 163, 209, 0.2);
         }
 
         .conversation-line:nth-child(even) .bubble::before {
-            right: -20px;
+            right: -16px;
             border-left-color: rgba(255, 107, 157, 0.2);
         }
 
