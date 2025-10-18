@@ -270,11 +270,12 @@
             width: 1.2em;
             height: 1.5em;
             text-align: center;
-            border: 3px solid #ffa45b;
-            border-radius: 8px;
+            border: none;
+            border-bottom: 3px solid rgba(150, 150, 150, 0.3);
+            border-radius: 0;
             margin: 0 2px;
             padding: 0;
-            background: white;
+            background: transparent;
             color: #333;
             font-weight: bold;
             vertical-align: middle;
@@ -283,21 +284,21 @@
 
         .char-input:focus {
             outline: none;
-            border-color: #4fa3d1;
-            box-shadow: 0 0 10px rgba(79, 163, 209, 0.5);
-            transform: scale(1.1);
+            border-bottom-color: #4fa3d1;
+            box-shadow: 0 2px 4px rgba(79, 163, 209, 0.3);
         }
 
         .char-input.correct {
-            background: linear-gradient(135deg, #6bcf7f, #5bc76d);
-            border-color: #6bcf7f;
-            color: white;
+            background: transparent;
+            border-bottom-color: #6bcf7f;
+            color: #6bcf7f;
             animation: correctPop 0.3s ease-out;
         }
 
         .char-input.wrong {
-            background: linear-gradient(135deg, #ff6b9d, #ff5588);
-            border-color: #ff6b9d;
+            background: transparent;
+            border-bottom-color: #ff6b9d;
+            color: #ff6b9d;
             animation: shake 0.5s;
         }
 
