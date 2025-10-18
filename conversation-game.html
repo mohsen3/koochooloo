@@ -749,6 +749,12 @@
                                 input.type = 'text';
                                 input.className = 'char-input';
                                 input.maxLength = 1;
+                                input.inputMode = 'text';
+                                input.autocomplete = 'off';
+                                input.autocorrect = 'off';
+                                input.autocapitalize = 'off';
+                                input.spellcheck = false;
+                                input.pattern = '[a-zA-Z]';
                                 input.dataset.expected = cleanWord[i].toLowerCase();
                                 input.dataset.lineIndex = lineIndex;
                                 input.dataset.wordIndex = wordIndex;
