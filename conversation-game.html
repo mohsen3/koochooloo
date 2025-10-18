@@ -631,18 +631,9 @@
                         const cleanWord = word.replace(punctuation, '');
                         const punctuationMatch = word.match(punctuation);
 
-                        // For short words (2-3 letters), use 1 blank; otherwise use 2-3 blanks
-                        const numBlanks = cleanWord.length <= 3 ? 1 : Math.min(Math.max(2, Math.floor(cleanWord.length / 2)), 3);
-                        const blankIndices = [];
-
-                        // Only select indices from the clean word (no punctuation)
-                        while (blankIndices.length < numBlanks && blankIndices.length < cleanWord.length) {
-                            const idx = Math.floor(Math.random() * cleanWord.length);
-                            if (!blankIndices.includes(idx)) {
-                                blankIndices.push(idx);
-                            }
-                        }
-                        blankIndices.sort((a, b) => a - b);
+                        // Only 1 blank per word - select a random character
+                        const blankIndex = Math.floor(Math.random() * cleanWord.length);
+                        const blankIndices = [blankIndex];
 
                         // Render the word with blanks
                         for (let i = 0; i < cleanWord.length; i++) {
