@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter Tracing Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            background: linear-gradient(135deg, #e6f5ff 0%, #f0f8ff 50%, #fafcff 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .game-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 15px;
+            text-align: center;
+            background: linear-gradient(135deg, #4fa3d1 0%, #6bcf7f 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .grid-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 10px;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .letter-box {
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 3px solid rgba(79, 163, 209, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: crosshair;
+            transition: all 0.3s ease;
+        }
+
+        .letter-box.completed {
+            background: linear-gradient(135deg, #d4ffd4 0%, #a8e6a8 100%);
+            border-color: #6bcf7f;
+            box-shadow: 0 0 20px rgba(107, 207, 127, 0.6);
+        }
+
+        .letter-box.error {
+            animation: errorPulse 0.6s ease-out;
+        }
+
+        @keyframes errorPulse {
+            0%, 100% {
+                background: white;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+            50% {
+                background: #ffcccc;
+                box-shadow: 0 0 30px rgba(255, 107, 157, 0.8);
+                border-color: #ff6b9d;
+            }
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            touch-action: none;
+        }
+
+        .check-button {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: linear-gradient(135deg, #6bcf7f 0%, #4fa3d1 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 0.7em;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+
+        .letter-box.has-drawing .check-button {
+            opacity: 1;
+        }
+
+        .check-button:hover {
+            transform: scale(1.05);
+        }
+
+        .check-button:active {
+            transform: scale(0.95);
+        }
+
+        .celebration-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4em;
+            font-weight: 900;
+            z-index: 1000;
+            animation: celebrate 1s ease-out;
+            pointer-events: none;
+            background: linear-gradient(135deg, #6bcf7f 0%, #4fa3d1 100%);
+            padding: 40px 60px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 6px solid #ffffff;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-10deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.15) rotate(5deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 2s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .level-complete {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .level-complete-content {
+            background: linear-gradient(135deg, #ffffff 0%, #fafcff 100%);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 6px solid #4fa3d1;
+        }
+
+        .level-complete-content h2 {
+            font-size: 3em;
+            color: #4fa3d1;
+            margin-bottom: 20px;
+        }
+
+        .level-complete-content p {
+            font-size: 1.5em;
+            color: #6bcf7f;
+            margin-bottom: 30px;
+        }
+
+        .next-level-btn {
+            font-size: 1.5em;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #6bcf7f 0%, #4fa3d1 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(79, 163, 209, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .next-level-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .next-level-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Letter Tracing Game</h1>
+            <div class="header-info">
+                <div>Level: <span id="level-number">1</span></div>
+                <div>Progress: <span id="progress">0/36</span></div>
+                <div>Difficulty: <span id="difficulty">Easy</span></div>
+            </div>
+        </div>
+
+        <div class="grid-container" id="grid-container">
+            <!-- Letter boxes will be generated here -->
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        class LetterTracingGame {
+            constructor() {
+                this.currentLevel = 1;
+                this.completedLetters = new Set();
+                this.activeCanvas = null;
+                this.drawing = false;
+                this.currentPath = [];
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                // Difficulty settings (gets harder each level)
+                this.baseDifficulty = 1;
+                this.toleranceThreshold = 40; // pixels
+                this.coverageRequired = 0.65; // percentage
+                this.accuracyRequired = 0.60; // percentage
+
+                this.init();
+            }
+
+            init() {
+                this.updateDifficultySettings();
+                this.renderGrid();
+                this.updateProgress();
+            }
+
+            updateDifficultySettings() {
+                // Increase difficulty with each level
+                const difficultyMultiplier = 1 + (this.currentLevel - 1) * 0.15;
+
+                // Tolerance gets stricter (start at 25, go down to 10)
+                this.toleranceThreshold = Math.max(10, 25 - (this.currentLevel - 1) * 2);
+
+                // Coverage requirement increases (start at 80%, go up to 95%)
+                this.coverageRequired = Math.min(0.95, 0.80 + (this.currentLevel - 1) * 0.02);
+
+                // Accuracy requirement increases (start at 85%, go up to 95%)
+                this.accuracyRequired = Math.min(0.95, 0.85 + (this.currentLevel - 1) * 0.015);
+
+                // Update difficulty display
+                const difficultySpan = document.getElementById('difficulty');
+                if (this.currentLevel <= 2) {
+                    difficultySpan.textContent = 'Easy';
+                    difficultySpan.style.color = '#6bcf7f';
+                } else if (this.currentLevel <= 4) {
+                    difficultySpan.textContent = 'Medium';
+                    difficultySpan.style.color = '#ffa45b';
+                } else {
+                    difficultySpan.textContent = 'Hard';
+                    difficultySpan.style.color = '#ff6b9d';
+                }
+            }
+
+            getCurrentCharacters() {
+                // Alternate between uppercase and lowercase
+                const isUppercase = this.currentLevel % 2 === 1;
+                const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                const numbers = '0123456789';
+
+                const chars = isUppercase ?
+                    letters.split('') :
+                    letters.toLowerCase().split('');
+
+                return [...chars, ...numbers.split('')];
+            }
+
+            renderGrid() {
+                const gridContainer = document.getElementById('grid-container');
+                gridContainer.innerHTML = '';
+
+                const characters = this.getCurrentCharacters();
+
+                characters.forEach(char => {
+                    const box = document.createElement('div');
+                    box.className = 'letter-box';
+                    box.dataset.char = char;
+
+                    const canvas = document.createElement('canvas');
+                    canvas.dataset.char = char;
+
+                    const checkButton = document.createElement('button');
+                    checkButton.className = 'check-button';
+                    checkButton.textContent = 'Check';
+                    checkButton.onclick = (e) => {
+                        e.stopPropagation();
+                        this.validateTracing(canvas, char);
+                    };
+
+                    box.appendChild(canvas);
+                    box.appendChild(checkButton);
+                    gridContainer.appendChild(box);
+
+                    // Setup canvas
+                    this.setupCanvas(canvas, char);
+                });
+            }
+
+            setupCanvas(canvas, char) {
+                // Set canvas size to match box size
+                const resizeCanvas = () => {
+                    const box = canvas.parentElement;
+                    const rect = box.getBoundingClientRect();
+                    canvas.width = rect.width;
+                    canvas.height = rect.height;
+                    this.drawDottedCharacter(canvas, char);
+                };
+
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+
+                // Setup event listeners
+                if (window.PointerEvent) {
+                    canvas.addEventListener('pointerdown', (e) => this.startDrawing(e, canvas, char));
+                    canvas.addEventListener('pointermove', (e) => this.draw(e, canvas));
+                    canvas.addEventListener('pointerup', (e) => this.stopDrawing(e, canvas, char));
+                    canvas.addEventListener('pointercancel', (e) => this.stopDrawing(e, canvas, char));
+                } else {
+                    canvas.addEventListener('touchstart', (e) => this.startDrawing(e, canvas, char), { passive: false });
+                    canvas.addEventListener('touchmove', (e) => this.draw(e, canvas), { passive: false });
+                    canvas.addEventListener('touchend', (e) => this.stopDrawing(e, canvas, char), { passive: false });
+
+                    canvas.addEventListener('mousedown', (e) => this.startDrawing(e, canvas, char));
+                    canvas.addEventListener('mousemove', (e) => this.draw(e, canvas));
+                    canvas.addEventListener('mouseup', (e) => this.stopDrawing(e, canvas, char));
+                }
+            }
+
+            drawDottedCharacter(canvas, char) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const paths = this.getCharacterPaths(char, canvas.width, canvas.height);
+
+                ctx.save();
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = 'rgba(79, 163, 209, 0.5)';
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                paths.forEach(path => {
+                    ctx.beginPath();
+                    ctx.moveTo(path[0][0], path[0][1]);
+                    for (let i = 1; i < path.length; i++) {
+                        ctx.lineTo(path[i][0], path[i][1]);
+                    }
+                    ctx.stroke();
+                });
+
+                ctx.restore();
+            }
+
+            getCharacterPaths(char, width, height) {
+                // Scale paths to fit canvas
+                const scale = Math.min(width, height) / 100;
+                const offsetX = width / 2;
+                const offsetY = height / 2;
+
+                const transform = (paths) => {
+                    return paths.map(path =>
+                        path.map(([x, y]) => [
+                            offsetX + (x - 50) * scale * 0.7,
+                            offsetY + (y - 50) * scale * 0.7
+                        ])
+                    );
+                };
+
+                // Character path definitions (normalized to 100x100 grid, centered at 50,50)
+                const paths = {
+                    // Uppercase letters
+                    'A': [[[30, 70], [50, 20], [70, 70]], [[40, 50], [60, 50]]],
+                    'B': [[[30, 20], [30, 70]], [[30, 20], [55, 20], [60, 25], [60, 40], [55, 45], [30, 45]], [[30, 45], [60, 45], [65, 50], [65, 65], [60, 70], [30, 70]]],
+                    'C': [[[65, 30], [60, 25], [45, 20], [35, 25], [30, 35], [30, 65], [35, 75], [45, 80], [60, 75], [65, 70]]],
+                    'D': [[[30, 20], [30, 70]], [[30, 20], [55, 20], [65, 30], [70, 45], [70, 55], [65, 70], [55, 80], [30, 80]]],
+                    'E': [[[70, 20], [30, 20], [30, 70], [70, 70]], [[30, 45], [60, 45]]],
+                    'F': [[[30, 20], [30, 70]], [[30, 20], [70, 20]], [[30, 45], [60, 45]]],
+                    'G': [[[65, 30], [60, 25], [45, 20], [35, 25], [30, 35], [30, 65], [35, 75], [45, 80], [60, 75], [65, 70], [65, 50], [50, 50]]],
+                    'H': [[[30, 20], [30, 70]], [[30, 45], [70, 45]], [[70, 20], [70, 70]]],
+                    'I': [[[40, 20], [60, 20]], [[50, 20], [50, 70]], [[40, 70], [60, 70]]],
+                    'J': [[[60, 20], [60, 60], [55, 70], [45, 75], [35, 70], [30, 60]]],
+                    'K': [[[30, 20], [30, 70]], [[70, 20], [30, 45]], [[30, 45], [70, 70]]],
+                    'L': [[[30, 20], [30, 70], [70, 70]]],
+                    'M': [[[30, 70], [30, 20], [50, 40], [70, 20], [70, 70]]],
+                    'N': [[[30, 70], [30, 20], [70, 70], [70, 20]]],
+                    'O': [[[50, 20], [35, 25], [30, 35], [30, 65], [35, 75], [50, 80], [65, 75], [70, 65], [70, 35], [65, 25], [50, 20]]],
+                    'P': [[[30, 70], [30, 20], [60, 20], [65, 25], [65, 40], [60, 45], [30, 45]]],
+                    'Q': [[[50, 20], [35, 25], [30, 35], [30, 65], [35, 75], [50, 80], [65, 75], [70, 65], [70, 35], [65, 25], [50, 20]], [[55, 60], [70, 75]]],
+                    'R': [[[30, 70], [30, 20], [60, 20], [65, 25], [65, 40], [60, 45], [30, 45]], [[55, 45], [70, 70]]],
+                    'S': [[[65, 25], [55, 20], [40, 20], [30, 25], [30, 35], [35, 45], [65, 55], [70, 65], [70, 75], [60, 80], [45, 80], [35, 75]]],
+                    'T': [[[30, 20], [70, 20]], [[50, 20], [50, 70]]],
+                    'U': [[[30, 20], [30, 60], [35, 70], [50, 75], [65, 70], [70, 60], [70, 20]]],
+                    'V': [[[30, 20], [50, 70], [70, 20]]],
+                    'W': [[[30, 20], [35, 70], [50, 50], [65, 70], [70, 20]]],
+                    'X': [[[30, 20], [70, 70]], [[70, 20], [30, 70]]],
+                    'Y': [[[30, 20], [50, 45]], [[70, 20], [50, 45]], [[50, 45], [50, 70]]],
+                    'Z': [[[30, 20], [70, 20], [30, 70], [70, 70]]],
+
+                    // Lowercase letters
+                    'a': [[[60, 40], [55, 35], [45, 35], [35, 40], [35, 55], [40, 60], [50, 60], [60, 55], [60, 35], [60, 70]]],
+                    'b': [[[30, 20], [30, 70]], [[30, 40], [40, 35], [55, 35], [65, 45], [65, 60], [55, 70], [40, 70], [30, 65]]],
+                    'c': [[[60, 40], [55, 35], [40, 35], [30, 40], [30, 60], [40, 70], [55, 70], [60, 65]]],
+                    'd': [[[70, 20], [70, 70]], [[70, 40], [60, 35], [45, 35], [35, 45], [35, 60], [45, 70], [60, 70], [70, 65]]],
+                    'e': [[[30, 50], [30, 45], [35, 35], [50, 35], [60, 40], [65, 50], [60, 60], [50, 70], [40, 70], [30, 65]]],
+                    'f': [[[60, 20], [55, 20], [50, 25], [50, 70]], [[35, 40], [60, 40]]],
+                    'g': [[[70, 35], [60, 35], [45, 35], [35, 45], [35, 55], [45, 65], [60, 65], [70, 60], [70, 75], [60, 85], [45, 85], [35, 80]]],
+                    'h': [[[30, 20], [30, 70]], [[30, 45], [40, 35], [55, 35], [65, 40], [65, 70]]],
+                    'i': [[[50, 25], [50, 28]], [[50, 35], [50, 70]]],
+                    'j': [[[55, 25], [55, 28]], [[55, 35], [55, 75], [50, 85], [40, 85], [30, 80]]],
+                    'k': [[[30, 20], [30, 70]], [[60, 35], [30, 52]], [[30, 52], [60, 70]]],
+                    'l': [[[50, 20], [50, 70]]],
+                    'm': [[[30, 70], [30, 35]], [[30, 40], [35, 35], [42, 35], [45, 38], [45, 70]], [[45, 40], [50, 35], [57, 35], [60, 38], [60, 70]]],
+                    'n': [[[30, 70], [30, 35]], [[30, 40], [40, 35], [55, 35], [65, 40], [65, 70]]],
+                    'o': [[[50, 35], [40, 35], [30, 40], [30, 60], [40, 70], [60, 70], [70, 60], [70, 40], [60, 35], [50, 35]]],
+                    'p': [[[30, 35], [30, 85]], [[30, 40], [40, 35], [55, 35], [65, 45], [65, 60], [55, 70], [40, 70], [30, 65]]],
+                    'q': [[[70, 35], [70, 85]], [[70, 40], [60, 35], [45, 35], [35, 45], [35, 60], [45, 70], [60, 70], [70, 65]]],
+                    'r': [[[30, 70], [30, 35]], [[30, 40], [40, 35], [50, 35], [60, 38]]],
+                    's': [[[60, 38], [55, 35], [40, 35], [30, 40], [35, 50], [50, 52], [65, 55], [70, 62], [65, 70], [50, 70], [40, 67]]],
+                    't': [[[50, 25], [50, 65], [55, 70], [60, 70]], [[35, 35], [60, 35]]],
+                    'u': [[[30, 35], [30, 60], [35, 68], [50, 70], [60, 68], [65, 60], [65, 35], [65, 70]]],
+                    'v': [[[30, 35], [50, 70], [70, 35]]],
+                    'w': [[[30, 35], [35, 70], [50, 55], [65, 70], [70, 35]]],
+                    'x': [[[30, 35], [70, 70]], [[70, 35], [30, 70]]],
+                    'y': [[[30, 35], [30, 55], [35, 65], [50, 70], [65, 65], [70, 55], [70, 35], [70, 75], [60, 85], [45, 85], [35, 80]]],
+                    'z': [[[30, 35], [70, 35], [30, 70], [70, 70]]],
+
+                    // Numbers
+                    '0': [[[50, 20], [35, 25], [30, 35], [30, 65], [35, 75], [50, 80], [65, 75], [70, 65], [70, 35], [65, 25], [50, 20]]],
+                    '1': [[[45, 25], [50, 20], [50, 70]], [[40, 70], [60, 70]]],
+                    '2': [[[30, 30], [40, 20], [60, 20], [70, 30], [70, 40], [30, 70], [70, 70]]],
+                    '3': [[[30, 25], [45, 20], [60, 20], [70, 30], [65, 45], [70, 60], [60, 70], [45, 75], [30, 70]], [[50, 45], [65, 45]]],
+                    '4': [[[60, 70], [60, 20], [30, 60], [70, 60]]],
+                    '5': [[[70, 20], [30, 20], [30, 45], [60, 45], [70, 55], [70, 65], [60, 75], [40, 75], [30, 70]]],
+                    '6': [[[60, 25], [50, 20], [40, 25], [30, 40], [30, 65], [40, 75], [60, 75], [70, 65], [70, 55], [60, 45], [40, 45], [30, 50]]],
+                    '7': [[[30, 20], [70, 20], [40, 70]]],
+                    '8': [[[50, 20], [35, 25], [35, 35], [50, 45], [65, 35], [65, 25], [50, 20]], [[50, 45], [35, 50], [30, 60], [35, 70], [50, 75], [65, 70], [70, 60], [65, 50], [50, 45]]],
+                    '9': [[[40, 75], [50, 80], [60, 75], [70, 60], [70, 35], [60, 25], [40, 25], [30, 35], [30, 45], [40, 55], [60, 55], [70, 50]]],
+                };
+
+                return transform(paths[char] || []);
+            }
+
+            getCoordinates(e, canvas) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+
+                if (e.touches) {
+                    e.preventDefault();
+                    return {
+                        x: (e.touches[0].clientX - rect.left) * scaleX,
+                        y: (e.touches[0].clientY - rect.top) * scaleY
+                    };
+                }
+
+                return {
+                    x: (e.clientX - rect.left) * scaleX,
+                    y: (e.clientY - rect.top) * scaleY
+                };
+            }
+
+            startDrawing(e, canvas, char) {
+                if (this.completedLetters.has(char)) return;
+
+                e.preventDefault();
+                this.drawing = true;
+                this.activeCanvas = canvas;
+                const coords = this.getCoordinates(e, canvas);
+                this.currentPath = [coords];
+
+                const ctx = canvas.getContext('2d');
+                ctx.beginPath();
+                ctx.moveTo(coords.x, coords.y);
+            }
+
+            draw(e, canvas) {
+                if (!this.drawing || this.activeCanvas !== canvas) return;
+
+                e.preventDefault();
+                const coords = this.getCoordinates(e, canvas);
+                this.currentPath.push(coords);
+
+                const ctx = canvas.getContext('2d');
+                ctx.lineTo(coords.x, coords.y);
+                ctx.strokeStyle = '#4fa3d1';
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+            }
+
+            stopDrawing(e, canvas, char) {
+                if (!this.drawing || this.activeCanvas !== canvas) return;
+
+                this.drawing = false;
+                this.activeCanvas = null;
+                this.currentPath = [];
+
+                // Show check button if there's any drawing
+                const box = canvas.parentElement;
+                const hasDrawing = this.hasAnyDrawing(canvas);
+                if (hasDrawing) {
+                    box.classList.add('has-drawing');
+                } else {
+                    box.classList.remove('has-drawing');
+                }
+            }
+
+            hasAnyDrawing(canvas) {
+                const ctx = canvas.getContext('2d');
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+                for (let i = 3; i < imageData.data.length; i += 4) {
+                    if (imageData.data[i] > 128) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            validateTracing(canvas, char) {
+                const ctx = canvas.getContext('2d');
+                const paths = this.getCharacterPaths(char, canvas.width, canvas.height);
+
+                // Get all drawn points from canvas
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const drawnPoints = [];
+
+                // Sample at higher resolution for better accuracy
+                for (let y = 0; y < canvas.height; y += 1) {
+                    for (let x = 0; x < canvas.width; x += 1) {
+                        const index = (y * canvas.width + x) * 4;
+                        // Check if pixel is not transparent (alpha > 0)
+                        if (imageData.data[index + 3] > 128) {
+                            drawnPoints.push({x, y});
+                        }
+                    }
+                }
+
+                if (drawnPoints.length === 0) return;
+
+                // Check coverage: how much of the expected path is covered
+                let totalExpectedPoints = 0;
+                let coveredPoints = 0;
+
+                // Sample more points on the path for stricter checking
+                paths.forEach(path => {
+                    for (let i = 0; i < path.length - 1; i++) {
+                        const steps = 30; // Increased from 20 for more precision
+                        for (let j = 0; j <= steps; j++) {
+                            const t = j / steps;
+                            const x = path[i][0] + (path[i+1][0] - path[i][0]) * t;
+                            const y = path[i][1] + (path[i+1][1] - path[i][1]) * t;
+
+                            totalExpectedPoints++;
+
+                            const isCovered = drawnPoints.some(dp => {
+                                const dist = Math.sqrt(Math.pow(x - dp.x, 2) + Math.pow(y - dp.y, 2));
+                                return dist < this.toleranceThreshold;
+                            });
+
+                            if (isCovered) coveredPoints++;
+                        }
+                    }
+                });
+
+                const coverage = coveredPoints / totalExpectedPoints;
+
+                // Check accuracy: how many drawn points are near the expected path
+                let accuratePoints = 0;
+
+                drawnPoints.forEach(dp => {
+                    const isNear = paths.some(path => {
+                        return this.isPointNearPath(dp, path, this.toleranceThreshold);
+                    });
+                    if (isNear) accuratePoints++;
+                });
+
+                const accuracy = accuratePoints / drawnPoints.length;
+
+                // Check that each individual stroke/segment is covered
+                let allSegmentsCovered = true;
+                paths.forEach(path => {
+                    let segmentCovered = 0;
+                    let segmentTotal = 0;
+
+                    for (let i = 0; i < path.length - 1; i++) {
+                        const steps = 30;
+                        for (let j = 0; j <= steps; j++) {
+                            const t = j / steps;
+                            const x = path[i][0] + (path[i+1][0] - path[i][0]) * t;
+                            const y = path[i][1] + (path[i+1][1] - path[i][1]) * t;
+
+                            segmentTotal++;
+
+                            const isCovered = drawnPoints.some(dp => {
+                                const dist = Math.sqrt(Math.pow(x - dp.x, 2) + Math.pow(y - dp.y, 2));
+                                return dist < this.toleranceThreshold;
+                            });
+
+                            if (isCovered) segmentCovered++;
+                        }
+                    }
+
+                    const segmentCoverage = segmentCovered / segmentTotal;
+                    // Each segment must have at least 75% coverage
+                    if (segmentCoverage < 0.75) {
+                        allSegmentsCovered = false;
+                    }
+                });
+
+                // Validate - ALL conditions must be met
+                if (coverage >= this.coverageRequired &&
+                    accuracy >= this.accuracyRequired &&
+                    allSegmentsCovered) {
+                    this.onCorrectTrace(canvas, char);
+                } else {
+                    this.onIncorrectTrace(canvas, char);
+                }
+            }
+
+            isPointNearPath(point, path, threshold) {
+                for (let i = 0; i < path.length - 1; i++) {
+                    const dist = this.distanceToLineSegment(
+                        point,
+                        {x: path[i][0], y: path[i][1]},
+                        {x: path[i+1][0], y: path[i+1][1]}
+                    );
+                    if (dist < threshold) return true;
+                }
+                return false;
+            }
+
+            distanceToLineSegment(p, v, w) {
+                const l2 = Math.pow(v.x - w.x, 2) + Math.pow(v.y - w.y, 2);
+                if (l2 === 0) return Math.sqrt(Math.pow(p.x - v.x, 2) + Math.pow(p.y - v.y, 2));
+
+                let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+                t = Math.max(0, Math.min(1, t));
+
+                const projX = v.x + t * (w.x - v.x);
+                const projY = v.y + t * (w.y - v.y);
+
+                return Math.sqrt(Math.pow(p.x - projX, 2) + Math.pow(p.y - projY, 2));
+            }
+
+            onCorrectTrace(canvas, char) {
+                this.completedLetters.add(char);
+
+                // Mark as completed with green
+                const box = canvas.parentElement;
+                box.classList.add('completed');
+
+                // Play success sound
+                this.playSuccessSound();
+
+                // Update progress
+                this.updateProgress();
+
+                // Check if level complete
+                const totalChars = this.getCurrentCharacters().length;
+                if (this.completedLetters.size === totalChars) {
+                    setTimeout(() => this.onLevelComplete(), 500);
+                }
+            }
+
+            onIncorrectTrace(canvas, char) {
+                const box = canvas.parentElement;
+
+                // Show error animation
+                box.classList.add('error');
+                setTimeout(() => box.classList.remove('error'), 600);
+
+                // Clear the canvas after error animation
+                setTimeout(() => {
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    this.drawDottedCharacter(canvas, char);
+                    box.classList.remove('has-drawing');
+                }, 600);
+
+                // Play error sound
+                this.playErrorSound();
+            }
+
+            onLevelComplete() {
+                this.createConfetti();
+
+                const overlay = document.createElement('div');
+                overlay.className = 'level-complete';
+                overlay.innerHTML = `
+                    <div class="level-complete-content">
+                        <h2>Level ${this.currentLevel} Complete!</h2>
+                        <p>Great job! Ready for the next challenge?</p>
+                        <button class="next-level-btn" onclick="game.nextLevel()">Next Level</button>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+
+                this.playCelebrationSound();
+            }
+
+            nextLevel() {
+                // Remove overlay
+                const overlay = document.querySelector('.level-complete');
+                if (overlay) overlay.remove();
+
+                // Advance level
+                this.currentLevel++;
+                this.completedLetters.clear();
+
+                // Update difficulty
+                this.updateDifficultySettings();
+
+                // Re-render grid
+                this.renderGrid();
+                this.updateProgress();
+
+                // Update level number
+                document.getElementById('level-number').textContent = this.currentLevel;
+            }
+
+            updateProgress() {
+                const total = this.getCurrentCharacters().length;
+                const completed = this.completedLetters.size;
+                document.getElementById('progress').textContent = `${completed}/${total}`;
+            }
+
+            playSuccessSound() {
+                const now = this.audioContext.currentTime;
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+
+                oscillator.frequency.value = 523.25; // C5
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+                oscillator.start(now);
+                oscillator.stop(now + 0.2);
+            }
+
+            playErrorSound() {
+                const now = this.audioContext.currentTime;
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+
+                oscillator.frequency.value = 200; // Low tone
+                oscillator.type = 'sawtooth';
+
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.1, now + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+                oscillator.start(now);
+                oscillator.stop(now + 0.15);
+            }
+
+            playCelebrationSound() {
+                const now = this.audioContext.currentTime;
+                const frequencies = [523.25, 659.25, 783.99, 1046.50];
+
+                frequencies.forEach((freq, index) => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+
+                    const startTime = now + index * 0.1;
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.3);
+                });
+            }
+
+            createConfetti() {
+                const celebration = document.getElementById('celebration');
+                const colors = ['#4fa3d1', '#6bcf7f', '#ffa45b', '#ff6b9d', '#ffd93d'];
+
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.3 + 's';
+                    celebration.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 2000);
+                }
+            }
+        }
+
+        // Initialize game
+        let game;
+        window.addEventListener('load', () => {
+            game = new LetterTracingGame();
+        });
+    </script>
+</body>
+</html>
