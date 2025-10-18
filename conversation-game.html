@@ -449,8 +449,8 @@
     <script>
         // Conversation data (use {NAME} as placeholder for child's name)
         const conversations = [
-            {lines: ["Hi!", "Hi!"], blanks: [[0], [0]]},
-            {lines: ["How are you?", "I'm good!", "Me too!"], blanks: [[2], [1], [1]]},
+            {lines: ["Good morning!", "Good morning!", "How are you?", "I'm good!"], blanks: [[0], [0], [2], [1]]},
+            {lines: ["Let's play!", "Yes!", "What should we play?", "Let's play blocks!"], blanks: [[1], [0], [3], [2]]},
             {lines: ["Bye bye!", "Bye!"], blanks: [[0], [0]]},
             {lines: ["What's your name?", "I'm {NAME}.", "Hi {NAME}!"], blanks: [[2], [1], [1]]},
             {lines: ["I'm {NAME}.", "Hi {NAME}!", "Let's play!"], blanks: [[1], [1], [1]]},
@@ -724,6 +724,12 @@
                 input.classList.remove('correct');
                 input.classList.add('wrong');
                 playErrorSound();
+
+                // Clear the input after showing error feedback
+                setTimeout(() => {
+                    input.value = '';
+                    input.classList.remove('wrong');
+                }, 500);
             }
         }
 
