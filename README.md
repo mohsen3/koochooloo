@@ -49,6 +49,11 @@ Practice Farsi letters and words through tracing! Complete Farsi interface with 
 - **Play:** [farsi-tracing-game.html](farsi-tracing-game.html)
 - **Features:** 18 progressive levels (10 Farsi letters, 8 simple Farsi words), pen stroke-based letter paths, Farsi interface with Persian numbers, bidirectional validation, adaptive difficulty, RTL text support, touch and Apple Pencil compatible
 
+### Letter Tracing Game
+Practice tracing all English letters and numbers with progressive difficulty! Full-screen grid layout with multi-stroke support and manual validation.
+- **Play:** [letter-tracing-game.html](letter-tracing-game.html)
+- **Features:** Full-screen grid with 26 letters + 10 numbers, alternating uppercase/lowercase levels, multi-stroke tracing support, manual validation via Check button, strict accuracy requirements (80%+ coverage, 85%+ accuracy), per-segment validation, green highlight for correct traces, red glow animation for errors, progressive difficulty system, touch and Apple Pencil compatible
+
 ### Addition Table
 Master addition tables from 0 to 100! Practice completing full addition tables with progressive levels.
 - **Play:** [addition-table.html](addition-table.html)
