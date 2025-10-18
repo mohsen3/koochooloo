@@ -232,31 +232,111 @@
         }
 
         .greeting {
-            color: #4fa3d1;
-            font-size: 1.8em;
+            color: white;
+            font-size: 1.5em;
             margin-bottom: 30px;
+            background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
+            padding: 15px 35px;
+            border-radius: 25px;
+            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.4);
             font-weight: bold;
+            display: inline-block;
+            animation: greetingPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes greetingPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .conversation-container {
             font-size: clamp(24px, 4vw, 36px);
-            line-height: 2;
+            line-height: 1.8;
             text-align: left;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             color: #333;
         }
 
         .conversation-line {
-            margin-bottom: 20px;
-            display: block;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .conversation-line:nth-child(even) {
+            flex-direction: row-reverse;
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .speaker {
-            color: #ff6b9d;
-            font-weight: bold;
-            margin-right: 8px;
+            font-size: 2em;
+            margin: 0 10px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .bubble {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+            border-radius: 20px;
+            padding: 15px 25px;
+            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.3);
+            position: relative;
+            max-width: 80%;
+            border: 3px solid rgba(79, 163, 209, 0.2);
+        }
+
+        .conversation-line:nth-child(even) .bubble {
+            background: linear-gradient(135deg, #fff5f7 0%, #ffe6f0 100%);
+            border-color: rgba(255, 107, 157, 0.2);
+        }
+
+        .bubble::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            top: 15px;
+        }
+
+        .conversation-line:nth-child(odd) .bubble::before {
+            left: -20px;
+            border-right-color: rgba(79, 163, 209, 0.2);
+        }
+
+        .conversation-line:nth-child(even) .bubble::before {
+            right: -20px;
+            border-left-color: rgba(255, 107, 157, 0.2);
         }
 
         .word {
@@ -609,8 +689,12 @@
 
                 const speaker = document.createElement('span');
                 speaker.className = 'speaker';
-                speaker.textContent = speakers[lineIndex % 2] + ': ';
+                speaker.textContent = speakers[lineIndex % 2];
                 lineDiv.appendChild(speaker);
+
+                // Create bubble container
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
 
                 // Replace {NAME} placeholder with actual child name
                 const personalizedLine = line.replace(/{NAME}/g, childName);
@@ -670,13 +754,14 @@
                         wordSpan.textContent = word;
                     }
 
-                    lineDiv.appendChild(wordSpan);
+                    bubble.appendChild(wordSpan);
 
                     if (wordIndex < words.length - 1) {
-                        lineDiv.appendChild(document.createTextNode(' '));
+                        bubble.appendChild(document.createTextNode(' '));
                     }
                 });
 
+                lineDiv.appendChild(bubble);
                 container.appendChild(lineDiv);
             });
 
