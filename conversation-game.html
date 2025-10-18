@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversation Learning Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            background: linear-gradient(135deg, #a8e6cf 0%, #ffd3b6 50%, #ffaaa5 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '⭐';
+            position: absolute;
+            font-size: 2em;
+            animation: float 3s ease-in-out infinite;
+            top: 10%;
+            left: 10%;
+            opacity: 0.4;
+        }
+
+        body::after {
+            content: '⚡';
+            position: absolute;
+            font-size: 2.5em;
+            animation: float 4s ease-in-out infinite;
+            bottom: 10%;
+            right: 10%;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(8deg); }
+        }
+
+        .star-decoration {
+            position: absolute;
+            font-size: 1.5em;
+            animation: twinkle 2s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.15); }
+        }
+
+        .settings-gear {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        .settings-gear:hover {
+            transform: rotate(90deg);
+        }
+
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ffffff 0%, #fff5f7 100%);
+            border-radius: 30px;
+            padding: 40px 60px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            z-index: 1001;
+            text-align: center;
+            border: 6px solid transparent;
+            background-clip: padding-box;
+            position: fixed;
+        }
+
+        .settings-modal.active {
+            display: block;
+        }
+
+        .settings-modal::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            background: linear-gradient(45deg, #ff6b9d, #c44569, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff6b9d);
+            border-radius: 36px;
+            z-index: -1;
+            animation: rainbow 3s linear infinite;
+            background-size: 300% 300%;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .settings-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .settings-overlay.active {
+            display: block;
+        }
+
+        .settings-modal h2 {
+            color: #ff6b9d;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0px #ffa45b;
+        }
+
+        .settings-modal input {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 1.5em;
+            padding: 15px 25px;
+            border: 3px solid #ffa45b;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .settings-modal button {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 1.3em;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #6bcf7f, #4fa3d1);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(107, 207, 127, 0.4);
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .settings-modal button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(107, 207, 127, 0.6);
+        }
+
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 100;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b9d, #ffa45b, #ffd93d);
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(255, 107, 157, 0.6);
+        }
+
+        .main-container {
+            background: linear-gradient(135deg, #ffffff 0%, #fff5f7 100%);
+            border-radius: 30px;
+            padding: 40px 60px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 6px rgba(255, 107, 157, 0.3);
+            text-align: center;
+            max-width: 90vw;
+            min-height: 400px;
+            outline: none;
+            border: 6px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+
+        .main-container::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            background: linear-gradient(45deg, #ff6b9d, #c44569, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff6b9d);
+            border-radius: 36px;
+            z-index: -1;
+            animation: rainbow 3s linear infinite;
+            background-size: 300% 300%;
+        }
+
+        h1 {
+            color: #ff6b9d;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0px #ffa45b, 4px 4px 0px #ffd93d;
+            animation: titleBounce 2s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .greeting {
+            color: #4fa3d1;
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .conversation-container {
+            font-size: clamp(24px, 4vw, 36px);
+            line-height: 2;
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+
+        .conversation-line {
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .speaker {
+            color: #ff6b9d;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .word {
+            display: inline;
+            position: relative;
+        }
+
+        .char-input {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: inherit;
+            width: 1.2em;
+            height: 1.5em;
+            text-align: center;
+            border: 3px solid #ffa45b;
+            border-radius: 8px;
+            margin: 0 2px;
+            padding: 0;
+            background: white;
+            color: #333;
+            font-weight: bold;
+            vertical-align: middle;
+            transition: all 0.3s ease;
+        }
+
+        .char-input:focus {
+            outline: none;
+            border-color: #4fa3d1;
+            box-shadow: 0 0 10px rgba(79, 163, 209, 0.5);
+            transform: scale(1.1);
+        }
+
+        .char-input.correct {
+            background: linear-gradient(135deg, #6bcf7f, #5bc76d);
+            border-color: #6bcf7f;
+            color: white;
+            animation: correctPop 0.3s ease-out;
+        }
+
+        .char-input.wrong {
+            background: linear-gradient(135deg, #ff6b9d, #ff5588);
+            border-color: #ff6b9d;
+            animation: shake 0.5s;
+        }
+
+        @keyframes correctPop {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 150px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .celebration.active {
+            animation: celebrate 1.5s ease-out;
+        }
+
+        @keyframes celebrate {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.3) rotate(-20deg);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.3) rotate(10deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.6) rotate(20deg);
+            }
+        }
+
+        .stats {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #ff9ff3, #c44569);
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-size: 1.3em;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(255, 159, 243, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            position: absolute;
+            animation: confetti-fall 3s linear;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .completion-message {
+            color: #ff6b9d;
+            font-size: 2.5em;
+            font-weight: 900;
+            text-shadow: 0 0 30px rgba(255, 107, 157, 0.8), 3px 3px 6px rgba(0,0,0,0.3);
+            animation: rainbowText 2s linear infinite, pulse 1s infinite;
+        }
+
+        @keyframes rainbowText {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .conversation-container {
+                font-size: clamp(20px, 5vw, 30px);
+            }
+
+            .main-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating decorations -->
+    <div class="star-decoration" style="top: 5%; left: 15%;">🚀</div>
+    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">⚡</div>
+    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">⚽</div>
+    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">🏀</div>
+    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🎮</div>
+    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🦖</div>
+
+    <div class="settings-gear" id="settingsGear">⚙️</div>
+    <div class="settings-overlay" id="settingsOverlay"></div>
+    <div class="settings-modal" id="settingsModal">
+        <h2>Settings ⚙️</h2>
+        <label for="nameInput" style="color: #6bcf7f; font-size: 1.2em; display: block; margin-bottom: 10px;">
+            What's your name?
+        </label>
+        <input type="text" id="nameInput" placeholder="Enter your name">
+        <br>
+        <button id="saveSettings">Save 💾</button>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="main-container">
+        <h1>💬 Let's Talk! 🗣️</h1>
+        <div class="greeting" id="greeting">Hi Sepehr!</div>
+        <div class="conversation-container" id="conversationContainer"></div>
+    </div>
+
+    <div class="stats" id="stats">
+        Conversation <span id="currentConv">1</span> of 30
+    </div>
+
+    <div class="celebration" id="celebration">🎉</div>
+
+    <script>
+        // Conversation data
+        const conversations = [
+            {lines: ["Hi!", "Hi!"], blanks: [[2], [2]]},
+            {lines: ["How are you?", "I'm good!", "Me too!"], blanks: [[8], [5], [3]]},
+            {lines: ["Bye bye!", "Bye!"], blanks: [[0, 4], [0]]},
+            {lines: ["What's your name?", "I'm Sam.", "Hi Sam!"], blanks: [[11], [4], [3]]},
+            {lines: ["I'm Mia.", "Hi Mia!", "Let's play!"], blanks: [[2], [3], [6]]},
+            {lines: ["Help me!", "Okay!", "Thank you!"], blanks: [[0], [0], [6]]},
+            {lines: ["I need help.", "What's wrong?", "I can't do it."], blanks: [[2], [7], [8]]},
+            {lines: ["Can you help?", "Yes!", "Thanks!"], blanks: [[4], [0], [0]]},
+            {lines: ["Want to play?", "Yes!", "Let's go!"], blanks: [[5], [0], [6]]},
+            {lines: ["What are you doing?", "Playing!", "Can I play?", "Yes!"], blanks: [[5, 13], [0], [6], [0]]},
+            {lines: ["Come play!", "Okay!", "Yay!"], blanks: [[5], [0], [0]]},
+            {lines: ["Let's play blocks!", "Okay!", "I'll build a tower!"], blanks: [[10], [0], [14]]},
+            {lines: ["Can I have it?", "Okay, here!", "Thank you!"], blanks: [[6], [6], [0]]},
+            {lines: ["My turn!", "Okay, wait.", "Now?", "Yes, your turn!"], blanks: [[3], [6], [0], [10]]},
+            {lines: ["Please share.", "Okay!", "Thank you!"], blanks: [[7], [0], [6]]},
+            {lines: ["Can I use it?", "Yes!", "Thanks!"], blanks: [[6], [0], [0]]},
+            {lines: ["Are you okay?", "I'm sad.", "Why?", "I want Mommy."], blanks: [[8], [4], [0], [7]]},
+            {lines: ["I'm happy!", "Why?", "I got a sticker!"], blanks: [[4], [0], [6]]},
+            {lines: ["That hurts!", "I'm sorry!", "It's okay."], blanks: [[5], [4], [5]]},
+            {lines: ["Don't cry.", "I fell down.", "Let me help you."], blanks: [[6], [7], [7]]},
+            {lines: ["Please?", "Okay, here.", "Thank you!"], blanks: [[0], [6], [0]]},
+            {lines: ["Thank you!", "You're welcome!"], blanks: [[6], [7]]},
+            {lines: ["Sorry!", "It's okay!", "Are you mad?", "No!"], blanks: [[0], [5], [8], [0]]},
+            {lines: ["What's that?", "It's a ball!", "Can I see?", "Sure!"], blanks: [[7], [7], [6], [0]]},
+            {lines: ["Where is it?", "Over there!", "I see it!"], blanks: [[6], [5], [2]]},
+            {lines: ["Who is that?", "That's my friend!", "Hi friend!"], blanks: [[4], [9], [3]]},
+            {lines: ["I need water.", "Go get some.", "Okay!"], blanks: [[7], [7], [0]]},
+            {lines: ["I'm done!", "Good job!", "What now?", "Go play!"], blanks: [[4], [5], [5], [3]]},
+            {lines: ["I'm hungry.", "It's snack time soon!", "Okay!"], blanks: [[4], [12], [0]]},
+            {lines: ["Is it time to go?", "Not yet.", "When?", "Soon!"], blanks: [[10], [4], [0], [0]]}
+        ];
+
+        let currentConvIndex = 0;
+        let childName = localStorage.getItem('childName') || 'Sepehr';
+
+        // Audio context for sounds
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Settings functionality
+        document.getElementById('settingsGear').addEventListener('click', () => {
+            document.getElementById('settingsModal').classList.add('active');
+            document.getElementById('settingsOverlay').classList.add('active');
+            document.getElementById('nameInput').value = childName;
+            document.getElementById('nameInput').focus();
+        });
+
+        document.getElementById('settingsOverlay').addEventListener('click', () => {
+            document.getElementById('settingsModal').classList.remove('active');
+            document.getElementById('settingsOverlay').classList.remove('active');
+        });
+
+        document.getElementById('saveSettings').addEventListener('click', () => {
+            const newName = document.getElementById('nameInput').value.trim();
+            if (newName) {
+                childName = newName;
+                localStorage.setItem('childName', childName);
+                document.getElementById('greeting').textContent = `Hi ${childName}!`;
+            }
+            document.getElementById('settingsModal').classList.remove('active');
+            document.getElementById('settingsOverlay').classList.remove('active');
+        });
+
+        function playCelebrationSound() {
+            const now = audioContext.currentTime;
+            const frequencies = [523.25, 659.25, 783.99]; // C, E, G notes
+
+            frequencies.forEach((freq, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = freq;
+                oscillator.type = 'sine';
+
+                const startTime = now + index * 0.1;
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.3);
+            });
+        }
+
+        function playErrorSound() {
+            const now = audioContext.currentTime;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = 200;
+            oscillator.type = 'sawtooth';
+
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+            oscillator.start(now);
+            oscillator.stop(now + 0.2);
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b9d', '#ffa45b', '#ffd93d', '#6bcf7f', '#4fa3d1', '#ff9ff3'];
+
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 20);
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentConvIndex / conversations.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentConv').textContent = currentConvIndex + 1;
+        }
+
+        function getRandomBlanks(text, count) {
+            const words = text.split(' ');
+            const positions = [];
+
+            for (let i = 0; i < Math.min(count, words.length); i++) {
+                let wordIndex;
+                do {
+                    wordIndex = Math.floor(Math.random() * words.length);
+                } while (positions.includes(wordIndex) || words[wordIndex].length < 2);
+
+                positions.push(wordIndex);
+            }
+
+            return positions;
+        }
+
+        function displayConversation() {
+            const conv = conversations[currentConvIndex];
+            const container = document.getElementById('conversationContainer');
+            container.innerHTML = '';
+
+            const speakers = ['👧', '👦'];
+            let allInputs = [];
+
+            conv.lines.forEach((line, lineIndex) => {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'conversation-line';
+
+                const speaker = document.createElement('span');
+                speaker.className = 'speaker';
+                speaker.textContent = speakers[lineIndex % 2] + ': ';
+                lineDiv.appendChild(speaker);
+
+                const words = line.split(' ');
+                const blankPositions = conv.blanks[lineIndex];
+
+                words.forEach((word, wordIndex) => {
+                    const wordSpan = document.createElement('span');
+                    wordSpan.className = 'word';
+
+                    if (blankPositions.includes(wordIndex)) {
+                        // This word has blanks - choose 2-3 random characters
+                        const numBlanks = Math.min(Math.max(2, Math.floor(word.length / 2)), 3);
+                        const blankIndices = [];
+
+                        while (blankIndices.length < numBlanks) {
+                            const idx = Math.floor(Math.random() * word.length);
+                            if (!blankIndices.includes(idx)) {
+                                blankIndices.push(idx);
+                            }
+                        }
+                        blankIndices.sort((a, b) => a - b);
+
+                        for (let i = 0; i < word.length; i++) {
+                            if (blankIndices.includes(i)) {
+                                const input = document.createElement('input');
+                                input.type = 'text';
+                                input.className = 'char-input';
+                                input.maxLength = 1;
+                                input.dataset.expected = word[i].toLowerCase();
+                                input.dataset.lineIndex = lineIndex;
+                                input.dataset.wordIndex = wordIndex;
+                                input.dataset.charIndex = i;
+
+                                input.addEventListener('input', handleInput);
+                                input.addEventListener('keydown', handleKeyDown);
+
+                                allInputs.push(input);
+                                wordSpan.appendChild(input);
+                            } else {
+                                const charSpan = document.createElement('span');
+                                charSpan.textContent = word[i];
+                                wordSpan.appendChild(charSpan);
+                            }
+                        }
+                    } else {
+                        wordSpan.textContent = word;
+                    }
+
+                    lineDiv.appendChild(wordSpan);
+
+                    if (wordIndex < words.length - 1) {
+                        lineDiv.appendChild(document.createTextNode(' '));
+                    }
+                });
+
+                container.appendChild(lineDiv);
+            });
+
+            // Store all inputs for navigation
+            container.dataset.inputs = JSON.stringify(allInputs.map(input => ({
+                lineIndex: input.dataset.lineIndex,
+                wordIndex: input.dataset.wordIndex,
+                charIndex: input.dataset.charIndex
+            })));
+
+            // Focus first input
+            if (allInputs.length > 0) {
+                setTimeout(() => allInputs[0].focus(), 100);
+            }
+        }
+
+        function handleInput(e) {
+            const input = e.target;
+            const expected = input.dataset.expected;
+            const typed = input.value.toLowerCase();
+
+            if (typed === expected) {
+                input.classList.remove('wrong');
+                input.classList.add('correct');
+
+                // Move to next input
+                const allInputs = document.querySelectorAll('.char-input');
+                const currentIndex = Array.from(allInputs).indexOf(input);
+
+                if (currentIndex < allInputs.length - 1) {
+                    allInputs[currentIndex + 1].focus();
+                } else {
+                    // All completed!
+                    showCelebration();
+                }
+            } else if (typed) {
+                input.classList.remove('correct');
+                input.classList.add('wrong');
+                playErrorSound();
+            }
+        }
+
+        function handleKeyDown(e) {
+            const input = e.target;
+            const allInputs = document.querySelectorAll('.char-input');
+            const currentIndex = Array.from(allInputs).indexOf(input);
+
+            // Handle backspace to previous input
+            if (e.key === 'Backspace' && !input.value && currentIndex > 0) {
+                e.preventDefault();
+                allInputs[currentIndex - 1].focus();
+                allInputs[currentIndex - 1].value = '';
+                allInputs[currentIndex - 1].classList.remove('correct', 'wrong');
+            }
+        }
+
+        function showCelebration() {
+            const celebration = document.getElementById('celebration');
+            const emojis = ['🎉', '🌟', '⭐', '🎊', '🎈', '🏆', '👏', '💯'];
+            celebration.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            celebration.className = 'celebration active';
+            playCelebrationSound();
+            createConfetti();
+
+            setTimeout(() => {
+                celebration.className = 'celebration';
+                currentConvIndex++;
+
+                if (currentConvIndex < conversations.length) {
+                    updateProgress();
+                    displayConversation();
+                } else {
+                    // All conversations completed
+                    document.getElementById('conversationContainer').innerHTML =
+                        `<div class="completion-message">🎉 Amazing job, ${childName}! You completed all conversations! 🎉</div>`;
+                }
+            }, 1500);
+        }
+
+        // Initialize
+        document.getElementById('greeting').textContent = `Hi ${childName}!`;
+        updateProgress();
+        displayConversation();
+    </script>
+</body>
+</html>

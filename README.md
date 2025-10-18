@@ -59,6 +59,11 @@ Master addition tables from 0 to 100! Practice completing full addition tables w
 - **Play:** [addition-table.html](addition-table.html)
 - **Features:** Progressive levels (0+0 through 100+9), two-column layout with 10 equations per level, real-time validation with color feedback (green for correct, red for wrong), automatic focus management, keyboard-friendly input, celebration animations on level completion, confetti effects
 
+### Conversation Learning Game
+Learn essential toddler conversations through interactive fill-in-the-blank exercises! Practice 30 real-world conversations with 2-3 blanks per word.
+- **Play:** [conversation-game.html](conversation-game.html)
+- **Features:** 30 essential toddler conversations covering greetings, basic needs, playing, sharing, feelings, and manners; fill-in-the-blank with 2-3 characters per word; automatic focus management; real-time validation with color feedback; personalized greeting with name customization; localStorage persistence; celebration animations; confetti effects; toddler-friendly natural language
+
 ## Usage
 
 Simply open any HTML file in a web browser to play. No installation required.
