@@ -696,6 +696,8 @@
                 this.touchClone.style.width = rect.width + 'px';
                 this.touchClone.style.height = rect.height + 'px';
                 this.touchClone.style.fontSize = window.getComputedStyle(e.target).fontSize;
+                this.touchClone.style.left = '0';
+                this.touchClone.style.top = '0';
                 document.body.appendChild(this.touchClone);
 
                 e.target.classList.add('dragging');
