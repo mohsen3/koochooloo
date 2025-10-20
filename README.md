@@ -29,6 +29,11 @@ Learn addition with visual dot representations! Practice adding numbers with pro
 - **Play:** [math-addition-game.html](math-addition-game.html)
 - **Features:** Visual dot counting, progressive levels (5 correct answers per level), digit-by-digit input, immediate feedback with sounds, confetti celebrations, boy-themed design
 
+### Math Addition Level 2 (Drag & Drop)
+Master addition equations up to 25 with interactive drag-and-drop gameplay! Fill in missing numbers by dragging digits.
+- **Play:** [math-addition-level2.html](math-addition-level2.html)
+- **Features:** Addition equations (a + b = c, where c ≤ 25), one number blank per question, single/double digit blanks, drag-and-drop interface with 4 digit options, touch and mouse support, green/red feedback, automatic progression, celebration animations
+
 ### English Words Typing Tutor
 Practice typing 300 common English words with progressive difficulty! Words get longer and more complex as you advance.
 - **Play:** [english-words.html](english-words.html)
