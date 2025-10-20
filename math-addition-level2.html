@@ -692,16 +692,18 @@
                 // Create a clone for visual feedback
                 this.touchClone = e.target.cloneNode(true);
                 this.touchClone.className = 'digit-option touch-clone';
-                this.touchClone.style.width = e.target.offsetWidth + 'px';
-                this.touchClone.style.height = e.target.offsetHeight + 'px';
+                const rect = e.target.getBoundingClientRect();
+                this.touchClone.style.width = rect.width + 'px';
+                this.touchClone.style.height = rect.height + 'px';
+                this.touchClone.style.fontSize = window.getComputedStyle(e.target).fontSize;
                 document.body.appendChild(this.touchClone);
 
                 e.target.classList.add('dragging');
 
                 const touch = e.touches[0];
-                const rect = e.target.getBoundingClientRect();
-                this.touchOffsetX = touch.clientX - rect.left - rect.width / 2;
-                this.touchOffsetY = touch.clientY - rect.top - rect.height / 2;
+                // Store offset from touch point to element center
+                this.touchOffsetX = rect.width / 2;
+                this.touchOffsetY = rect.height / 2;
 
                 this.updateTouchClonePosition(touch);
             }
@@ -716,11 +718,12 @@
             updateTouchClonePosition(touch) {
                 if (!this.touchClone) return;
 
+                // Position clone centered under finger
                 const x = touch.clientX - this.touchOffsetX;
                 const y = touch.clientY - this.touchOffsetY;
 
                 // Use transform for better performance
-                this.touchClone.style.transform = `translate3d(${x}px, ${y}px, 0) translateX(-50%) translateY(-50%)`;
+                this.touchClone.style.transform = `translate3d(${x}px, ${y}px, 0)`;
             }
 
             handleTouchEnd(e) {
