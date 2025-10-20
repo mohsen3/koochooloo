@@ -263,9 +263,12 @@
             align-items: center;
             cursor: grab;
             box-shadow: 0 8px 20px rgba(255, 164, 91, 0.4);
-            transition: all 0.3s ease;
+            transition: transform 0.2s ease, opacity 0.2s ease;
             user-select: none;
             touch-action: none;
+            will-change: transform;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
         }
 
         .digit-option:hover {
@@ -285,6 +288,17 @@
         .digit-option.used {
             opacity: 0.3;
             pointer-events: none;
+        }
+
+        .touch-clone {
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            opacity: 0.9;
+            will-change: transform;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            transition: none !important;
         }
 
         .instructions {
@@ -677,17 +691,19 @@
 
                 // Create a clone for visual feedback
                 this.touchClone = e.target.cloneNode(true);
-                this.touchClone.style.position = 'fixed';
-                this.touchClone.style.pointerEvents = 'none';
-                this.touchClone.style.zIndex = '10000';
-                this.touchClone.style.opacity = '0.8';
+                this.touchClone.className = 'digit-option touch-clone';
                 this.touchClone.style.width = e.target.offsetWidth + 'px';
                 this.touchClone.style.height = e.target.offsetHeight + 'px';
                 document.body.appendChild(this.touchClone);
 
                 e.target.classList.add('dragging');
 
-                this.updateTouchClonePosition(e.touches[0]);
+                const touch = e.touches[0];
+                const rect = e.target.getBoundingClientRect();
+                this.touchOffsetX = touch.clientX - rect.left - rect.width / 2;
+                this.touchOffsetY = touch.clientY - rect.top - rect.height / 2;
+
+                this.updateTouchClonePosition(touch);
             }
 
             handleTouchMove(e) {
@@ -700,8 +716,11 @@
             updateTouchClonePosition(touch) {
                 if (!this.touchClone) return;
 
-                this.touchClone.style.left = (touch.clientX - this.touchClone.offsetWidth / 2) + 'px';
-                this.touchClone.style.top = (touch.clientY - this.touchClone.offsetHeight / 2) + 'px';
+                const x = touch.clientX - this.touchOffsetX;
+                const y = touch.clientY - this.touchOffsetY;
+
+                // Use transform for better performance
+                this.touchClone.style.transform = `translate3d(${x}px, ${y}px, 0) translateX(-50%) translateY(-50%)`;
             }
 
             handleTouchEnd(e) {
