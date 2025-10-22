@@ -34,6 +34,11 @@ Master addition equations up to 25 with interactive drag-and-drop gameplay! Fill
 - **Play:** [math-addition-level2.html](math-addition-level2.html)
 - **Features:** Addition equations (a + b = c, where c ≤ 25), one number blank per question, single/double digit blanks, drag-and-drop interface with 4 digit options, touch and mouse support, green/red feedback, automatic progression, celebration animations
 
+### Skip Counting Game
+Learn to count by 2s, 5s, 10s, and more! Master skip counting patterns with interactive fill-in-the-blank gameplay.
+- **Play:** [skip-counting-game.html](skip-counting-game.html)
+- **Features:** 11 boxes (0 through 10 × k), count by 1-10 with selectable levels, basic mode (2, 5, 10) and advanced mode (all 1-10), first 4 boxes show placeholder hints, auto-advance to next box on correct input, multi-digit number support, red/green visual feedback, localStorage to remember level preference, celebration animations and confetti
+
 ### English Words Typing Tutor
 Practice typing 300 common English words with progressive difficulty! Words get longer and more complex as you advance.
 - **Play:** [english-words.html](english-words.html)

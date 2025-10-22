@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skip Counting Game - Count by Numbers!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            background: linear-gradient(135deg, #b3d9ff 0%, #cce7ff 50%, #e6f5ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            outline: none;
+            position: relative;
+            padding: 20px;
+            transition: background 1s ease;
+        }
+
+        body::before {
+            content: '⭐';
+            position: absolute;
+            font-size: 2em;
+            animation: float 3s ease-in-out infinite;
+            top: 10%;
+            left: 10%;
+            opacity: 0.4;
+        }
+
+        body::after {
+            content: '⚡';
+            position: absolute;
+            font-size: 2.5em;
+            animation: float 4s ease-in-out infinite;
+            bottom: 10%;
+            right: 10%;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(8deg); }
+        }
+
+        .star-decoration {
+            position: absolute;
+            font-size: 1.5em;
+            animation: twinkle 2s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.15); }
+        }
+
+        .container {
+            background: linear-gradient(135deg, #ffffff 0%, #fff5f7 100%);
+            border-radius: 30px;
+            padding: 40px 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 6px rgba(255, 107, 157, 0.3);
+            text-align: center;
+            max-width: 1200px;
+            width: 90%;
+            outline: none;
+            border: 6px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            max-height: 95vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            background: linear-gradient(45deg, #ff6b9d, #c44569, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff6b9d);
+            border-radius: 36px;
+            z-index: -1;
+            animation: rainbow 3s linear infinite;
+            background-size: 300% 300%;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        h1 {
+            color: #ff6b9d;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px #ffa45b, 4px 4px 0px #ffd93d;
+            animation: titleBounce 2s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .score-info {
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #ff6b9d, #ffa45b);
+            color: white;
+            margin: 0 auto 20px auto;
+            font-weight: bold;
+            padding: 10px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            box-shadow: 0 6px 15px rgba(255, 107, 157, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .boxes-container {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            gap: 12px;
+            margin: 30px auto;
+            max-width: 100%;
+            justify-content: center;
+        }
+
+        .box-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .box-number {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4fa3d1;
+            min-height: 25px;
+        }
+
+        .number-input {
+            width: 80px;
+            height: 80px;
+            font-size: 2em;
+            text-align: center;
+            border: 4px solid #4fa3d1;
+            border-radius: 15px;
+            outline: none;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff5f7, #ffffff);
+            color: #ff6b9d;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+        }
+
+        .number-input::placeholder {
+            color: #999;
+            opacity: 1;
+        }
+
+        .number-input:focus {
+            border-color: #ff6b9d;
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.6);
+            transform: scale(1.05);
+        }
+
+        .number-input.correct {
+            background: linear-gradient(135deg, #6bcf7f, #4fa3d1);
+            border-color: #6bcf7f;
+            color: white;
+            box-shadow: 0 6px 20px rgba(107, 207, 127, 0.5);
+            animation: correctPop 0.5s ease-out;
+        }
+
+        .number-input.wrong {
+            background: linear-gradient(135deg, #ff9ff3, #feca57);
+            border-color: #ff9ff3;
+            color: white;
+            box-shadow: 0 6px 20px rgba(255, 159, 243, 0.5);
+            animation: shake 0.5s;
+        }
+
+        @keyframes correctPop {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .instructions {
+            font-size: 1.3em;
+            color: white;
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.4);
+            font-weight: bold;
+        }
+
+        .level-selector {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #ffa45b, #ffd93d);
+            border: 3px solid #ff6b9d;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 164, 91, 0.4);
+            transition: all 0.2s ease;
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+        }
+
+        .level-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 6px 15px rgba(255, 164, 91, 0.6);
+        }
+
+        .level-btn.active {
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            border-color: #6bcf7f;
+            box-shadow: 0 6px 15px rgba(255, 107, 157, 0.6);
+            transform: scale(1.15);
+        }
+
+        .level-btn.hidden {
+            display: none;
+        }
+
+        .advanced-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
+            border: 3px solid #ff6b9d;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(79, 163, 209, 0.4);
+            transition: all 0.2s ease;
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            z-index: 100;
+        }
+
+        .advanced-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(79, 163, 209, 0.6);
+        }
+
+        .advanced-toggle.active {
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            border-color: #6bcf7f;
+        }
+
+        .celebration-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: 900;
+            z-index: 1000;
+            animation: celebrate 1.5s, rainbow 2s linear infinite;
+            pointer-events: none;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ffa45b 25%, #ffd93d 75%, #6bcf7f 100%);
+            padding: 30px 50px;
+            border-radius: 35px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.3), 0 0 80px rgba(255, 107, 157, 0.6);
+            border: 8px solid #ffffff;
+            background-size: 300% 300%;
+            color: white;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+        }
+
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); opacity: 1; }
+            70% { transform: translate(-50%, -50%) scale(1.05) rotate(-5deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .bounce {
+            animation: bounce 0.5s ease-in-out 3;
+        }
+
+        @media (max-width: 1200px) {
+            .boxes-container {
+                gap: 8px;
+            }
+
+            .number-input {
+                width: 65px;
+                height: 65px;
+                font-size: 1.6em;
+            }
+
+            .box-number {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .boxes-container {
+                gap: 6px;
+            }
+
+            .number-input {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+                border-width: 3px;
+            }
+
+            .box-number {
+                font-size: 0.85em;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .score-info {
+                font-size: 1.2em;
+            }
+
+            .level-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating decorations -->
+    <div class="star-decoration" style="top: 5%; left: 15%;">🚀</div>
+    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">⚡</div>
+    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">⚽</div>
+    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">🏀</div>
+    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🎮</div>
+    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🦖</div>
+
+    <button class="advanced-toggle" id="advanced-toggle">Advanced</button>
+
+    <div class="container" id="game-container">
+        <h1>🔢 Skip Counting! 🎯</h1>
+        <div class="score-info" id="score-info">Count by: <span id="current-k">1</span></div>
+
+        <div class="level-selector" id="level-selector">
+            <!-- Level buttons will be generated here -->
+        </div>
+
+        <div class="boxes-container" id="boxes-container">
+            <!-- Boxes will be generated here -->
+        </div>
+
+        <div class="instructions">Fill in the numbers! First 4 are hints 💡</div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        class SkipCountingGame {
+            constructor() {
+                this.boxes = [];
+                this.advancedMode = false;
+                this.basicLevels = [2, 5, 10]; // Levels visible by default
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                // Load saved level from localStorage, default to 2
+                this.currentK = this.loadSavedLevel();
+
+                const messages = [
+                    "Awesome! 🎉", "Great job! ⭐", "Perfect! 🌟",
+                    "Amazing! 🎊", "Wonderful! 🎈", "Fantastic! 🌈",
+                    "Super! 🚀", "Brilliant! ✨"
+                ];
+                this.messages = messages;
+
+                this.init();
+            }
+
+            init() {
+                this.generateLevelButtons();
+                this.generateBoxes();
+                this.setupAdvancedToggle();
+            }
+
+            loadSavedLevel() {
+                try {
+                    const saved = localStorage.getItem('skipCountingLevel');
+                    if (saved) {
+                        const level = parseInt(saved);
+                        // Validate it's a valid basic level
+                        if (this.basicLevels.includes(level)) {
+                            return level;
+                        }
+                    }
+                } catch (e) {
+                    console.log('Could not load saved level:', e);
+                }
+                // Default to 2 if nothing saved or invalid
+                return 2;
+            }
+
+            saveLevelToStorage(level) {
+                try {
+                    localStorage.setItem('skipCountingLevel', level.toString());
+                } catch (e) {
+                    console.log('Could not save level:', e);
+                }
+            }
+
+            setupAdvancedToggle() {
+                const toggleBtn = document.getElementById('advanced-toggle');
+                toggleBtn.addEventListener('click', () => {
+                    this.advancedMode = !this.advancedMode;
+                    toggleBtn.classList.toggle('active', this.advancedMode);
+                    this.updateLevelVisibility();
+                });
+            }
+
+            updateLevelVisibility() {
+                document.querySelectorAll('.level-btn').forEach(btn => {
+                    const k = parseInt(btn.textContent);
+                    if (this.advancedMode || this.basicLevels.includes(k)) {
+                        btn.classList.remove('hidden');
+                    } else {
+                        btn.classList.add('hidden');
+                    }
+                });
+            }
+
+            playCelebrationSound() {
+                const now = this.audioContext.currentTime;
+                const frequencies = [523.25, 659.25, 783.99]; // C, E, G notes
+
+                frequencies.forEach((freq, index) => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+
+                    const startTime = now + index * 0.1;
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.3);
+                });
+            }
+
+            playErrorSound() {
+                const now = this.audioContext.currentTime;
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+
+                oscillator.frequency.value = 200;
+                oscillator.type = 'sawtooth';
+
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+                oscillator.start(now);
+                oscillator.stop(now + 0.2);
+            }
+
+            playCorrectSound() {
+                const now = this.audioContext.currentTime;
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+
+                oscillator.frequency.value = 523.25; // C note
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+                oscillator.start(now);
+                oscillator.stop(now + 0.15);
+            }
+
+            generateLevelButtons() {
+                const container = document.getElementById('level-selector');
+                container.innerHTML = '';
+
+                for (let k = 1; k <= 10; k++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'level-btn';
+                    if (k === this.currentK) {
+                        btn.classList.add('active');
+                    }
+                    // Hide advanced levels by default
+                    if (!this.basicLevels.includes(k)) {
+                        btn.classList.add('hidden');
+                    }
+                    btn.textContent = k;
+                    btn.addEventListener('click', () => this.changeLevel(k));
+                    container.appendChild(btn);
+                }
+            }
+
+            changeLevel(k) {
+                this.currentK = k;
+                document.getElementById('current-k').textContent = k;
+
+                // Save to localStorage only in basic mode
+                if (!this.advancedMode) {
+                    this.saveLevelToStorage(k);
+                }
+
+                // Update active button
+                document.querySelectorAll('.level-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (parseInt(btn.textContent) === k) {
+                        btn.classList.add('active');
+                    }
+                });
+
+                this.generateBoxes();
+            }
+
+            generateBoxes() {
+                const container = document.getElementById('boxes-container');
+                container.innerHTML = '';
+                this.boxes = [];
+
+                for (let i = 0; i < 11; i++) {
+                    const value = i * this.currentK;
+                    const isHint = i < 4;
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'box-wrapper';
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'number-input';
+                    input.inputMode = 'numeric';
+                    input.pattern = '[0-9]*';
+                    input.dataset.index = i;
+                    input.dataset.expected = value;
+
+                    if (isHint) {
+                        input.placeholder = value;
+                    }
+
+                    input.addEventListener('input', (e) => this.handleInput(e, input, value, isHint));
+
+                    wrapper.appendChild(input);
+                    container.appendChild(wrapper);
+
+                    this.boxes.push({ input, value, isHint });
+                }
+
+                // Focus on the first box (index 0)
+                setTimeout(() => {
+                    if (this.boxes[0]) {
+                        this.boxes[0].input.focus();
+                    }
+                }, 100);
+            }
+
+            focusNextBox(currentInput) {
+                // Find the current box index
+                const currentIndex = this.boxes.findIndex(box => box.input === currentInput);
+
+                // Find the next non-filled box
+                for (let i = currentIndex + 1; i < this.boxes.length; i++) {
+                    if (!this.boxes[i].input.classList.contains('correct')) {
+                        this.boxes[i].input.focus();
+                        return;
+                    }
+                }
+            }
+
+            handleInput(e, input, expectedValue, isHint) {
+                const value = e.target.value.trim();
+
+                // Allow empty input
+                if (value === '') {
+                    input.classList.remove('correct', 'wrong');
+                    return;
+                }
+
+                // Only allow numbers
+                if (!/^\d+$/.test(value)) {
+                    e.target.value = value.replace(/\D/g, '');
+                    return;
+                }
+
+                const numValue = parseInt(value);
+                const expectedLength = expectedValue.toString().length;
+                const currentLength = value.length;
+
+                // Wait for complete input if expected value has more digits
+                if (currentLength < expectedLength) {
+                    // Don't validate yet, just clear any previous wrong state
+                    input.classList.remove('correct', 'wrong');
+                    return;
+                }
+
+                // If user typed more digits than expected, trim to expected length
+                if (currentLength > expectedLength) {
+                    e.target.value = value.substring(0, expectedLength);
+                    return;
+                }
+
+                // Now validate (we have the right number of digits)
+                if (numValue === expectedValue) {
+                    // Correct!
+                    input.classList.remove('wrong');
+                    input.classList.add('correct');
+                    input.readOnly = true;
+                    this.playCorrectSound();
+
+                    // Move focus to next box
+                    setTimeout(() => {
+                        this.focusNextBox(input);
+                    }, 200);
+
+                    // Check if all non-hint boxes are correct
+                    this.checkAllComplete();
+                } else {
+                    // Wrong!
+                    input.classList.remove('correct');
+                    input.classList.add('wrong');
+                    this.playErrorSound();
+
+                    // Clear the input and remove wrong class after animation
+                    setTimeout(() => {
+                        if (!input.classList.contains('correct')) {
+                            input.value = '';
+                            input.classList.remove('wrong');
+                            input.focus();
+                        }
+                    }, 500);
+                }
+            }
+
+            checkAllComplete() {
+                const allCorrect = this.boxes.every(box => {
+                    if (box.isHint) return true;
+                    return box.input.classList.contains('correct');
+                });
+
+                if (allCorrect) {
+                    // All correct! Celebrate and move to next level
+                    setTimeout(() => {
+                        this.celebrate();
+
+                        // Auto-advance to next level after celebration (only in advanced mode)
+                        setTimeout(() => {
+                            if (this.advancedMode) {
+                                // In advanced mode, go to next number
+                                const nextLevel = this.currentK < 10 ? this.currentK + 1 : null;
+
+                                if (nextLevel) {
+                                    this.changeLevel(nextLevel);
+                                } else {
+                                    // Completed all levels! Show final message
+                                    const gameContainer = document.getElementById('game-container');
+                                    gameContainer.innerHTML = '<h1 style="font-size: 3em; margin: 50px 0;">🏆 You completed all levels! 🎉</h1><p style="font-size: 1.5em; color: #ff6b9d;">Great job learning skip counting!</p>';
+                                }
+                            }
+                            // In basic mode, do NOT auto-advance - let user choose next level
+                        }, 2000);
+                    }, 300);
+                }
+            }
+
+            celebrate() {
+                this.playCelebrationSound();
+
+                const gameContainer = document.getElementById('game-container');
+                gameContainer.classList.add('bounce');
+
+                const msg = this.messages[Math.floor(Math.random() * this.messages.length)];
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration-overlay';
+                celebration.textContent = msg;
+                document.body.appendChild(celebration);
+
+                setTimeout(() => {
+                    celebration.remove();
+                }, 1500);
+
+                this.createConfetti();
+
+                setTimeout(() => {
+                    gameContainer.classList.remove('bounce');
+                }, 1500);
+            }
+
+            createConfetti() {
+                const celebration = document.getElementById('celebration');
+                const colors = ['#ff6b9d', '#ffa45b', '#ffd93d', '#6bcf7f', '#4fa3d1', '#ff9ff3'];
+
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    celebration.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }
+            }
+        }
+
+        window.addEventListener('load', () => {
+            new SkipCountingGame();
+        });
+    </script>
+</body>
+</html>
