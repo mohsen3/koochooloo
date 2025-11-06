@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Addition Game - Three Numbers!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            background: linear-gradient(135deg, #b3d9ff 0%, #cce7ff 50%, #e6f5ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            outline: none;
+            position: relative;
+            padding: 20px;
+            transition: background 1s ease;
+        }
+
+        body::before {
+            content: '⭐';
+            position: absolute;
+            font-size: 2em;
+            animation: float 3s ease-in-out infinite;
+            top: 10%;
+            left: 10%;
+            opacity: 0.4;
+        }
+
+        body::after {
+            content: '⚡';
+            position: absolute;
+            font-size: 2.5em;
+            animation: float 4s ease-in-out infinite;
+            bottom: 10%;
+            right: 10%;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(8deg); }
+        }
+
+        .star-decoration {
+            position: absolute;
+            font-size: 1.5em;
+            animation: twinkle 2s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.15); }
+        }
+
+        .container {
+            background: linear-gradient(135deg, #ffffff 0%, #fff5f7 100%);
+            border-radius: 30px;
+            padding: 30px 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 6px rgba(255, 107, 157, 0.3);
+            text-align: center;
+            max-width: 1000px;
+            width: 90%;
+            outline: none;
+            border: 6px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            max-height: 95vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            background: linear-gradient(45deg, #ff6b9d, #c44569, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff6b9d);
+            border-radius: 36px;
+            z-index: -1;
+            animation: rainbow 3s linear infinite;
+            background-size: 300% 300%;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        h1 {
+            color: #ff6b9d;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px #ffa45b, 4px 4px 0px #ffd93d;
+            animation: titleBounce 2s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .score-info {
+            font-size: 1.8em;
+            background: linear-gradient(135deg, #ff6b9d, #ffa45b);
+            color: white;
+            margin: 0 auto 20px auto;
+            font-weight: bold;
+            padding: 12px 35px;
+            border-radius: 50px;
+            display: inline-block;
+            box-shadow: 0 6px 15px rgba(255, 107, 157, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+            transition: background 0.8s ease, box-shadow 0.8s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .shapes-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-end;
+            margin: 25px 0;
+            gap: 15px;
+            flex-wrap: nowrap;
+        }
+
+        .number-with-shapes {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .shapes-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 200px;
+            min-height: 70px;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .shape {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: dotPop 0.5s ease-out;
+        }
+
+        @keyframes dotPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .blue-dot {
+            background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
+        }
+
+        .green-dot {
+            background: linear-gradient(135deg, #ffa45b, #ffd93d);
+        }
+
+        .purple-dot {
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+        }
+
+        .number {
+            font-size: 5em;
+            font-weight: 900;
+            color: #ff6b9d;
+            text-shadow: 3px 3px 0px rgba(255,170,91,0.3);
+            animation: numberPulse 1.5s ease-in-out infinite;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        @keyframes numberPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .operator {
+            font-size: 5em;
+            font-weight: 900;
+            color: #6bcf7f;
+            text-shadow: 3px 3px 0px rgba(79,163,209,0.3);
+            animation: operatorGlow 2s ease-in-out infinite;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        @keyframes operatorGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            flex-shrink: 0;
+        }
+
+        .digit-input {
+            width: 90px;
+            height: 100px;
+            font-size: 5em;
+            text-align: center;
+            border: 5px solid #4fa3d1;
+            border-radius: 20px;
+            outline: none;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff5f7, #ffffff);
+            color: #ff6b9d;
+            caret-color: transparent;
+            cursor: default;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .digit-input:focus {
+            border-color: #ff6b9d;
+            box-shadow: 0 0 25px rgba(255, 107, 157, 0.6);
+            transform: scale(1.08);
+        }
+
+        .digit-input.correct {
+            background: linear-gradient(135deg, #6bcf7f, #4fa3d1);
+            border-color: #6bcf7f;
+            color: white;
+            box-shadow: 0 8px 25px rgba(107, 207, 127, 0.5);
+        }
+
+        .digit-input.wrong {
+            background: linear-gradient(135deg, #ff9ff3, #feca57);
+            border-color: #ff9ff3;
+            color: white;
+            box-shadow: 0 8px 25px rgba(255, 159, 243, 0.5);
+        }
+
+        .celebration-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: 900;
+            z-index: 1000;
+            animation: celebrate 1.5s, rainbow 2s linear infinite;
+            pointer-events: none;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ffa45b 25%, #ffd93d 75%, #6bcf7f 100%);
+            padding: 30px 50px;
+            border-radius: 35px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.3), 0 0 80px rgba(255, 107, 157, 0.6);
+            border: 8px solid #ffffff;
+            background-size: 300% 300%;
+            color: white;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+        }
+
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); opacity: 1; }
+            70% { transform: translate(-50%, -50%) scale(1.05) rotate(-5deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .instructions {
+            font-size: 1.1em;
+            color: white;
+            margin-top: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.4);
+            font-weight: bold;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .bounce {
+            animation: bounce 0.5s ease-in-out 3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating decorations -->
+    <div class="star-decoration" style="top: 5%; left: 15%;">🚀</div>
+    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">⚡</div>
+    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">⚽</div>
+    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">🏀</div>
+    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🎮</div>
+    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🦖</div>
+
+    <div class="container" id="game-container">
+        <h1>🎮 Math Addition - Three Numbers! 🚀</h1>
+        <div class="score-info" id="score-info">Score: 1</div>
+
+        <div class="shapes-container" id="shapes-container">
+            <div class="number-with-shapes">
+                <div class="shapes-group" id="shapes-left"></div>
+                <span class="number" id="num1">1</span>
+            </div>
+            <span class="operator">+</span>
+            <div class="number-with-shapes">
+                <div class="shapes-group" id="shapes-middle"></div>
+                <span class="number" id="num2">1</span>
+            </div>
+            <span class="operator">+</span>
+            <div class="number-with-shapes">
+                <div class="shapes-group" id="shapes-right"></div>
+                <span class="number" id="num3">1</span>
+            </div>
+            <span class="operator">=</span>
+            <div class="input-container" id="input-container">
+                <input type="text" class="digit-input" id="digit0" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+            </div>
+        </div>
+
+        <div class="instructions">Type the answer on your keyboard! 🎯</div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        class MathGame {
+            constructor() {
+                this.score = 1;
+                this.consecutiveWrong = 0;
+                this.currentProblem = {};
+                this.previousProblem = null;
+                this.correctAnswer = 0;
+
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                const messages = [
+                    "Awesome! 🎉", "Great job! ⭐", "Perfect! 🌟",
+                    "Amazing! 🎊", "Wonderful! 🎈", "Fantastic! 🌈",
+                    "Super! 🚀", "Brilliant! ✨"
+                ];
+                this.messages = messages;
+
+                this.init();
+            }
+
+            init() {
+                this.generateProblem();
+                this.setupEventListeners();
+                this.updateScore();
+            }
+
+            playCelebrationSound() {
+                const now = this.audioContext.currentTime;
+
+                // Create a fun ascending tone sequence
+                const frequencies = [523.25, 659.25, 783.99]; // C, E, G notes
+
+                frequencies.forEach((freq, index) => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+
+                    const startTime = now + index * 0.1;
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.3);
+                });
+            }
+
+            playErrorSound() {
+                const now = this.audioContext.currentTime;
+
+                // Create a descending "wrong" sound
+                const frequencies = [400, 300, 200]; // Descending tones
+
+                frequencies.forEach((freq, index) => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sawtooth';
+
+                    const startTime = now + index * 0.08;
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.2, startTime + 0.03);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.2);
+                });
+            }
+
+            generateProblem() {
+                // Clean up any existing timeouts
+                if (this.clearWrongTimeout) {
+                    clearTimeout(this.clearWrongTimeout);
+                }
+
+                let num1, num2, num3;
+                let attempts = 0;
+                const maxAttempts = 50;
+
+                do {
+                    // Generate random numbers between 1 and current score
+                    num1 = Math.floor(Math.random() * this.score) + 1;
+                    num2 = Math.floor(Math.random() * this.score) + 1;
+                    num3 = Math.floor(Math.random() * this.score) + 1;
+
+                    attempts++;
+                } while (
+                    this.previousProblem &&
+                    this.isProblemSimilar(num1, num2, num3) &&
+                    attempts < maxAttempts
+                );
+
+                // Store previous problem to avoid repeats
+                this.previousProblem = { num1, num2, num3 };
+                this.currentProblem = { num1, num2, num3 };
+                this.correctAnswer = num1 + num2 + num3;
+
+                this.displayProblem();
+                this.generateShapes();
+            }
+
+            isProblemSimilar(num1, num2, num3) {
+                // Check if this problem is a permutation of the previous one
+                const current = [num1, num2, num3].sort();
+                const previous = [this.previousProblem.num1, this.previousProblem.num2, this.previousProblem.num3].sort();
+
+                return current[0] === previous[0] &&
+                       current[1] === previous[1] &&
+                       current[2] === previous[2];
+            }
+
+            displayProblem() {
+                document.getElementById('num1').textContent = this.currentProblem.num1;
+                document.getElementById('num2').textContent = this.currentProblem.num2;
+                document.getElementById('num3').textContent = this.currentProblem.num3;
+
+                const inputContainer = document.getElementById('input-container');
+                inputContainer.innerHTML = '';
+
+                const answerLength = this.correctAnswer.toString().length;
+                for (let i = 0; i < answerLength; i++) {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'digit-input';
+                    input.maxLength = 1;
+                    input.id = `digit${i}`;
+                    input.inputMode = 'numeric';
+                    input.pattern = '[0-9]*';
+                    input.addEventListener('input', (e) => this.handleInput(e, i));
+                    input.addEventListener('keydown', (e) => this.handleKeydown(e, i));
+                    inputContainer.appendChild(input);
+                }
+
+                // Set focus to first input
+                setTimeout(() => {
+                    document.getElementById('digit0').focus();
+                }, 100);
+
+                // Setup global keyboard listener
+                this.setupGlobalKeyboard();
+            }
+
+            generateShapes() {
+                const shapesLeft = document.getElementById('shapes-left');
+                const shapesMiddle = document.getElementById('shapes-middle');
+                const shapesRight = document.getElementById('shapes-right');
+
+                shapesLeft.innerHTML = '';
+                shapesMiddle.innerHTML = '';
+                shapesRight.innerHTML = '';
+
+                // Generate blue dots for first number
+                for (let i = 0; i < this.currentProblem.num1; i++) {
+                    const shape = document.createElement('div');
+                    shape.className = 'shape blue-dot';
+                    shapesLeft.appendChild(shape);
+                }
+
+                // Generate green dots for second number
+                for (let i = 0; i < this.currentProblem.num2; i++) {
+                    const shape = document.createElement('div');
+                    shape.className = 'shape green-dot';
+                    shapesMiddle.appendChild(shape);
+                }
+
+                // Generate purple dots for third number
+                for (let i = 0; i < this.currentProblem.num3; i++) {
+                    const shape = document.createElement('div');
+                    shape.className = 'shape purple-dot';
+                    shapesRight.appendChild(shape);
+                }
+            }
+
+            handleInput(e, position) {
+                const value = e.target.value;
+                const input = e.target;
+
+                if (!/^\d$/.test(value)) {
+                    input.value = '';
+                    return;
+                }
+
+                const correctDigit = this.correctAnswer.toString()[position];
+                if (value === correctDigit) {
+                    input.classList.remove('wrong');
+                    input.classList.add('correct');
+
+                    // Move to next input if available
+                    const nextInput = document.getElementById(`digit${position + 1}`);
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+
+                    // Check if complete answer is correct
+                    this.checkCompleteAnswer();
+                } else {
+                    // Wrong digit - increment consecutive wrong counter
+                    this.consecutiveWrong++;
+
+                    // If 2 consecutive wrong answers, decrease score
+                    if (this.consecutiveWrong >= 2) {
+                        this.score = Math.max(1, this.score - 1);
+                        this.consecutiveWrong = 0;
+                        this.updateScore();
+                    }
+
+                    input.classList.remove('correct');
+                    input.classList.add('wrong');
+                    this.shakeEquation();
+                    // Error sound removed for better user experience
+                    // this.playErrorSound();
+
+                    // Clear any existing timeout
+                    if (this.clearWrongTimeout) {
+                        clearTimeout(this.clearWrongTimeout);
+                    }
+
+                    // Auto-clear wrong answer after 0.5 seconds
+                    this.clearWrongTimeout = setTimeout(() => {
+                        if (input && input.parentNode && document.contains(input)) {
+                            input.value = '';
+                            input.classList.remove('wrong');
+                            input.focus();
+                        }
+                    }, 500);
+                }
+            }
+
+            handleKeydown(e, position) {
+                if (e.key === 'Backspace' && e.target.value === '') {
+                    const prevInput = document.getElementById(`digit${position - 1}`);
+                    if (prevInput) {
+                        prevInput.focus();
+                        prevInput.select();
+                    }
+                }
+            }
+
+            checkCompleteAnswer() {
+                const inputs = document.querySelectorAll('.digit-input');
+                let userAnswer = '';
+                let allFilled = true;
+
+                inputs.forEach(input => {
+                    if (input.value === '') {
+                        allFilled = false;
+                    } else {
+                        userAnswer += input.value;
+                    }
+                });
+
+                if (allFilled && parseInt(userAnswer) === this.correctAnswer) {
+                    // Correct answer - increase score and reset wrong counter
+                    this.score++;
+                    this.consecutiveWrong = 0;
+                    this.updateScore();
+
+                    this.celebrate();
+
+                    setTimeout(() => {
+                        this.generateProblem();
+                    }, 2000);
+                }
+            }
+
+            celebrate() {
+                // Clear any pending timeouts
+                if (this.clearWrongTimeout) {
+                    clearTimeout(this.clearWrongTimeout);
+                }
+
+                this.playCelebrationSound();
+
+                const gameContainer = document.getElementById('game-container');
+                gameContainer.classList.add('bounce');
+
+                // Show celebration message
+                const msg = this.messages[Math.floor(Math.random() * this.messages.length)];
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration-overlay';
+                celebration.textContent = msg;
+                document.body.appendChild(celebration);
+
+                setTimeout(() => {
+                    celebration.remove();
+                }, 1500);
+
+                this.createConfetti();
+
+                setTimeout(() => {
+                    gameContainer.classList.remove('bounce');
+                }, 1500);
+            }
+
+            createConfetti() {
+                const celebration = document.getElementById('celebration');
+                const colors = ['#ff6b9d', '#ffa45b', '#ffd93d', '#6bcf7f', '#4fa3d1', '#ff9ff3'];
+
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    celebration.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }
+            }
+
+            shakeEquation() {
+                const container = document.getElementById('shapes-container');
+                container.classList.add('shake');
+                setTimeout(() => {
+                    container.classList.remove('shake');
+                }, 500);
+            }
+
+            updateScore() {
+                const scoreInfo = document.getElementById('score-info');
+                scoreInfo.textContent = `Score: ${this.score}`;
+                this.updateTheme();
+            }
+
+            updateTheme() {
+                const score = this.score;
+
+                // Define color themes based on score ranges
+                let bgGradient, scoreGradient, borderGradient, shadowColor;
+
+                if (score <= 5) {
+                    // Light blue theme (default)
+                    bgGradient = 'linear-gradient(135deg, #b3d9ff 0%, #cce7ff 50%, #e6f5ff 100%)';
+                    scoreGradient = 'linear-gradient(135deg, #ff6b9d, #ffa45b)';
+                    borderGradient = 'linear-gradient(45deg, #ff6b9d, #c44569, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff6b9d)';
+                    shadowColor = 'rgba(255, 107, 157, 0.4)';
+                } else if (score <= 10) {
+                    // Pastel purple theme
+                    bgGradient = 'linear-gradient(135deg, #ffd3b6 0%, #ffaaa5 50%, #ff9ff3 100%)';
+                    scoreGradient = 'linear-gradient(135deg, #ff9ff3, #c44569)';
+                    borderGradient = 'linear-gradient(45deg, #ff9ff3, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff6b9d, #ff9ff3)';
+                    shadowColor = 'rgba(255, 159, 243, 0.4)';
+                } else if (score <= 15) {
+                    // Warm pastel theme
+                    bgGradient = 'linear-gradient(135deg, #ffd93d 0%, #ffa45b 50%, #ffaaa5 100%)';
+                    scoreGradient = 'linear-gradient(135deg, #ffa45b, #feca57)';
+                    borderGradient = 'linear-gradient(45deg, #ffd93d, #ffa45b, #ff6b9d, #ff9ff3, #4fa3d1, #ffd93d)';
+                    shadowColor = 'rgba(255, 164, 91, 0.4)';
+                } else if (score <= 20) {
+                    // Bright pastel theme
+                    bgGradient = 'linear-gradient(135deg, #ff9ff3 0%, #ffa45b 50%, #ffd93d 100%)';
+                    scoreGradient = 'linear-gradient(135deg, #ff6b9d, #ff9ff3)';
+                    borderGradient = 'linear-gradient(45deg, #ff6b9d, #ff9ff3, #ffa45b, #ffd93d, #6bcf7f, #ff6b9d)';
+                    shadowColor = 'rgba(255, 107, 157, 0.4)';
+                } else {
+                    // Rainbow pastel theme for high scores
+                    bgGradient = 'linear-gradient(135deg, #a8e6cf 0%, #ffd3b6 33%, #ffaaa5 66%, #ff9ff3 100%)';
+                    scoreGradient = 'linear-gradient(135deg, #ff6b9d, #ffd93d)';
+                    borderGradient = 'linear-gradient(45deg, #ff6b9d, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff9ff3, #ff6b9d)';
+                    shadowColor = 'rgba(255, 164, 91, 0.4)';
+                }
+
+                // Apply theme
+                document.body.style.background = bgGradient;
+                const scoreInfo = document.getElementById('score-info');
+                scoreInfo.style.background = scoreGradient;
+                scoreInfo.style.boxShadow = `0 6px 15px ${shadowColor}`;
+
+                // Update container border using style injection
+                let styleEl = document.getElementById('dynamic-theme-style');
+                if (!styleEl) {
+                    styleEl = document.createElement('style');
+                    styleEl.id = 'dynamic-theme-style';
+                    document.head.appendChild(styleEl);
+                }
+                styleEl.textContent = `.container::before { background: ${borderGradient}; }`;
+
+                // Add more floating decorations as score increases
+                this.updateFloatingDecorations();
+            }
+
+            updateFloatingDecorations() {
+                // Remove old dynamic decorations
+                document.querySelectorAll('.dynamic-decoration').forEach(el => el.remove());
+
+                // Add more decorations based on score
+                const decorationSets = [
+                    ['🌟', '💫', '✨', '⭐'],  // Score 6-10
+                    ['🔥', '💥', '⚡', '🌈'],  // Score 11-15
+                    ['🎯', '🏆', '👑', '💎'],  // Score 16-20
+                    ['🦄', '🌠', '🎨', '🎪']   // Score 21+
+                ];
+
+                const baseDecorations = 6; // Initial decorations
+                const additionalSets = Math.floor((this.score - 1) / 5); // One new set every 5 points
+
+                for (let setIndex = 0; setIndex < additionalSets && setIndex < decorationSets.length; setIndex++) {
+                    const emojiSet = decorationSets[setIndex];
+                    emojiSet.forEach((emoji, index) => {
+                        const decoration = document.createElement('div');
+                        decoration.className = 'star-decoration dynamic-decoration';
+                        decoration.textContent = emoji;
+
+                        // Position randomly
+                        const positions = [
+                            { top: '20%', left: '80%' },
+                            { top: '70%', right: '80%' },
+                            { top: '40%', left: '25%' },
+                            { top: '85%', left: '50%' }
+                        ];
+
+                        const pos = positions[index];
+                        Object.assign(decoration.style, pos);
+                        decoration.style.animationDelay = `${(setIndex * 4 + index) * 0.3}s`;
+
+                        document.body.appendChild(decoration);
+                    });
+                }
+            }
+
+            setupGlobalKeyboard() {
+                // Remove any existing global keyboard listener
+                if (this.globalKeyboardHandler) {
+                    document.removeEventListener('keydown', this.globalKeyboardHandler);
+                }
+
+                this.globalKeyboardHandler = (e) => {
+                    // Only handle number keys
+                    if (/^[0-9]$/.test(e.key)) {
+                        e.preventDefault();
+
+                        // Find the first empty input or the currently focused input
+                        const inputs = document.querySelectorAll('.digit-input');
+                        let targetInput = null;
+
+                        // Check if any input is currently focused
+                        const focusedInput = document.activeElement;
+                        if (focusedInput && focusedInput.classList.contains('digit-input')) {
+                            targetInput = focusedInput;
+                        } else {
+                            // Find first empty input
+                            for (let input of inputs) {
+                                if (input.value === '') {
+                                    targetInput = input;
+                                    break;
+                                }
+                            }
+                            // If no empty inputs, use the first one
+                            if (!targetInput && inputs.length > 0) {
+                                targetInput = inputs[0];
+                            }
+                        }
+
+                        if (targetInput) {
+                            targetInput.value = e.key;
+                            targetInput.focus();
+
+                            // Trigger the input event manually
+                            const inputEvent = new Event('input', { bubbles: true });
+                            targetInput.dispatchEvent(inputEvent);
+                        }
+                    }
+                };
+
+                document.addEventListener('keydown', this.globalKeyboardHandler);
+            }
+
+            setupEventListeners() {
+                // Setup global keyboard handling
+                this.setupGlobalKeyboard();
+            }
+        }
+
+        // Ensure the page is always ready to receive keypresses
+        window.addEventListener('load', () => {
+            document.body.setAttribute('tabindex', '0');
+            document.body.focus();
+            new MathGame();
+        });
+
+        // Refocus body if focus is lost
+        document.addEventListener('click', () => {
+            document.body.focus();
+        });
+    </script>
+</body>
+</html>

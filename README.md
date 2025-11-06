@@ -29,6 +29,11 @@ Learn addition with visual dot representations! Practice adding numbers with pro
 - **Play:** [math-addition-game.html](math-addition-game.html)
 - **Features:** Visual dot counting, progressive levels (5 correct answers per level), digit-by-digit input, immediate feedback with sounds, confetti celebrations, boy-themed design
 
+### Math Addition - Three Numbers
+Practice adding three numbers together with visual representations! Progressive difficulty with adaptive scoring.
+- **Play:** [math-addition-three-numbers.html](math-addition-three-numbers.html)
+- **Features:** Three-number addition (a + b + c), visual dot counting with three colors, progressive difficulty, adaptive scoring (score increases on correct, decreases after 2 consecutive wrong), dynamic theme changes, celebration animations
+
 ### Math Addition Level 2 (Drag & Drop)
 Master addition equations up to 25 with interactive drag-and-drop gameplay! Fill in missing numbers by dragging digits.
 - **Play:** [math-addition-level2.html](math-addition-level2.html)
