@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplication Table Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            background: linear-gradient(135deg, #f3e5f5 0%, #fff9c4 50%, #e1bee7 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            outline: none;
+            position: relative;
+            padding: 20px;
+            animation: backgroundShift 15s ease infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        body::before {
+            content: '✨';
+            position: absolute;
+            font-size: 2em;
+            animation: float 3s ease-in-out infinite;
+            top: 10%;
+            left: 10%;
+            opacity: 0.4;
+        }
+
+        body::after {
+            content: '💜';
+            position: absolute;
+            font-size: 2.5em;
+            animation: float 4s ease-in-out infinite;
+            bottom: 10%;
+            right: 10%;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(8deg); }
+        }
+
+        .star-decoration {
+            position: absolute;
+            font-size: 1.5em;
+            animation: twinkle 2s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.15); }
+        }
+
+        .container {
+            background: linear-gradient(135deg, #ffffff 0%, #fffef7 100%);
+            border-radius: 35px;
+            padding: 25px 35px;
+            box-shadow: 0 25px 80px rgba(156, 39, 176, 0.3),
+                        0 15px 40px rgba(255, 215, 0, 0.2),
+                        inset 0 -5px 15px rgba(156, 39, 176, 0.1);
+            text-align: center;
+            max-width: 1000px;
+            width: 90%;
+            outline: none;
+            border: 6px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            max-height: 95vh;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: scale(1.01);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            background: linear-gradient(45deg, #9c27b0, #7b1fa2, #ffd54f, #ffeb3b, #ab47bc, #ce93d8, #9c27b0);
+            border-radius: 36px;
+            z-index: -1;
+            animation: rainbow 3s linear infinite;
+            background-size: 300% 300%;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            gap: 20px;
+        }
+
+        h1 {
+            color: #9c27b0;
+            font-size: 2.4em;
+            margin: 0;
+            text-shadow: 2px 2px 0px #ffd54f,
+                         4px 4px 0px #ffeb3b,
+                         6px 6px 15px rgba(156, 39, 176, 0.3);
+            animation: titleBounce 2s ease-in-out infinite;
+            letter-spacing: 3px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #9c27b0, #ab47bc, #ffd54f);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(2px 2px 0px #ffd54f) drop-shadow(4px 4px 0px #ffeb3b);
+        }
+
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+
+        .level-info {
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #9c27b0, #ffd54f);
+            color: white;
+            font-weight: bold;
+            padding: 10px 25px;
+            border-radius: 50px;
+            box-shadow: 0 6px 15px rgba(156, 39, 176, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+            white-space: nowrap;
+        }
+
+        .progress-text {
+            font-size: 1.2em;
+            color: #9c27b0;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .equations-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .equation-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f3e5f5, #ffffff);
+            border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .equation-row::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(156, 39, 176, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .equation-row:hover::before {
+            left: 100%;
+        }
+
+        .equation-row:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(156, 39, 176, 0.25);
+        }
+
+        .equation-row.complete {
+            background: linear-gradient(135deg, #ab47bc, #ce93d8, #ffd54f);
+            box-shadow: 0 10px 30px rgba(171, 71, 188, 0.6),
+                        0 0 20px rgba(255, 213, 79, 0.4);
+            animation: successPulse 0.6s ease;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .equation-text {
+            font-size: 2.2em;
+            font-weight: 900;
+            color: #9c27b0;
+            text-shadow: 2px 2px 0px rgba(255,235,59,0.3);
+            min-width: 110px;
+            text-align: right;
+        }
+
+        .equation-row.complete .equation-text {
+            color: white;
+        }
+
+        .equals {
+            font-size: 2.2em;
+            font-weight: 900;
+            color: #ffd54f;
+            text-shadow: 2px 2px 0px rgba(156,39,176,0.3);
+        }
+
+        .equation-row.complete .equals {
+            color: white;
+        }
+
+        .answer-input {
+            width: 85px;
+            height: 75px;
+            font-size: 2.3em;
+            text-align: center;
+            border: 4px solid #ab47bc;
+            border-radius: 15px;
+            outline: none;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fffef7, #ffffff);
+            color: #9c27b0;
+            caret-color: transparent;
+            cursor: default;
+            box-shadow: 0 5px 15px rgba(171, 71, 188, 0.2),
+                        inset 0 2px 5px rgba(255, 255, 255, 0.8);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .answer-input:focus {
+            border-color: #9c27b0;
+            box-shadow: 0 0 30px rgba(156, 39, 176, 0.6),
+                        0 0 15px rgba(255, 213, 79, 0.4),
+                        inset 0 2px 5px rgba(255, 255, 255, 0.8);
+            transform: scale(1.08);
+            animation: focusPulse 1s ease infinite;
+        }
+
+        @keyframes focusPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(156, 39, 176, 0.6), 0 0 15px rgba(255, 213, 79, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.8); }
+            50% { box-shadow: 0 0 40px rgba(156, 39, 176, 0.8), 0 0 20px rgba(255, 213, 79, 0.6), inset 0 2px 5px rgba(255, 255, 255, 0.8); }
+        }
+
+        .answer-input.correct {
+            background: linear-gradient(135deg, #ab47bc, #ce93d8, #ffd54f);
+            border-color: #ab47bc;
+            color: white;
+            box-shadow: 0 8px 25px rgba(171, 71, 188, 0.6),
+                        0 0 20px rgba(255, 213, 79, 0.5),
+                        inset 0 2px 10px rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+            animation: correctBounce 0.6s ease;
+        }
+
+        @keyframes correctBounce {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.15) rotate(3deg); }
+            50% { transform: scale(1.1) rotate(-3deg); }
+            70% { transform: scale(1.05) rotate(2deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .answer-input.wrong {
+            background: linear-gradient(135deg, #ce93d8, #ffeb3b);
+            border-color: #ce93d8;
+            color: white;
+            box-shadow: 0 6px 20px rgba(206, 147, 216, 0.5);
+            animation: shake 0.5s;
+        }
+
+        .celebration-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: 900;
+            z-index: 1000;
+            animation: celebrate 1.5s, rainbow 2s linear infinite;
+            pointer-events: none;
+            background: linear-gradient(135deg, #9c27b0 0%, #ab47bc 25%, #ffd54f 75%, #ffeb3b 100%);
+            padding: 40px 60px;
+            border-radius: 35px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.3), 0 0 80px rgba(156, 39, 176, 0.6);
+            border: 8px solid #ffffff;
+            background-size: 300% 300%;
+            color: white;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+        }
+
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); opacity: 1; }
+            70% { transform: translate(-50%, -50%) scale(1.05) rotate(-5deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .equations-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .header-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .info-row {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .level-info {
+                font-size: 1.2em;
+                padding: 8px 20px;
+            }
+
+            .progress-text {
+                font-size: 1em;
+            }
+
+            .equation-text, .equals {
+                font-size: 1.8em;
+            }
+
+            .answer-input {
+                width: 65px;
+                height: 55px;
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating decorations -->
+    <div class="star-decoration" style="top: 5%; left: 15%;">⭐</div>
+    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">✨</div>
+    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">💜</div>
+    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">💛</div>
+    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🌟</div>
+    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🎯</div>
+
+    <div class="container" id="game-container">
+        <div class="header-row">
+            <h1>✨ Multiplication Table! 💜</h1>
+            <div class="info-row">
+                <div class="level-info" id="level-info">Level 1</div>
+                <div class="progress-text" id="progress-text">0 of 10 correct</div>
+            </div>
+        </div>
+
+        <div class="equations-grid" id="equations-grid"></div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        class MultiplicationTableGame {
+            constructor() {
+                this.level = 1;
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                const messages = [
+                    "Awesome! 🎉", "Great job! ⭐", "Perfect! 🌟",
+                    "Amazing! 🎊", "Wonderful! 🎈", "Fantastic! 🌈",
+                    "Super! 💜", "Brilliant! ✨", "Outstanding! 💫",
+                    "Excellent! 🏆"
+                ];
+                this.messages = messages;
+
+                this.init();
+            }
+
+            init() {
+                this.generateTable();
+                this.setupGlobalKeyboard();
+            }
+
+            playCelebrationSound() {
+                const now = this.audioContext.currentTime;
+
+                // Create a fun ascending tone sequence
+                const frequencies = [523.25, 659.25, 783.99]; // C, E, G notes
+
+                frequencies.forEach((freq, index) => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+
+                    const startTime = now + index * 0.1;
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.3);
+                });
+            }
+
+            generateTable() {
+                const grid = document.getElementById('equations-grid');
+                grid.innerHTML = '';
+
+                document.getElementById('level-info').textContent = `Level ${this.level}`;
+
+                // Generate 10 equations: level × 0 through level × 9
+                for (let b = 0; b <= 9; b++) {
+                    const row = document.createElement('div');
+                    row.className = 'equation-row';
+                    row.dataset.answer = this.level * b;
+
+                    const equationText = document.createElement('div');
+                    equationText.className = 'equation-text';
+                    equationText.textContent = `${this.level} × ${b}`;
+
+                    const equals = document.createElement('span');
+                    equals.className = 'equals';
+                    equals.textContent = '=';
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'answer-input';
+                    input.maxLength = (this.level * b).toString().length;
+                    input.inputMode = 'numeric';
+                    input.pattern = '[0-9]*';
+                    input.dataset.index = b;
+                    input.dataset.answer = this.level * b;
+                    input.addEventListener('input', (e) => this.handleInput(e));
+                    input.addEventListener('keydown', (e) => this.handleKeydown(e));
+
+                    row.appendChild(equationText);
+                    row.appendChild(equals);
+                    row.appendChild(input);
+                    grid.appendChild(row);
+                }
+
+                // Focus on first input
+                setTimeout(() => {
+                    const firstInput = grid.querySelector('.answer-input');
+                    if (firstInput) firstInput.focus();
+                }, 100);
+
+                this.updateProgress();
+            }
+
+            handleInput(e) {
+                const input = e.target;
+                const value = input.value;
+
+                // Only allow numeric input
+                if (!/^\d*$/.test(value)) {
+                    input.value = value.replace(/\D/g, '');
+                    return;
+                }
+
+                const correctAnswer = parseInt(input.dataset.answer);
+                const userAnswer = parseInt(value);
+
+                // Check if the answer is complete and correct
+                if (value.length === correctAnswer.toString().length) {
+                    if (userAnswer === correctAnswer) {
+                        // Correct answer
+                        input.classList.remove('wrong');
+                        input.classList.add('correct');
+                        input.parentElement.classList.add('complete');
+
+                        // Play success sound
+                        this.playSuccessSound();
+
+                        // Move to next input
+                        setTimeout(() => {
+                            const nextInput = this.findNextEmptyInput(input);
+                            if (nextInput) {
+                                nextInput.focus();
+                            }
+                        }, 300);
+
+                        // Check if all answers are correct
+                        this.checkCompletion();
+                    } else {
+                        // Wrong answer
+                        input.classList.remove('correct');
+                        input.classList.add('wrong');
+
+                        // Clear after a delay
+                        setTimeout(() => {
+                            input.value = '';
+                            input.classList.remove('wrong');
+                            input.focus();
+                        }, 800);
+                    }
+                }
+
+                this.updateProgress();
+            }
+
+            handleKeydown(e) {
+                const input = e.target;
+
+                if (e.key === 'Backspace' && input.value === '') {
+                    // Move to previous input
+                    const prevInput = this.findPreviousInput(input);
+                    if (prevInput) {
+                        e.preventDefault();
+                        prevInput.focus();
+                        prevInput.select();
+                    }
+                } else if (e.key === 'Enter') {
+                    // Move to next input
+                    const nextInput = this.findNextEmptyInput(input);
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                }
+            }
+
+            findNextEmptyInput(currentInput) {
+                const inputs = Array.from(document.querySelectorAll('.answer-input'));
+                const currentIndex = inputs.indexOf(currentInput);
+
+                for (let i = currentIndex + 1; i < inputs.length; i++) {
+                    if (!inputs[i].classList.contains('correct')) {
+                        return inputs[i];
+                    }
+                }
+                return null;
+            }
+
+            findPreviousInput(currentInput) {
+                const inputs = Array.from(document.querySelectorAll('.answer-input'));
+                const currentIndex = inputs.indexOf(currentInput);
+
+                if (currentIndex > 0) {
+                    return inputs[currentIndex - 1];
+                }
+                return null;
+            }
+
+            checkCompletion() {
+                const inputs = document.querySelectorAll('.answer-input');
+                const allCorrect = Array.from(inputs).every(input => input.classList.contains('correct'));
+
+                if (allCorrect) {
+                    // All answers correct! Celebrate and advance level
+                    setTimeout(() => {
+                        this.celebrateLevelComplete();
+
+                        setTimeout(() => {
+                            this.level++;
+                            this.generateTable();
+                        }, 2500);
+                    }, 500);
+                }
+            }
+
+            celebrateLevelComplete() {
+                this.playCelebrationSound();
+
+                const gameContainer = document.getElementById('game-container');
+
+                // Show celebration message
+                const msg = this.messages[Math.floor(Math.random() * this.messages.length)];
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration-overlay';
+                celebration.innerHTML = `
+                    <div>${msg}</div>
+                    <div style="font-size: 0.7em; margin-top: 15px;">Level ${this.level} Complete!</div>
+                `;
+                document.body.appendChild(celebration);
+
+                setTimeout(() => {
+                    celebration.remove();
+                }, 2000);
+
+                this.createConfetti();
+            }
+
+            createConfetti() {
+                const celebration = document.getElementById('celebration');
+                const colors = ['#9c27b0', '#ab47bc', '#ce93d8', '#ffd54f', '#ffeb3b', '#fff59d'];
+
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    celebration.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }
+            }
+
+            playSuccessSound() {
+                const now = this.audioContext.currentTime;
+
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+
+                oscillator.frequency.value = 659.25; // E note
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+                oscillator.start(now);
+                oscillator.stop(now + 0.2);
+            }
+
+            updateProgress() {
+                const inputs = document.querySelectorAll('.answer-input');
+                const correctCount = Array.from(inputs).filter(input => input.classList.contains('correct')).length;
+                const total = inputs.length;
+
+                const progressText = document.getElementById('progress-text');
+                if (correctCount === total) {
+                    progressText.textContent = `🎉 All correct! Moving to next level...`;
+                } else {
+                    progressText.textContent = `${correctCount} of ${total} correct`;
+                }
+            }
+
+            setupGlobalKeyboard() {
+                document.addEventListener('keydown', (e) => {
+                    // Only handle number keys
+                    if (/^[0-9]$/.test(e.key)) {
+                        const focusedElement = document.activeElement;
+
+                        // If focus is not on an input, find the first empty input
+                        if (!focusedElement || !focusedElement.classList.contains('answer-input')) {
+                            e.preventDefault();
+                            const firstEmpty = document.querySelector('.answer-input:not(.correct)');
+                            if (firstEmpty) {
+                                firstEmpty.value = e.key;
+                                firstEmpty.focus();
+
+                                // Trigger input event
+                                const inputEvent = new Event('input', { bubbles: true });
+                                firstEmpty.dispatchEvent(inputEvent);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Ensure the page is always ready to receive keypresses
+        window.addEventListener('load', () => {
+            document.body.setAttribute('tabindex', '0');
+            document.body.focus();
+            new MultiplicationTableGame();
+        });
+
+        // Refocus body if focus is lost
+        document.addEventListener('click', () => {
+            document.body.focus();
+        });
+    </script>
+</body>
+</html>

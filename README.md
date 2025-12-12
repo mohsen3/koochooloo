@@ -74,6 +74,11 @@ Master addition tables from 0 to 100! Practice completing full addition tables w
 - **Play:** [addition-table.html](addition-table.html)
 - **Features:** Progressive levels (0+0 through 100+9), two-column layout with 10 equations per level, real-time validation with color feedback (green for correct, red for wrong), automatic focus management, keyboard-friendly input, celebration animations on level completion, confetti effects
 
+### Multiplication Table
+Master multiplication tables from 0 to 100! Practice completing full multiplication tables with progressive levels and a beautiful purple-yellow theme.
+- **Play:** [multiplication-table.html](multiplication-table.html)
+- **Features:** Progressive levels (0×0 through 100×9), two-column layout with 10 equations per level, enhanced visual effects with animated gradients, real-time validation with bouncing animations, automatic focus management, keyboard-friendly input, celebration animations on level completion, confetti effects, purple and yellow color palette
+
 ### Conversation Learning Game
 Learn essential toddler conversations through interactive fill-in-the-blank exercises! Practice 30 real-world conversations with 2-3 blanks per word.
 - **Play:** [conversation-game.html](conversation-game.html)
