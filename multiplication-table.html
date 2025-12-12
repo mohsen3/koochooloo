@@ -12,8 +12,8 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
-            background: linear-gradient(135deg, #f3e5f5 0%, #fff9c4 50%, #e1bee7 100%);
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #1976D2 0%, #0288D1 50%, #0097A7 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,32 +22,26 @@
             outline: none;
             position: relative;
             padding: 20px;
-            animation: backgroundShift 15s ease infinite;
-        }
-
-        @keyframes backgroundShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
         }
 
         body::before {
-            content: '✨';
+            content: '🚀';
             position: absolute;
             font-size: 2em;
             animation: float 3s ease-in-out infinite;
             top: 10%;
             left: 10%;
-            opacity: 0.4;
+            opacity: 0.3;
         }
 
         body::after {
-            content: '💜';
+            content: '⚡';
             position: absolute;
             font-size: 2.5em;
             animation: float 4s ease-in-out infinite;
             bottom: 10%;
             right: 10%;
-            opacity: 0.4;
+            opacity: 0.3;
         }
 
         @keyframes float {
@@ -60,55 +54,37 @@
             font-size: 1.5em;
             animation: twinkle 2s ease-in-out infinite;
             pointer-events: none;
-            opacity: 0.4;
+            opacity: 0.3;
         }
 
         @keyframes twinkle {
             0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.15); }
+            50% { opacity: 0.4; transform: scale(1.1); }
         }
 
         .container {
-            background: linear-gradient(135deg, #ffffff 0%, #fffef7 100%);
-            border-radius: 35px;
+            background: #ffffff;
+            border-radius: 25px;
             padding: 25px 35px;
-            box-shadow: 0 25px 80px rgba(156, 39, 176, 0.3),
-                        0 15px 40px rgba(255, 215, 0, 0.2),
-                        inset 0 -5px 15px rgba(156, 39, 176, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             text-align: center;
             max-width: 1000px;
             width: 90%;
             outline: none;
-            border: 6px solid transparent;
-            background-clip: padding-box;
             position: relative;
             max-height: 95vh;
             overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-
-        .container:hover {
-            transform: scale(1.01);
         }
 
         .container::before {
             content: '';
             position: absolute;
-            top: -6px;
-            left: -6px;
-            right: -6px;
-            bottom: -6px;
-            background: linear-gradient(45deg, #9c27b0, #7b1fa2, #ffd54f, #ffeb3b, #ab47bc, #ce93d8, #9c27b0);
-            border-radius: 36px;
-            z-index: -1;
-            animation: rainbow 3s linear infinite;
-            background-size: 300% 300%;
-        }
-
-        @keyframes rainbow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #FF6F00, #FFA726, #66BB6A, #42A5F5, #1976D2);
+            border-radius: 25px 25px 0 0;
         }
 
         .shake {
@@ -130,25 +106,17 @@
         }
 
         h1 {
-            color: #9c27b0;
-            font-size: 2.4em;
+            color: #1565C0;
+            font-size: 2.2em;
             margin: 0;
-            text-shadow: 2px 2px 0px #ffd54f,
-                         4px 4px 0px #ffeb3b,
-                         6px 6px 15px rgba(156, 39, 176, 0.3);
-            animation: titleBounce 2s ease-in-out infinite;
-            letter-spacing: 3px;
+            font-weight: 800;
+            letter-spacing: 1px;
             flex-shrink: 0;
-            background: linear-gradient(135deg, #9c27b0, #ab47bc, #ffd54f);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(2px 2px 0px #ffd54f) drop-shadow(4px 4px 0px #ffeb3b);
         }
 
         @keyframes titleBounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-5px); }
         }
 
         .info-row {
@@ -159,21 +127,20 @@
         }
 
         .level-info {
-            font-size: 1.5em;
-            background: linear-gradient(135deg, #9c27b0, #ffd54f);
+            font-size: 1.4em;
+            background: #1976D2;
             color: white;
             font-weight: bold;
             padding: 10px 25px;
-            border-radius: 50px;
-            box-shadow: 0 6px 15px rgba(156, 39, 176, 0.4);
-            animation: pulse 2s ease-in-out infinite;
+            border-radius: 25px;
+            box-shadow: 0 4px 10px rgba(25, 118, 210, 0.3);
             white-space: nowrap;
         }
 
         .progress-text {
-            font-size: 1.2em;
-            color: #9c27b0;
-            font-weight: bold;
+            font-size: 1.1em;
+            color: #1565C0;
+            font-weight: 600;
             white-space: nowrap;
         }
 
@@ -195,53 +162,34 @@
             align-items: center;
             justify-content: center;
             gap: 15px;
-            padding: 15px;
-            background: linear-gradient(135deg, #f3e5f5, #ffffff);
-            border-radius: 18px;
-            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.15);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .equation-row::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(156, 39, 176, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .equation-row:hover::before {
-            left: 100%;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
 
         .equation-row:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(156, 39, 176, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .equation-row.complete {
-            background: linear-gradient(135deg, #ab47bc, #ce93d8, #ffd54f);
-            box-shadow: 0 10px 30px rgba(171, 71, 188, 0.6),
-                        0 0 20px rgba(255, 213, 79, 0.4);
-            animation: successPulse 0.6s ease;
+            background: linear-gradient(135deg, #66BB6A, #43A047);
+            box-shadow: 0 4px 15px rgba(67, 160, 71, 0.4);
+            animation: successPulse 0.4s ease;
         }
 
         @keyframes successPulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.03); }
             100% { transform: scale(1); }
         }
 
         .equation-text {
-            font-size: 2.2em;
-            font-weight: 900;
-            color: #9c27b0;
-            text-shadow: 2px 2px 0px rgba(255,235,59,0.3);
+            font-size: 2em;
+            font-weight: 700;
+            color: #1565C0;
             min-width: 110px;
             text-align: right;
         }
@@ -251,10 +199,9 @@
         }
 
         .equals {
-            font-size: 2.2em;
-            font-weight: 900;
-            color: #ffd54f;
-            text-shadow: 2px 2px 0px rgba(156,39,176,0.3);
+            font-size: 2em;
+            font-weight: 700;
+            color: #FF6F00;
         }
 
         .equation-row.complete .equals {
@@ -262,62 +209,48 @@
         }
 
         .answer-input {
-            width: 85px;
-            height: 75px;
-            font-size: 2.3em;
+            width: 80px;
+            height: 70px;
+            font-size: 2em;
             text-align: center;
-            border: 4px solid #ab47bc;
-            border-radius: 15px;
+            border: 3px solid #42A5F5;
+            border-radius: 10px;
             outline: none;
-            font-weight: 900;
-            background: linear-gradient(135deg, #fffef7, #ffffff);
-            color: #9c27b0;
+            font-weight: 700;
+            background: white;
+            color: #1565C0;
             caret-color: transparent;
             cursor: default;
-            box-shadow: 0 5px 15px rgba(171, 71, 188, 0.2),
-                        inset 0 2px 5px rgba(255, 255, 255, 0.8);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
 
         .answer-input:focus {
-            border-color: #9c27b0;
-            box-shadow: 0 0 30px rgba(156, 39, 176, 0.6),
-                        0 0 15px rgba(255, 213, 79, 0.4),
-                        inset 0 2px 5px rgba(255, 255, 255, 0.8);
-            transform: scale(1.08);
-            animation: focusPulse 1s ease infinite;
-        }
-
-        @keyframes focusPulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(156, 39, 176, 0.6), 0 0 15px rgba(255, 213, 79, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.8); }
-            50% { box-shadow: 0 0 40px rgba(156, 39, 176, 0.8), 0 0 20px rgba(255, 213, 79, 0.6), inset 0 2px 5px rgba(255, 255, 255, 0.8); }
+            border-color: #1976D2;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+            transform: scale(1.05);
         }
 
         .answer-input.correct {
-            background: linear-gradient(135deg, #ab47bc, #ce93d8, #ffd54f);
-            border-color: #ab47bc;
+            background: linear-gradient(135deg, #66BB6A, #43A047);
+            border-color: #43A047;
             color: white;
-            box-shadow: 0 8px 25px rgba(171, 71, 188, 0.6),
-                        0 0 20px rgba(255, 213, 79, 0.5),
-                        inset 0 2px 10px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(67, 160, 71, 0.4);
             pointer-events: none;
-            animation: correctBounce 0.6s ease;
+            animation: correctBounce 0.4s ease;
         }
 
         @keyframes correctBounce {
             0% { transform: scale(1); }
-            30% { transform: scale(1.15) rotate(3deg); }
-            50% { transform: scale(1.1) rotate(-3deg); }
-            70% { transform: scale(1.05) rotate(2deg); }
-            100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         .answer-input.wrong {
-            background: linear-gradient(135deg, #ce93d8, #ffeb3b);
-            border-color: #ce93d8;
+            background: #FF5252;
+            border-color: #D32F2F;
             color: white;
-            box-shadow: 0 6px 20px rgba(206, 147, 216, 0.5);
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.4);
             animation: shake 0.5s;
         }
 
@@ -327,18 +260,16 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 3em;
-            font-weight: 900;
+            font-weight: 800;
             z-index: 1000;
-            animation: celebrate 1.5s, rainbow 2s linear infinite;
+            animation: celebrate 1.5s;
             pointer-events: none;
-            background: linear-gradient(135deg, #9c27b0 0%, #ab47bc 25%, #ffd54f 75%, #ffeb3b 100%);
+            background: linear-gradient(135deg, #1976D2, #42A5F5, #66BB6A);
             padding: 40px 60px;
-            border-radius: 35px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.3), 0 0 80px rgba(156, 39, 176, 0.6);
-            border: 8px solid #ffffff;
-            background-size: 300% 300%;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
             color: white;
-            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         @keyframes celebrate {
@@ -419,16 +350,16 @@
 </head>
 <body>
     <!-- Floating decorations -->
-    <div class="star-decoration" style="top: 5%; left: 15%;">⭐</div>
-    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">✨</div>
-    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">💜</div>
-    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">💛</div>
-    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🌟</div>
-    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🎯</div>
+    <div class="star-decoration" style="top: 5%; left: 15%;">⚡</div>
+    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">🚀</div>
+    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">⭐</div>
+    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">🎯</div>
+    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">⚡</div>
+    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🚀</div>
 
     <div class="container" id="game-container">
         <div class="header-row">
-            <h1>✨ Multiplication Table! 💜</h1>
+            <h1>⚡ Multiplication Master! 🚀</h1>
             <div class="info-row">
                 <div class="level-info" id="level-info">Level 1</div>
                 <div class="progress-text" id="progress-text">0 of 10 correct</div>
@@ -668,7 +599,7 @@
 
             createConfetti() {
                 const celebration = document.getElementById('celebration');
-                const colors = ['#9c27b0', '#ab47bc', '#ce93d8', '#ffd54f', '#ffeb3b', '#fff59d'];
+                const colors = ['#1976D2', '#42A5F5', '#66BB6A', '#FF6F00', '#FFA726'];
 
                 for (let i = 0; i < 50; i++) {
                     const confetti = document.createElement('div');
