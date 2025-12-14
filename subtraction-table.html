@@ -425,8 +425,10 @@
 
                 document.getElementById('level-info').textContent = `Level ${this.level}`;
 
-                // Generate 10 equations: level - 0 through level - 9
-                for (let b = 0; b <= 9; b++) {
+                // Generate equations: level - 0 through level - min(level, 9)
+                // This ensures we never have negative results
+                const maxSubtrahend = Math.min(this.level, 9);
+                for (let b = 0; b <= maxSubtrahend; b++) {
                     const row = document.createElement('div');
                     row.className = 'equation-row';
                     row.dataset.answer = this.level - b;
