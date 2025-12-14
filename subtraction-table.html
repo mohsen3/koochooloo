@@ -374,7 +374,8 @@
     <script>
         class SubtractionTableGame {
             constructor() {
-                this.level = 1;
+                this.level = 0;
+                this.maxLevel = 20;
                 this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
                 const messages = [
@@ -425,17 +426,41 @@
 
                 document.getElementById('level-info').textContent = `Level ${this.level}`;
 
-                // Generate equations: level - 0 through level - min(level, 9)
-                // This ensures we never have negative results
-                const maxSubtrahend = Math.min(this.level, 9);
-                for (let b = 0; b <= maxSubtrahend; b++) {
+                // Generate 10 unique random numbers >= level
+                // Prefer single digits and low double digits
+                const minValue = this.level;
+                const maxValue = this.level + 15; // Keep numbers relatively small
+
+                // Create array of available numbers
+                const availableNumbers = [];
+                for (let i = minValue; i <= maxValue; i++) {
+                    availableNumbers.push(i);
+                }
+
+                // Shuffle using Fisher-Yates algorithm
+                for (let i = availableNumbers.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [availableNumbers[i], availableNumbers[j]] = [availableNumbers[j], availableNumbers[i]];
+                }
+
+                // Pick first 10 unique numbers
+                const selectedNumbers = availableNumbers.slice(0, 10);
+
+                // Sort them for easier reading
+                selectedNumbers.sort((a, b) => a - b);
+
+                // Generate 10 equations: x - level
+                for (let i = 0; i < 10; i++) {
+                    const x = selectedNumbers[i];
+                    const answer = x - this.level;
+
                     const row = document.createElement('div');
                     row.className = 'equation-row';
-                    row.dataset.answer = this.level - b;
+                    row.dataset.answer = answer;
 
                     const equationText = document.createElement('div');
                     equationText.className = 'equation-text';
-                    equationText.textContent = `${this.level} − ${b}`;
+                    equationText.textContent = `${x} − ${this.level}`;
 
                     const equals = document.createElement('span');
                     equals.className = 'equals';
@@ -444,11 +469,10 @@
                     const input = document.createElement('input');
                     input.type = 'text';
                     input.className = 'answer-input';
-                    const answer = this.level - b;
                     input.maxLength = Math.max(answer.toString().length, 1);
                     input.inputMode = 'numeric';
                     input.pattern = '[0-9]*';
-                    input.dataset.index = b;
+                    input.dataset.index = i;
                     input.dataset.answer = answer;
                     input.addEventListener('input', (e) => this.handleInput(e));
                     input.addEventListener('keydown', (e) => this.handleKeydown(e));
@@ -571,8 +595,15 @@
                         this.celebrateLevelComplete();
 
                         setTimeout(() => {
-                            this.level++;
-                            this.generateTable();
+                            // Only advance if not at max level
+                            if (this.level < this.maxLevel) {
+                                this.level++;
+                                this.generateTable();
+                            } else {
+                                // Show completion message
+                                const progressText = document.getElementById('progress-text');
+                                progressText.textContent = `🎉 All levels complete! You're a Subtraction Champion!`;
+                            }
                         }, 2500);
                     }, 500);
                 }
