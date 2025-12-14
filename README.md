@@ -79,6 +79,11 @@ Master multiplication tables from 0 to 100! Practice completing full multiplicat
 - **Play:** [multiplication-table.html](multiplication-table.html)
 - **Features:** Progressive levels (0×0 through 100×9), two-column layout with 10 equations per level, clean modern design with blue/green color scheme, real-time validation with smooth animations, automatic focus management, keyboard-friendly input, celebration animations on level completion, confetti effects, boy-friendly rocket and lightning theme
 
+### Subtraction Table
+Master subtraction tables from 0 to 100! Practice completing full subtraction tables with progressive levels and a cool purple and teal space theme.
+- **Play:** [subtraction-table.html](subtraction-table.html)
+- **Features:** Progressive levels (0−0 through 100−9), two-column layout with 10 equations per level, space-themed design with purple/teal color scheme, real-time validation with smooth animations, automatic focus management, keyboard-friendly input, celebration animations on level completion, confetti effects, galaxy theme with stars and moons
+
 ### Conversation Learning Game
 Learn essential toddler conversations through interactive fill-in-the-blank exercises! Practice 30 real-world conversations with 2-3 blanks per word.
 - **Play:** [conversation-game.html](conversation-game.html)
