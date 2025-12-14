@@ -101,8 +101,31 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             gap: 20px;
+        }
+
+        .subtraction-highlight {
+            background: linear-gradient(135deg, #7E57C2, #AB47BC);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(126, 87, 194, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .subtraction-highlight .label {
+            font-size: 1em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .subtraction-highlight .value {
+            font-size: 3em;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
@@ -127,14 +150,21 @@
         }
 
         .level-info {
-            font-size: 1.4em;
-            background: #7E57C2;
+            font-size: 1.8em;
+            background: linear-gradient(135deg, #7E57C2, #AB47BC);
             color: white;
-            font-weight: bold;
-            padding: 10px 25px;
-            border-radius: 25px;
-            box-shadow: 0 4px 10px rgba(126, 87, 194, 0.3);
+            font-weight: 900;
+            padding: 15px 35px;
+            border-radius: 30px;
+            box-shadow: 0 6px 20px rgba(126, 87, 194, 0.5);
             white-space: nowrap;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            animation: levelPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes levelPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 6px 20px rgba(126, 87, 194, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(126, 87, 194, 0.7); }
         }
 
         .progress-text {
@@ -336,6 +366,14 @@
                 font-size: 1em;
             }
 
+            .subtraction-highlight {
+                padding: 15px 30px;
+            }
+
+            .subtraction-highlight .value {
+                font-size: 2em;
+            }
+
             .equation-text, .equals {
                 font-size: 1.8em;
             }
@@ -361,9 +399,14 @@
         <div class="header-row">
             <h1>🌟 Subtraction Champion! 💫</h1>
             <div class="info-row">
-                <div class="level-info" id="level-info">Level 1</div>
+                <div class="level-info" id="level-info">Level 0</div>
                 <div class="progress-text" id="progress-text">0 of 10 correct</div>
             </div>
+        </div>
+
+        <div class="subtraction-highlight">
+            <div class="label">Subtracting:</div>
+            <div class="value" id="subtraction-value">− 0</div>
         </div>
 
         <div class="equations-grid" id="equations-grid"></div>
@@ -425,6 +468,7 @@
                 grid.innerHTML = '';
 
                 document.getElementById('level-info').textContent = `Level ${this.level}`;
+                document.getElementById('subtraction-value').textContent = `− ${this.level}`;
 
                 // Generate 10 unique random numbers >= level
                 // Prefer single digits and low double digits
