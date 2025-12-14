@@ -111,8 +111,21 @@
             padding: 20px 40px;
             border-radius: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 8px 25px rgba(126, 87, 194, 0.4);
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(126, 87, 194, 0.4), 0 0 0 4px #FFD700;
+            border: 5px solid #FFD700;
+            position: relative;
+        }
+
+        .subtraction-highlight::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border: 3px dashed #26C6DA;
+            border-radius: 24px;
+            pointer-events: none;
         }
 
         .subtraction-highlight .label {
