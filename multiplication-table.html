@@ -167,6 +167,14 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .equation-row.active {
+            border: 5px solid #FFD700;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 3px #42A5F5;
+            transform: scale(1.02);
+            background: #ffffff;
         }
 
         .equation-row:hover {
@@ -449,6 +457,7 @@
                     input.dataset.answer = this.level * b;
                     input.addEventListener('input', (e) => this.handleInput(e));
                     input.addEventListener('keydown', (e) => this.handleKeydown(e));
+                    input.addEventListener('focus', () => this.highlightCurrentEquation(row));
 
                     row.appendChild(equationText);
                     row.appendChild(equals);
@@ -646,6 +655,15 @@
                 } else {
                     progressText.textContent = `${correctCount} of ${total} correct`;
                 }
+            }
+
+            highlightCurrentEquation(currentRow) {
+                // Remove active class from all rows
+                const allRows = document.querySelectorAll('.equation-row');
+                allRows.forEach(row => row.classList.remove('active'));
+
+                // Add active class to current row
+                currentRow.classList.add('active');
             }
 
             setupGlobalKeyboard() {
