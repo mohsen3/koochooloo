@@ -84,6 +84,11 @@ Master subtraction from 0 to 20! Practice with randomized subtraction problems a
 - **Play:** [subtraction-table.html](subtraction-table.html)
 - **Features:** 21 levels (0-20) with 10 randomized equations per level, each level focuses on subtracting the level number (e.g., Level 5: various numbers minus 5), unique random numbers on each page (no repetition), answers always zero or positive, two-column layout, space-themed design with purple/teal color scheme, real-time validation with smooth animations, automatic focus management, keyboard-friendly input, celebration animations on level completion, confetti effects, galaxy theme with stars and moons
 
+### Two-Digit Addition
+Practice vertical two-digit addition with automatic carry display! Learn column addition just like on paper with special practice modes.
+- **Play:** [two-digit-addition.html](two-digit-addition.html)
+- **Features:** Vertical addition format (numbers stacked), right-to-left input (ones place first), automatic carry display when needed, 2-digit and 3-digit answers, special practice modes (all, no carry, +01, +02, +03, +10, +20, +30), real-time validation with green/red feedback, automatic focus management, celebration animations, confetti effects
+
 ### Conversation Learning Game
 Learn essential toddler conversations through interactive fill-in-the-blank exercises! Practice 30 real-world conversations with 2-3 blanks per word.
 - **Play:** [conversation-game.html](conversation-game.html)
