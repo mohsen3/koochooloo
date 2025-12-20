@@ -665,6 +665,14 @@
                 const answerRow = document.createElement('div');
                 answerRow.className = 'answer-row';
 
+                // Add spacer if answer is 2 digits (to align with operator column)
+                if (answerLength === 2) {
+                    const spacer = document.createElement('div');
+                    spacer.className = 'operator';
+                    spacer.textContent = '';
+                    answerRow.appendChild(spacer);
+                }
+
                 for (let i = 0; i < answerLength; i++) {
                     const input = document.createElement('input');
                     input.type = 'text';
