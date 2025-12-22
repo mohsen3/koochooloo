@@ -48,6 +48,14 @@
             overflow: hidden;
         }
 
+        .word-display.multi-line {
+            font-size: 9vw;
+        }
+
+        .word-display.very-long {
+            font-size: 7.5vw;
+        }
+
         .word-display span {
             line-height: 1.2;
             word-wrap: break-word;
@@ -286,6 +294,14 @@
                 min-height: 120px;
                 max-height: 35vh;
             }
+
+            .word-display.multi-line {
+                font-size: 7vw;
+            }
+
+            .word-display.very-long {
+                font-size: 6vw;
+            }
         }
     </style>
 </head>
@@ -338,7 +354,109 @@
             // Level 8: 3-word phrases
             ['I love you', 'big red ball', 'the sun shines', 'happy little dog', 'blue and green', 'jump and play'],
             // Level 9: Longer phrases
-            ['I can read', 'look at me', 'this is fun', 'you are great', 'I did it', 'let us play']
+            [
+                'I can read',
+                'look at me',
+                'this is fun',
+                'you are great',
+                'I did it',
+                'let us play',
+                'good morning',
+                'good night',
+                'wash hands',
+                'brush teeth',
+                'time for bed',
+                'I am hungry',
+                'I want milk',
+                'more please',
+                'thank you',
+                'help me please',
+                'all done',
+                'please help me',
+                'I need help',
+                'I need a hug',
+                'I love mommy',
+                'I love daddy',
+                'where is mom',
+                'where is dad',
+                'where is home',
+                'time to eat',
+                'I am thirsty',
+                'I want water',
+                'I want juice',
+                'I want snack',
+                'more water please',
+                'I like apples',
+                'I like bananas',
+                'I like grapes',
+                'I like yogurt',
+                'lets go outside',
+                'lets go home',
+                'hold my hand',
+                'I feel happy',
+                'I feel sleepy',
+                'I am tired',
+                'I am all done',
+                'I need potty',
+                'time to potty',
+                'diaper change',
+                'read a book',
+                'sing a song',
+                'play with me',
+                'I love you',
+                'hug me please',
+                'kiss me please',
+                'thank you mom',
+                'thank you dad',
+                'please and thank you',
+                'excuse me please',
+                'sorry I bumped you',
+                'nice to meet you',
+                'good job',
+                'well done',
+                'I am brave',
+                'I am kind',
+                'I am gentle',
+                'I can share',
+                'lets clean up',
+                'clean up toys',
+                'put toys away',
+                'wash your face',
+                'take a bath',
+                'time for bath',
+                'put on pajamas',
+                'put on shoes',
+                'put on socks',
+                'I want my blanket',
+                'I want my teddy',
+                'where is my toy',
+                'look at the cat',
+                'look at the dog',
+                'see the bird',
+                'I see a bus',
+                'I see a car',
+                'I see a truck',
+                'open the door',
+                'close the door',
+                'turn on light',
+                'turn off light',
+                'please sit down',
+                'please stand up',
+                'lets go potty',
+                'time to wash up',
+                'dry your hands',
+                'blow your nose',
+                'take a deep breath',
+                'count to ten',
+                'jump up high',
+                'clap your hands',
+                'stomp your feet',
+                'spin around',
+                'I love my family',
+                'you are my friend',
+                'we can play together',
+                'lets have a snack'
+            ]
         ];
 
         let currentLevel = 0;
@@ -927,6 +1045,7 @@
             if (currentWordIndex < currentWords.length) {
                 const word = currentWords[currentWordIndex];
                 document.getElementById('currentWord').textContent = word;
+                adjustWordSizing();
                 updateStatus('🎤 Say: "' + word + '"');
                 rotateCharacter();
 
@@ -950,6 +1069,29 @@
                     wordDisplay.classList.add('listening');
                 }
             }
+        }
+
+        function adjustWordSizing() {
+            const wordDisplay = document.getElementById('wordDisplay');
+            const wordSpan = document.getElementById('currentWord');
+            wordDisplay.classList.remove('multi-line', 'very-long');
+
+            requestAnimationFrame(() => {
+                const styles = window.getComputedStyle(wordSpan);
+                let lineHeight = parseFloat(styles.lineHeight);
+                if (Number.isNaN(lineHeight)) {
+                    const fontSize = parseFloat(styles.fontSize) || 16;
+                    lineHeight = fontSize * 1.2;
+                }
+                const height = wordSpan.getBoundingClientRect().height;
+                const lines = Math.round(height / lineHeight);
+                if (lines > 1) {
+                    wordDisplay.classList.add('multi-line');
+                }
+                if (lines > 2) {
+                    wordDisplay.classList.add('very-long');
+                }
+            });
         }
 
         function skipWord() {
@@ -1158,6 +1300,7 @@
 
             if (completed) {
                 document.getElementById('currentWord').textContent = '🎉 You\'re Amazing! 🎉';
+                adjustWordSizing();
                 updateStatus('You completed all the words!');
                 showConfetti();
                 playLevelUpSound();
@@ -1178,6 +1321,7 @@
             document.getElementById('startBtn').style.display = 'inline-block';
             document.getElementById('levelIndicator').style.display = 'none';
             document.getElementById('currentWord').textContent = 'Ready!';
+            adjustWordSizing();
             updateStatus('Ready to learn!');
             document.getElementById('progress').innerHTML = '';
         }
