@@ -148,6 +148,40 @@
             justify-content: center;
         }
 
+        .record-controls {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .small-btn {
+            font-size: 16px;
+            padding: 8px 14px;
+            border-radius: 12px;
+        }
+
+        .record-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+        }
+
+        .record-dot.recording {
+            background: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+        }
+
+        .download-link {
+            font-size: 14px;
+            color: #ffffff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
         button {
             font-size: 20px;
             padding: 12px 24px;
@@ -182,29 +216,6 @@
             gap: 20px;
             margin: 10px 0;
             flex-wrap: wrap;
-        }
-
-        .progress {
-            font-size: 40px;
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .star {
-            display: inline-block;
-            opacity: 0.3;
-            transition: all 0.2s ease;
-        }
-
-        .star.earned {
-            opacity: 1;
-            animation: starPop 0.25s ease;
-        }
-
-        @keyframes starPop {
-            0% { transform: scale(0.9); }
-            100% { transform: scale(1); }
         }
 
         .status {
@@ -315,10 +326,6 @@
                 padding: 10px 20px;
             }
 
-            .progress {
-                font-size: 32px;
-            }
-
             .character {
                 font-size: 60px;
                 bottom: -40px;
@@ -350,7 +357,6 @@
             <div class="level-indicator" id="levelIndicator" style="display: none;">
                 <span class="level-badge">Level <span id="levelNumber">1</span></span>
             </div>
-            <div class="progress" id="progress"></div>
         </div>
 
         <div class="word-display" id="wordDisplay">
@@ -361,9 +367,15 @@
         <div class="footer">
             <div class="status" id="status">Ready to learn!</div>
             <div class="controls">
-                <button id="startBtn" onclick="startGame()">Start Learning</button>
+                <button id="startBtn" onclick="startGame(false)">Start</button>
+                <button id="startRecordBtn" onclick="startGame(true)">Start with Recording</button>
                 <button id="skipBtn" onclick="skipWord()" style="display: none;">Skip Word</button>
                 <button id="restartBtn" onclick="restartGame()" style="display: none;">Play Again</button>
+            </div>
+            <div class="record-controls">
+                <span class="record-dot" id="recordDot" aria-label="Recording status"></span>
+                <button class="small-btn" id="stopRecordBtn" onclick="stopRecording()" disabled>Stop</button>
+                <a class="download-link" id="downloadLink" style="display: none;" download="toddler-recording.webm">Download</a>
             </div>
         </div>
     </div>
@@ -521,6 +533,12 @@
         let recognitionDebounceTimer = null;
         let isProcessingWord = false;  // Prevent double-matches during celebration
         let manualRestartPending = false;  // Avoid double restarts when re-arming per word
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let recordingStream = null;
+        let downloadUrl = null;
+        let pendingRecordingStart = false;
+        let isRecordingActive = false;
 
         // Adaptive difficulty tracking
         let consecutiveSuccesses = 0;
@@ -541,7 +559,6 @@
         function initGame() {
             currentWords = [...wordLevels[currentLevel]];
             shuffleArray(currentWords);
-            updateProgress();
             updateLevelIndicator();
         }
 
@@ -556,18 +573,23 @@
             }
         }
 
-        function startGame() {
+        function startGame(withRecording) {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert('Sorry! Your browser doesn\'t support speech recognition. Please try Chrome, Edge, or Safari.');
                 return;
             }
 
             document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('startRecordBtn').style.display = 'none';
             document.getElementById('skipBtn').style.display = 'inline-block';
             document.getElementById('levelIndicator').style.display = 'block';
 
             initGame();
+            pendingRecordingStart = withRecording;
             startSpeechRecognition();
+            if (withRecording) {
+                showRecordingControls();
+            }
             showNextWord();
         }
 
@@ -591,6 +613,10 @@
                 document.getElementById('wordDisplay').classList.add('listening');
                 updateStatus('🎤 I\'m listening! Say the word!');
                 console.log('%c🎙️ Speech Recognition Started', 'color: green; font-weight: bold');
+                if (pendingRecordingStart) {
+                    pendingRecordingStart = false;
+                    startRecording();
+                }
             };
 
             // Audio detection events
@@ -750,6 +776,11 @@
 
                 if (event.error === 'not-allowed') {
                     updateStatus('Please allow microphone access!');
+                }
+
+                if (event.error === 'audio-capture' && isRecordingActive) {
+                    updateStatus('Recording paused so I can keep listening.');
+                    stopRecording();
                 }
 
                 // Don't spam console with no-speech errors
@@ -1054,8 +1085,6 @@
             celebrateCharacter();
             showFeedbackMessage();
 
-            updateProgress();
-
             // Check if we should level up based on performance
             let shouldLevelUp = false;
             if (consecutiveSuccesses >= SUCCESS_THRESHOLD && currentLevel < wordLevels.length - 1) {
@@ -1182,19 +1211,6 @@
                 showNextWord();
                 updateStatus('No worries! Let\'s try a different word!');
             }
-        }
-
-        function updateProgress() {
-            const progressDiv = document.getElementById('progress');
-            const totalWords = currentWords.length;
-            let html = '';
-
-            for (let i = 0; i < totalWords; i++) {
-                const earned = i < currentWordIndex ? 'earned' : '';
-                html += `<span class="star ${earned}">⭐</span>`;
-            }
-
-            progressDiv.innerHTML = html;
         }
 
         function updateStatus(message) {
@@ -1380,13 +1396,80 @@
             isProcessingWord = false;
             consecutiveSuccesses = 0;
             consecutiveFailures = 0;
+            pendingRecordingStart = false;
             document.getElementById('restartBtn').style.display = 'none';
             document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('startRecordBtn').style.display = 'inline-block';
             document.getElementById('levelIndicator').style.display = 'none';
             document.getElementById('currentWord').textContent = 'Ready!';
             adjustWordSizing();
             updateStatus('Ready to learn!');
-            document.getElementById('progress').innerHTML = '';
+            hideRecordingControls();
+        }
+
+        async function startRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                return;
+            }
+
+            try {
+                if (!window.MediaRecorder) {
+                    updateStatus('Recording is not supported in this browser.');
+                    return;
+                }
+                if (!recordingStream) {
+                    recordingStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                }
+                recordedChunks = [];
+                mediaRecorder = new MediaRecorder(recordingStream);
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data && event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                    if (downloadUrl) {
+                        URL.revokeObjectURL(downloadUrl);
+                    }
+                    downloadUrl = URL.createObjectURL(blob);
+                    const link = document.getElementById('downloadLink');
+                    link.href = downloadUrl;
+                    link.style.display = 'inline-block';
+                };
+                mediaRecorder.start();
+                document.getElementById('recordDot').classList.add('recording');
+                document.getElementById('stopRecordBtn').disabled = false;
+                isRecordingActive = true;
+            } catch (error) {
+                alert('Microphone access is needed to record.');
+            }
+        }
+
+        function stopRecording() {
+            if (!mediaRecorder || mediaRecorder.state !== 'recording') {
+                return;
+            }
+            mediaRecorder.stop();
+            document.getElementById('recordDot').classList.remove('recording');
+            document.getElementById('stopRecordBtn').disabled = true;
+            isRecordingActive = false;
+        }
+
+        function showRecordingControls() {
+            const controls = document.querySelector('.record-controls');
+            controls.style.display = 'flex';
+            document.getElementById('downloadLink').style.display = 'none';
+            document.getElementById('recordDot').classList.remove('recording');
+            document.getElementById('stopRecordBtn').disabled = true;
+        }
+
+        function hideRecordingControls() {
+            const controls = document.querySelector('.record-controls');
+            controls.style.display = 'none';
+            document.getElementById('downloadLink').style.display = 'none';
+            document.getElementById('recordDot').classList.remove('recording');
+            document.getElementById('stopRecordBtn').disabled = true;
         }
     </script>
 </body>
