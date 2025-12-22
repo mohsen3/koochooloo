@@ -94,6 +94,11 @@ Learn essential toddler conversations through interactive fill-in-the-blank exer
 - **Play:** [conversation-game.html](conversation-game.html)
 - **Features:** 30 essential toddler conversations covering greetings, basic needs, playing, sharing, feelings, and manners; fill-in-the-blank with 2-3 characters per word; automatic focus management; real-time validation with color feedback; personalized greeting with name customization; localStorage persistence; celebration animations; confetti effects; toddler-friendly natural language
 
+### Toddler Reading & Speaking Game
+Help toddlers learn reading and speaking with interactive speech recognition! Progress through 10 adaptive difficulty levels from simple words to complex phrases.
+- **Play:** [toddler-reading-game.html](toddler-reading-game.html)
+- **Features:** Web Speech API for voice recognition, adaptive difficulty system (auto-levels up after 4 successes, down after 3 skips), 10 progressive levels (3-letter words to 3+ word phrases), very lenient fuzzy matching for mispronunciations, robust noise filtering with confidence thresholds, multi-word phrase validation, gentle celebration effects (confetti, sounds, animations), progress tracking with stars, rotating character animations, compact responsive layout for all screen sizes
+
 ## Usage
 
 Simply open any HTML file in a web browser to play. No installation required.
