@@ -350,12 +350,16 @@
         let lastRecognitionTime = 0;
         let recognitionDebounceTimer = null;
         let isProcessingWord = false;  // Prevent double-matches during celebration
+        let manualRestartPending = false;  // Avoid double restarts when re-arming per word
 
         // Adaptive difficulty tracking
         let consecutiveSuccesses = 0;
         let consecutiveFailures = 0;
         const SUCCESS_THRESHOLD = 4;  // Level up after 4 successes
         const FAILURE_THRESHOLD = 3;  // Level down after 3 skips/struggles
+
+        // Debug tracking
+        let debugAttempts = [];
 
         // Audio context for sounds
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -399,6 +403,7 @@
 
         function startSpeechRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
             recognition = new SpeechRecognition();
 
             recognition.continuous = true;  // Keep listening
@@ -406,10 +411,45 @@
             recognition.lang = 'en-US';
             recognition.maxAlternatives = 5;  // Get multiple interpretations
 
+            // Additional settings for better sensitivity
+            if ('audioCapture' in recognition) {
+                recognition.audioCapture = true;
+            }
+
             recognition.onstart = function() {
                 isListening = true;
                 document.getElementById('wordDisplay').classList.add('listening');
                 updateStatus('🎤 I\'m listening! Say the word!');
+                console.log('%c🎙️ Speech Recognition Started', 'color: green; font-weight: bold');
+            };
+
+            // Audio detection events
+            recognition.onaudiostart = function() {
+                console.log('%c🔊 Audio capture started', 'color: gray');
+            };
+
+            recognition.onaudioend = function() {
+                console.log('%c🔇 Audio capture ended', 'color: gray');
+            };
+
+            recognition.onsoundstart = function() {
+                console.log('%c📢 Sound detected', 'color: purple');
+            };
+
+            recognition.onsoundend = function() {
+                console.log('%c🔕 Sound ended', 'color: purple');
+            };
+
+            recognition.onspeechstart = function() {
+                console.log('%c🗣️ Speech detected (processing...)', 'color: blue; font-weight: bold');
+            };
+
+            recognition.onspeechend = function() {
+                console.log('%c🤐 Speech ended', 'color: blue');
+            };
+
+            recognition.onnomatch = function(event) {
+                console.log('%c❓ Speech detected but no match from recognition engine', 'color: orange; font-weight: bold');
             };
 
             recognition.onresult = function(event) {
@@ -419,77 +459,279 @@
                 }
 
                 const now = Date.now();
+                const targetWord = currentWords[currentWordIndex].toLowerCase();
 
-                // Debounce rapid-fire results - reduced to 200ms for better responsiveness
-                if (now - lastRecognitionTime < 200) {
+                // Reduced debounce for faster response to quiet speech
+                if (now - lastRecognitionTime < 100) {
                     return;
                 }
 
+                let bestAttempt = null;
+
                 for (let i = event.resultIndex; i < event.results.length; i++) {
                     const result = event.results[i];
-
-                    // Only process final results or high-confidence interim results
                     const isFinal = result.isFinal;
 
                     // Check all alternatives for better matching
                     for (let j = 0; j < result.length; j++) {
                         const transcript = result[j].transcript.toLowerCase().trim();
-                        const confidence = result[j].confidence;
+                        const confidence = result[j].confidence || 1.0;
 
-                        // Ignore very short utterances (likely noise)
-                        if (transcript.length < 2) continue;
+                        // Track attempt for debugging
+                        const attempt = {
+                            transcript: transcript,
+                            confidence: confidence.toFixed(2),
+                            isFinal: isFinal,
+                            target: targetWord,
+                            rejected: null,
+                            matched: false
+                        };
 
-                        // Gentle confidence filtering for noise reduction
-                        // For final results, require at least 0.4 confidence (pretty lenient)
-                        // For interim results, require moderate confidence (0.65) to avoid false positives
-                        // Note: undefined confidence is treated as 1.0 by some browsers
-                        if (confidence !== undefined) {
-                            if (isFinal && confidence < 0.4) continue;
-                            if (!isFinal && confidence < 0.65) continue;
+                        // Ignore completely empty
+                        if (transcript.length < 1) {
+                            attempt.rejected = 'empty';
+                            debugAttempts.push(attempt);
+                            continue;
                         }
 
-                        const targetWord = currentWords[currentWordIndex].toLowerCase();
+                        // Smart noise filtering: check if it contains letters/words
+                        const hasLetters = /[a-z]/i.test(transcript);
+                        if (!hasLetters) {
+                            attempt.rejected = 'no_letters';
+                            debugAttempts.push(attempt);
+                            continue;
+                        }
+
+                        // VERY sensitive confidence filtering - accept almost anything with words
+                        // Only reject extremely low confidence to filter pure noise
+                        if (confidence !== undefined) {
+                            // For final results, extremely low threshold (0.1) - accept almost anything
+                            if (isFinal && confidence < 0.1) {
+                                attempt.rejected = `low_conf_final(${confidence.toFixed(2)})`;
+                                debugAttempts.push(attempt);
+                                continue;
+                            }
+                            // For interim results, low threshold (0.3) - still very accepting
+                            if (!isFinal && confidence < 0.3) {
+                                attempt.rejected = `low_conf_interim(${confidence.toFixed(2)})`;
+                                debugAttempts.push(attempt);
+                                continue;
+                            }
+                        }
+
+                        // Track this as a valid attempt
+                        if (!bestAttempt || confidence > parseFloat(bestAttempt.confidence)) {
+                            bestAttempt = attempt;
+                        }
 
                         if (isWordMatch(transcript, targetWord)) {
+                            attempt.matched = true;
+                            debugAttempts.push(attempt);
+
+                            // Log successful match
+                            console.log('%c✅ MATCH FOUND', 'color: green; font-weight: bold; font-size: 14px', {
+                                spoken: transcript,
+                                target: targetWord,
+                                confidence: confidence.toFixed(2),
+                                isFinal: isFinal
+                            });
+
                             lastRecognitionTime = now;
                             handleCorrectWord();
+
+                            // Clear debug attempts after success
+                            debugAttempts = [];
                             return;
+                        } else {
+                            attempt.rejected = 'no_match';
+                            debugAttempts.push(attempt);
                         }
                     }
+                }
+
+                // Log if we got results but nothing processable
+                if (bestAttempt === null && event.results.length > 0) {
+                    console.log('%c⚠️ Got speech results but all were filtered out', 'color: orange', {
+                        totalResults: event.results.length,
+                        checkDebugAttempts: 'See debugAttempts array for details'
+                    });
+                }
+
+                // Periodically log aggregated debug info (every 5 attempts)
+                if (debugAttempts.length >= 5 && debugAttempts.length % 5 === 0) {
+                    logDebugSummary();
                 }
             };
 
             recognition.onerror = function(event) {
-                // Gracefully handle errors, especially for kids who might make noise
-                if (event.error === 'no-speech') {
-                    // Ignore no-speech errors
-                    return;
-                }
-                console.log('Speech recognition error:', event.error);
+                // Log all errors for debugging
+                const errorMessages = {
+                    'no-speech': '⏸️ No speech detected (timeout)',
+                    'audio-capture': '🔴 Audio capture failed',
+                    'not-allowed': '🚫 Microphone access denied',
+                    'network': '🌐 Network error',
+                    'aborted': '⛔ Recognition aborted',
+                    'bad-grammar': '📝 Grammar error',
+                    'language-not-supported': '🌍 Language not supported'
+                };
+
+                const message = errorMessages[event.error] || `❌ Unknown error: ${event.error}`;
+                console.log(`%c${message}`, 'color: red; font-weight: bold');
 
                 if (event.error === 'not-allowed') {
                     updateStatus('Please allow microphone access!');
                 }
+
+                // Don't spam console with no-speech errors
+                if (event.error === 'no-speech') {
+                    console.log('%c💡 TIP: Speak louder or closer to the microphone', 'color: orange');
+                }
             };
 
             recognition.onend = function() {
+                console.log('%c⏹️ Recognition ended, restarting...', 'color: gray');
+
+                // If we manually aborted to re-arm for a new word, skip auto restart
+                if (manualRestartPending) {
+                    manualRestartPending = false;
+                    return;
+                }
+
                 // Automatically restart if game is still active
                 if (isListening && currentWordIndex < currentWords.length) {
                     setTimeout(() => {
                         try {
                             recognition.start();
                         } catch (e) {
-                            console.log('Restart error:', e);
+                            console.error('%c❌ Failed to restart recognition', 'color: red; font-weight: bold', e);
                         }
                     }, 100);
                 }
             };
+        }
 
-            try {
-                recognition.start();
-            } catch (e) {
-                console.log('Start error:', e);
+        // Global debug helper - can be called from console
+        window.checkSpeechDebug = function() {
+            console.group('%c🔧 Speech Recognition Debug Info', 'color: cyan; font-weight: bold; font-size: 16px');
+            console.log('Current target:', currentWords[currentWordIndex]);
+            console.log('Is listening:', isListening);
+            console.log('Is processing word:', isProcessingWord);
+            console.log('Total attempts logged:', debugAttempts.length);
+            console.log('Recognition state:', recognition ? 'initialized' : 'not initialized');
+
+            if (debugAttempts.length > 0) {
+                console.log('\n📊 Recent attempts:');
+                logDebugSummary();
+            } else {
+                console.log('%c⚠️ No attempts logged yet - speech may not be reaching the recognition engine', 'color: orange; font-weight: bold');
+                console.log('Possible reasons:');
+                console.log('  1. Volume too low');
+                console.log('  2. Microphone not working');
+                console.log('  3. Background noise drowning out speech');
+                console.log('  4. Browser speech recognition internal filtering');
             }
+
+            console.log('\n💡 TIP: Watch for these console messages when you speak:');
+            console.log('  - 📢 Sound detected (means microphone is picking up audio)');
+            console.log('  - 🗣️ Speech detected (means engine recognizes it as speech)');
+            console.log('  - If you see neither, the audio is too quiet for the browser');
+
+            console.groupEnd();
+        };
+
+        console.log('%c💡 Debug Helper Available: Type checkSpeechDebug() in console anytime', 'color: cyan; font-size: 12px');
+
+        // Apply a tight grammar so the recognizer biases toward the current target
+        function applyGrammarFor(target) {
+            const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
+            if (!recognition || !SpeechGrammarList) return;
+
+            const grammars = new SpeechGrammarList();
+            grammars.addFromString(`#JSGF V1.0; grammar words; public <word> = ${target};`, 1.0);
+            recognition.grammars = grammars;
+            // Ensure we keep a few alternatives while staying biased
+            recognition.maxAlternatives = Math.max(recognition.maxAlternatives || 1, 3);
+        }
+
+        // Restart recognition for each new word so we get a fresh buffer with the new grammar
+        function restartRecognitionForWord(target) {
+            applyGrammarFor(target);
+            if (!recognition) return;
+
+            // If we haven't started listening yet, just start with the grammar applied
+            if (!isListening) {
+                try {
+                    recognition.start();
+                    console.log('%c🎯 Recognition armed for first word:', 'color: teal; font-weight: bold', target);
+                } catch (e) {
+                    console.error('Failed to start recognition for first word', target, e);
+                }
+                return;
+            }
+
+            manualRestartPending = true;
+            try {
+                recognition.abort();
+            } catch (e) {
+                console.warn('Recognition abort failed (may not be running yet):', e);
+            }
+
+            setTimeout(() => {
+                try {
+                    recognition.start();
+                    console.log('%c🎯 Recognition re-armed for word:', 'color: teal; font-weight: bold', target);
+                } catch (e) {
+                    console.error('Failed to restart recognition for word', target, e);
+                }
+            }, 120);
+        }
+
+        function logDebugSummary() {
+            const recentAttempts = debugAttempts.slice(-10);  // Last 10 attempts
+
+            // Aggregate statistics
+            const stats = {
+                total: recentAttempts.length,
+                byReason: {},
+                avgConfidence: 0,
+                transcripts: []
+            };
+
+            let confSum = 0;
+            let confCount = 0;
+
+            recentAttempts.forEach(att => {
+                const reason = att.rejected || 'matched';
+                stats.byReason[reason] = (stats.byReason[reason] || 0) + 1;
+
+                if (att.confidence) {
+                    confSum += parseFloat(att.confidence);
+                    confCount++;
+                }
+
+                if (att.transcript && !stats.transcripts.includes(att.transcript)) {
+                    stats.transcripts.push(att.transcript);
+                }
+            });
+
+            stats.avgConfidence = confCount > 0 ? (confSum / confCount).toFixed(2) : 'N/A';
+
+            // Log structured summary
+            console.groupCollapsed(`🔍 Speech Detection Summary (Target: "${recentAttempts[0]?.target}")`);
+            console.log('%cAttempts:', 'font-weight: bold', stats.total);
+            console.log('%cRejection reasons:', 'font-weight: bold', stats.byReason);
+            console.log('%cAvg Confidence:', 'font-weight: bold', stats.avgConfidence);
+            console.log('%cWhat was heard:', 'font-weight: bold', stats.transcripts);
+
+            // Show detailed table
+            console.table(recentAttempts.map(a => ({
+                'Transcript': a.transcript,
+                'Confidence': a.confidence,
+                'Final': a.isFinal ? '✓' : '○',
+                'Status': a.matched ? '✅ MATCH' : `❌ ${a.rejected}`
+            })));
+
+            console.groupEnd();
         }
 
         // Very lenient fuzzy matching using Levenshtein distance
@@ -688,6 +930,19 @@
                 updateStatus('🎤 Say: "' + word + '"');
                 rotateCharacter();
 
+                // Re-arm recognition with a grammar biased to this word/phrase
+                restartRecognitionForWord(word);
+
+                // Log new word
+                console.log('%c🎯 NEW WORD', 'color: blue; font-weight: bold; font-size: 14px', {
+                    target: word,
+                    level: currentLevel + 1,
+                    progress: `${currentWordIndex + 1}/${currentWords.length}`
+                });
+
+                // Clear previous attempts
+                debugAttempts = [];
+
                 // Re-enable listening visual indicator
                 const wordDisplay = document.getElementById('wordDisplay');
                 wordDisplay.classList.remove('success');
@@ -698,7 +953,19 @@
         }
 
         function skipWord() {
+            // Log debug summary before skipping
+            if (debugAttempts.length > 0) {
+                console.log('%c⏭️ WORD SKIPPED', 'color: orange; font-weight: bold; font-size: 14px', {
+                    target: currentWords[currentWordIndex],
+                    attempts: debugAttempts.length
+                });
+                logDebugSummary();
+            }
+
             isProcessingWord = false;  // Reset in case we're skipping during celebration
+
+            // Clear debug attempts for next word
+            debugAttempts = [];
 
             // Adaptive difficulty tracking
             consecutiveFailures++;
