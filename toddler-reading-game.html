@@ -11,14 +11,39 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-sky: #9be7ff;
+            --bg-sun: #ffe29a;
+            --card-glass: rgba(255, 255, 255, 0.28);
+            --card-border: rgba(255, 255, 255, 0.55);
+            --accent-warm: #ff7a59;
+            --accent-cool: #24c6dc;
+            --text-bright: #fff2a8;
+            --shadow-soft: rgba(0, 0, 0, 0.2);
+        }
+
         body {
-            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Comic Sans MS', 'Trebuchet MS', 'Arial Rounded MT Bold', cursive, sans-serif;
+            background: linear-gradient(160deg, var(--bg-sky) 0%, #b3f4f9 40%, var(--bg-sun) 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: -20%;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.5), transparent 40%),
+                radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.35), transparent 45%),
+                radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.25), transparent 50%),
+                radial-gradient(circle at 30% 75%, rgba(255, 255, 255, 0.3), transparent 55%);
+            filter: blur(0px);
+            pointer-events: none;
         }
 
         .container {
@@ -26,18 +51,20 @@
             padding: 20px;
             max-width: 1200px;
             width: 100%;
+            position: relative;
+            z-index: 1;
         }
 
         .word-display {
             font-size: 12vw;
             font-weight: bold;
-            color: #FFD700;
-            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+            color: var(--text-bright);
+            text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.25);
             margin: 20px 0;
             padding: 30px 20px;
-            background: rgba(255, 255, 255, 0.2);
+            background: linear-gradient(145deg, var(--card-glass), rgba(255, 255, 255, 0.15));
             border-radius: 30px;
-            border: 8px solid rgba(255, 255, 255, 0.4);
+            border: 8px solid var(--card-border);
             min-height: 200px;
             max-height: 45vh;
             display: flex;
@@ -46,6 +73,8 @@
             position: relative;
             transition: all 0.3s ease;
             overflow: hidden;
+            box-shadow: 0 20px 40px var(--shadow-soft);
+            backdrop-filter: blur(8px);
         }
 
         .word-display.multi-line {
@@ -64,15 +93,15 @@
         }
 
         .word-display.listening {
-            border-color: #4ade80;
-            box-shadow: 0 0 40px rgba(74, 222, 128, 0.5);
+            border-color: #34d399;
+            box-shadow: 0 0 40px rgba(52, 211, 153, 0.5);
             animation: pulse 1.5s infinite;
         }
 
         .word-display.success {
-            border-color: #FFD700;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 255, 255, 0.3));
-            box-shadow: 0 0 60px rgba(255, 215, 0, 0.8);
+            border-color: #ffe066;
+            background: linear-gradient(135deg, rgba(255, 224, 102, 0.35), rgba(255, 255, 255, 0.35));
+            box-shadow: 0 0 60px rgba(255, 224, 102, 0.7);
             animation: successPulse 0.6s ease;
         }
 
@@ -122,11 +151,11 @@
             padding: 12px 24px;
             border: none;
             border-radius: 15px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, var(--accent-cool) 0%, var(--accent-warm) 100%);
             color: white;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
             transition: transform 0.2s;
             font-family: inherit;
         }
@@ -179,10 +208,14 @@
 
         .status {
             font-size: 22px;
-            color: white;
+            color: #ffffff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             text-align: center;
             max-width: 400px;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 10px 16px;
+            border-radius: 999px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
         }
 
         .confetti {
@@ -202,7 +235,7 @@
             transform: translate(-50%, -50%);
             font-size: 60px;
             font-weight: bold;
-            color: #FFD700;
+            color: #fff3b0;
             text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
             opacity: 0;
             pointer-events: none;
@@ -1162,7 +1195,16 @@
         }
 
         function showFeedbackMessage() {
-            const messages = ['Amazing!', 'Perfect!', 'Great job!', 'Wonderful!', 'You did it!', 'Awesome!', 'Super!'];
+            const messages = [
+                'You did it!',
+                'Super reader!',
+                'Shiny star!',
+                'Fantastic!',
+                'Great job!',
+                'High five!',
+                'So proud of you!',
+                'You are amazing!'
+            ];
             const message = messages[Math.floor(Math.random() * messages.length)];
             const feedbackEl = document.getElementById('feedbackMessage');
             feedbackEl.textContent = message;
@@ -1299,9 +1341,9 @@
             document.getElementById('wordDisplay').classList.remove('listening');
 
             if (completed) {
-                document.getElementById('currentWord').textContent = '🎉 You\'re Amazing! 🎉';
+                document.getElementById('currentWord').textContent = '🌟 Super reader! 🌟';
                 adjustWordSizing();
-                updateStatus('You completed all the words!');
+                updateStatus('You did it! You completed all the words!');
                 showConfetti();
                 playLevelUpSound();
             }
