@@ -99,7 +99,6 @@
         .word-display.listening {
             border-color: #34d399;
             box-shadow: 0 0 16px rgba(52, 211, 153, 0.35);
-            animation: pulse 0.6s infinite;
         }
 
         .word-display.success {
@@ -114,22 +113,11 @@
             100% { transform: scale(1.02); }
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.01); }
-        }
-
         .character {
             position: absolute;
-            bottom: -60px;
+            bottom: -40px;
             right: 30px;
             font-size: 80px;
-            animation: bounce 1s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
         }
 
         .character.celebrate {
@@ -277,12 +265,6 @@
             background: #4ade80;
             border-radius: 50%;
             margin-left: 10px;
-            animation: blink 0.45s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
         }
 
         .level-indicator {
