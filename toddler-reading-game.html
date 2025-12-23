@@ -355,7 +355,7 @@
         </div>
 
         <div class="footer">
-            <div class="status" id="status">Ready to learn!</div>
+            <div class="status" id="status"></div>
             <div class="controls">
                 <button id="startBtn" onclick="startGame(false)">Start</button>
                 <button id="startRecordBtn" onclick="startGame(true)">Start with Recording</button>
@@ -1397,7 +1397,7 @@
             document.getElementById('levelIndicator').style.display = 'none';
             document.getElementById('currentWord').textContent = 'Ready!';
             adjustWordSizing();
-            updateStatus('Ready to learn!');
+            updateStatus('');
             hideRecordingControls();
             document.getElementById('progressText').textContent = '';
         }
