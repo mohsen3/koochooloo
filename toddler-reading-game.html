@@ -400,395 +400,329 @@
         const wordLevels = [
             // Level 0: First words (preschool)
             [
-                'mom', 'dad', 'baby', 'cat', 'dog', 'ball', 'cup', 'book', 'bed', 'milk', 'water',
-                'snack', 'car', 'bus', 'hat', 'shoe', 'toy', 'yes', 'no', 'stop', 'go', 'help'
+                ['mom', 'مامان'], ['dad', 'بابا'], ['baby', 'نی نی'], ['cat', 'گربه'], ['dog', 'سگ'],
+                ['ball', 'توپ'], ['cup', 'لیوان'], ['book', 'کتاب'], ['bed', 'تخت'], ['milk', 'شیر'],
+                ['water', 'آب'], ['snack', 'خوراکی'], ['car', 'ماشین'], ['bus', 'اتوبوس'],
+                ['hat', 'کلاه'], ['shoe', 'کفش'], ['toy', 'اسباب بازی'], ['yes', 'بله'], ['no', 'نه'],
+                ['stop', 'بایست'], ['go', 'برو'], ['help', 'کمک']
             ],
             // Level 1: People and daily items (ages 3-4)
             [
-                'brother', 'sister', 'grandma', 'grandpa', 'baby', 'diaper', 'potty', 'tooth', 'brush',
-                'soap', 'towel', 'shirt', 'pants', 'sock', 'shoe', 'jacket', 'blanket', 'teddy',
-                'cookie', 'banana', 'apple', 'cracker', 'juice', 'teacher', 'school', 'class',
-                'daycare', 'lunch', 'backpack'
+                ['brother', 'برادر'], ['sister', 'خواهر'], ['grandma', 'مامان بزرگ'],
+                ['grandpa', 'بابابزرگ'], ['baby', 'بچه'], ['diaper', 'پوشک'], ['potty', 'لگن'],
+                ['tooth', 'دندان'], ['brush', 'مسواک'], ['soap', 'صابون'], ['towel', 'حوله'],
+                ['shirt', 'پیراهن'], ['pants', 'شلوار'], ['sock', 'جوراب'], ['shoe', 'کفش'],
+                ['jacket', 'کاپشن'], ['blanket', 'پتو'], ['teddy', 'خرس عروسکی'],
+                ['cookie', 'بیسکویت'], ['banana', 'موز'], ['apple', 'سیب'], ['cracker', 'کراکر'],
+                ['juice', 'آبمیوه'], ['teacher', 'مربی'], ['school', 'مدرسه'], ['class', 'کلاس'],
+                ['daycare', 'مهدکودک'], ['lunch', 'ناهار'], ['backpack', 'کوله پشتی']
             ],
             // Level 2: Common actions and opposites (ages 3-4)
             [
-                'eat', 'drink', 'sleep', 'wake', 'play', 'read', 'draw', 'sing', 'dance', 'jump',
-                'run', 'walk', 'sit', 'stand', 'open', 'close', 'wash', 'dry', 'clean', 'dirty',
-                'hot', 'cold', 'big', 'small', 'share', 'wait', 'listen', 'talk', 'inside', 'outside'
+                ['eat', 'بخور'], ['drink', 'بنوش'], ['sleep', 'بخواب'], ['wake', 'بیدار شو'],
+                ['play', 'بازی کن'], ['read', 'بخوان'], ['draw', 'نقاشی کن'], ['sing', 'آواز بخوان'],
+                ['dance', 'برقص'], ['jump', 'بپر'], ['run', 'بدو'], ['walk', 'راه برو'],
+                ['sit', 'بشین'], ['stand', 'بایست'], ['open', 'باز کن'], ['close', 'ببند'],
+                ['wash', 'بشور'], ['dry', 'خشک کن'], ['clean', 'تمیز'], ['dirty', 'کثیف'],
+                ['hot', 'داغ'], ['cold', 'سرد'], ['big', 'بزرگ'], ['small', 'کوچک'],
+                ['share', 'شریک شو'], ['wait', 'صبر کن'], ['listen', 'گوش کن'], ['talk', 'حرف بزن'],
+                ['inside', 'داخل'], ['outside', 'بیرون']
             ],
             // Level 3: My + noun phrases (ages 3-4)
             [
-                'my cup', 'my book', 'my bed', 'my toy', 'my blanket', 'my teddy', 'my shoes',
-                'my socks', 'my hat', 'my coat', 'my room', 'my chair', 'my ball', 'my car',
-                'my doll', 'my snack', 'my milk', 'my water', 'my juice', 'my plate',
-                'my spoon', 'my fork', 'my diaper', 'my potty', 'my backpack', 'my lunchbox',
-                'my crayons', 'my marker', 'my puzzle', 'my juice box'
+                ['my cup', 'لیوان من'], ['my book', 'کتاب من'], ['my bed', 'تخت من'],
+                ['my toy', 'اسباب بازی من'], ['my blanket', 'پتوی من'], ['my teddy', 'خرس عروسکی من'],
+                ['my shoes', 'کفش من'], ['my socks', 'جوراب من'], ['my hat', 'کلاه من'],
+                ['my coat', 'کاپشن من'], ['my room', 'اتاق من'], ['my chair', 'صندلی من'],
+                ['my ball', 'توپ من'], ['my car', 'ماشین من'], ['my doll', 'عروسک من'],
+                ['my snack', 'خوراکی من'], ['my milk', 'شیر من'], ['my water', 'آب من'],
+                ['my juice', 'آبمیوه من'], ['my plate', 'بشقاب من'], ['my spoon', 'قاشق من'],
+                ['my fork', 'چنگال من'], ['my diaper', 'پوشک من'], ['my potty', 'لگن من'],
+                ['my backpack', 'کوله پشتی من'], ['my lunchbox', 'جعبه ناهار من'],
+                ['my crayons', 'مداد شمعی من'], ['my marker', 'ماژیک من'], ['my puzzle', 'پازل من'],
+                ['my juice box', 'آبمیوه جعبه ای من']
             ],
             // Level 4: Color + noun phrases (ages 3-4)
             [
-                'red ball', 'blue ball', 'green cup', 'yellow car', 'pink hat', 'brown bear',
-                'white dog', 'black cat', 'orange juice', 'purple cup', 'red apple', 'green apple',
-                'blue shoes', 'yellow socks', 'pink shirt', 'brown shoes', 'white bed', 'black pants',
-                'orange snack', 'purple blanket', 'red bus', 'blue truck', 'green frog',
-                'yellow banana', 'blue backpack', 'red crayon', 'green crayon', 'yellow lunchbox',
-                'pink cup', 'purple marker'
+                ['red ball', 'توپ قرمز'], ['blue ball', 'توپ آبی'], ['green cup', 'لیوان سبز'],
+                ['yellow car', 'ماشین زرد'], ['pink hat', 'کلاه صورتی'], ['brown bear', 'خرس قهوه ای'],
+                ['white dog', 'سگ سفید'], ['black cat', 'گربه سیاه'], ['orange juice', 'آبمیوه پرتقالی'],
+                ['purple cup', 'لیوان بنفش'], ['red apple', 'سیب قرمز'], ['green apple', 'سیب سبز'],
+                ['blue shoes', 'کفش آبی'], ['yellow socks', 'جوراب زرد'], ['pink shirt', 'پیراهن صورتی'],
+                ['brown shoes', 'کفش قهوه ای'], ['white bed', 'تخت سفید'], ['black pants', 'شلوار سیاه'],
+                ['orange snack', 'خوراکی نارنجی'], ['purple blanket', 'پتوی بنفش'],
+                ['red bus', 'اتوبوس قرمز'], ['blue truck', 'کامیون آبی'], ['green frog', 'قورباغه سبز'],
+                ['yellow banana', 'موز زرد'], ['blue backpack', 'کوله پشتی آبی'],
+                ['red crayon', 'مداد شمعی قرمز'], ['green crayon', 'مداد شمعی سبز'],
+                ['yellow lunchbox', 'جعبه ناهار زرد'], ['pink cup', 'لیوان صورتی'],
+                ['purple marker', 'ماژیک بنفش']
             ],
             // Level 5: Simple actions (ages 3-4)
             [
-                'go home', 'go outside', 'come here', 'sit down', 'stand up', 'lie down',
-                'pick up', 'put down', 'clean up', 'wash hands', 'brush teeth', 'dry hands',
-                'open door', 'close door', 'turn on', 'turn off', 'hold hands', 'hug me',
-                'kiss me', 'high five', 'look here', 'listen now', 'wait here', 'slow down',
-                'line up', 'use potty', 'take turns', 'share toys', 'pack up', 'wipe nose'
+                ['go home', 'برو خونه'], ['go outside', 'برو بیرون'], ['come here', 'بیا اینجا'],
+                ['sit down', 'بشین'], ['stand up', 'بایست'], ['lie down', 'دراز بکش'],
+                ['pick up', 'بردار'], ['put down', 'بذار پایین'], ['clean up', 'جمع کن'],
+                ['wash hands', 'دستاتو بشور'], ['brush teeth', 'دندونات رو مسواک بزن'],
+                ['dry hands', 'دستاتو خشک کن'], ['open door', 'در را باز کن'],
+                ['close door', 'در را ببند'], ['turn on', 'روشن کن'], ['turn off', 'خاموش کن'],
+                ['hold hands', 'دستم را بگیر'], ['hug me', 'بغلم کن'], ['kiss me', 'منو ببوس'],
+                ['high five', 'دست بده'], ['look here', 'اینجا نگاه کن'], ['listen now', 'الان گوش کن'],
+                ['wait here', 'اینجا صبر کن'], ['slow down', 'آروم تر'], ['line up', 'صف ببند'],
+                ['use potty', 'دستشویی برو'], ['take turns', 'نوبتی باش'],
+                ['share toys', 'اسباب بازی تقسیم کن'], ['pack up', 'وسایلتو جمع کن'],
+                ['wipe nose', 'بینی رو پاک کن']
             ],
             // Level 6: Basic needs (ages 3-4)
             [
-                'I want milk', 'I want water', 'I want snack', 'I want juice', 'I want cookie',
-                'I want banana', 'I want apple', 'I need help', 'I need potty', 'I need hug',
-                'I need rest', 'I need shoes', 'I need socks', 'I need coat', 'I need towel',
-                'I need soap', 'I need toy', 'I need book', 'I need blanket', 'I need teddy',
-                'I need drink', 'I need food', 'I need nap', 'I need bathroom', 'I need lunch',
-                'I need snack', 'I need tissue', 'I need bandage', 'I need backpack'
+                ['I want milk', 'شیر میخوام'], ['I want water', 'آب میخوام'],
+                ['I want snack', 'خوراکی میخوام'], ['I want juice', 'آبمیوه میخوام'],
+                ['I want cookie', 'بیسکویت میخوام'], ['I want banana', 'موز میخوام'],
+                ['I want apple', 'سیب میخوام'], ['I need help', 'کمک میخوام'],
+                ['I need potty', 'دستشویی دارم'], ['I need hug', 'بغل میخوام'],
+                ['I need rest', 'استراحت میخوام'], ['I need shoes', 'کفش میخوام'],
+                ['I need socks', 'جوراب میخوام'], ['I need coat', 'کاپشن میخوام'],
+                ['I need towel', 'حوله میخوام'], ['I need soap', 'صابون میخوام'],
+                ['I need toy', 'اسباب بازی میخوام'], ['I need book', 'کتاب میخوام'],
+                ['I need blanket', 'پتو میخوام'], ['I need teddy', 'خرس عروسکی میخوام'],
+                ['I need drink', 'نوشیدنی میخوام'], ['I need food', 'غذا میخوام'],
+                ['I need nap', 'چرت میخوام'], ['I need bathroom', 'دستشویی میخوام'],
+                ['I need lunch', 'ناهار میخوام'], ['I need snack', 'میان وعده میخوام'],
+                ['I need tissue', 'دستمال میخوام'], ['I need bandage', 'چسب زخم میخوام'],
+                ['I need backpack', 'کوله پشتی میخوام']
             ],
             // Level 7: Feelings (ages 3-4)
             [
-                'I am happy', 'I am sad', 'I am mad', 'I am tired', 'I am sleepy', 'I am hungry',
-                'I am thirsty', 'I am scared', 'I am cold', 'I am hot', 'I feel sick',
-                'I feel better', 'I feel fine', 'I feel okay', 'I feel hurt', 'I feel shy',
-                'I feel brave', 'I feel proud', 'I feel safe', 'I feel lonely', 'I feel silly',
-                'I feel excited', 'I feel worried', 'I feel calm', 'I feel angry', 'I feel bored',
-                'I feel nervous', 'I feel upset', 'I feel surprised'
+                ['I am happy', 'خوشحالم'], ['I am sad', 'غمگینم'], ['I am mad', 'عصبانی ام'],
+                ['I am tired', 'خسته ام'], ['I am sleepy', 'خوابم میاد'], ['I am hungry', 'گرسنه ام'],
+                ['I am thirsty', 'تشنه ام'], ['I am scared', 'می ترسم'], ['I am cold', 'سردمه'],
+                ['I am hot', 'گرممه'], ['I feel sick', 'حالم بده'], ['I feel better', 'حالم بهتره'],
+                ['I feel fine', 'حالم خوبه'], ['I feel okay', 'اوکی ام'], ['I feel hurt', 'درد دارم'],
+                ['I feel shy', 'خجالتی ام'], ['I feel brave', 'شجاعم'],
+                ['I feel proud', 'به خودم می بالم'], ['I feel safe', 'احساس امنیت دارم'],
+                ['I feel lonely', 'تنهایم'], ['I feel silly', 'شیطون شدم'],
+                ['I feel excited', 'هیجان زده ام'], ['I feel worried', 'نگرانم'], ['I feel calm', 'آرامم'],
+                ['I feel angry', 'خیلی عصبانیم'], ['I feel bored', 'حوصله ام سر رفته'],
+                ['I feel nervous', 'استرس دارم'], ['I feel upset', 'ناراحتم'],
+                ['I feel surprised', 'متعجبم']
             ],
             // Level 8: Routines (ages 3-4)
             [
-                'time to eat', 'time for bath', 'time for bed', 'time to potty', 'time to nap',
-                'time to play', 'time to clean', 'time to read', 'wash your hands', 'brush your teeth',
-                'put on shoes', 'put on socks', 'take off shoes', 'take off socks', 'put on coat',
-                'take off coat', 'clean up toys', 'put toys away', 'get in bed', 'get in tub',
-                'dry your hands', 'wipe your face', 'turn off light', 'turn on light',
-                'time for snack', 'time for lunch', 'time for class', 'time for circle',
-                'hang up coat', 'pack backpack'
+                ['time to eat', 'وقت غذاست'], ['time for bath', 'وقت حمامه'],
+                ['time for bed', 'وقت خوابه'], ['time to potty', 'وقت دستشوییه'],
+                ['time to nap', 'وقت چرت زدنه'], ['time to play', 'وقت بازیه'],
+                ['time to clean', 'وقت تمیز کردنه'], ['time to read', 'وقت خوندنه'],
+                ['wash your hands', 'دست هاتو بشور'], ['brush your teeth', 'دندونات رو مسواک بزن'],
+                ['put on shoes', 'کفشاتو بپوش'], ['put on socks', 'جوراباتو بپوش'],
+                ['take off shoes', 'کفشاتو دربیار'], ['take off socks', 'جوراباتو دربیار'],
+                ['put on coat', 'کاپشنتو بپوش'], ['take off coat', 'کاپشنتو دربیار'],
+                ['clean up toys', 'اسباب بازی ها رو جمع کن'],
+                ['put toys away', 'اسباب بازی ها رو بذار سرجا'], ['get in bed', 'برو تخت'],
+                ['get in tub', 'برو تو وان'], ['dry your hands', 'دست هاتو خشک کن'],
+                ['wipe your face', 'صورتتو پاک کن'], ['turn off light', 'چراغو خاموش کن'],
+                ['turn on light', 'چراغو روشن کن'], ['time for snack', 'وقت میان وعده است'],
+                ['time for lunch', 'وقت ناهاره'], ['time for class', 'وقت کلاس است'],
+                ['time for circle', 'وقت حلقه است'], ['hang up coat', 'کاپشن را آویزون کن'],
+                ['pack backpack', 'کوله پشتی رو ببند']
             ],
             // Level 9: Polite requests (ages 3-4)
             [
-                'please help me', 'please wait here', 'please come here', 'please sit down',
-                'please stand up', 'please open door', 'please close door', 'please read book',
-                'please play with me', 'please watch me', 'please hold my hand', 'please hug me',
-                'please kiss me', 'please wipe me', 'please change me', 'please get water',
-                'please get milk', 'please get snack', 'please give toy', 'please give cup',
-                'please give spoon', 'please give fork', 'please be gentle', 'please be quiet',
-                'please line up', 'please sit here', 'please wash hands', 'please use words',
-                'please take turns', 'please share toys'
+                ['please help me', 'لطفا کمکم کن'], ['please wait here', 'لطفا اینجا صبر کن'],
+                ['please come here', 'لطفا بیا اینجا'], ['please sit down', 'لطفا بشین'],
+                ['please stand up', 'لطفا بایست'], ['please open door', 'لطفا در را باز کن'],
+                ['please close door', 'لطفا در را ببند'], ['please read book', 'لطفا کتاب بخون'],
+                ['please play with me', 'لطفا با من بازی کن'], ['please watch me', 'لطفا منو نگاه کن'],
+                ['please hold my hand', 'لطفا دستم رو بگیر'], ['please hug me', 'لطفا بغلم کن'],
+                ['please kiss me', 'لطفا منو ببوس'], ['please wipe me', 'لطفا منو پاک کن'],
+                ['please change me', 'لطفا پوشکم رو عوض کن'], ['please get water', 'لطفا آب بیار'],
+                ['please get milk', 'لطفا شیر بیار'], ['please get snack', 'لطفا خوراکی بیار'],
+                ['please give toy', 'لطفا اسباب بازی بده'], ['please give cup', 'لطفا لیوان بده'],
+                ['please give spoon', 'لطفا قاشق بده'], ['please give fork', 'لطفا چنگال بده'],
+                ['please be gentle', 'لطفا آروم باش'], ['please be quiet', 'لطفا ساکت باش'],
+                ['please line up', 'لطفا صف ببند'], ['please sit here', 'لطفا اینجا بشین'],
+                ['please wash hands', 'لطفا دستاتو بشور'], ['please use words', 'لطفا با کلمه بگو'],
+                ['please take turns', 'لطفا نوبتی باش'], ['please share toys', 'لطفا اسباب بازی بده']
             ],
             // Level 10: Questions (ages 3-4)
             [
-                'where is mom', 'where is dad', 'where is baby', 'where is my toy',
-                'where is my book', 'where is my cup', 'where is my shoe', 'where is my sock',
-                'where is my hat', 'where is my bed', 'where is the ball', 'where is the dog',
-                'where is the cat', 'what is this', 'what is that', 'what is inside',
-                'what is outside', 'who is that', 'who is here', 'can I go', 'can I play',
-                'can I eat', 'can I drink', 'can I help', 'where is teacher', 'where is class',
-                'where is bathroom', 'where is playground', 'where is lunch', 'can I go potty'
+                ['where is mom', 'مامان کجاست'], ['where is dad', 'بابا کجاست'],
+                ['where is baby', 'نی نی کجاست'], ['where is my toy', 'اسباب بازی من کجاست'],
+                ['where is my book', 'کتاب من کجاست'], ['where is my cup', 'لیوان من کجاست'],
+                ['where is my shoe', 'کفش من کجاست'], ['where is my sock', 'جوراب من کجاست'],
+                ['where is my hat', 'کلاه من کجاست'], ['where is my bed', 'تخت من کجاست'],
+                ['where is the ball', 'توپ کجاست'], ['where is the dog', 'سگه کجاست'],
+                ['where is the cat', 'گربه کجاست'], ['what is this', 'این چیه'],
+                ['what is that', 'اون چیه'], ['what is inside', 'توی این چیه'],
+                ['what is outside', 'بیرون چیه'], ['who is that', 'اون کیه'],
+                ['who is here', 'اینجا کیه'], ['can I go', 'می تونم برم'],
+                ['can I play', 'می تونم بازی کنم'], ['can I eat', 'می تونم بخورم'],
+                ['can I drink', 'می تونم بنوشم'], ['can I help', 'می تونم کمک کنم'],
+                ['where is teacher', 'مربی کجاست'], ['where is class', 'کلاس کجاست'],
+                ['where is bathroom', 'دستشویی کجاست'], ['where is playground', 'حیاط کجاست'],
+                ['where is lunch', 'ناهار کجاست'], ['can I go potty', 'می تونم دستشویی برم']
             ],
             // Level 11: Simple directions (ages 3-4)
             [
-                'put it here', 'put it there', 'put it inside', 'put it outside', 'put it on top',
-                'put it under', 'put it away', 'take it out', 'bring it here', 'take it there',
-                'look under bed', 'look behind chair', 'look in box', 'look on table', 'look at me',
-                'look at this', 'look at that', 'come with me', 'come to me', 'stay with me',
-                'stay right here', 'go with me', 'go over there', 'step back now',
-                'hang up coat', 'put backpack away', 'put shoes here', 'walk to class',
-                'walk to door', 'follow the line'
+                ['put it here', 'اینجا بذار'], ['put it there', 'اونجا بذار'],
+                ['put it inside', 'بذار توش'], ['put it outside', 'بذار بیرون'],
+                ['put it on top', 'بذار روش'], ['put it under', 'بذار زیرش'],
+                ['put it away', 'بذار سرجا'], ['take it out', 'درش بیار'],
+                ['bring it here', 'بیار اینجا'], ['take it there', 'ببر اونجا'],
+                ['look under bed', 'زیر تخت رو نگاه کن'], ['look behind chair', 'پشت صندلی رو نگاه کن'],
+                ['look in box', 'توی جعبه رو نگاه کن'], ['look on table', 'روی میز رو نگاه کن'],
+                ['look at me', 'به من نگاه کن'], ['look at this', 'به این نگاه کن'],
+                ['look at that', 'به اون نگاه کن'], ['come with me', 'با من بیا'],
+                ['come to me', 'بیا پیش من'], ['stay with me', 'پیش من بمون'],
+                ['stay right here', 'همینجا بمون'], ['go with me', 'با من برو'],
+                ['go over there', 'برو اونجا'], ['step back now', 'عقب برو الان'],
+                ['hang up coat', 'کاپشن را آویزون کن'], ['put backpack away', 'کوله پشتی رو بذار سرجا'],
+                ['put shoes here', 'کفشاتو اینجا بذار'], ['walk to class', 'برو سمت کلاس'],
+                ['walk to door', 'برو سمت در'], ['follow the line', 'خط رو دنبال کن']
             ],
             // Level 12: Simple statements (ages 3-4)
             [
-                'I can do it', 'I can try again', 'I can help you', 'I can clean up',
-                'I can put away', 'I can read book', 'I can sing song', 'I can count now',
-                'I can jump high', 'I can run fast', 'I can be gentle', 'I can be quiet',
-                'I can be brave', 'I can share toys', 'I can take turns', 'I can say sorry',
-                'I can say please', 'I can say thanks', 'I can wait now', 'I can listen now',
-                'I can follow you', 'I can follow rules', 'I can use words', 'I can ask nicely',
-                'I can wash hands', 'I can pack up', 'I can sit still', 'I can be kind',
-                'I can be patient', 'I can use glue'
+                ['I can do it', 'می تونم انجامش بدم'], ['I can try again', 'می تونم دوباره تلاش کنم'],
+                ['I can help you', 'می تونم کمکت کنم'], ['I can clean up', 'می تونم جمع کنم'],
+                ['I can put away', 'می تونم سرجا بذارم'], ['I can read book', 'می تونم کتاب بخونم'],
+                ['I can sing song', 'می تونم آواز بخونم'], ['I can count now', 'می تونم الان بشمرم'],
+                ['I can jump high', 'می تونم بلند بپرم'], ['I can run fast', 'می تونم تند بدوم'],
+                ['I can be gentle', 'می تونم مهربون باشم'], ['I can be quiet', 'می تونم ساکت باشم'],
+                ['I can be brave', 'می تونم شجاع باشم'],
+                ['I can share toys', 'می تونم اسباب بازی ها رو تقسیم کنم'],
+                ['I can take turns', 'می تونم نوبتی بازی کنم'], ['I can say sorry', 'می تونم معذرت بخوام'],
+                ['I can say please', 'می تونم لطفا بگم'], ['I can say thanks', 'می تونم تشکر کنم'],
+                ['I can wait now', 'می تونم الان صبر کنم'], ['I can listen now', 'می تونم الان گوش کنم'],
+                ['I can follow you', 'می تونم دنبال تو بیام'],
+                ['I can follow rules', 'می تونم قوانین رو رعایت کنم'],
+                ['I can use words', 'می تونم با کلمه ها حرف بزنم'],
+                ['I can ask nicely', 'می تونم مؤدبانه بپرسم'],
+                ['I can wash hands', 'می تونم دستامو بشورم'], ['I can pack up', 'می تونم جمع کنم'],
+                ['I can sit still', 'می تونم آروم بشینم'], ['I can be kind', 'می تونم مهربون باشم'],
+                ['I can be patient', 'می تونم صبور باشم'], ['I can use glue', 'می تونم چسب بزنم']
             ],
             // Level 13: Social play (ages 3-4)
             [
-                'my turn now', 'your turn now', 'take turns please', 'share with me',
-                'share with friends', 'play with me', 'play with us', 'let us play',
-                'let us go', 'let us read', 'let us clean', 'please say sorry',
-                'I am sorry now', 'are you okay', 'I am okay now', 'do you want help',
-                'can you help me', 'thank you mom', 'thank you dad', 'thank you friend',
-                'good job friend', 'nice to meet you', 'see you later', 'see you soon',
-                'let us build', 'let us share', 'can I join', 'can I sit',
-                'welcome friend', 'see you tomorrow'
+                ['my turn now', 'نوبت من الان'], ['your turn now', 'نوبت تو الان'],
+                ['take turns please', 'لطفا نوبتی بازی کن'], ['share with me', 'با من شریک شو'],
+                ['share with friends', 'با دوست ها شریک شو'], ['play with me', 'با من بازی کن'],
+                ['play with us', 'با ما بازی کن'], ['let us play', 'بیاید بازی کنیم'],
+                ['let us go', 'بیاید بریم'], ['let us read', 'بیاید بخونیم'],
+                ['let us clean', 'بیاید تمیز کنیم'], ['please say sorry', 'لطفا معذرت خواهی کن'],
+                ['I am sorry now', 'الان معذرت میخوام'], ['are you okay', 'حالت خوبه'],
+                ['I am okay now', 'الان حالم خوبه'], ['do you want help', 'کمک میخوای'],
+                ['can you help me', 'میتونی کمکم کنی'], ['thank you mom', 'ممنون مامان'],
+                ['thank you dad', 'ممنون بابا'], ['thank you friend', 'ممنون دوست من'],
+                ['good job friend', 'آفرین دوست من'], ['nice to meet you', 'خوشبختم'],
+                ['see you later', 'بعدا می بینمت'], ['see you soon', 'زود می بینمت'],
+                ['let us build', 'بیاید بسازیم'], ['let us share', 'بیاید شریک بشیم'],
+                ['can I join', 'می تونم بیام'], ['can I sit', 'می تونم بشینم'],
+                ['welcome friend', 'خوش اومدی دوست'], ['see you tomorrow', 'فردا می بینمت']
             ],
             // Level 14: Safety and health (ages 3-4)
             [
-                'wash hands please', 'cover your mouth', 'use gentle hands', 'hold my hand',
-                'stay near me', 'stay on sidewalk', 'stop at curb', 'look both ways',
-                'do not touch', 'do not run', 'do not hit', 'do not bite', 'be careful now',
-                'slow down please', 'sit in seat', 'buckle your seat', 'wear your helmet',
-                'wear your jacket', 'drink some water', 'eat your food', 'take a deep breath',
-                'calm down now', 'rest on pillow', 'lie down now', 'walk do not run',
-                'stay with class', 'hold the rail', 'keep hands close', 'ask for help',
-                'use the potty', 'wear your mask'
+                ['wash hands please', 'لطفا دست هاتو بشور'], ['cover your mouth', 'دهنت رو بپوشون'],
+                ['use gentle hands', 'دستای مهربون'], ['hold my hand', 'دستم رو بگیر'],
+                ['stay near me', 'کنارم بمون'], ['stay on sidewalk', 'روی پیاده رو بمون'],
+                ['stop at curb', 'کنار جدول بایست'], ['look both ways', 'هر دو طرف رو نگاه کن'],
+                ['do not touch', 'دست نزن'], ['do not run', 'ندو'], ['do not hit', 'نزن'],
+                ['do not bite', 'گاز نگیر'], ['be careful now', 'الان مراقب باش'],
+                ['slow down please', 'لطفا آروم تر'], ['sit in seat', 'روی صندلی بشین'],
+                ['buckle your seat', 'کمربندتو ببند'], ['wear your helmet', 'کلاه ایمنی بپوش'],
+                ['wear your jacket', 'کاپشنت رو بپوش'], ['drink some water', 'کمی آب بخور'],
+                ['eat your food', 'غذاتو بخور'], ['take a deep breath', 'نفس عمیق بکش'],
+                ['calm down now', 'الان آروم شو'], ['rest on pillow', 'روی بالش استراحت کن'],
+                ['lie down now', 'الان دراز بکش'], ['walk do not run', 'راه برو ندو'],
+                ['stay with class', 'با کلاس بمون'], ['hold the rail', 'نرده رو بگیر'],
+                ['keep hands close', 'دستات پیش خودت'], ['ask for help', 'کمک بخواه'],
+                ['use the potty', 'از دستشویی استفاده کن'], ['wear your mask', 'ماسکت رو بزن']
             ],
             // Level 15: Longer practical requests (ages 3-4)
             [
-                'I need a break', 'I need more time', 'I need help now', 'I want to cuddle',
-                'I want to play', 'I want to draw', 'I want to color', 'I want to build',
-                'I want to read', 'I want to sing', 'I want to dance', 'I want to jump',
-                'can we go now', 'can we play now', 'can we read now', 'can we eat now',
-                'please help me now', 'please listen to me', 'please stay with me',
-                'please look at me', 'please be patient', 'please try again',
-                'please wait a minute', 'please use kind words', 'can we go potty',
-                'can we go playground', 'can we go outside', 'please zip my coat',
-                'please tie my shoes', 'please open my lunch'
+                ['I need a break', 'یه استراحت میخوام'], ['I need more time', 'وقت بیشتر میخوام'],
+                ['I need help now', 'الان کمک میخوام'], ['I want to cuddle', 'بغل میخوام'],
+                ['I want to play', 'میخوام بازی کنم'], ['I want to draw', 'میخوام نقاشی کنم'],
+                ['I want to color', 'میخوام رنگ کنم'], ['I want to build', 'میخوام بسازم'],
+                ['I want to read', 'میخوام بخونم'], ['I want to sing', 'میخوام آواز بخونم'],
+                ['I want to dance', 'میخوام برقصم'], ['I want to jump', 'میخوام بپرم'],
+                ['can we go now', 'میشه الان بریم'], ['can we play now', 'میشه الان بازی کنیم'],
+                ['can we read now', 'میشه الان بخونیم'], ['can we eat now', 'میشه الان غذا بخوریم'],
+                ['please help me now', 'لطفا الان کمکم کن'], ['please listen to me', 'لطفا به حرفم گوش کن'],
+                ['please stay with me', 'لطفا پیشم بمون'], ['please look at me', 'لطفا منو نگاه کن'],
+                ['please be patient', 'لطفا صبور باش'], ['please try again', 'لطفا دوباره تلاش کن'],
+                ['please wait a minute', 'لطفا یه دقیقه صبر کن'],
+                ['please use kind words', 'لطفا مهربون حرف بزن'],
+                ['can we go potty', 'میشه برم دستشویی'], ['can we go playground', 'میشه بریم حیاط'],
+                ['can we go outside', 'میشه بریم بیرون'], ['please zip my coat', 'لطفا زیپمو بکش'],
+                ['please tie my shoes', 'لطفا بند کفشمو ببند'], ['please open my lunch', 'لطفا ناهارمو باز کن']
             ],
             // Level 16: Practical requests (grade 1)
             [
-                'I want to read', 'read it again', 'can we read now', 'can we go now',
-                'can we play outside', 'can we go inside', 'I want to draw', 'I want to color',
-                'I need a pencil', 'I need some paper', 'I lost my toy', 'where is my toy',
-                'where is my book', 'where are my shoes', 'please open the door', 'please close the door',
-                'turn on the light', 'turn off the light', 'I can zip it', 'I can button it',
-                'put the lid on', 'take the lid off'
+                ['I want to read', 'میخوام بخونم'], ['read it again', 'دوباره بخون'],
+                ['can we read now', 'میشه الان بخونیم'], ['can we go now', 'میشه الان بریم'],
+                ['can we play outside', 'میشه بیرون بازی کنیم'], ['can we go inside', 'میشه بریم داخل'],
+                ['I want to draw', 'میخوام نقاشی کنم'], ['I want to color', 'میخوام رنگ کنم'],
+                ['I need a pencil', 'مداد میخوام'], ['I need some paper', 'کاغذ میخوام'],
+                ['I lost my toy', 'اسباب بازی ام گم شد'], ['where is my toy', 'اسباب بازی من کجاست'],
+                ['where is my book', 'کتاب من کجاست'], ['where are my shoes', 'کفش هام کجاست'],
+                ['please open the door', 'لطفا در را باز کن'], ['please close the door', 'لطفا در را ببند'],
+                ['turn on the light', 'چراغ را روشن کن'], ['turn off the light', 'چراغ را خاموش کن'],
+                ['I can zip it', 'میتونم زیپش کنم'], ['I can button it', 'میتونم دکمه اش کنم'],
+                ['put the lid on', 'درش رو بذار'], ['take the lid off', 'درش رو بردار']
             ],
             // Level 17: Descriptive sentences (grade 1)
             [
-                'the big dog barks', 'the small cat sleeps', 'the red truck goes', 'the blue car stops',
-                'the yellow bus waits', 'the green frog hops', 'the brown bear eats', 'the white bird sings',
-                'the tall tree sways', 'the wide river flows', 'the hot soup steams', 'the cold water splashes',
-                'the soft blanket warms', 'the hard rock hurts', 'the light is bright', 'the room is quiet',
-                'the room is noisy', 'I can read this', 'I can write words', 'I can sound it',
-                'I can solve this', 'we can work together'
+                ['the big dog barks', 'سگ بزرگ پارس می کند'], ['the small cat sleeps', 'گربه کوچک می خوابد'],
+                ['the red truck goes', 'کامیون قرمز می رود'], ['the blue car stops', 'ماشین آبی می ایستد'],
+                ['the yellow bus waits', 'اتوبوس زرد منتظر می ماند'], ['the green frog hops', 'قورباغه سبز می پرد'],
+                ['the brown bear eats', 'خرس قهوه ای می خورد'], ['the white bird sings', 'پرنده سفید می خواند'],
+                ['the tall tree sways', 'درخت بلند تاب می خورد'], ['the wide river flows', 'رودخانه پهن جاری است'],
+                ['the hot soup steams', 'سوپ داغ بخار می کند'], ['the cold water splashes', 'آب سرد می پاشد'],
+                ['the soft blanket warms', 'پتوی نرم گرم می کند'], ['the hard rock hurts', 'سنگ سفت درد می آورد'],
+                ['the light is bright', 'نور روشن است'], ['the room is quiet', 'اتاق ساکت است'],
+                ['the room is noisy', 'اتاق شلوغ است'], ['I can read this', 'می توانم این را بخوانم'],
+                ['I can write words', 'می توانم کلمه بنویسم'], ['I can sound it', 'می توانم بخش بخش بخوانم'],
+                ['I can solve this', 'می توانم حلش کنم'], ['we can work together', 'می توانیم با هم کار کنیم']
             ],
             // Level 18: Directions and time words (grade 1)
             [
-                'put it on top', 'put it under there', 'put it in here', 'take it out now',
-                'look under the bed', 'look behind the chair', 'look inside the box', 'look beside the door',
-                'we will go later', 'we will go soon', 'we will be back', 'we will try again',
-                'first we wash hands', 'then we dry hands', 'after snack we play', 'before bed we read',
-                'please line up here', 'please stand in line', 'keep your voice quiet', 'use your inside voice',
-                'use your outdoor voice', 'I can listen well'
+                ['put it on top', 'بذار بالاش'], ['put it under there', 'بذار زیر اون'],
+                ['put it in here', 'بذار این تو'], ['take it out now', 'الان بیرونش بیار'],
+                ['look under the bed', 'زیر تخت رو نگاه کن'], ['look behind the chair', 'پشت صندلی رو نگاه کن'],
+                ['look inside the box', 'داخل جعبه رو نگاه کن'], ['look beside the door', 'کنار در رو نگاه کن'],
+                ['we will go later', 'بعدا میریم'], ['we will go soon', 'به زودی میریم'],
+                ['we will be back', 'برمی گردیم'], ['we will try again', 'دوباره تلاش می کنیم'],
+                ['first we wash hands', 'اول دست می شوریم'], ['then we dry hands', 'بعد دست خشک می کنیم'],
+                ['after snack we play', 'بعد از خوراکی بازی می کنیم'], ['before bed we read', 'قبل از خواب می خونیم'],
+                ['please line up here', 'لطفا اینجا صف بکش'], ['please stand in line', 'لطفا تو صف بایست'],
+                ['keep your voice quiet', 'صداتو آروم نگه دار'], ['use your inside voice', 'با صدای داخل حرف بزن'],
+                ['use your outdoor voice', 'با صدای بیرون حرف بزن'], ['I can listen well', 'خوب گوش می کنم']
             ],
             // Level 19: Classroom and problem-solving (grade 2)
             [
-                'I can follow directions', 'I can make choices', 'I can solve problems', 'I can ask questions',
-                'I can explain it', 'I can help friends', 'I can share ideas', 'I can learn words',
-                'I can read stories', 'I can write notes', 'I can spell words', 'I can count tens',
-                'I can add numbers', 'I can take turns', 'I can use manners', 'please pass the paper',
-                'please pass the pencil', 'please raise your hand', 'please wait your turn',
-                'please speak clearly', 'please listen carefully', 'please try your best'
+                ['I can follow directions', 'می توانم دستورها را دنبال کنم'], ['I can make choices', 'می توانم انتخاب کنم'],
+                ['I can solve problems', 'می توانم مشکل حل کنم'], ['I can ask questions', 'می توانم سوال بپرسم'],
+                ['I can explain it', 'می توانم توضیح بدهم'], ['I can help friends', 'می توانم به دوست ها کمک کنم'],
+                ['I can share ideas', 'می توانم ایده ها را شریک شوم'], ['I can learn words', 'می توانم کلمات یاد بگیرم'],
+                ['I can read stories', 'می توانم داستان بخوانم'], ['I can write notes', 'می توانم یادداشت بنویسم'],
+                ['I can spell words', 'می توانم کلمه ها را هجی کنم'], ['I can count tens', 'می توانم ده تا ده تا بشمرم'],
+                ['I can add numbers', 'می توانم عددها را جمع کنم'], ['I can take turns', 'می توانم نوبتی باشم'],
+                ['I can use manners', 'می توانم مودب باشم'], ['please pass the paper', 'لطفا برگه را بده'],
+                ['please pass the pencil', 'لطفا مداد را بده'], ['please raise your hand', 'لطفا دستت را بلند کن'],
+                ['please wait your turn', 'لطفا نوبتت را صبر کن'], ['please speak clearly', 'لطفا واضح حرف بزن'],
+                ['please listen carefully', 'لطفا با دقت گوش کن'], ['please try your best', 'لطفا بهترینت را بکن']
             ],
             // Level 20: Independence and responsibility (grade 2)
             [
-                'I can stay focused', 'I can check work', 'I can fix mistakes', 'I can read directions',
-                'I can follow rules', 'I can use clues', 'I can tell stories', 'I can write sentences',
-                'I can read aloud', 'I can speak politely', 'I can solve puzzles', 'I can compare numbers',
-                'I can measure length', 'I can tell time', 'I can count money', 'I can sort objects',
-                'I can make lists', 'I can follow steps', 'I can work independently', 'I can get help',
-                'I can listen closely', 'I can be responsible'
-            ]
-        ];
-
-        const wordLevelsFa = [
-            // Level 0
-            [
-                'مامان', 'بابا', 'نی نی', 'گربه', 'سگ', 'توپ', 'لیوان', 'کتاب', 'تخت', 'شیر', 'آب',
-                'خوراکی', 'ماشین', 'اتوبوس', 'کلاه', 'کفش', 'اسباب بازی', 'بله', 'نه', 'بایست', 'برو', 'کمک'
-            ],
-            // Level 1
-            [
-                'برادر', 'خواهر', 'مامان بزرگ', 'بابابزرگ', 'بچه', 'پوشک', 'لگن', 'دندان', 'مسواک',
-                'صابون', 'حوله', 'پیراهن', 'شلوار', 'جوراب', 'کفش', 'کاپشن', 'پتو', 'خرس عروسکی',
-                'بیسکویت', 'موز', 'سیب', 'کراکر', 'آبمیوه', 'مربی', 'مدرسه', 'کلاس',
-                'مهدکودک', 'ناهار', 'کوله پشتی'
-            ],
-            // Level 2
-            [
-                'بخور', 'بنوش', 'بخواب', 'بیدار شو', 'بازی کن', 'بخوان', 'نقاشی کن', 'آواز بخوان',
-                'برقص', 'بپر', 'بدو', 'راه برو', 'بشین', 'بایست', 'باز کن', 'ببند', 'بشور', 'خشک کن',
-                'تمیز', 'کثیف', 'داغ', 'سرد', 'بزرگ', 'کوچک', 'شریک شو', 'صبر کن',
-                'گوش کن', 'حرف بزن', 'داخل', 'بیرون'
-            ],
-            // Level 3
-            [
-                'لیوان من', 'کتاب من', 'تخت من', 'اسباب بازی من', 'پتوی من', 'خرس عروسکی من', 'کفش من',
-                'جوراب من', 'کلاه من', 'کاپشن من', 'اتاق من', 'صندلی من', 'توپ من', 'ماشین من',
-                'عروسک من', 'خوراکی من', 'شیر من', 'آب من', 'آبمیوه من', 'بشقاب من',
-                'قاشق من', 'چنگال من', 'پوشک من', 'لگن من', 'کوله پشتی من', 'جعبه ناهار من',
-                'مداد شمعی من', 'ماژیک من', 'پازل من', 'آبمیوه جعبه ای من'
-            ],
-            // Level 4
-            [
-                'توپ قرمز', 'توپ آبی', 'لیوان سبز', 'ماشین زرد', 'کلاه صورتی', 'خرس قهوه ای',
-                'سگ سفید', 'گربه سیاه', 'آبمیوه پرتقالی', 'لیوان بنفش', 'سیب قرمز', 'سیب سبز',
-                'کفش آبی', 'جوراب زرد', 'پیراهن صورتی', 'کفش قهوه ای', 'تخت سفید', 'شلوار سیاه',
-                'خوراکی نارنجی', 'پتوی بنفش', 'اتوبوس قرمز', 'کامیون آبی', 'قورباغه سبز',
-                'موز زرد', 'کوله پشتی آبی', 'مداد شمعی قرمز', 'مداد شمعی سبز', 'جعبه ناهار زرد',
-                'لیوان صورتی', 'ماژیک بنفش'
-            ],
-            // Level 5
-            [
-                'برو خونه', 'برو بیرون', 'بیا اینجا', 'بشین', 'بایست', 'دراز بکش', 'بردار', 'بذار پایین',
-                'جمع کن', 'دستاتو بشور', 'دندونات رو مسواک بزن', 'دستاتو خشک کن',
-                'در را باز کن', 'در را ببند', 'روشن کن', 'خاموش کن', 'دستم را بگیر', 'بغلم کن',
-                'منو ببوس', 'دست بده', 'اینجا نگاه کن', 'الان گوش کن', 'اینجا صبر کن', 'آروم تر',
-                'صف ببند', 'دستشویی برو', 'نوبتی باش', 'اسباب بازی تقسیم کن', 'وسایلتو جمع کن',
-                'بینی رو پاک کن'
-            ],
-            // Level 6
-            [
-                'شیر میخوام', 'آب میخوام', 'خوراکی میخوام', 'آبمیوه میخوام', 'بیسکویت میخوام',
-                'موز میخوام', 'سیب میخوام', 'کمک میخوام', 'دستشویی دارم', 'بغل میخوام',
-                'استراحت میخوام', 'کفش میخوام', 'جوراب میخوام', 'کاپشن میخوام', 'حوله میخوام',
-                'صابون میخوام', 'اسباب بازی میخوام', 'کتاب میخوام', 'پتو میخوام', 'خرس عروسکی میخوام',
-                'نوشیدنی میخوام', 'غذا میخوام', 'چرت میخوام', 'دستشویی میخوام', 'ناهار میخوام',
-                'میان وعده میخوام', 'دستمال میخوام', 'چسب زخم میخوام', 'کوله پشتی میخوام'
-            ],
-            // Level 7
-            [
-                'خوشحالم', 'غمگینم', 'عصبانی ام', 'خسته ام', 'خوابم میاد', 'گرسنه ام', 'تشنه ام',
-                'می ترسم', 'سردمه', 'گرممه', 'حالم بده', 'حالم بهتره', 'حالم خوبه', 'اوکی ام',
-                'درد دارم', 'خجالتی ام', 'شجاعم', 'به خودم می بالم', 'احساس امنیت دارم', 'تنهایم',
-                'شیطون شدم', 'هیجان زده ام', 'نگرانم', 'آرامم', 'خیلی عصبانیم', 'حوصله ام سر رفته',
-                'استرس دارم', 'ناراحتم', 'متعجبم'
-            ],
-            // Level 8
-            [
-                'وقت غذاست', 'وقت حمامه', 'وقت خوابه', 'وقت دستشوییه', 'وقت چرت زدنه', 'وقت بازیه',
-                'وقت تمیز کردنه', 'وقت خوندنه', 'دست هاتو بشور', 'دندونات رو مسواک بزن',
-                'کفشاتو بپوش', 'جوراباتو بپوش', 'کفشاتو دربیار', 'جوراباتو دربیار', 'کاپشنتو بپوش',
-                'کاپشنتو دربیار', 'اسباب بازی ها رو جمع کن', 'اسباب بازی ها رو بذار سرجا',
-                'برو تخت', 'برو تو وان', 'دست هاتو خشک کن', 'صورتتو پاک کن', 'چراغو خاموش کن',
-                'چراغو روشن کن', 'وقت میان وعده است', 'وقت ناهاره', 'وقت کلاس است',
-                'وقت حلقه است', 'کاپشن را آویزون کن', 'کوله پشتی رو ببند'
-            ],
-            // Level 9
-            [
-                'لطفا کمکم کن', 'لطفا اینجا صبر کن', 'لطفا بیا اینجا', 'لطفا بشین', 'لطفا بایست',
-                'لطفا در را باز کن', 'لطفا در را ببند', 'لطفا کتاب بخون', 'لطفا با من بازی کن',
-                'لطفا منو نگاه کن', 'لطفا دستم رو بگیر', 'لطفا بغلم کن', 'لطفا منو ببوس',
-                'لطفا منو پاک کن', 'لطفا پوشکم رو عوض کن', 'لطفا آب بیار', 'لطفا شیر بیار',
-                'لطفا خوراکی بیار', 'لطفا اسباب بازی بده', 'لطفا لیوان بده', 'لطفا قاشق بده',
-                'لطفا چنگال بده', 'لطفا آروم باش', 'لطفا ساکت باش', 'لطفا صف ببند',
-                'لطفا اینجا بشین', 'لطفا دستاتو بشور', 'لطفا با کلمه بگو',
-                'لطفا نوبتی باش', 'لطفا اسباب بازی بده'
-            ],
-            // Level 10
-            [
-                'مامان کجاست', 'بابا کجاست', 'نی نی کجاست', 'اسباب بازی من کجاست', 'کتاب من کجاست',
-                'لیوان من کجاست', 'کفش من کجاست', 'جوراب من کجاست', 'کلاه من کجاست',
-                'تخت من کجاست', 'توپ کجاست', 'سگه کجاست', 'گربه کجاست', 'این چیه', 'اون چیه',
-                'توی این چیه', 'بیرون چیه', 'اون کیه', 'اینجا کیه', 'می تونم برم',
-                'می تونم بازی کنم', 'می تونم بخورم', 'می تونم بنوشم', 'می تونم کمک کنم',
-                'مربی کجاست', 'کلاس کجاست', 'دستشویی کجاست', 'حیاط کجاست',
-                'ناهار کجاست', 'می تونم دستشویی برم'
-            ],
-            // Level 11
-            [
-                'اینجا بذار', 'اونجا بذار', 'بذار توش', 'بذار بیرون', 'بذار روش', 'بذار زیرش',
-                'بذار سرجا', 'درش بیار', 'بیار اینجا', 'ببر اونجا', 'زیر تخت رو نگاه کن',
-                'پشت صندلی رو نگاه کن', 'توی جعبه رو نگاه کن', 'روی میز رو نگاه کن',
-                'به من نگاه کن', 'به این نگاه کن', 'به اون نگاه کن', 'با من بیا', 'بیا پیش من',
-                'پیش من بمون', 'همینجا بمون', 'با من برو', 'برو اونجا', 'عقب برو الان',
-                'کاپشن را آویزون کن', 'کوله پشتی رو بذار سرجا', 'کفشاتو اینجا بذار',
-                'برو سمت کلاس', 'برو سمت در', 'خط رو دنبال کن'
-            ],
-            // Level 12
-            [
-                'می تونم انجامش بدم', 'می تونم دوباره تلاش کنم', 'می تونم کمکت کنم', 'می تونم جمع کنم',
-                'می تونم سرجا بذارم', 'می تونم کتاب بخونم', 'می تونم آواز بخونم', 'می تونم الان بشمرم',
-                'می تونم بلند بپرم', 'می تونم تند بدوم', 'می تونم مهربون باشم', 'می تونم ساکت باشم',
-                'می تونم شجاع باشم', 'می تونم اسباب بازی ها رو تقسیم کنم', 'می تونم نوبتی بازی کنم',
-                'می تونم معذرت بخوام', 'می تونم لطفا بگم', 'می تونم تشکر کنم', 'می تونم الان صبر کنم',
-                'می تونم الان گوش کنم', 'می تونم دنبال تو بیام', 'می تونم قوانین رو رعایت کنم',
-                'می تونم با کلمه ها حرف بزنم', 'می تونم مؤدبانه بپرسم',
-                'می تونم دستامو بشورم', 'می تونم جمع کنم', 'می تونم آروم بشینم',
-                'می تونم مهربون باشم', 'می تونم صبور باشم', 'می تونم چسب بزنم'
-            ],
-            // Level 13
-            [
-                'نوبت من الان', 'نوبت تو الان', 'لطفا نوبتی بازی کن', 'با من شریک شو',
-                'با دوست ها شریک شو', 'با من بازی کن', 'با ما بازی کن', 'بیاید بازی کنیم', 'بیاید بریم',
-                'بیاید بخونیم', 'بیاید تمیز کنیم', 'لطفا معذرت خواهی کن', 'الان معذرت میخوام',
-                'حالت خوبه', 'الان حالم خوبه', 'کمک میخوای', 'میتونی کمکم کنی', 'ممنون مامان',
-                'ممنون بابا', 'ممنون دوست من', 'آفرین دوست من', 'خوشبختم', 'بعدا می بینمت',
-                'زود می بینمت', 'بیاید بسازیم', 'بیاید شریک بشیم', 'می تونم بیام',
-                'می تونم بشینم', 'خوش اومدی دوست', 'فردا می بینمت'
-            ],
-            // Level 14
-            [
-                'لطفا دست هاتو بشور', 'دهنت رو بپوشون', 'دستای مهربون', 'دستم رو بگیر',
-                'کنارم بمون', 'روی پیاده رو بمون', 'کنار جدول بایست', 'هر دو طرف رو نگاه کن',
-                'دست نزن', 'ندو', 'نزن', 'گاز نگیر', 'الان مراقب باش', 'لطفا آروم تر',
-                'روی صندلی بشین', 'کمربندتو ببند', 'کلاه ایمنی بپوش', 'کاپشنت رو بپوش',
-                'کمی آب بخور', 'غذاتو بخور', 'نفس عمیق بکش', 'الان آروم شو',
-                'روی بالش استراحت کن', 'الان دراز بکش', 'راه برو ندو', 'با کلاس بمون',
-                'نرده رو بگیر', 'دستات پیش خودت', 'کمک بخواه', 'از دستشویی استفاده کن',
-                'ماسکت رو بزن'
-            ],
-            // Level 15
-            [
-                'یه استراحت میخوام', 'وقت بیشتر میخوام', 'الان کمک میخوام', 'بغل میخوام',
-                'میخوام بازی کنم', 'میخوام نقاشی کنم', 'میخوام رنگ کنم', 'میخوام بسازم',
-                'میخوام بخونم', 'میخوام آواز بخونم', 'میخوام برقصم', 'میخوام بپرم',
-                'میشه الان بریم', 'میشه الان بازی کنیم', 'میشه الان بخونیم', 'میشه الان غذا بخوریم',
-                'لطفا الان کمکم کن', 'لطفا به حرفم گوش کن', 'لطفا پیشم بمون', 'لطفا منو نگاه کن',
-                'لطفا صبور باش', 'لطفا دوباره تلاش کن', 'لطفا یه دقیقه صبر کن', 'لطفا مهربون حرف بزن',
-                'میشه برم دستشویی', 'میشه بریم حیاط', 'میشه بریم بیرون', 'لطفا زیپمو بکش',
-                'لطفا بند کفشمو ببند', 'لطفا ناهارمو باز کن'
-            ],
-            // Level 16
-            [
-                'میخوام بخونم', 'دوباره بخون', 'میشه الان بخونیم', 'میشه الان بریم',
-                'میشه بیرون بازی کنیم', 'میشه بریم داخل', 'میخوام نقاشی کنم', 'میخوام رنگ کنم',
-                'مداد میخوام', 'کاغذ میخوام', 'اسباب بازی ام گم شد', 'اسباب بازی من کجاست',
-                'کتاب من کجاست', 'کفش هام کجاست', 'لطفا در را باز کن', 'لطفا در را ببند',
-                'چراغ را روشن کن', 'چراغ را خاموش کن', 'میتونم زیپش کنم', 'میتونم دکمه اش کنم',
-                'درش رو بذار', 'درش رو بردار'
-            ],
-            // Level 17
-            [
-                'سگ بزرگ پارس می کند', 'گربه کوچک می خوابد', 'کامیون قرمز می رود', 'ماشین آبی می ایستد',
-                'اتوبوس زرد منتظر می ماند', 'قورباغه سبز می پرد', 'خرس قهوه ای می خورد',
-                'پرنده سفید می خواند', 'درخت بلند تاب می خورد', 'رودخانه پهن جاری است',
-                'سوپ داغ بخار می کند', 'آب سرد می پاشد', 'پتوی نرم گرم می کند', 'سنگ سفت درد می آورد',
-                'نور روشن است', 'اتاق ساکت است', 'اتاق شلوغ است', 'می توانم این را بخوانم',
-                'می توانم کلمه بنویسم', 'می توانم بخش بخش بخوانم', 'می توانم حلش کنم',
-                'می توانیم با هم کار کنیم'
-            ],
-            // Level 18
-            [
-                'بذار بالاش', 'بذار زیر اون', 'بذار این تو', 'الان بیرونش بیار', 'زیر تخت رو نگاه کن',
-                'پشت صندلی رو نگاه کن', 'داخل جعبه رو نگاه کن', 'کنار در رو نگاه کن', 'بعدا میریم',
-                'به زودی میریم', 'برمی گردیم', 'دوباره تلاش می کنیم', 'اول دست می شوریم',
-                'بعد دست خشک می کنیم', 'بعد از خوراکی بازی می کنیم', 'قبل از خواب می خونیم',
-                'لطفا اینجا صف بکش', 'لطفا تو صف بایست', 'صداتو آروم نگه دار',
-                'با صدای داخل حرف بزن', 'با صدای بیرون حرف بزن', 'خوب گوش می کنم'
-            ],
-            // Level 19
-            [
-                'می توانم دستورها را دنبال کنم', 'می توانم انتخاب کنم', 'می توانم مشکل حل کنم',
-                'می توانم سوال بپرسم', 'می توانم توضیح بدهم', 'می توانم به دوست ها کمک کنم',
-                'می توانم ایده ها را شریک شوم', 'می توانم کلمات یاد بگیرم', 'می توانم داستان بخوانم',
-                'می توانم یادداشت بنویسم', 'می توانم کلمه ها را هجی کنم', 'می توانم ده تا ده تا بشمرم',
-                'می توانم عددها را جمع کنم', 'می توانم نوبتی باشم', 'می توانم مودب باشم',
-                'لطفا برگه را بده', 'لطفا مداد را بده', 'لطفا دستت را بلند کن',
-                'لطفا نوبتت را صبر کن', 'لطفا واضح حرف بزن', 'لطفا با دقت گوش کن',
-                'لطفا بهترینت را بکن'
-            ],
-            // Level 20
-            [
-                'می توانم تمرکز کنم', 'می توانم کارم را چک کنم', 'می توانم اشتباه ها را درست کنم',
-                'می توانم دستورها را بخوانم', 'می توانم قوانین را رعایت کنم', 'می توانم سرنخ ها را پیدا کنم',
-                'می توانم داستان تعریف کنم', 'می توانم جمله بنویسم', 'می توانم بلند بخوانم',
-                'می توانم مودبانه حرف بزنم', 'می توانم معما حل کنم', 'می توانم عددها را مقایسه کنم',
-                'می توانم طول را اندازه بگیرم', 'می توانم ساعت را بگویم', 'می توانم پول بشمرم',
-                'می توانم چیزها را دسته بندی کنم', 'می توانم فهرست بسازم', 'می توانم مرحله ها را دنبال کنم',
-                'می توانم مستقل کار کنم', 'می توانم کمک بگیرم', 'می توانم با دقت گوش کنم',
-                'می توانم مسئول باشم'
+                ['I can stay focused', 'می توانم تمرکز کنم'], ['I can check work', 'می توانم کارم را چک کنم'],
+                ['I can fix mistakes', 'می توانم اشتباه ها را درست کنم'], ['I can read directions', 'می توانم دستورها را بخوانم'],
+                ['I can follow rules', 'می توانم قوانین را رعایت کنم'], ['I can use clues', 'می توانم سرنخ ها را پیدا کنم'],
+                ['I can tell stories', 'می توانم داستان تعریف کنم'], ['I can write sentences', 'می توانم جمله بنویسم'],
+                ['I can read aloud', 'می توانم بلند بخوانم'], ['I can speak politely', 'می توانم مودبانه حرف بزنم'],
+                ['I can solve puzzles', 'می توانم معما حل کنم'], ['I can compare numbers', 'می توانم عددها را مقایسه کنم'],
+                ['I can measure length', 'می توانم طول را اندازه بگیرم'], ['I can tell time', 'می توانم ساعت را بگویم'],
+                ['I can count money', 'می توانم پول بشمرم'], ['I can sort objects', 'می توانم چیزها را دسته بندی کنم'],
+                ['I can make lists', 'می توانم فهرست بسازم'], ['I can follow steps', 'می توانم مرحله ها را دنبال کنم'],
+                ['I can work independently', 'می توانم مستقل کار کنم'], ['I can get help', 'می توانم کمک بگیرم'],
+                ['I can listen closely', 'می توانم با دقت گوش کنم'], ['I can be responsible', 'می توانم مسئول باشم']
             ]
         ];
 
@@ -853,12 +787,11 @@
         let currentCharacterIndex = 0;
 
         function initGame() {
-            const levelWords = wordLevels[currentLevel];
-            const levelWordsFa = wordLevelsFa[currentLevel] || [];
-            const indices = levelWords.map((_, i) => i);
+            const levelPairs = wordLevels[currentLevel] || [];
+            const indices = levelPairs.map((_, i) => i);
             shuffleArray(indices);
-            currentWords = indices.map((i) => levelWords[i]);
-            currentWordsFa = indices.map((i) => levelWordsFa[i] || '');
+            currentWords = indices.map((i) => (levelPairs[i] && levelPairs[i][0]) || '');
+            currentWordsFa = indices.map((i) => (levelPairs[i] && levelPairs[i][1]) || '');
             updateCounter();
             updateLevelIndicator();
         }
