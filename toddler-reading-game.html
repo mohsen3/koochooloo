@@ -289,6 +289,16 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
+        .level-estimate {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.92);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+            padding: 6px 14px;
+            border-radius: 999px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+        }
+
         .footer {
             display: flex;
             align-items: center;
@@ -347,6 +357,7 @@
                 <span class="level-badge">Level <span id="levelNumber">1</span></span>
             </div>
             <div class="progress-text" id="progressText"></div>
+            <div class="level-estimate" id="levelEstimate" style="display: none;"></div>
         </div>
 
         <div class="word-display" id="wordDisplay">
@@ -375,132 +386,201 @@
     <script>
         // Expanded word list with more granular difficulty levels
         const wordLevels = [
-            // Level 0: Very simple 3-letter words
-            ['cat', 'dog', 'sun', 'hat', 'cup', 'pen'],
-            // Level 1: More 3-letter words
-            ['run', 'top', 'car', 'bus', 'bed', 'egg'],
-            // Level 2: Easy 4-letter words
-            ['ball', 'tree', 'book', 'duck', 'fish', 'star'],
-            // Level 3: More 4-letter words
-            ['jump', 'play', 'bird', 'frog', 'moon', 'wind'],
-            // Level 4: 5-letter words
-            ['house', 'happy', 'water', 'apple', 'smile', 'table'],
-            // Level 5: More 5-letter words
-            ['horse', 'green', 'light', 'chair', 'plant', 'heart'],
-            // Level 6: Simple 2-word phrases
-            ['big cat', 'red ball', 'blue sky', 'my dog', 'the sun', 'fun game'],
-            // Level 7: More 2-word phrases
-            ['happy kid', 'green frog', 'yellow star', 'fast car', 'soft bed', 'warm hug'],
-            // Level 8: 3-word phrases
-            ['I love you', 'big red ball', 'the sun shines', 'happy little dog', 'blue and green', 'jump and play'],
-            // Level 9: Longer phrases
+            // Level 0: First words (preschool)
             [
-                'look at me',
-                'I did it',
-                'all done',
-                'more please',
-                'help me please',
-                'I need help',
-                'I am hungry',
-                'I am thirsty',
-                'I need a drink',
-                'I want milk',
-                'I want water',
-                'I want snack',
-                'time to eat',
-                'wash hands',
-                'brush teeth',
-                'time for bed',
-                'good morning',
-                'good night',
-                'I need potty',
-                'time to potty',
-                'diaper change',
-                'hold my hand',
-                'where is mom',
-                'where is dad',
-                'where is home',
-                'I feel happy',
-                'I feel sad',
-                'I feel scared',
-                'I feel sleepy',
-                'I am tired',
-                'I need a hug',
-                'that hurts',
-                'please stop',
-                'my turn',
-                'your turn',
-                'can I play',
-                'share please',
-                'wait for me',
-                'I want that',
-                'I like this',
-                'I do not like that',
-                'read a book',
-                'sing a song',
-                'play with me',
-                'let us play',
-                'this is fun',
-                'you are great',
-                'good job',
-                'well done',
-                'I can read',
-                'I love you',
-                'I love mommy',
-                'I love daddy',
-                'I love my family',
-                'you are my friend',
-                'we can play together',
-                'jump and play',
-                'jump up high',
-                'clap your hands',
-                'stomp your feet',
-                'spin around',
-                'lets go outside',
-                'lets go home',
-                'lets have a snack',
-                'more water please',
-                'I want juice',
-                'thank you',
-                'thank you mom',
-                'thank you dad',
-                'please and thank you',
-                'nice to meet you',
-                'I am brave',
-                'I am kind',
-                'I am gentle',
-                'I can share',
-                'lets clean up',
-                'clean up toys',
-                'put toys away',
-                'wash your face',
-                'take a bath',
-                'time for bath',
-                'put on shoes',
-                'put on socks',
-                'I want my blanket',
-                'I want my teddy',
-                'where is my toy',
-                'look at the cat',
-                'look at the dog',
-                'I see a bus',
-                'I see a car',
-                'I see a truck',
-                'open the door',
-                'close the door',
-                'turn on light',
-                'turn off light',
-                'please sit down',
-                'please stand up',
-                'lets go potty',
-                'time to wash up',
-                'dry your hands',
-                'count to ten',
-                'big red ball',
-                'the sun shines',
-                'happy little dog',
-                'blue and green'
+                'mom', 'dad', 'baby', 'cat', 'dog', 'ball', 'cup', 'book', 'bed', 'milk', 'water',
+                'snack', 'car', 'bus', 'hat', 'shoe', 'toy', 'yes', 'no', 'stop', 'go', 'help'
+            ],
+            // Level 1: People and daily items (ages 3-4)
+            [
+                'brother', 'sister', 'grandma', 'grandpa', 'baby', 'diaper', 'potty', 'tooth', 'brush',
+                'soap', 'towel', 'shirt', 'pants', 'sock', 'shoe', 'jacket', 'blanket', 'teddy',
+                'cookie', 'banana', 'apple', 'cracker', 'juice'
+            ],
+            // Level 2: Common actions and opposites (ages 3-4)
+            [
+                'eat', 'drink', 'sleep', 'wake', 'play', 'read', 'draw', 'sing', 'dance', 'jump',
+                'run', 'walk', 'sit', 'stand', 'open', 'close', 'wash', 'dry', 'clean', 'dirty',
+                'hot', 'cold', 'big', 'small'
+            ],
+            // Level 3: My + noun phrases (ages 3-4)
+            [
+                'my cup', 'my book', 'my bed', 'my toy', 'my blanket', 'my teddy', 'my shoes',
+                'my socks', 'my hat', 'my coat', 'my room', 'my chair', 'my ball', 'my car',
+                'my doll', 'my snack', 'my milk', 'my water', 'my juice', 'my plate',
+                'my spoon', 'my fork', 'my diaper', 'my potty'
+            ],
+            // Level 4: Color + noun phrases (ages 3-4)
+            [
+                'red ball', 'blue ball', 'green cup', 'yellow car', 'pink hat', 'brown bear',
+                'white dog', 'black cat', 'orange juice', 'purple cup', 'red apple', 'green apple',
+                'blue shoes', 'yellow socks', 'pink shirt', 'brown shoes', 'white bed', 'black pants',
+                'orange snack', 'purple blanket', 'red bus', 'blue truck', 'green frog',
+                'yellow banana'
+            ],
+            // Level 5: Simple actions (ages 3-4)
+            [
+                'go home', 'go outside', 'come here', 'sit down', 'stand up', 'lie down',
+                'pick up', 'put down', 'clean up', 'wash hands', 'brush teeth', 'dry hands',
+                'open door', 'close door', 'turn on', 'turn off', 'hold hands', 'hug me',
+                'kiss me', 'high five', 'look here', 'listen now', 'wait here', 'slow down'
+            ],
+            // Level 6: Basic needs (ages 3-4)
+            [
+                'I want milk', 'I want water', 'I want snack', 'I want juice', 'I want cookie',
+                'I want banana', 'I want apple', 'I need help', 'I need potty', 'I need hug',
+                'I need rest', 'I need shoes', 'I need socks', 'I need coat', 'I need towel',
+                'I need soap', 'I need toy', 'I need book', 'I need blanket', 'I need teddy',
+                'I need drink', 'I need food', 'I need nap'
+            ],
+            // Level 7: Feelings (ages 3-4)
+            [
+                'I am happy', 'I am sad', 'I am mad', 'I am tired', 'I am sleepy', 'I am hungry',
+                'I am thirsty', 'I am scared', 'I am cold', 'I am hot', 'I feel sick',
+                'I feel better', 'I feel fine', 'I feel okay', 'I feel hurt', 'I feel shy',
+                'I feel brave', 'I feel proud', 'I feel safe', 'I feel lonely', 'I feel silly',
+                'I feel excited', 'I feel worried', 'I feel calm'
+            ],
+            // Level 8: Routines (ages 3-4)
+            [
+                'time to eat', 'time for bath', 'time for bed', 'time to potty', 'time to nap',
+                'time to play', 'time to clean', 'time to read', 'wash your hands', 'brush your teeth',
+                'put on shoes', 'put on socks', 'take off shoes', 'take off socks', 'put on coat',
+                'take off coat', 'clean up toys', 'put toys away', 'get in bed', 'get in tub',
+                'dry your hands', 'wipe your face', 'turn off light', 'turn on light'
+            ],
+            // Level 9: Polite requests (ages 3-4)
+            [
+                'please help me', 'please wait here', 'please come here', 'please sit down',
+                'please stand up', 'please open door', 'please close door', 'please read book',
+                'please play with me', 'please watch me', 'please hold my hand', 'please hug me',
+                'please kiss me', 'please wipe me', 'please change me', 'please get water',
+                'please get milk', 'please get snack', 'please give toy', 'please give cup',
+                'please give spoon', 'please give fork', 'please be gentle', 'please be quiet'
+            ],
+            // Level 10: Questions (ages 3-4)
+            [
+                'where is mom', 'where is dad', 'where is baby', 'where is my toy',
+                'where is my book', 'where is my cup', 'where is my shoe', 'where is my sock',
+                'where is my hat', 'where is my bed', 'where is the ball', 'where is the dog',
+                'where is the cat', 'what is this', 'what is that', 'what is inside',
+                'what is outside', 'who is that', 'who is here', 'can I go', 'can I play',
+                'can I eat', 'can I drink', 'can I help'
+            ],
+            // Level 11: Simple directions (ages 3-4)
+            [
+                'put it here', 'put it there', 'put it inside', 'put it outside', 'put it on top',
+                'put it under', 'put it away', 'take it out', 'bring it here', 'take it there',
+                'look under bed', 'look behind chair', 'look in box', 'look on table', 'look at me',
+                'look at this', 'look at that', 'come with me', 'come to me', 'stay with me',
+                'stay right here', 'go with me', 'go over there', 'step back now'
+            ],
+            // Level 12: Simple statements (ages 3-4)
+            [
+                'I can do it', 'I can try again', 'I can help you', 'I can clean up',
+                'I can put away', 'I can read book', 'I can sing song', 'I can count now',
+                'I can jump high', 'I can run fast', 'I can be gentle', 'I can be quiet',
+                'I can be brave', 'I can share toys', 'I can take turns', 'I can say sorry',
+                'I can say please', 'I can say thanks', 'I can wait now', 'I can listen now',
+                'I can follow you', 'I can follow rules', 'I can use words', 'I can ask nicely'
+            ],
+            // Level 13: Social play (ages 3-4)
+            [
+                'my turn now', 'your turn now', 'take turns please', 'share with me',
+                'share with friends', 'play with me', 'play with us', 'let us play',
+                'let us go', 'let us read', 'let us clean', 'please say sorry',
+                'I am sorry now', 'are you okay', 'I am okay now', 'do you want help',
+                'can you help me', 'thank you mom', 'thank you dad', 'thank you friend',
+                'good job friend', 'nice to meet you', 'see you later', 'see you soon'
+            ],
+            // Level 14: Safety and health (ages 3-4)
+            [
+                'wash hands please', 'cover your mouth', 'use gentle hands', 'hold my hand',
+                'stay near me', 'stay on sidewalk', 'stop at curb', 'look both ways',
+                'do not touch', 'do not run', 'do not hit', 'do not bite', 'be careful now',
+                'slow down please', 'sit in seat', 'buckle your seat', 'wear your helmet',
+                'wear your jacket', 'drink some water', 'eat your food', 'take a deep breath',
+                'calm down now', 'rest on pillow', 'lie down now'
+            ],
+            // Level 15: Longer practical requests (ages 3-4)
+            [
+                'I need a break', 'I need more time', 'I need help now', 'I want to cuddle',
+                'I want to play', 'I want to draw', 'I want to color', 'I want to build',
+                'I want to read', 'I want to sing', 'I want to dance', 'I want to jump',
+                'can we go now', 'can we play now', 'can we read now', 'can we eat now',
+                'please help me now', 'please listen to me', 'please stay with me',
+                'please look at me', 'please be patient', 'please try again',
+                'please wait a minute', 'please use kind words'
+            ],
+            // Level 16: Practical requests (grade 1)
+            [
+                'I want to read', 'read it again', 'can we read now', 'can we go now',
+                'can we play outside', 'can we go inside', 'I want to draw', 'I want to color',
+                'I need a pencil', 'I need some paper', 'I lost my toy', 'where is my toy',
+                'where is my book', 'where are my shoes', 'please open the door', 'please close the door',
+                'turn on the light', 'turn off the light', 'I can zip it', 'I can button it',
+                'put the lid on', 'take the lid off'
+            ],
+            // Level 17: Descriptive sentences (grade 1)
+            [
+                'the big dog barks', 'the small cat sleeps', 'the red truck goes', 'the blue car stops',
+                'the yellow bus waits', 'the green frog hops', 'the brown bear eats', 'the white bird sings',
+                'the tall tree sways', 'the wide river flows', 'the hot soup steams', 'the cold water splashes',
+                'the soft blanket warms', 'the hard rock hurts', 'the light is bright', 'the room is quiet',
+                'the room is noisy', 'I can read this', 'I can write words', 'I can sound it',
+                'I can solve this', 'we can work together'
+            ],
+            // Level 18: Directions and time words (grade 1)
+            [
+                'put it on top', 'put it under there', 'put it in here', 'take it out now',
+                'look under the bed', 'look behind the chair', 'look inside the box', 'look beside the door',
+                'we will go later', 'we will go soon', 'we will be back', 'we will try again',
+                'first we wash hands', 'then we dry hands', 'after snack we play', 'before bed we read',
+                'please line up here', 'please stand in line', 'keep your voice quiet', 'use your inside voice',
+                'use your outdoor voice', 'I can listen well'
+            ],
+            // Level 19: Classroom and problem-solving (grade 2)
+            [
+                'I can follow directions', 'I can make choices', 'I can solve problems', 'I can ask questions',
+                'I can explain it', 'I can help friends', 'I can share ideas', 'I can learn words',
+                'I can read stories', 'I can write notes', 'I can spell words', 'I can count tens',
+                'I can add numbers', 'I can take turns', 'I can use manners', 'please pass the paper',
+                'please pass the pencil', 'please raise your hand', 'please wait your turn',
+                'please speak clearly', 'please listen carefully', 'please try your best'
+            ],
+            // Level 20: Independence and responsibility (grade 2)
+            [
+                'I can stay focused', 'I can check work', 'I can fix mistakes', 'I can read directions',
+                'I can follow rules', 'I can use clues', 'I can tell stories', 'I can write sentences',
+                'I can read aloud', 'I can speak politely', 'I can solve puzzles', 'I can compare numbers',
+                'I can measure length', 'I can tell time', 'I can count money', 'I can sort objects',
+                'I can make lists', 'I can follow steps', 'I can work independently', 'I can get help',
+                'I can listen closely', 'I can be responsible'
             ]
+        ];
+
+        const levelMilestones = [
+            { age: '2-3', words: '50-200' },
+            { age: '2-3', words: '100-300' },
+            { age: '2-3', words: '200-400' },
+            { age: '2-3', words: '300-500' },
+            { age: '2-3', words: '400-600' },
+            { age: '3', words: '500-700' },
+            { age: '3', words: '600-800' },
+            { age: '3-4', words: '700-900' },
+            { age: '3-4', words: '800-1,000' },
+            { age: '3-4', words: '900-1,100' },
+            { age: '3-4', words: '1,000-1,200' },
+            { age: '3-4', words: '1,100-1,300' },
+            { age: '3-4', words: '1,200-1,400' },
+            { age: '3-4', words: '1,300-1,500' },
+            { age: '3-4', words: '1,400-1,600' },
+            { age: '3-4', words: '1,500-1,800' },
+            { age: '5', words: '1,500-2,500' },
+            { age: '5-6', words: '2,500-4,000' },
+            { age: '6', words: '4,000-6,000' },
+            { age: '6-7', words: '6,000-8,000' },
+            { age: '7', words: '8,000-10,000' }
         ];
 
         let currentLevel = 0;
@@ -525,6 +605,8 @@
         let consecutiveFailures = 0;
         const SUCCESS_THRESHOLD = 4;  // Level up after 4 successes
         const FAILURE_THRESHOLD = 3;  // Level down after 3 skips/struggles
+        const FEEDBACK_ANIMATION_MS = 700;
+        const NEXT_WORD_DELAY_MS = 650;
 
         // Debug tracking
         let debugAttempts = [];
@@ -545,6 +627,17 @@
 
         function updateLevelIndicator() {
             document.getElementById('levelNumber').textContent = currentLevel + 1;
+            updateLevelEstimate();
+        }
+
+        function updateLevelEstimate() {
+            const estimateEl = document.getElementById('levelEstimate');
+            if (!estimateEl) {
+                return;
+            }
+            const milestone = levelMilestones[currentLevel] || levelMilestones[levelMilestones.length - 1];
+            estimateEl.textContent = `Est. age ${milestone.age} • vocab ${milestone.words} words`;
+            estimateEl.style.display = 'inline-block';
         }
 
         function shuffleArray(array) {
@@ -1073,6 +1166,7 @@
                 consecutiveSuccesses = 0;  // Reset counter
             }
 
+            const nextWordDelay = shouldLevelUp ? 1500 : NEXT_WORD_DELAY_MS;
             setTimeout(() => {
                 currentWordIndex++;
 
@@ -1100,7 +1194,7 @@
                     showNextWord();
                     isProcessingWord = false;  // Re-enable processing
                 }
-            }, 1500);  // Reduced from 2000ms to make it feel snappier
+            }, nextWordDelay);  // Reduced from 2000ms to make it feel snappier
         }
 
         function showNextWord() {
@@ -1240,7 +1334,7 @@
             feedbackEl.textContent = message;
             feedbackEl.classList.remove('show');
             setTimeout(() => feedbackEl.classList.add('show'), 10);
-            setTimeout(() => feedbackEl.classList.remove('show'), 1500);
+            setTimeout(() => feedbackEl.classList.remove('show'), FEEDBACK_ANIMATION_MS);
         }
 
         // Confetti effect
