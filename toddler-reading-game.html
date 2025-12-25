@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Learning Game for Toddlers</title>
     <link href="https://fonts.googleapis.com/css2?family=Koodak&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -125,8 +126,17 @@
             bottom: -40px;
             right: 30px;
             font-size: 80px;
+            color: var(--accent-cool);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            min-height: 80px;
         }
 
+        .character i {
+            font-size: 72px;
+        }
         .character.celebrate {
             animation: celebrate 0.3s ease;
         }
@@ -370,7 +380,7 @@
         <div class="word-display" id="wordDisplay">
             <span id="currentWordFa" class="translation"></span>
             <span id="currentWord">Ready!</span>
-            <div class="character" id="character">📚</div>
+            <div class="character" id="character" aria-hidden="true"></div>
         </div>
 
         <div class="footer">
@@ -393,7 +403,59 @@
 
     <script>
         // Expanded word list with more granular difficulty levels
-        const wordLevels = [
+        class Phrase {
+            constructor(english, farsi, icon = null, iconCategory = null) {
+                this.english = english;
+                this.farsi = farsi;
+                this.icon = icon;
+                this.iconCategory = iconCategory;
+            }
+        }
+
+        const iconRules = [
+            { keywords: ['backpack'], icon: 'fa-solid fa-backpack', category: 'school' },
+            { keywords: ['lunchbox', 'lunch'], icon: 'fa-solid fa-utensils', category: 'food' },
+            { keywords: ['spoon', 'fork', 'plate'], icon: 'fa-solid fa-utensils', category: 'food' },
+            { keywords: ['cup', 'juice', 'milk', 'water', 'drink', 'bottle'], icon: 'fa-solid fa-mug-hot', category: 'drink' },
+            { keywords: ['apple'], icon: 'fa-solid fa-apple-whole', category: 'food' },
+            { keywords: ['banana'], icon: 'fa-solid fa-banana', category: 'food' },
+            { keywords: ['cookie', 'cracker', 'snack', 'yogurt', 'bread'], icon: 'fa-solid fa-cookie-bite', category: 'food' },
+            { keywords: ['bed', 'sleep', 'nap', 'pillow', 'blanket'], icon: 'fa-solid fa-bed', category: 'home' },
+            { keywords: ['book', 'read'], icon: 'fa-solid fa-book', category: 'learning' },
+            { keywords: ['bus'], icon: 'fa-solid fa-bus', category: 'transport' },
+            { keywords: ['car'], icon: 'fa-solid fa-car-side', category: 'transport' },
+            { keywords: ['truck'], icon: 'fa-solid fa-truck', category: 'transport' },
+            { keywords: ['ball'], icon: 'fa-solid fa-futbol', category: 'play' },
+            { keywords: ['teddy', 'bear'], icon: 'fa-solid fa-bear', category: 'play' },
+            { keywords: ['toy', 'doll', 'puzzle', 'crayon', 'marker'], icon: 'fa-solid fa-puzzle-piece', category: 'play' },
+            { keywords: ['tooth', 'toothbrush'], icon: 'fa-solid fa-tooth', category: 'health' },
+            { keywords: ['soap', 'wash', 'bath'], icon: 'fa-solid fa-soap', category: 'health' },
+            { keywords: ['potty', 'toilet', 'bathroom'], icon: 'fa-solid fa-toilet', category: 'health' },
+            { keywords: ['shirt', 'pants', 'shorts', 'coat', 'jacket'], icon: 'fa-solid fa-shirt', category: 'clothes' },
+            { keywords: ['sock', 'socks'], icon: 'fa-solid fa-socks', category: 'clothes' },
+            { keywords: ['shoe', 'shoes'], icon: 'fa-solid fa-shoe-prints', category: 'clothes' },
+            { keywords: ['hat'], icon: 'fa-solid fa-hat-cowboy', category: 'clothes' },
+            { keywords: ['school', 'class', 'daycare'], icon: 'fa-solid fa-school', category: 'school' },
+            { keywords: ['teacher'], icon: 'fa-solid fa-chalkboard-user', category: 'school' },
+            { keywords: ['mom', 'dad', 'brother', 'sister', 'grandma', 'grandpa', 'friend', 'helper'], icon: 'fa-solid fa-user', category: 'people' },
+            { keywords: ['baby'], icon: 'fa-solid fa-baby', category: 'people' },
+            { keywords: ['cat'], icon: 'fa-solid fa-cat', category: 'animals' },
+            { keywords: ['dog'], icon: 'fa-solid fa-dog', category: 'animals' },
+            { keywords: ['frog'], icon: 'fa-solid fa-frog', category: 'animals' }
+        ];
+
+        function phraseHasKeyword(phrase, keyword) {
+            const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`\\b${escaped}\\b`);
+            return regex.test(phrase);
+        }
+
+        function resolveIconEntry(english) {
+            const lowered = english.toLowerCase();
+            return iconRules.find((rule) => rule.keywords.some((keyword) => phraseHasKeyword(lowered, keyword))) || null;
+        }
+
+        const phrasePairs = [
             // Level 0: First words (preschool)
             [
                 ['mom', 'مامان'], ['dad', 'بابا'], ['baby', 'نی نی'], ['cat', 'گربه'], ['dog', 'سگ'],
@@ -739,6 +801,18 @@
             ]
         ];
 
+        const phraseLevels = phrasePairs.map((level) =>
+            level.map(([english, farsi]) => {
+                const iconEntry = resolveIconEntry(english);
+                return new Phrase(
+                    english,
+                    farsi,
+                    iconEntry ? iconEntry.icon : null,
+                    iconEntry ? iconEntry.category : null
+                );
+            })
+        );
+
         const levelMilestones = [
             { age: '2-3', words: '50-200' },
             { age: '2-3', words: '100-300' },
@@ -765,8 +839,8 @@
 
         let currentLevel = 0;
         let currentWordIndex = 0;
+        let currentPhrases = [];
         let currentWords = [];
-        let currentWordsFa = [];
         let score = 0;
         let recognition = null;
         let isListening = false;
@@ -795,22 +869,12 @@
         // Audio context for sounds
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        // Character emojis that rotate
-        const characters = [
-            '📚', '📖', '🧸', '🧩', '🖍️', '🎨', '⭐', '🌈', '🧠', '👶', '🧒', '🫧',
-            '🪁', '🫶', '🎵', '🥁', '🎈', '🎉', '🪄', '🚂', '🚌', '🚗', '🚲', '🛝',
-            '🧱', '🧃', '🍎', '🍌', '🥨', '🍪', '🧁', '🥛', '🧸', '🪅', '🧤',
-            '🧦', '🧢', '☀️', '⛅', '🌼', '🌟', '🐶', '🐱', '🐻', '🐸', '🦋',
-            '🦕', '🦖', '🧊', '💧', '❤️'
-        ];
-        let currentCharacterIndex = 0;
-
         function initGame() {
-            const levelPairs = wordLevels[currentLevel] || [];
-            const indices = levelPairs.map((_, i) => i);
+            const levelPhrases = phraseLevels[currentLevel] || [];
+            const indices = levelPhrases.map((_, i) => i);
             shuffleArray(indices);
-            currentWords = indices.map((i) => (levelPairs[i] && levelPairs[i][0]) || '');
-            currentWordsFa = indices.map((i) => (levelPairs[i] && levelPairs[i][1]) || '');
+            currentPhrases = indices.map((i) => levelPhrases[i]);
+            currentWords = currentPhrases.map((phrase) => phrase.english);
             updateCounter();
             updateLevelIndicator();
         }
@@ -1351,7 +1415,7 @@
 
             // Check if we should level up based on performance
             let shouldLevelUp = false;
-            if (consecutiveSuccesses >= SUCCESS_THRESHOLD && currentLevel < wordLevels.length - 1) {
+            if (consecutiveSuccesses >= SUCCESS_THRESHOLD && currentLevel < phraseLevels.length - 1) {
                 shouldLevelUp = true;
                 consecutiveSuccesses = 0;  // Reset counter
             }
@@ -1362,7 +1426,7 @@
 
                 if (currentWordIndex >= currentWords.length || shouldLevelUp) {
                     // Level complete or performance-based level up!
-                    if (currentLevel < wordLevels.length - 1) {
+                    if (currentLevel < phraseLevels.length - 1) {
                         currentLevel++;
                         currentWordIndex = 0;
                         initGame();
@@ -1389,14 +1453,15 @@
 
         function showNextWord() {
             if (currentWordIndex < currentWords.length) {
-                const word = currentWords[currentWordIndex];
-                const wordFa = currentWordsFa[currentWordIndex] || '';
+                const phrase = currentPhrases[currentWordIndex];
+                const word = phrase.english;
+                const wordFa = phrase.farsi || '';
                 document.getElementById('currentWord').textContent = word;
                 document.getElementById('currentWordFa').textContent = wordFa;
                 adjustWordSizing();
                 updateStatus('🎤 Say: "' + word + '"');
                 updateCounter();
-                rotateCharacter();
+                updatePhraseIcon(phrase);
 
                 // Re-arm recognition with a grammar biased to this word/phrase
                 restartRecognitionForWord(word);
@@ -1500,14 +1565,26 @@
 
         function celebrateCharacter() {
             const char = document.getElementById('character');
+            if (!char || char.style.display === 'none') {
+                return;
+            }
             char.classList.remove('celebrate');
             setTimeout(() => char.classList.add('celebrate'), 10);
             setTimeout(() => char.classList.remove('celebrate'), 600);
         }
 
-        function rotateCharacter() {
-            currentCharacterIndex = (currentCharacterIndex + 1) % characters.length;
-            document.getElementById('character').textContent = characters[currentCharacterIndex];
+        function updatePhraseIcon(phrase) {
+            const char = document.getElementById('character');
+            if (!char) {
+                return;
+            }
+            if (!phrase || !phrase.icon) {
+                char.style.display = 'none';
+                char.innerHTML = '';
+                return;
+            }
+            char.style.display = 'flex';
+            char.innerHTML = `<i class="${phrase.icon}" aria-hidden="true"></i>`;
         }
 
         function showFeedbackMessage() {
