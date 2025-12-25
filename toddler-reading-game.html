@@ -370,7 +370,7 @@
         <div class="word-display" id="wordDisplay">
             <span id="currentWordFa" class="translation"></span>
             <span id="currentWord">Ready!</span>
-            <div class="character" id="character">🦁</div>
+            <div class="character" id="character">📚</div>
         </div>
 
         <div class="footer">
@@ -796,7 +796,13 @@
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
         // Character emojis that rotate
-        const characters = ['🦁', '🐼', '🐨', '🦊', '🐯', '🐸', '🦄'];
+        const characters = [
+            '📚', '📖', '🧸', '🧩', '🖍️', '🎨', '⭐', '🌈', '🧠', '👶', '🧒', '🫧',
+            '🪁', '🫶', '🎵', '🥁', '🎈', '🎉', '🪄', '🚂', '🚌', '🚗', '🚲', '🛝',
+            '🧱', '🧃', '🍎', '🍌', '🥨', '🍪', '🧁', '🥛', '🧸', '🪅', '🧤',
+            '🧦', '🧢', '☀️', '⛅', '🌼', '🌟', '🐶', '🐱', '🐻', '🐸', '🦋',
+            '🦕', '🦖', '🧊', '💧', '❤️'
+        ];
         let currentCharacterIndex = 0;
 
         function initGame() {
