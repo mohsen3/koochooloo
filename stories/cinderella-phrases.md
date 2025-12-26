@@ -1,0 +1,84 @@
+# Cinderella (short phrases)
+
+Source: Traditional European fairy tale (Public domain)
+
+These phrases are a toddler-friendly adaptation of the story, broken into short 4–5 word phrases (under 100 total).
+
+## Phrases
+- A young girl
+- Named Cinderella lived
+- With her step mother
+- And her two sisters
+- They were very mean
+- And made her work hard
+- To clean the whole house
+- And cook all the food
+- And wash all the clothes
+- Cinderella cried sometimes
+- And wished for help
+- The king announced a
+- Big party at the palace
+- For the prince to
+- Find a wife to marry
+- The sisters dressed up
+- In their finest clothes
+- Cinderella asked them nicely
+- Can I go too please
+- The sisters laughed at her
+- No you cannot go
+- You must stay and work
+- Cinderella cried again
+- Then her fairy godmother
+- Appeared suddenly before her
+- She said do not cry
+- My dear little girl
+- I will help you now
+- With her magic wand
+- A pumpkin turned into
+- A beautiful golden coach
+- Mice turned into horses
+- A lizard turned into
+- A fine coachman too
+- Cinderella's old dress turned
+- Into a beautiful gown
+- And glass slippers appeared
+- On her dainty feet
+- The fairy said remember
+- Be home by midnight
+- Because the magic ends
+- At twelve o'clock sharp
+- Cinderella went to the ball
+- The prince saw her
+- And fell in love
+- They danced all night long
+- The clock struck eleven
+- Fifty nine she remembered
+- Cinderella ran away fast
+- And lost her slipper
+- On the palace stairs
+- The prince found the
+- Glass slipper on the stairs
+- He searched the whole kingdom
+- For the girl whose foot
+- Would fit the slipper
+- He tried it on
+- Many girls in the kingdom
+- But it did not fit
+- He came to their house
+- The sisters tried it on
+- But it was too big
+- Cinderella tried it on
+- And it was perfect fit
+- The other slipper matched too
+- The prince said to her
+- Will you marry me please
+- Cinderella said yes I will
+- They got married and
+- Lived happily ever after
+- In the beautiful palace
+- The sisters learned to
+- Be kind to others
+- The moral of the story
+- Is to always be kind
+- And good things will
+- Happen to you someday

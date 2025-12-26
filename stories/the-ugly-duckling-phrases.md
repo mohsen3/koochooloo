@@ -1,0 +1,78 @@
+# The Ugly Duckling (short phrases)
+
+Source: Hans Christian Andersen (Public domain)
+
+These phrases are a toddler-friendly adaptation of the story, broken into short 4–5 word phrases (under 100 total).
+
+## Phrases
+- A mother duck
+- Sat on her eggs
+- The eggs hatched soon
+- Into little yellow ducklings
+- But one egg was
+- Big and gray colored
+- It was last to hatch
+- And looked very different
+- The other little ducklings
+- Called him ugly duckling
+- His mother said to them
+- He is my baby too
+- But he is different
+- They all went to the pond
+- The ugly little duckling
+- Could not swim well
+- Like the other ducklings
+- Other animals on the farm
+- Made fun of him too
+- The chickens pecked at him
+- The geese hissed at him
+- The cat chased after him
+- And the dog barked loud
+- The ugly duckling felt sad
+- And ran away from home
+- Through the fields and meadows
+- And over many fences
+- He found an old barn
+- And lived there alone
+- Then winter came and
+- It was very very cold
+- Snow fell from the sky
+- And ice formed on ponds
+- A kind farmer found him
+- And took him to his house
+- But the children laughed
+- And called him ugly again
+- So he ran away again
+- Then spring came at last
+- The ice melted away
+- And flowers bloomed everywhere
+- The ugly duckling saw a pond
+- With beautiful swans swimming
+- They were beautiful white birds
+- With white feathers and
+- Long graceful necks
+- The ugly duckling looked at them
+- And felt very sad
+- He looked down at the water
+- And saw his reflection
+- He was not ugly anymore
+- He was not a duckling
+- He was a beautiful swan
+- The other swans came over
+- And said hello to him
+- You are one of us
+- You are a beautiful swan
+- Now he was happy
+- And flew away with them
+- Over the lake together
+- High up in the sky
+- He was never lonely again
+- And never sad again
+- He found his true family
+- And found his real home
+- The moral of the story
+- Is to be kind always
+- To others who may look
+- Different than you do
+- Because everyone grows up
+- Into something beautiful someday

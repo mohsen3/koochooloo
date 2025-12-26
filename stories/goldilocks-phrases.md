@@ -1,0 +1,84 @@
+# Goldilocks and the Three Bears (short phrases)
+
+Source: Traditional English fairy tale (Public domain)
+
+These phrases are a toddler-friendly adaptation of the story, broken into short 4–5 word phrases (under 100 total).
+
+## Phrases
+- Three bears lived together
+- In a house in the woods
+- Papa bear was very big
+- Mama bear was medium size
+- Baby bear was very small
+- One sunny morning
+- They made some porridge
+- But it was too hot
+- So they went for a walk
+- A little girl named Goldilocks
+- Came walking through the woods
+- She saw their little house
+- And knocked on the door
+- There was no answer
+- So she went inside
+- She saw the porridge bowls
+- She tried the big bowl
+- But it was too hot
+- She tried the medium bowl
+- But it was too cold
+- She tried the small bowl
+- And it was just right
+- So she ate it all up
+- Then she saw the chairs
+- She tried the big chair
+- But it was too hard
+- She tried the medium chair
+- But it was too soft
+- She tried the small chair
+- And it was just right
+- But the chair broke
+- Then she saw the beds
+- She tried the big bed
+- But it was too hard
+- She tried the medium bed
+- But it was too soft
+- She tried the small bed
+- And it was just right
+- So she fell fast asleep
+- The bears came back home
+- Papa bear looked and said
+- Someone has been eating
+- My porridge bowl
+- Mama bear looked and said
+- Someone has been eating
+- My porridge bowl too
+- Baby bear looked and cried
+- Someone has been eating
+- My porridge and it's gone
+- Papa bear looked and said
+- Someone has been sitting
+- In my favorite chair
+- Mama bear looked and said
+- Someone has been sitting
+- In my favorite chair too
+- Baby bear looked and cried
+- Someone has been sitting
+- In my chair and it broke
+- Papa bear looked and said
+- Someone has been sleeping
+- In my comfortable bed
+- Mama bear looked and said
+- Someone has been sleeping
+- In my comfortable bed too
+- Baby bear looked and said
+- Someone has been sleeping
+- In my bed and she's here
+- Goldilocks woke up suddenly
+- She saw the three bears
+- And ran away very fast
+- Out the door and away
+- Through the woods to home
+- She never came back again
+- The bears ate their dinner
+- And fixed the broken chair
+- Then they went to bed
+- Good night three bears
