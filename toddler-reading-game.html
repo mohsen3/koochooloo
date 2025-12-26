@@ -107,6 +107,9 @@
             font-family: 'Koodak', 'Vazirmatn', 'Noto Naskh Arabic', 'Tahoma', sans-serif;
             color: var(--text-soft);
         }
+        .word-display .translation:empty {
+            display: none;
+        }
 
         .word-display.listening {
             border-color: #34d399;
@@ -227,6 +230,21 @@
             flex-wrap: wrap;
             flex-shrink: 0;
             min-height: 60px;
+        }
+
+        .story-select {
+            font-size: 18px;
+            padding: 8px 16px;
+            border-radius: 15px;
+            border: 2px solid var(--accent-cool);
+            background: var(--card-glass);
+            color: var(--text-bright);
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 4px 8px var(--shadow-soft);
+        }
+        .story-select:hover {
+            background: var(--card-border);
         }
 
         .status {
@@ -420,6 +438,15 @@
 <body>
     <div class="container">
         <div class="header">
+            <select id="storySelect" class="story-select">
+                <option value="basic_phrases">Basic Phrases</option>
+                <option value="cinderella">Cinderella</option>
+                <option value="goldilocks">Goldilocks and the Three Bears</option>
+                <option value="little_red_riding_hood">Little Red Riding Hood</option>
+                <option value="peter_rabbit">Peter Rabbit</option>
+                <option value="the_ugly_duckling">The Ugly Duckling</option>
+                <option value="three_little_pigs">Three Little Pigs</option>
+            </select>
             <div class="level-indicator" id="levelIndicator" style="display: none;">
                 <span class="level-badge">Level <span id="levelNumber">1</span></span>
             </div>
@@ -878,18 +905,451 @@
             ]
         ];
 
-        const phraseLevels = phrasePairs.map((level) =>
-            level.map(([english, farsi]) => {
-                const iconEntry = resolveIconEntry(english);
-                return new Phrase(
-                    english,
-                    farsi,
-                    iconEntry ? iconEntry.icon : null,
-                    iconEntry ? iconEntry.category : null
-                );
-            })
-        );
+        // Story phrases extracted from ./stories folder
+        const storyPhrases = {
+          'goldilocks': {
+            title: 'Goldilocks and the Three Bears',
+            levels: [
+              [
+                "Three bears lived together",
+                "In a house in the woods",
+                "Papa bear was very big",
+                "Mama bear was medium size",
+                "Baby bear was very small",
+                "One sunny morning",
+                "They made some porridge",
+                "But it was too hot",
+                "So they went for a walk",
+                "A little girl named Goldilocks",
+                "Came walking through the woods",
+                "She saw their little house",
+                "And knocked on the door",
+                "There was no answer",
+                "So she went inside",
+                "She saw the porridge bowls",
+                "She tried the big bowl",
+                "But it was too hot",
+                "She tried the medium bowl",
+                "But it was too cold",
+                "She tried the small bowl",
+                "And it was just right",
+                "So she ate it all up",
+                "Then she saw the chairs",
+                "She tried the big chair",
+                "But it was too hard",
+                "She tried the medium chair",
+                "But it was too soft",
+                "She tried the small chair",
+                "And it was just right",
+                "But the chair broke",
+                "Then she saw the beds",
+                "She tried the big bed",
+                "But it was too hard",
+                "She tried the medium bed",
+                "But it was too soft",
+                "She tried the small bed",
+                "And it was just right",
+                "So she fell fast asleep",
+                "The bears came back home",
+                "Papa bear looked and said",
+                "Someone has been eating",
+                "My porridge bowl",
+                "Mama bear looked and said",
+                "Someone has been eating",
+                "My porridge bowl too",
+                "Baby bear looked and cried",
+                "Someone has been eating",
+                "My porridge and it's gone",
+                "Papa bear looked and said",
+                "Someone has been sitting",
+                "In my favorite chair",
+                "Mama bear looked and said",
+                "Someone has been sitting",
+                "In my favorite chair too",
+                "Baby bear looked and cried",
+                "Someone has been sitting",
+                "In my chair and it broke",
+                "Papa bear looked and said",
+                "Someone has been sleeping",
+                "In my comfortable bed",
+                "Mama bear looked and said",
+                "Someone has been sleeping",
+                "In my comfortable bed too",
+                "Baby bear looked and said",
+                "Someone has been sleeping",
+                "In my bed and she's here",
+                "Goldilocks woke up suddenly",
+                "She saw the three bears",
+                "And ran away very fast",
+                "Out the door and away",
+                "Through the woods to home",
+                "She never came back again",
+                "The bears ate their dinner",
+                "And fixed the broken chair",
+                "Then they went to bed",
+                "Good night three bears",
+              ]
+            ],
+          },
+          'the_ugly_duckling': {
+            title: 'The Ugly Duckling',
+            levels: [
+              [
+                "A mother duck",
+                "Sat on her eggs",
+                "The eggs hatched soon",
+                "Into little yellow ducklings",
+                "But one egg was",
+                "Big and gray colored",
+                "It was last to hatch",
+                "And looked very different",
+                "The other little ducklings",
+                "Called him ugly duckling",
+                "His mother said to them",
+                "He is my baby too",
+                "But he is different",
+                "They all went to the pond",
+                "The ugly little duckling",
+                "Could not swim well",
+                "Like the other ducklings",
+                "Other animals on the farm",
+                "Made fun of him too",
+                "The chickens pecked at him",
+                "The geese hissed at him",
+                "The cat chased after him",
+                "And the dog barked loud",
+                "The ugly duckling felt sad",
+                "And ran away from home",
+                "Through the fields and meadows",
+                "And over many fences",
+                "He found an old barn",
+                "And lived there alone",
+                "Then winter came and",
+                "It was very very cold",
+                "Snow fell from the sky",
+                "And ice formed on ponds",
+                "A kind farmer found him",
+                "And took him to his house",
+                "But the children laughed",
+                "And called him ugly again",
+                "So he ran away again",
+                "Then spring came at last",
+                "The ice melted away",
+                "And flowers bloomed everywhere",
+                "The ugly duckling saw a pond",
+                "With beautiful swans swimming",
+                "They were beautiful white birds",
+                "With white feathers and",
+                "Long graceful necks",
+                "The ugly duckling looked at them",
+                "And felt very sad",
+                "He looked down at the water",
+                "And saw his reflection",
+                "He was not ugly anymore",
+                "He was not a duckling",
+                "He was a beautiful swan",
+                "The other swans came over",
+                "And said hello to him",
+                "You are one of us",
+                "You are a beautiful swan",
+                "Now he was happy",
+                "And flew away with them",
+                "Over the lake together",
+                "High up in the sky",
+                "He was never lonely again",
+                "And never sad again",
+                "He found his true family",
+                "And found his real home",
+                "The moral of the story",
+                "Is to be kind always",
+                "To others who may look",
+                "Different than you do",
+                "Because everyone grows up",
+                "Into something beautiful someday",
+              ]
+            ],
+          },
+          'cinderella': {
+            title: 'Cinderella',
+            levels: [
+              [
+                "A young girl",
+                "Named Cinderella lived",
+                "With her step mother",
+                "And her two sisters",
+                "They were very mean",
+                "And made her work hard",
+                "To clean the whole house",
+                "And cook all the food",
+                "And wash all the clothes",
+                "Cinderella cried sometimes",
+                "And wished for help",
+                "The king announced a",
+                "Big party at the palace",
+                "For the prince to",
+                "Find a wife to marry",
+                "The sisters dressed up",
+                "In their finest clothes",
+                "Cinderella asked them nicely",
+                "Can I go too please",
+                "The sisters laughed at her",
+                "No you cannot go",
+                "You must stay and work",
+                "Cinderella cried again",
+                "Then her fairy godmother",
+                "Appeared suddenly before her",
+                "She said do not cry",
+                "My dear little girl",
+                "I will help you now",
+                "With her magic wand",
+                "A pumpkin turned into",
+                "A beautiful golden coach",
+                "Mice turned into horses",
+                "A lizard turned into",
+                "A fine coachman too",
+                "Cinderella's old dress turned",
+                "Into a beautiful gown",
+                "And glass slippers appeared",
+                "On her dainty feet",
+                "The fairy said remember",
+                "Be home by midnight",
+                "Because the magic ends",
+                "At twelve o'clock sharp",
+                "Cinderella went to the ball",
+                "The prince saw her",
+                "And fell in love",
+                "They danced all night long",
+                "The clock struck eleven",
+                "Fifty nine she remembered",
+                "Cinderella ran away fast",
+                "And lost her slipper",
+                "On the palace stairs",
+                "The prince found the",
+                "Glass slipper on the stairs",
+                "He searched the whole kingdom",
+                "For the girl whose foot",
+                "Would fit the slipper",
+                "He tried it on",
+                "Many girls in the kingdom",
+                "But it did not fit",
+                "He came to their house",
+                "The sisters tried it on",
+                "But it was too big",
+                "Cinderella tried it on",
+                "And it was perfect fit",
+                "The other slipper matched too",
+                "The prince said to her",
+                "Will you marry me please",
+                "Cinderella said yes I will",
+                "They got married and",
+                "Lived happily ever after",
+                "In the beautiful palace",
+                "The sisters learned to",
+                "Be kind to others",
+                "The moral of the story",
+                "Is to always be kind",
+                "And good things will",
+                "Happen to you someday",
+              ]
+            ],
+          },
+          'little_red_riding_hood': {
+            title: 'Little Red Riding Hood',
+            levels: [
+              [
+                "A little girl",
+                "Wearing a red riding hood",
+                "Went to visit her grandmother",
+                "Her mother said to her",
+                "Take this basket of food",
+                "To your grandmother's house",
+                "Please be very careful",
+                "And stay on the path",
+                "Don't talk to any strangers",
+                "The girl said yes mother",
+                "She walked through the woods",
+                "And met a big wolf",
+                "The wolf said hello there",
+                "Where are you going today",
+                "The little girl said",
+                "I'm going to grandmother's house",
+                "The wolf thought to himself",
+                "I will eat both of them",
+                "The wolf ran ahead fast",
+                "To the grandmother's house first",
+                "He knocked on the door",
+                "Who is there said grandmother",
+                "Little Red Riding Hood he said",
+                "The wolf said come in dear",
+                "Then the wolf ate grandmother",
+                "And put on her clothes",
+                "And got into her bed",
+                "The girl arrived soon after",
+                "And knocked on the door",
+                "Who is there said wolf",
+                "Little Red Riding Hood she said",
+                "The wolf said come in dear",
+                "The girl went inside",
+                "And saw her grandmother",
+                "What big ears you have",
+                "The better to hear you",
+                "What big eyes you have",
+                "The better to see you",
+                "What big hands you have",
+                "The better to hold you",
+                "What big teeth you have",
+                "The better to eat you",
+                "The wolf jumped up then",
+                "And ate the little girl",
+                "A woodcutter heard the noise",
+                "And ran to the house",
+                "He saw the big wolf",
+                "And cut him open fast",
+                "The girl came out safe",
+                "Her grandmother came out too",
+                "The wolf ran away fast",
+                "And never came back again",
+                "The girl learned her lesson",
+                "To always listen to mother",
+                "And stay on the path",
+                "And don't talk to strangers",
+                "They ate the yummy cake",
+                "From the food basket",
+                "And drank some warm tea",
+                "And had a nice visit",
+                "Then went home safe",
+                "Her mother was very happy",
+                "Good night little girl",
+              ]
+            ],
+          },
+          'peter_rabbit': {
+            title: 'Peter Rabbit',
+            levels: [
+              [
+                "Once upon a time",
+                "There were four little rabbits",
+                "Their names were Flopsy",
+                "And Mopsy and Cotton-tail",
+                "And Peter Rabbit too",
+                "They lived with their mother",
+                "Under a big fir tree",
+                "Their mother said listen children",
+                "You may go out today",
+                "Into the fields to play",
+                "Or down the lane too",
+                "But do not go into",
+                "The garden Mr. Brown's garden",
+                "Flopsy stayed close to home",
+                "Mopsy stayed close too",
+                "Cotton-tail stayed with them",
+                "They picked some berries together",
+                "But Peter ran away alone",
+                "Peter went inside the garden",
+                "And ate some tasty lettuce",
+                "And ate some green beans",
+                "And ate some fresh radishes",
+                "And ate some parsley too",
+                "Then he felt very sick",
+                "Mr Brown saw Peter there",
+                "Peter ran very fast away",
+                "And lost his little shoes",
+                "And lost his blue jacket",
+                "His buttons got caught on",
+                "The fence as he ran",
+                "Peter hid inside a",
+                "Big watering can to hide",
+                "The water was very cold",
+                "Peter sneezed a loud sneeze",
+                "Mr Brown heard the sneeze",
+                "Peter ran out fast then",
+                "And he ran away quickly",
+                "Past the sleeping cat",
+                "And past the big pond",
+                "He found the garden gate",
+                "And squeezed under the gate",
+                "And ran back to home",
+                "His mother was very worried",
+                "She was knitting a sweater",
+                "She asked Peter where is",
+                "Your jacket my dear Peter",
+                "Where are your shoes now",
+                "Peter felt very tired",
+                "And he was quite sick",
+                "His mother put him to bed",
+                "And gave him warm tea",
+                "Peter fell fast asleep",
+                "His siblings ate their berries",
+                "And they had some milk",
+                "And bread for their dinner",
+                "Then it was bedtime",
+              ]
+            ],
+          },
+          'three_little_pigs': {
+            title: 'Three Little Pigs',
+            levels: [
+              [
+                "Three little pigs",
+                "Left their mother",
+                "To build their houses",
+                "The first little pig",
+                "Built a straw house",
+                "The second little pig",
+                "Built a stick house",
+                "The third little pig",
+                "Built a brick house",
+                "A big bad wolf",
+                "Came to visit them",
+                "He knocked on the door",
+                "The little pig said",
+                "Not by the hair",
+                "On my chinny chin chin",
+                "I will huff and puff",
+                "And blow your house down",
+                "The wolf huffed and puffed",
+                "The straw house fell down",
+                "The pig ran away fast",
+                "To his brother's stick house",
+                "The wolf followed him there",
+                "And knocked on the door",
+                "The little pig said again",
+                "Not by the hair on",
+                "My chinny chin chin",
+                "The wolf huffed and puffed",
+                "The stick house fell down",
+                "Both pigs ran away fast",
+                "To their brother's brick house",
+                "The wolf followed them there",
+                "And knocked on the door",
+                "The little pigs said together",
+                "Not by the hair on",
+                "Our chinny chin chins",
+                "The wolf huffed and puffed",
+                "But the house stood strong",
+                "The wolf got very angry",
+                "He climbed up on the roof",
+                "And went down the chimney",
+                "He fell into a pot",
+                "Of hot boiling water",
+                "The wolf ran away fast",
+                "And never came back again",
+                "The three little pigs",
+                "Lived happily together now",
+                "In their strong brick house",
+                "They were safe and warm",
+                "From the big bad wolf",
+                "They ate their dinner together",
+                "And played some fun games",
+                "Then they went to bed",
+                "Good night little pigs",
+                "Sleep well and dream",
+              ]
+            ],
+          },
+        };
 
+        // Combined stories object including basic phrases
         const levelMilestones = [
             { age: '2-3', words: '50-200' },
             { age: '2-3', words: '100-300' },
@@ -913,7 +1373,99 @@
             { age: '6-7', words: '6,000-8,000' },
             { age: '7', words: '8,000-10,000' }
         ];
+        const allStories = {
+            basic_phrases: {
+                title: 'Basic Phrases',
+                levels: phrasePairs.map((level) =>
+                    level.map(([english, farsi]) => {
+                        const iconEntry = resolveIconEntry(english);
+                        return new Phrase(
+                            english,
+                            farsi,
+                            iconEntry ? iconEntry.icon : null,
+                            iconEntry ? iconEntry.category : null
+                        );
+                    })
+                ),
+                milestones: levelMilestones
+            }
+        };
+        // Add story phrases (no Farsi translation)
+        for (const [storyId, data] of Object.entries(storyPhrases)) {
+            allStories[storyId] = {
+                title: data.title,
+                levels: data.levels.map(level =>
+                    level.map(english => {
+                        const iconEntry = resolveIconEntry(english);
+                        return new Phrase(
+                            english,
+                            '', // no Farsi translation
+                            iconEntry ? iconEntry.icon : null,
+                            iconEntry ? iconEntry.category : null
+                        );
+                    })
+                ),
+                milestones: null // stories don't have age milestones
+            };
+        }
 
+        // Story selection change handler
+        function loadStory(storyId) {
+            console.log('Loading story:', storyId, allStories[storyId].title);
+            if (!allStories.hasOwnProperty(storyId)) return;
+            // Stop any ongoing recognition
+            if (recognition) {
+                try {
+                    recognition.stop();
+                } catch (e) {
+                    console.log('Error stopping recognition:', e);
+                }
+                recognition = null;
+                isListening = false;
+            }
+            // Stop recording if active
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                try {
+                    mediaRecorder.stop();
+                } catch (e) {
+                    console.log('Error stopping recording:', e);
+                }
+                isRecordingActive = false;
+            }
+            currentStoryId = storyId;
+            currentLevel = 0;
+            currentWordIndex = 0;
+            currentPhrases = [];
+            currentWords = [];
+            score = 0;
+            consecutiveSuccesses = 0;
+            consecutiveFailures = 0;
+            isProcessingWord = false;
+            manualRestartPending = false;
+            debugAttempts = [];
+            // Reset UI
+            document.getElementById('currentWord').textContent = 'Ready!';
+            document.getElementById('currentWordFa').textContent = '';
+            document.getElementById('levelIndicator').style.display = 'none';
+            document.getElementById('progressText').textContent = '';
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('startRecordBtn').style.display = 'inline-block';
+            document.getElementById('skipBtn').style.display = 'none';
+            document.getElementById('restartBtn').style.display = 'none';
+            hideRecordingControls();
+            adjustWordSizing();
+        }
+
+        // Attach event listener to story dropdown
+        document.getElementById('storySelect').addEventListener('change', function() {
+            loadStory(this.value);
+        });
+
+
+
+
+
+        let currentStoryId = 'basic_phrases';
         let currentLevel = 0;
         let currentWordIndex = 0;
         let currentPhrases = [];
@@ -947,38 +1499,51 @@
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
         function initGame() {
-            const levelPhrases = phraseLevels[currentLevel] || [];
-            const indices = levelPhrases.map((_, i) => i);
-            shuffleArray(indices);
-            currentPhrases = indices.map((i) => levelPhrases[i]);
-            currentWords = currentPhrases.map((phrase) => phrase.english);
+            console.log('initGame: story=', currentStoryId, 'level=', currentLevel);
+            const story = allStories[currentStoryId];
+            const storyLevels = story.levels;
+            // Ensure currentLevel is within bounds
+            if (currentLevel >= storyLevels.length) {
+                currentLevel = 0;
+            }
+            const levelPhrases = storyLevels[currentLevel] || [];
+            currentPhrases = levelPhrases;
+            currentWords = levelPhrases.map((phrase) => phrase.english);
+            // Debug: log first few phrases
+            if (currentWords.length > 0) {
+                console.log('First 3 phrases:', currentWords.slice(0, 3).join(', '));
+            }
             updateCounter();
             updateLevelIndicator();
         }
 
         function updateLevelIndicator() {
-            document.getElementById('levelNumber').textContent = currentLevel + 1;
-            updateLevelEstimate();
-        }
-
-        function updateLevelEstimate() {
+            const story = allStories[currentStoryId];
             const estimateEl = document.getElementById('levelEstimate');
-            if (!estimateEl) {
-                return;
+            const badge = document.querySelector('.level-badge');
+            if (currentStoryId === 'basic_phrases') {
+                badge.innerHTML = 'Level <span id="levelNumber">' + (currentLevel + 1) + '</span>';
+                // show age estimate
+                const milestone = levelMilestones[currentLevel] || levelMilestones[levelMilestones.length - 1];
+                estimateEl.textContent = `Est. age ${milestone.age} • vocab ${milestone.words} words`;
+                estimateEl.style.display = 'inline-block';
+            } else {
+                // For stories, show "Part X of Y"
+                badge.innerHTML = 'Part <span id="levelNumber">' + (currentLevel + 1) + '</span>';
+                estimateEl.textContent = `Part ${currentLevel + 1} of ${story.levels.length}`;
+                estimateEl.style.display = 'inline-block';
             }
-            const milestone = levelMilestones[currentLevel] || levelMilestones[levelMilestones.length - 1];
-            estimateEl.textContent = `Est. age ${milestone.age} • vocab ${milestone.words} words`;
-            estimateEl.style.display = 'inline-block';
         }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
+        // Keep updateLevelEstimate for compatibility (no longer used)
+        function updateLevelEstimate() {
+            updateLevelIndicator();
         }
+
+
 
         function startGame(withRecording) {
+            console.log('Starting game with story:', currentStoryId, allStories[currentStoryId].title);
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert('Sorry! Your browser doesn\'t support speech recognition. Please try Chrome, Edge, or Safari.');
                 return;
@@ -999,6 +1564,16 @@
         }
 
         function startSpeechRecognition() {
+            // Stop any existing recognition before creating new one
+            if (recognition) {
+                try {
+                    recognition.stop();
+                } catch (e) {
+                    // Ignore errors
+                }
+                recognition = null;
+            }
+            
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
             recognition = new SpeechRecognition();
@@ -1275,6 +1850,7 @@
             if (!isListening) {
                 try {
                     recognition.start();
+                    isListening = true; // Set immediately, onstart will also set it
                     console.log('%c🎯 Recognition armed for first word:', 'color: teal; font-weight: bold', target);
                 } catch (e) {
                     console.error('Failed to start recognition for first word', target, e);
@@ -1499,7 +2075,7 @@
 
             // Check if we should level up based on performance
             let shouldLevelUp = false;
-            if (consecutiveSuccesses >= SUCCESS_THRESHOLD && currentLevel < phraseLevels.length - 1) {
+            if (consecutiveSuccesses >= SUCCESS_THRESHOLD && currentLevel < allStories[currentStoryId].levels.length - 1) {
                 shouldLevelUp = true;
                 consecutiveSuccesses = 0;  // Reset counter
             }
@@ -1510,7 +2086,7 @@
 
                 if (currentWordIndex >= currentWords.length || shouldLevelUp) {
                     // Level complete or performance-based level up!
-                    if (currentLevel < phraseLevels.length - 1) {
+                    if (currentLevel < allStories[currentStoryId].levels.length - 1) {
                         currentLevel++;
                         currentWordIndex = 0;
                         initGame();
