@@ -627,7 +627,7 @@
         // Adaptive difficulty tracking
         let consecutiveSuccesses = 0;
         let consecutiveFailures = 0;
-        const SUCCESS_THRESHOLD = 4;  // Level up after 4 successes
+        const SUCCESS_THRESHOLD = 100;  // Level up after 100 successes (effectively disables early level-up)
         const FAILURE_THRESHOLD = 3;  // Level down after 3 skips/struggles
         const FEEDBACK_ANIMATION_MS = 700;
         const NEXT_WORD_DELAY_MS = 650;
