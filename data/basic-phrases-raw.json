@@ -1,0 +1,2580 @@
+[
+  [
+    [
+      "mom",
+      "مامان"
+    ],
+    [
+      "dad",
+      "بابا"
+    ],
+    [
+      "baby",
+      "نی نی"
+    ],
+    [
+      "cat",
+      "گربه"
+    ],
+    [
+      "dog",
+      "سگ"
+    ],
+    [
+      "ball",
+      "توپ"
+    ],
+    [
+      "cup",
+      "لیوان"
+    ],
+    [
+      "book",
+      "کتاب"
+    ],
+    [
+      "bed",
+      "تخت"
+    ],
+    [
+      "milk",
+      "شیر"
+    ],
+    [
+      "water",
+      "آب"
+    ],
+    [
+      "snack",
+      "خوراکی"
+    ],
+    [
+      "car",
+      "ماشین"
+    ],
+    [
+      "bus",
+      "اتوبوس"
+    ],
+    [
+      "hat",
+      "کلاه"
+    ],
+    [
+      "shoe",
+      "کفش"
+    ],
+    [
+      "toy",
+      "اسباب بازی"
+    ],
+    [
+      "yes",
+      "بله"
+    ],
+    [
+      "no",
+      "نه"
+    ],
+    [
+      "stop",
+      "بایست"
+    ],
+    [
+      "go",
+      "برو"
+    ],
+    [
+      "help",
+      "کمک"
+    ]
+  ],
+  [
+    [
+      "brother",
+      "برادر"
+    ],
+    [
+      "sister",
+      "خواهر"
+    ],
+    [
+      "grandma",
+      "مامان بزرگ"
+    ],
+    [
+      "grandpa",
+      "بابابزرگ"
+    ],
+    [
+      "friend",
+      "دوست"
+    ],
+    [
+      "teacher",
+      "مربی"
+    ],
+    [
+      "helper",
+      "کمک مربی"
+    ],
+    [
+      "baby",
+      "بچه"
+    ],
+    [
+      "diaper",
+      "پوشک"
+    ],
+    [
+      "potty",
+      "لگن"
+    ],
+    [
+      "toilet",
+      "دستشویی"
+    ],
+    [
+      "tooth",
+      "دندان"
+    ],
+    [
+      "toothbrush",
+      "مسواک"
+    ],
+    [
+      "soap",
+      "صابون"
+    ],
+    [
+      "towel",
+      "حوله"
+    ],
+    [
+      "shirt",
+      "پیراهن"
+    ],
+    [
+      "pants",
+      "شلوار"
+    ],
+    [
+      "shorts",
+      "شلوارک"
+    ],
+    [
+      "sock",
+      "جوراب"
+    ],
+    [
+      "shoe",
+      "کفش"
+    ],
+    [
+      "jacket",
+      "کاپشن"
+    ],
+    [
+      "hat",
+      "کلاه"
+    ],
+    [
+      "blanket",
+      "پتو"
+    ],
+    [
+      "pillow",
+      "بالش"
+    ],
+    [
+      "teddy",
+      "خرس عروسکی"
+    ],
+    [
+      "bottle",
+      "بطری"
+    ],
+    [
+      "cup",
+      "لیوان"
+    ],
+    [
+      "plate",
+      "بشقاب"
+    ],
+    [
+      "spoon",
+      "قاشق"
+    ],
+    [
+      "fork",
+      "چنگال"
+    ],
+    [
+      "napkin",
+      "دستمال سفره"
+    ],
+    [
+      "tissue",
+      "دستمال کاغذی"
+    ],
+    [
+      "lunchbox",
+      "جعبه ناهار"
+    ],
+    [
+      "backpack",
+      "کوله پشتی"
+    ]
+  ],
+  [
+    [
+      "eat",
+      "بخور"
+    ],
+    [
+      "drink",
+      "بنوش"
+    ],
+    [
+      "sleep",
+      "بخواب"
+    ],
+    [
+      "wake",
+      "بیدار شو"
+    ],
+    [
+      "play",
+      "بازی کن"
+    ],
+    [
+      "read",
+      "بخون"
+    ],
+    [
+      "draw",
+      "نقاشی کن"
+    ],
+    [
+      "sing",
+      "آواز بخون"
+    ],
+    [
+      "dance",
+      "برقص"
+    ],
+    [
+      "jump",
+      "بپر"
+    ],
+    [
+      "run",
+      "بدو"
+    ],
+    [
+      "walk",
+      "راه برو"
+    ],
+    [
+      "sit",
+      "بشین"
+    ],
+    [
+      "stand",
+      "بایست"
+    ],
+    [
+      "open",
+      "باز کن"
+    ],
+    [
+      "close",
+      "ببند"
+    ],
+    [
+      "wash",
+      "بشور"
+    ],
+    [
+      "dry",
+      "خشک کن"
+    ],
+    [
+      "clean",
+      "تمیز"
+    ],
+    [
+      "dirty",
+      "کثیف"
+    ],
+    [
+      "hot",
+      "داغ"
+    ],
+    [
+      "cold",
+      "سرد"
+    ],
+    [
+      "big",
+      "بزرگ"
+    ],
+    [
+      "small",
+      "کوچک"
+    ],
+    [
+      "fast",
+      "تند"
+    ],
+    [
+      "slow",
+      "آروم"
+    ],
+    [
+      "up",
+      "بالا"
+    ],
+    [
+      "down",
+      "پایین"
+    ],
+    [
+      "in",
+      "تو"
+    ],
+    [
+      "out",
+      "بیرون"
+    ],
+    [
+      "stop",
+      "بایست"
+    ],
+    [
+      "go",
+      "برو"
+    ],
+    [
+      "share",
+      "تقسیم کن"
+    ],
+    [
+      "wait",
+      "صبر کن"
+    ],
+    [
+      "listen",
+      "گوش کن"
+    ],
+    [
+      "talk",
+      "حرف بزن"
+    ],
+    [
+      "push",
+      "هل بده"
+    ],
+    [
+      "pull",
+      "بکش"
+    ],
+    [
+      "give",
+      "بده"
+    ],
+    [
+      "take",
+      "بگیر"
+    ],
+    [
+      "help",
+      "کمک کن"
+    ],
+    [
+      "carry",
+      "ببر"
+    ]
+  ],
+  [
+    [
+      "my cup",
+      "لیوان من"
+    ],
+    [
+      "my water",
+      "آب من"
+    ],
+    [
+      "my milk",
+      "شیر من"
+    ],
+    [
+      "my plate",
+      "بشقاب من"
+    ],
+    [
+      "my spoon",
+      "قاشق من"
+    ],
+    [
+      "my fork",
+      "چنگال من"
+    ],
+    [
+      "my napkin",
+      "دستمال من"
+    ],
+    [
+      "my bottle",
+      "بطری من"
+    ],
+    [
+      "my book",
+      "کتاب من"
+    ],
+    [
+      "my toy",
+      "اسباب بازی من"
+    ],
+    [
+      "my teddy",
+      "خرس عروسکی من"
+    ],
+    [
+      "my blanket",
+      "پتوی من"
+    ],
+    [
+      "my pillow",
+      "بالش من"
+    ],
+    [
+      "my bed",
+      "تخت من"
+    ],
+    [
+      "my room",
+      "اتاق من"
+    ],
+    [
+      "my chair",
+      "صندلی من"
+    ],
+    [
+      "my shoes",
+      "کفش من"
+    ],
+    [
+      "my socks",
+      "جوراب من"
+    ],
+    [
+      "my hat",
+      "کلاه من"
+    ],
+    [
+      "my coat",
+      "کاپشن من"
+    ],
+    [
+      "my backpack",
+      "کوله پشتی من"
+    ],
+    [
+      "my lunchbox",
+      "جعبه ناهار من"
+    ],
+    [
+      "my crayons",
+      "مداد شمعی من"
+    ],
+    [
+      "my marker",
+      "ماژیک من"
+    ],
+    [
+      "my puzzle",
+      "پازل من"
+    ],
+    [
+      "my toothbrush",
+      "مسواک من"
+    ],
+    [
+      "my soap",
+      "صابون من"
+    ],
+    [
+      "my towel",
+      "حوله من"
+    ],
+    [
+      "my diaper",
+      "پوشک من"
+    ],
+    [
+      "my potty",
+      "لگن من"
+    ],
+    [
+      "my doll",
+      "عروسک من"
+    ],
+    [
+      "my ball",
+      "توپ من"
+    ],
+    [
+      "my car",
+      "ماشین من"
+    ],
+    [
+      "my name",
+      "اسم من"
+    ]
+  ],
+  [
+    [
+      "red ball",
+      "توپ قرمز"
+    ],
+    [
+      "blue ball",
+      "توپ آبی"
+    ],
+    [
+      "green cup",
+      "لیوان سبز"
+    ],
+    [
+      "yellow cup",
+      "لیوان زرد"
+    ],
+    [
+      "pink hat",
+      "کلاه صورتی"
+    ],
+    [
+      "brown bear",
+      "خرس قهوه ای"
+    ],
+    [
+      "white dog",
+      "سگ سفید"
+    ],
+    [
+      "black cat",
+      "گربه سیاه"
+    ],
+    [
+      "orange juice",
+      "آبمیوه پرتقالی"
+    ],
+    [
+      "purple cup",
+      "لیوان بنفش"
+    ],
+    [
+      "red apple",
+      "سیب قرمز"
+    ],
+    [
+      "green apple",
+      "سیب سبز"
+    ],
+    [
+      "blue shoes",
+      "کفش آبی"
+    ],
+    [
+      "yellow socks",
+      "جوراب زرد"
+    ],
+    [
+      "pink shirt",
+      "پیراهن صورتی"
+    ],
+    [
+      "brown shoes",
+      "کفش قهوه ای"
+    ],
+    [
+      "white bed",
+      "تخت سفید"
+    ],
+    [
+      "black pants",
+      "شلوار سیاه"
+    ],
+    [
+      "orange ball",
+      "توپ نارنجی"
+    ],
+    [
+      "purple blanket",
+      "پتوی بنفش"
+    ],
+    [
+      "red bus",
+      "اتوبوس قرمز"
+    ],
+    [
+      "blue truck",
+      "کامیون آبی"
+    ],
+    [
+      "green frog",
+      "قورباغه سبز"
+    ],
+    [
+      "yellow banana",
+      "موز زرد"
+    ],
+    [
+      "blue backpack",
+      "کوله پشتی آبی"
+    ],
+    [
+      "red crayon",
+      "مداد شمعی قرمز"
+    ],
+    [
+      "green crayon",
+      "مداد شمعی سبز"
+    ],
+    [
+      "yellow lunchbox",
+      "جعبه ناهار زرد"
+    ],
+    [
+      "pink cup",
+      "لیوان صورتی"
+    ],
+    [
+      "purple marker",
+      "ماژیک بنفش"
+    ],
+    [
+      "green plate",
+      "بشقاب سبز"
+    ],
+    [
+      "blue chair",
+      "صندلی آبی"
+    ],
+    [
+      "red jacket",
+      "کاپشن قرمز"
+    ],
+    [
+      "yellow duck",
+      "اردک زرد"
+    ]
+  ],
+  [
+    [
+      "go home",
+      "برو خونه"
+    ],
+    [
+      "go outside",
+      "برو بیرون"
+    ],
+    [
+      "come here",
+      "بیا اینجا"
+    ],
+    [
+      "come back",
+      "برگرد"
+    ],
+    [
+      "sit down",
+      "بشین"
+    ],
+    [
+      "stand up",
+      "بایست"
+    ],
+    [
+      "lie down",
+      "دراز بکش"
+    ],
+    [
+      "pick up",
+      "بردار"
+    ],
+    [
+      "put down",
+      "بذار پایین"
+    ],
+    [
+      "put away",
+      "سر جاش بذار"
+    ],
+    [
+      "clean up",
+      "جمع کن"
+    ],
+    [
+      "wash hands",
+      "دستاتو بشور"
+    ],
+    [
+      "brush teeth",
+      "دندونات رو مسواک بزن"
+    ],
+    [
+      "dry hands",
+      "دستاتو خشک کن"
+    ],
+    [
+      "open door",
+      "در را باز کن"
+    ],
+    [
+      "close door",
+      "در را ببند"
+    ],
+    [
+      "turn on",
+      "روشن کن"
+    ],
+    [
+      "turn off",
+      "خاموش کن"
+    ],
+    [
+      "hold my hand",
+      "دستم رو بگیر"
+    ],
+    [
+      "hug me",
+      "بغلم کن"
+    ],
+    [
+      "kiss me",
+      "منو ببوس"
+    ],
+    [
+      "high five",
+      "دست بده"
+    ],
+    [
+      "look here",
+      "اینجا نگاه کن"
+    ],
+    [
+      "listen now",
+      "الان گوش کن"
+    ],
+    [
+      "wait here",
+      "اینجا صبر کن"
+    ],
+    [
+      "slow down",
+      "آروم تر"
+    ],
+    [
+      "line up",
+      "صف ببند"
+    ],
+    [
+      "use the potty",
+      "دستشویی برو"
+    ],
+    [
+      "take turns",
+      "نوبتی باش"
+    ],
+    [
+      "share toys",
+      "اسباب بازی ها رو تقسیم کن"
+    ],
+    [
+      "pack up",
+      "وسایلتو جمع کن"
+    ],
+    [
+      "wipe nose",
+      "بینی رو پاک کن"
+    ],
+    [
+      "take off shoes",
+      "کفشاتو دربیار"
+    ],
+    [
+      "put on shoes",
+      "کفشاتو بپوش"
+    ],
+    [
+      "zip it up",
+      "زیپش رو بکش"
+    ],
+    [
+      "button it",
+      "دکمه اش رو ببند"
+    ],
+    [
+      "give it to me",
+      "بده به من"
+    ],
+    [
+      "show me",
+      "نشونم بده"
+    ]
+  ],
+  [
+    [
+      "I want milk",
+      "شیر میخوام"
+    ],
+    [
+      "I want water",
+      "آب میخوام"
+    ],
+    [
+      "I want juice",
+      "آبمیوه میخوام"
+    ],
+    [
+      "I want snack",
+      "خوراکی میخوام"
+    ],
+    [
+      "I want yogurt",
+      "ماست میخوام"
+    ],
+    [
+      "I want bread",
+      "نان میخوام"
+    ],
+    [
+      "I want banana",
+      "موز میخوام"
+    ],
+    [
+      "I want apple",
+      "سیب میخوام"
+    ],
+    [
+      "I want more",
+      "بازم میخوام"
+    ],
+    [
+      "I am all done",
+      "تموم کردم"
+    ],
+    [
+      "I need help",
+      "کمک میخوام"
+    ],
+    [
+      "I need a hug",
+      "بغل میخوام"
+    ],
+    [
+      "I need potty",
+      "دستشویی دارم"
+    ],
+    [
+      "I need to pee",
+      "پی پی دارم"
+    ],
+    [
+      "I need to poop",
+      "پوپو دارم"
+    ],
+    [
+      "I need rest",
+      "استراحت میخوام"
+    ],
+    [
+      "I need a nap",
+      "چرت میخوام"
+    ],
+    [
+      "I need a drink",
+      "نوشیدنی میخوام"
+    ],
+    [
+      "I need food",
+      "غذا میخوام"
+    ],
+    [
+      "I need my shoes",
+      "کفش میخوام"
+    ],
+    [
+      "I need my coat",
+      "کاپشن میخوام"
+    ],
+    [
+      "I need a blanket",
+      "پتو میخوام"
+    ],
+    [
+      "I need my teddy",
+      "خرس عروسکی میخوام"
+    ],
+    [
+      "I need a tissue",
+      "دستمال میخوام"
+    ],
+    [
+      "I need a bandage",
+      "چسب زخم میخوام"
+    ],
+    [
+      "I need my backpack",
+      "کوله پشتی میخوام"
+    ],
+    [
+      "I need my book",
+      "کتاب میخوام"
+    ],
+    [
+      "I need my toy",
+      "اسباب بازی میخوام"
+    ],
+    [
+      "I need to wash hands",
+      "میخوام دستامو بشورم"
+    ]
+  ],
+  [
+    [
+      "I am happy",
+      "خوشحالم"
+    ],
+    [
+      "I am sad",
+      "غمگینم"
+    ],
+    [
+      "I am mad",
+      "عصبانی ام"
+    ],
+    [
+      "I am tired",
+      "خسته ام"
+    ],
+    [
+      "I am sleepy",
+      "خوابم میاد"
+    ],
+    [
+      "I am hungry",
+      "گرسنه ام"
+    ],
+    [
+      "I am thirsty",
+      "تشنه ام"
+    ],
+    [
+      "I am scared",
+      "می ترسم"
+    ],
+    [
+      "I am cold",
+      "سردمه"
+    ],
+    [
+      "I am hot",
+      "گرممه"
+    ],
+    [
+      "I feel sick",
+      "حالم بده"
+    ],
+    [
+      "I feel better",
+      "حالم بهتره"
+    ],
+    [
+      "I feel okay",
+      "خوبم"
+    ],
+    [
+      "I feel hurt",
+      "درد دارم"
+    ],
+    [
+      "I feel shy",
+      "خجالتی ام"
+    ],
+    [
+      "I feel brave",
+      "شجاعم"
+    ],
+    [
+      "I feel proud",
+      "به خودم افتخار می کنم"
+    ],
+    [
+      "I feel safe",
+      "امنم"
+    ],
+    [
+      "I feel lonely",
+      "تنها موندم"
+    ],
+    [
+      "I feel silly",
+      "شیطون شدم"
+    ],
+    [
+      "I feel excited",
+      "هیجان زده ام"
+    ],
+    [
+      "I feel worried",
+      "نگرانم"
+    ],
+    [
+      "I feel calm",
+      "آرومم"
+    ],
+    [
+      "I feel angry",
+      "خیلی عصبانی ام"
+    ],
+    [
+      "I feel bored",
+      "حوصله ام سر رفته"
+    ],
+    [
+      "I feel nervous",
+      "دلشوره دارم"
+    ],
+    [
+      "I feel upset",
+      "ناراحتم"
+    ],
+    [
+      "I feel surprised",
+      "تعجب کردم"
+    ],
+    [
+      "my tummy hurts",
+      "دلم درد می کنه"
+    ],
+    [
+      "my head hurts",
+      "سرم درد می کنه"
+    ]
+  ],
+  [
+    [
+      "time to eat",
+      "وقت غذاست"
+    ],
+    [
+      "time for snack",
+      "وقت میان وعده است"
+    ],
+    [
+      "time for lunch",
+      "وقت ناهاره"
+    ],
+    [
+      "time for bath",
+      "وقت حمامه"
+    ],
+    [
+      "time for bed",
+      "وقت خوابه"
+    ],
+    [
+      "time to potty",
+      "وقت دستشوییه"
+    ],
+    [
+      "time to nap",
+      "وقت چرت زدنه"
+    ],
+    [
+      "time to play",
+      "وقت بازیه"
+    ],
+    [
+      "time to clean up",
+      "وقت جمع کردنه"
+    ],
+    [
+      "time to read",
+      "وقت خوندنه"
+    ],
+    [
+      "time to go outside",
+      "وقت بیرون رفتنه"
+    ],
+    [
+      "time to go home",
+      "وقت رفتن به خونه است"
+    ],
+    [
+      "time for class",
+      "وقت کلاسه"
+    ],
+    [
+      "time for circle",
+      "وقت حلقه است"
+    ],
+    [
+      "wash your hands",
+      "دستاتو بشور"
+    ],
+    [
+      "brush your teeth",
+      "دندونات رو مسواک بزن"
+    ],
+    [
+      "put on shoes",
+      "کفشاتو بپوش"
+    ],
+    [
+      "take off shoes",
+      "کفشاتو دربیار"
+    ],
+    [
+      "put on socks",
+      "جوراباتو بپوش"
+    ],
+    [
+      "take off socks",
+      "جوراباتو دربیار"
+    ],
+    [
+      "put on coat",
+      "کاپشنتو بپوش"
+    ],
+    [
+      "take off coat",
+      "کاپشنتو دربیار"
+    ],
+    [
+      "hang up coat",
+      "کاپشنت رو آویزون کن"
+    ],
+    [
+      "pack backpack",
+      "کوله پشتی رو ببند"
+    ],
+    [
+      "clean up toys",
+      "اسباب بازی ها رو جمع کن"
+    ],
+    [
+      "put toys away",
+      "اسباب بازی ها رو بذار سرجا"
+    ],
+    [
+      "get in bed",
+      "برو تخت"
+    ],
+    [
+      "get in tub",
+      "برو تو وان"
+    ],
+    [
+      "dry your hands",
+      "دستاتو خشک کن"
+    ],
+    [
+      "wipe your face",
+      "صورتتو پاک کن"
+    ],
+    [
+      "turn off light",
+      "چراغو خاموش کن"
+    ],
+    [
+      "turn on light",
+      "چراغو روشن کن"
+    ],
+    [
+      "sit at table",
+      "پشت میز بشین"
+    ],
+    [
+      "line up",
+      "صف ببند"
+    ]
+  ],
+  [
+    [
+      "please help me",
+      "لطفا کمکم کن"
+    ],
+    [
+      "please wait here",
+      "لطفا اینجا صبر کن"
+    ],
+    [
+      "please come here",
+      "لطفا بیا اینجا"
+    ],
+    [
+      "please sit down",
+      "لطفا بشین"
+    ],
+    [
+      "please stand up",
+      "لطفا بایست"
+    ],
+    [
+      "please open door",
+      "لطفا در را باز کن"
+    ],
+    [
+      "please close door",
+      "لطفا در را ببند"
+    ],
+    [
+      "please read to me",
+      "لطفا برام کتاب بخون"
+    ],
+    [
+      "please play with me",
+      "لطفا با من بازی کن"
+    ],
+    [
+      "please watch me",
+      "لطفا منو نگاه کن"
+    ],
+    [
+      "please hold my hand",
+      "لطفا دستم رو بگیر"
+    ],
+    [
+      "please hug me",
+      "لطفا بغلم کن"
+    ],
+    [
+      "please wipe me",
+      "لطفا منو پاک کن"
+    ],
+    [
+      "please change me",
+      "لطفا پوشکم رو عوض کن"
+    ],
+    [
+      "please get water",
+      "لطفا آب بیار"
+    ],
+    [
+      "please get milk",
+      "لطفا شیر بیار"
+    ],
+    [
+      "please get snack",
+      "لطفا خوراکی بیار"
+    ],
+    [
+      "please give me my toy",
+      "لطفا اسباب بازی مو بده"
+    ],
+    [
+      "please give me my cup",
+      "لطفا لیوانمو بده"
+    ],
+    [
+      "please give me a spoon",
+      "لطفا یه قاشق بده"
+    ],
+    [
+      "please be gentle",
+      "لطفا آروم باش"
+    ],
+    [
+      "please be quiet",
+      "لطفا ساکت باش"
+    ],
+    [
+      "please listen",
+      "لطفا گوش کن"
+    ],
+    [
+      "please line up",
+      "لطفا صف ببند"
+    ],
+    [
+      "please sit here",
+      "لطفا اینجا بشین"
+    ],
+    [
+      "please wash hands",
+      "لطفا دستاتو بشور"
+    ],
+    [
+      "please use words",
+      "لطفا با کلمه بگو"
+    ],
+    [
+      "please take turns",
+      "لطفا نوبتی باش"
+    ],
+    [
+      "please share toys",
+      "لطفا اسباب بازی ها رو تقسیم کن"
+    ],
+    [
+      "please move over",
+      "لطفا یکم جا بده"
+    ],
+    [
+      "please stop",
+      "لطفا وایسا"
+    ],
+    [
+      "please slow down",
+      "لطفا آروم تر"
+    ],
+    [
+      "please help me zip",
+      "لطفا زیپمو بکش"
+    ]
+  ],
+  [
+    [
+      "where is mom",
+      "مامان کجاست"
+    ],
+    [
+      "where is dad",
+      "بابا کجاست"
+    ],
+    [
+      "where is my toy",
+      "اسباب بازی من کجاست"
+    ],
+    [
+      "where is my book",
+      "کتاب من کجاست"
+    ],
+    [
+      "where is my cup",
+      "لیوان من کجاست"
+    ],
+    [
+      "where are my shoes",
+      "کفشام کجاست"
+    ],
+    [
+      "where is my coat",
+      "کاپشنم کجاست"
+    ],
+    [
+      "where is the ball",
+      "توپ کجاست"
+    ],
+    [
+      "where is the bathroom",
+      "دستشویی کجاست"
+    ],
+    [
+      "where is the teacher",
+      "مربی کجاست"
+    ],
+    [
+      "where is my backpack",
+      "کوله پشتی من کجاست"
+    ],
+    [
+      "where is my lunch",
+      "ناهار من کجاست"
+    ],
+    [
+      "where is the playground",
+      "حیاط کجاست"
+    ],
+    [
+      "what is this",
+      "این چیه"
+    ],
+    [
+      "what is that",
+      "اون چیه"
+    ],
+    [
+      "what is for snack",
+      "میان وعده چیه"
+    ],
+    [
+      "what are we doing",
+      "الان چی کار می کنیم"
+    ],
+    [
+      "who is that",
+      "اون کیه"
+    ],
+    [
+      "who is here",
+      "اینجا کیه"
+    ],
+    [
+      "what is your name",
+      "اسمت چیه"
+    ],
+    [
+      "can I go",
+      "می تونم برم"
+    ],
+    [
+      "can I play",
+      "می تونم بازی کنم"
+    ],
+    [
+      "can I eat",
+      "می تونم بخورم"
+    ],
+    [
+      "can I drink",
+      "می تونم بنوشم"
+    ],
+    [
+      "can I help",
+      "می تونم کمک کنم"
+    ],
+    [
+      "can I have some",
+      "می تونم یه کم بردارم"
+    ],
+    [
+      "can I have more",
+      "می تونم بیشتر بخوام"
+    ],
+    [
+      "can I go potty",
+      "می تونم برم دستشویی"
+    ],
+    [
+      "can we go outside",
+      "می تونیم بریم بیرون"
+    ],
+    [
+      "can we go home",
+      "می تونیم بریم خونه"
+    ],
+    [
+      "is it my turn",
+      "نوبت منه"
+    ],
+    [
+      "where is the trash",
+      "سطل زباله کجاست"
+    ]
+  ],
+  [
+    [
+      "put it here",
+      "اینجا بذار"
+    ],
+    [
+      "put it there",
+      "اونجا بذار"
+    ],
+    [
+      "put it inside",
+      "بذار توش"
+    ],
+    [
+      "put it outside",
+      "بذار بیرون"
+    ],
+    [
+      "put it on top",
+      "بذار روش"
+    ],
+    [
+      "put it under",
+      "بذار زیرش"
+    ],
+    [
+      "put it away",
+      "بذار سرجا"
+    ],
+    [
+      "put it in the trash",
+      "بنداز توی سطل"
+    ],
+    [
+      "put it in the bag",
+      "بذار توی کیف"
+    ],
+    [
+      "take it out",
+      "درش بیار"
+    ],
+    [
+      "bring it here",
+      "بیار اینجا"
+    ],
+    [
+      "take it there",
+      "ببر اونجا"
+    ],
+    [
+      "give it to teacher",
+      "به مربی بده"
+    ],
+    [
+      "go to the table",
+      "برو سر میز"
+    ],
+    [
+      "go to the bathroom",
+      "برو دستشویی"
+    ],
+    [
+      "sit on the carpet",
+      "روی فرش بشین"
+    ],
+    [
+      "stand by the door",
+      "کنار در بایست"
+    ],
+    [
+      "look under bed",
+      "زیر تخت رو نگاه کن"
+    ],
+    [
+      "look behind chair",
+      "پشت صندلی رو نگاه کن"
+    ],
+    [
+      "look in the box",
+      "توی جعبه رو نگاه کن"
+    ],
+    [
+      "look on the table",
+      "روی میز رو نگاه کن"
+    ],
+    [
+      "look at me",
+      "به من نگاه کن"
+    ],
+    [
+      "look at this",
+      "به این نگاه کن"
+    ],
+    [
+      "look at that",
+      "به اون نگاه کن"
+    ],
+    [
+      "come with me",
+      "با من بیا"
+    ],
+    [
+      "come to me",
+      "بیا پیش من"
+    ],
+    [
+      "stay with me",
+      "پیش من بمون"
+    ],
+    [
+      "stay right here",
+      "همینجا بمون"
+    ],
+    [
+      "go over there",
+      "برو اونجا"
+    ],
+    [
+      "step back",
+      "عقب برو"
+    ],
+    [
+      "follow me",
+      "دنبالم بیا"
+    ],
+    [
+      "follow the line",
+      "خط رو دنبال کن"
+    ]
+  ],
+  [
+    [
+      "I can do it",
+      "می تونم انجامش بدم"
+    ],
+    [
+      "I can try again",
+      "می تونم دوباره تلاش کنم"
+    ],
+    [
+      "I can help you",
+      "می تونم کمکت کنم"
+    ],
+    [
+      "I can clean up",
+      "می تونم جمع کنم"
+    ],
+    [
+      "I can put away",
+      "می تونم سرجا بذارم"
+    ],
+    [
+      "I can wash hands",
+      "می تونم دستامو بشورم"
+    ],
+    [
+      "I can use the potty",
+      "می تونم برم دستشویی"
+    ],
+    [
+      "I can get dressed",
+      "می تونم لباس بپوشم"
+    ],
+    [
+      "I can read a book",
+      "می تونم کتاب بخونم"
+    ],
+    [
+      "I can sing a song",
+      "می تونم آواز بخونم"
+    ],
+    [
+      "I can count",
+      "می تونم بشمرم"
+    ],
+    [
+      "I can jump high",
+      "می تونم بلند بپرم"
+    ],
+    [
+      "I can run fast",
+      "می تونم تند بدوم"
+    ],
+    [
+      "I can be gentle",
+      "می تونم آروم باشم"
+    ],
+    [
+      "I can be quiet",
+      "می تونم ساکت باشم"
+    ],
+    [
+      "I can be brave",
+      "می تونم شجاع باشم"
+    ],
+    [
+      "I can share",
+      "می تونم تقسیم کنم"
+    ],
+    [
+      "I can take turns",
+      "می تونم نوبتی باشم"
+    ],
+    [
+      "I can say sorry",
+      "می تونم معذرت بخوام"
+    ],
+    [
+      "I can say please",
+      "می تونم لطفا بگم"
+    ],
+    [
+      "I can say thank you",
+      "می تونم تشکر کنم"
+    ],
+    [
+      "I can wait",
+      "می تونم صبر کنم"
+    ],
+    [
+      "I can listen",
+      "می تونم گوش کنم"
+    ],
+    [
+      "I can follow rules",
+      "می تونم قوانین رو رعایت کنم"
+    ],
+    [
+      "I can use words",
+      "می تونم با کلمه ها بگم"
+    ],
+    [
+      "I can ask for help",
+      "می تونم کمک بخوام"
+    ],
+    [
+      "I can be kind",
+      "می تونم مهربون باشم"
+    ],
+    [
+      "I can be patient",
+      "می تونم صبور باشم"
+    ],
+    [
+      "I can sit still",
+      "می تونم آروم بشینم"
+    ],
+    [
+      "I can try my best",
+      "می تونم بهترینم رو بکنم"
+    ]
+  ],
+  [
+    [
+      "my turn",
+      "نوبت منه"
+    ],
+    [
+      "your turn",
+      "نوبت توئه"
+    ],
+    [
+      "our turn",
+      "نوبت ماست"
+    ],
+    [
+      "can I play",
+      "می تونم بازی کنم"
+    ],
+    [
+      "play with me",
+      "با من بازی کن"
+    ],
+    [
+      "let us play",
+      "بیاید بازی کنیم"
+    ],
+    [
+      "play together",
+      "با هم بازی کنیم"
+    ],
+    [
+      "share with me",
+      "با من تقسیم کن"
+    ],
+    [
+      "please stop",
+      "لطفا بس کن"
+    ],
+    [
+      "that is mine",
+      "این مال منه"
+    ],
+    [
+      "can I have it",
+      "می تونم اون رو بگیرم"
+    ],
+    [
+      "can I use it",
+      "می تونم ازش استفاده کنم"
+    ],
+    [
+      "here you go",
+      "بفرما"
+    ],
+    [
+      "I am sorry",
+      "ببخشید"
+    ],
+    [
+      "are you okay",
+      "حالت خوبه"
+    ],
+    [
+      "thank you",
+      "ممنون"
+    ],
+    [
+      "good job",
+      "آفرین"
+    ],
+    [
+      "hi",
+      "سلام"
+    ],
+    [
+      "bye",
+      "خداحافظ"
+    ],
+    [
+      "see you later",
+      "بعدا می بینمت"
+    ],
+    [
+      "see you tomorrow",
+      "فردا می بینمت"
+    ],
+    [
+      "nice to meet you",
+      "خوشبختم"
+    ],
+    [
+      "welcome",
+      "خوش اومدی"
+    ],
+    [
+      "let us build",
+      "بیاید بسازیم"
+    ],
+    [
+      "let us clean up",
+      "بیاید جمع کنیم"
+    ],
+    [
+      "let us read",
+      "بیاید بخونیم"
+    ],
+    [
+      "let us share",
+      "بیاید تقسیم کنیم"
+    ],
+    [
+      "can I join",
+      "می تونم بیام"
+    ],
+    [
+      "can you help me",
+      "میتونی کمکم کنی"
+    ],
+    [
+      "do you want to play",
+      "دوست داری بازی کنیم"
+    ],
+    [
+      "I like it",
+      "دوستش دارم"
+    ]
+  ],
+  [
+    [
+      "wash hands please",
+      "لطفا دستاتو بشور"
+    ],
+    [
+      "cover your mouth",
+      "دهنت رو بپوشون"
+    ],
+    [
+      "use a tissue",
+      "با دستمال پاک کن"
+    ],
+    [
+      "blow your nose",
+      "بینیتو فین کن"
+    ],
+    [
+      "use gentle hands",
+      "دستای مهربون"
+    ],
+    [
+      "hands to yourself",
+      "دستاتو پیش خودت نگه دار"
+    ],
+    [
+      "hold my hand",
+      "دستم رو بگیر"
+    ],
+    [
+      "stay near me",
+      "کنارم بمون"
+    ],
+    [
+      "stop at the curb",
+      "کنار جدول وایسا"
+    ],
+    [
+      "look both ways",
+      "هر دو طرف رو نگاه کن"
+    ],
+    [
+      "do not touch",
+      "دست نزن"
+    ],
+    [
+      "do not run",
+      "ندو"
+    ],
+    [
+      "do not hit",
+      "نزن"
+    ],
+    [
+      "do not bite",
+      "گاز نگیر"
+    ],
+    [
+      "do not push",
+      "هل نده"
+    ],
+    [
+      "be careful",
+      "مراقب باش"
+    ],
+    [
+      "slow down please",
+      "لطفا آروم تر"
+    ],
+    [
+      "sit in your seat",
+      "روی صندلی بشین"
+    ],
+    [
+      "buckle your seat",
+      "کمربندتو ببند"
+    ],
+    [
+      "wear your helmet",
+      "کلاه ایمنی بپوش"
+    ],
+    [
+      "wear your jacket",
+      "کاپشنت رو بپوش"
+    ],
+    [
+      "hot",
+      "داغه"
+    ],
+    [
+      "sharp",
+      "تیزه"
+    ],
+    [
+      "drink some water",
+      "کمی آب بخور"
+    ],
+    [
+      "eat your food",
+      "غذاتو بخور"
+    ],
+    [
+      "take a deep breath",
+      "نفس عمیق بکش"
+    ],
+    [
+      "calm down",
+      "آروم شو"
+    ],
+    [
+      "rest on pillow",
+      "روی بالش استراحت کن"
+    ],
+    [
+      "walk do not run",
+      "راه برو ندو"
+    ],
+    [
+      "stay with the group",
+      "با گروه بمون"
+    ],
+    [
+      "ask for help",
+      "کمک بخواه"
+    ],
+    [
+      "use the potty",
+      "از دستشویی استفاده کن"
+    ],
+    [
+      "tell a grown up",
+      "به بزرگتر بگو"
+    ]
+  ],
+  [
+    [
+      "I need a break",
+      "یه استراحت میخوام"
+    ],
+    [
+      "I need more time",
+      "وقت بیشتر میخوام"
+    ],
+    [
+      "I need help now",
+      "الان کمک میخوام"
+    ],
+    [
+      "I want a hug",
+      "بغل میخوام"
+    ],
+    [
+      "I want to play",
+      "میخوام بازی کنم"
+    ],
+    [
+      "I want to draw",
+      "میخوام نقاشی کنم"
+    ],
+    [
+      "I want to color",
+      "میخوام رنگ کنم"
+    ],
+    [
+      "I want to build",
+      "میخوام بسازم"
+    ],
+    [
+      "I want to read",
+      "میخوام بخونم"
+    ],
+    [
+      "I want to sing",
+      "میخوام آواز بخونم"
+    ],
+    [
+      "I want to dance",
+      "میخوام برقصم"
+    ],
+    [
+      "I want to jump",
+      "میخوام بپرم"
+    ],
+    [
+      "can we go now",
+      "میشه الان بریم"
+    ],
+    [
+      "can we go home",
+      "میشه بریم خونه"
+    ],
+    [
+      "can we go outside",
+      "میشه بریم بیرون"
+    ],
+    [
+      "can we go to playground",
+      "میشه بریم حیاط"
+    ],
+    [
+      "can we have snack",
+      "میشه میان وعده بخوریم"
+    ],
+    [
+      "can we have lunch",
+      "میشه ناهار بخوریم"
+    ],
+    [
+      "please help me now",
+      "لطفا الان کمکم کن"
+    ],
+    [
+      "please listen to me",
+      "لطفا به حرفم گوش کن"
+    ],
+    [
+      "please stay with me",
+      "لطفا پیشم بمون"
+    ],
+    [
+      "please look at me",
+      "لطفا منو نگاه کن"
+    ],
+    [
+      "please wait a minute",
+      "لطفا یه دقیقه صبر کن"
+    ],
+    [
+      "please be kind",
+      "لطفا مهربون باش"
+    ],
+    [
+      "please try again",
+      "لطفا دوباره تلاش کن"
+    ],
+    [
+      "can I go potty now",
+      "میشه الان برم دستشویی"
+    ],
+    [
+      "can I wash my hands",
+      "میشه دستامو بشورم"
+    ],
+    [
+      "please open my lunch",
+      "لطفا ناهارمو باز کن"
+    ],
+    [
+      "please cut it",
+      "لطفا برام خرد کن"
+    ],
+    [
+      "please pour water",
+      "لطفا آب بریز"
+    ],
+    [
+      "please zip my coat",
+      "لطفا زیپمو بکش"
+    ],
+    [
+      "please tie my shoes",
+      "لطفا بند کفشمو ببند"
+    ],
+    [
+      "please carry me",
+      "لطفا بغلم کن"
+    ],
+    [
+      "my tummy hurts",
+      "دلم درد می کنه"
+    ],
+    [
+      "can I have more",
+      "میشه بیشتر بخوام"
+    ],
+    [
+      "I am all done",
+      "تموم کردم"
+    ]
+  ],
+  [
+    [
+      "I want to read",
+      "میخوام بخونم"
+    ],
+    [
+      "read it again",
+      "دوباره بخون"
+    ],
+    [
+      "can we read now",
+      "میشه الان بخونیم"
+    ],
+    [
+      "can we go now",
+      "میشه الان بریم"
+    ],
+    [
+      "can we play outside",
+      "میشه بیرون بازی کنیم"
+    ],
+    [
+      "can we go inside",
+      "میشه بریم داخل"
+    ],
+    [
+      "I want to draw",
+      "میخوام نقاشی کنم"
+    ],
+    [
+      "I want to color",
+      "میخوام رنگ کنم"
+    ],
+    [
+      "I need a pencil",
+      "مداد میخوام"
+    ],
+    [
+      "I need some paper",
+      "کاغذ میخوام"
+    ],
+    [
+      "I lost my toy",
+      "اسباب بازی ام گم شد"
+    ],
+    [
+      "where is my toy",
+      "اسباب بازی من کجاست"
+    ],
+    [
+      "where is my book",
+      "کتاب من کجاست"
+    ],
+    [
+      "where are my shoes",
+      "کفش هام کجاست"
+    ],
+    [
+      "please open the door",
+      "لطفا در را باز کن"
+    ],
+    [
+      "please close the door",
+      "لطفا در را ببند"
+    ],
+    [
+      "turn on the light",
+      "چراغ را روشن کن"
+    ],
+    [
+      "turn off the light",
+      "چراغ را خاموش کن"
+    ],
+    [
+      "I can zip it",
+      "میتونم زیپش کنم"
+    ],
+    [
+      "I can button it",
+      "میتونم دکمه اش کنم"
+    ],
+    [
+      "put the lid on",
+      "درش رو بذار"
+    ],
+    [
+      "take the lid off",
+      "درش رو بردار"
+    ]
+  ],
+  [
+    [
+      "the big dog barks",
+      "سگ بزرگ پارس می کند"
+    ],
+    [
+      "the small cat sleeps",
+      "گربه کوچک می خوابد"
+    ],
+    [
+      "the red truck goes",
+      "کامیون قرمز می رود"
+    ],
+    [
+      "the blue car stops",
+      "ماشین آبی می ایستد"
+    ],
+    [
+      "the yellow bus waits",
+      "اتوبوس زرد منتظر می ماند"
+    ],
+    [
+      "the green frog hops",
+      "قورباغه سبز می پرد"
+    ],
+    [
+      "the brown bear eats",
+      "خرس قهوه ای می خورد"
+    ],
+    [
+      "the white bird sings",
+      "پرنده سفید می خواند"
+    ],
+    [
+      "the tall tree sways",
+      "درخت بلند تاب می خورد"
+    ],
+    [
+      "the wide river flows",
+      "رودخانه پهن جاری است"
+    ],
+    [
+      "the hot soup steams",
+      "سوپ داغ بخار می کند"
+    ],
+    [
+      "the cold water splashes",
+      "آب سرد می پاشد"
+    ],
+    [
+      "the soft blanket warms",
+      "پتوی نرم گرم می کند"
+    ],
+    [
+      "the hard rock hurts",
+      "سنگ سفت درد می آورد"
+    ],
+    [
+      "the light is bright",
+      "نور روشن است"
+    ],
+    [
+      "the room is quiet",
+      "اتاق ساکت است"
+    ],
+    [
+      "the room is noisy",
+      "اتاق شلوغ است"
+    ],
+    [
+      "I can read this",
+      "می توانم این را بخوانم"
+    ],
+    [
+      "I can write words",
+      "می توانم کلمه بنویسم"
+    ],
+    [
+      "I can sound it",
+      "می توانم بخش بخش بخوانم"
+    ],
+    [
+      "I can solve this",
+      "می توانم حلش کنم"
+    ],
+    [
+      "we can work together",
+      "می توانیم با هم کار کنیم"
+    ]
+  ],
+  [
+    [
+      "put it on top",
+      "بذار بالاش"
+    ],
+    [
+      "put it under there",
+      "بذار زیر اون"
+    ],
+    [
+      "put it in here",
+      "بذار این تو"
+    ],
+    [
+      "take it out now",
+      "الان بیرونش بیار"
+    ],
+    [
+      "look under the bed",
+      "زیر تخت رو نگاه کن"
+    ],
+    [
+      "look behind the chair",
+      "پشت صندلی رو نگاه کن"
+    ],
+    [
+      "look inside the box",
+      "داخل جعبه رو نگاه کن"
+    ],
+    [
+      "look beside the door",
+      "کنار در رو نگاه کن"
+    ],
+    [
+      "we will go later",
+      "بعدا میریم"
+    ],
+    [
+      "we will go soon",
+      "به زودی میریم"
+    ],
+    [
+      "we will be back",
+      "برمی گردیم"
+    ],
+    [
+      "we will try again",
+      "دوباره تلاش می کنیم"
+    ],
+    [
+      "first we wash hands",
+      "اول دست می شوریم"
+    ],
+    [
+      "then we dry hands",
+      "بعد دست خشک می کنیم"
+    ],
+    [
+      "after snack we play",
+      "بعد از خوراکی بازی می کنیم"
+    ],
+    [
+      "before bed we read",
+      "قبل از خواب می خونیم"
+    ],
+    [
+      "please line up here",
+      "لطفا اینجا صف بکش"
+    ],
+    [
+      "please stand in line",
+      "لطفا تو صف بایست"
+    ],
+    [
+      "keep your voice quiet",
+      "صداتو آروم نگه دار"
+    ],
+    [
+      "use your inside voice",
+      "با صدای داخل حرف بزن"
+    ],
+    [
+      "use your outdoor voice",
+      "با صدای بیرون حرف بزن"
+    ],
+    [
+      "I can listen well",
+      "خوب گوش می کنم"
+    ]
+  ],
+  [
+    [
+      "I can follow directions",
+      "می توانم دستورها را دنبال کنم"
+    ],
+    [
+      "I can make choices",
+      "می توانم انتخاب کنم"
+    ],
+    [
+      "I can solve problems",
+      "می توانم مشکل حل کنم"
+    ],
+    [
+      "I can ask questions",
+      "می توانم سوال بپرسم"
+    ],
+    [
+      "I can explain it",
+      "می توانم توضیح بدهم"
+    ],
+    [
+      "I can help friends",
+      "می توانم به دوست ها کمک کنم"
+    ],
+    [
+      "I can share ideas",
+      "می توانم ایده ها را شریک شوم"
+    ],
+    [
+      "I can learn words",
+      "می توانم کلمات یاد بگیرم"
+    ],
+    [
+      "I can read stories",
+      "می توانم داستان بخوانم"
+    ],
+    [
+      "I can write notes",
+      "می توانم یادداشت بنویسم"
+    ],
+    [
+      "I can spell words",
+      "می توانم کلمه ها را هجی کنم"
+    ],
+    [
+      "I can count tens",
+      "می توانم ده تا ده تا بشمرم"
+    ],
+    [
+      "I can add numbers",
+      "می توانم عددها را جمع کنم"
+    ],
+    [
+      "I can take turns",
+      "می توانم نوبتی باشم"
+    ],
+    [
+      "I can use manners",
+      "می توانم مودب باشم"
+    ],
+    [
+      "please pass the paper",
+      "لطفا برگه را بده"
+    ],
+    [
+      "please pass the pencil",
+      "لطفا مداد را بده"
+    ],
+    [
+      "please raise your hand",
+      "لطفا دستت را بلند کن"
+    ],
+    [
+      "please wait your turn",
+      "لطفا نوبتت را صبر کن"
+    ],
+    [
+      "please speak clearly",
+      "لطفا واضح حرف بزن"
+    ],
+    [
+      "please listen carefully",
+      "لطفا با دقت گوش کن"
+    ],
+    [
+      "please try your best",
+      "لطفا بهترینت را بکن"
+    ]
+  ],
+  [
+    [
+      "I can stay focused",
+      "می توانم تمرکز کنم"
+    ],
+    [
+      "I can check work",
+      "می توانم کارم را چک کنم"
+    ],
+    [
+      "I can fix mistakes",
+      "می توانم اشتباه ها را درست کنم"
+    ],
+    [
+      "I can read directions",
+      "می توانم دستورها را بخوانم"
+    ],
+    [
+      "I can follow rules",
+      "می توانم قوانین را رعایت کنم"
+    ],
+    [
+      "I can use clues",
+      "می توانم سرنخ ها را پیدا کنم"
+    ],
+    [
+      "I can tell stories",
+      "می توانم داستان تعریف کنم"
+    ],
+    [
+      "I can write sentences",
+      "می توانم جمله بنویسم"
+    ],
+    [
+      "I can read aloud",
+      "می توانم بلند بخوانم"
+    ],
+    [
+      "I can speak politely",
+      "می توانم مودبانه حرف بزنم"
+    ],
+    [
+      "I can solve puzzles",
+      "می توانم معما حل کنم"
+    ],
+    [
+      "I can compare numbers",
+      "می توانم عددها را مقایسه کنم"
+    ],
+    [
+      "I can measure length",
+      "می توانم طول را اندازه بگیرم"
+    ],
+    [
+      "I can tell time",
+      "می توانم ساعت را بگویم"
+    ],
+    [
+      "I can count money",
+      "می توانم پول بشمرم"
+    ],
+    [
+      "I can sort objects",
+      "می توانم چیزها را دسته بندی کنم"
+    ],
+    [
+      "I can make lists",
+      "می توانم فهرست بسازم"
+    ],
+    [
+      "I can follow steps",
+      "می توانم مرحله ها را دنبال کنم"
+    ],
+    [
+      "I can work independently",
+      "می توانم مستقل کار کنم"
+    ],
+    [
+      "I can get help",
+      "می توانم کمک بگیرم"
+    ],
+    [
+      "I can listen closely",
+      "می توانم با دقت گوش کنم"
+    ],
+    [
+      "I can be responsible",
+      "می توانم مسئول باشم"
+    ]
+  ]
+]
