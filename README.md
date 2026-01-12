@@ -99,6 +99,11 @@ Help toddlers learn reading and speaking with interactive speech recognition! Pr
 - **Play:** [toddler-reading-game.html](toddler-reading-game.html)
 - **Features:** Web Speech API for voice recognition, adaptive difficulty system (auto-levels up after 4 successes, down after 3 skips), 10 progressive levels (3-letter words to 3+ word phrases), very lenient fuzzy matching for mispronunciations, robust noise filtering with confidence thresholds, multi-word phrase validation, gentle celebration effects (confetti, sounds, animations), progress tracking with stars, rotating character animations, compact responsive layout for all screen sizes
 
+### Kiddo Quiz
+Quick multi-choice questions for early learners with gentle feedback and auto-advance.
+- **Play:** [multi-choice-game/index.html](multi-choice-game/index.html)
+- **Features:** Multi-choice question sets (counting, shapes, time, comparisons), simple analog clock questions, scoring and levels, kid-friendly UI with large options and quick feedback
+
 ## Usage
 
 Simply open any HTML file in a web browser to play. No installation required.
