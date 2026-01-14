@@ -1,7 +1,32 @@
-import { QUESTION_FACTORIES } from "./questions.js";
+import { QUESTION_TYPES } from "./questions.js";
 import { QuizManager } from "./manager.js";
 
-const manager = new QuizManager({ questionFactories: QUESTION_FACTORIES });
+const SETTINGS_KEY = "kiddo-quiz-settings";
+
+function loadEnabledTypes() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (!raw) {
+      return new Set(QUESTION_TYPES.map((type) => type.id));
+    }
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return new Set(QUESTION_TYPES.map((type) => type.id));
+    }
+    const valid = new Set(QUESTION_TYPES.map((type) => type.id));
+    const filtered = parsed.filter((id) => valid.has(id));
+    return new Set(filtered.length ? filtered : valid);
+  } catch (error) {
+    return new Set(QUESTION_TYPES.map((type) => type.id));
+  }
+}
+
+function saveEnabledTypes(enabledIds) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify([...enabledIds]));
+}
+
+let enabledTypeIds = loadEnabledTypes();
+const manager = new QuizManager({ questionFactories: getEnabledFactories() });
 
 const questionTypeEl = document.getElementById("question-type");
 const questionBodyEl = document.getElementById("question-body");
@@ -9,6 +34,11 @@ const questionHintEl = document.getElementById("question-hint");
 const optionsEl = document.getElementById("options");
 const submitBtn = document.getElementById("submit");
 const feedbackEl = document.getElementById("feedback");
+const settingsToggleBtn = document.getElementById("settings-toggle");
+const settingsPanel = document.getElementById("settings-panel");
+const settingsList = document.getElementById("settings-list");
+const settingsSelectAll = document.getElementById("settings-select-all");
+const settingsSelectNone = document.getElementById("settings-select-none");
 
 const levelEl = document.getElementById("level");
 const correctEl = document.getElementById("correct-count");
@@ -80,6 +110,10 @@ function clearFeedback() {
   feedbackEl.classList.remove("correct", "incorrect", "visible");
 }
 
+function getEnabledFactories() {
+  return QUESTION_TYPES.filter((type) => enabledTypeIds.has(type.id)).map((type) => type.factory);
+}
+
 function renderBody(bodyItems) {
   questionBodyEl.innerHTML = "";
   bodyItems.forEach((item) => {
@@ -126,6 +160,26 @@ function renderBody(bodyItems) {
       questionBodyEl.appendChild(mathStack);
     } else if (item.kind === "clock") {
       questionBodyEl.appendChild(createClock(item.value.hour, item.value.minute));
+    } else if (item.kind === "scatter") {
+      const field = document.createElement("div");
+      field.className = "scatter-field";
+      const items = item.value?.items || [];
+
+      items.forEach((scatterItem) => {
+        const icon = document.createElement("i");
+        icon.className = `scatter-item ${scatterItem.iconClass}`;
+        icon.style.left = `${scatterItem.x}%`;
+        icon.style.top = `${scatterItem.y}%`;
+        if (scatterItem.color) {
+          icon.style.color = scatterItem.color;
+        }
+        if (scatterItem.label) {
+          icon.setAttribute("aria-label", scatterItem.label);
+        }
+        field.appendChild(icon);
+      });
+
+      questionBodyEl.appendChild(field);
     }
   });
 }
@@ -185,7 +239,20 @@ function renderOptions(question) {
   });
 }
 
+function renderEmptyState() {
+  questionTypeEl.textContent = "No question types enabled";
+  questionHintEl.textContent = "Open settings to enable questions.";
+  questionBodyEl.innerHTML = "";
+  optionsEl.innerHTML = "";
+  submitBtn.disabled = true;
+  clearFeedback();
+}
+
 function renderQuestion(question) {
+  if (!question) {
+    renderEmptyState();
+    return;
+  }
   questionTypeEl.textContent = question.type;
   questionHintEl.textContent = question.hint || "";
   renderBody(question.body);
@@ -210,6 +277,59 @@ function start() {
   updateStats();
   const question = manager.nextQuestion();
   renderQuestion(question);
+}
+
+function renderSettings() {
+  settingsList.innerHTML = "";
+  QUESTION_TYPES.forEach((type) => {
+    const label = document.createElement("label");
+    label.className = "settings-item";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = enabledTypeIds.has(type.id);
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        enabledTypeIds.add(type.id);
+      } else {
+        enabledTypeIds.delete(type.id);
+      }
+      saveEnabledTypes(enabledTypeIds);
+      manager.questionFactories = getEnabledFactories();
+      if (!manager.questionFactories.length) {
+        renderEmptyState();
+        return;
+      }
+      if (!manager.current || !enabledTypeIds.has(manager.current.typeId)) {
+        const next = manager.nextQuestion();
+        renderQuestion(next);
+      }
+    });
+
+    const text = document.createElement("span");
+    text.textContent = type.label;
+
+    label.appendChild(checkbox);
+    label.appendChild(text);
+    settingsList.appendChild(label);
+  });
+}
+
+function setAllTypes(enabled) {
+  if (enabled) {
+    enabledTypeIds = new Set(QUESTION_TYPES.map((type) => type.id));
+  } else {
+    enabledTypeIds = new Set();
+  }
+  saveEnabledTypes(enabledTypeIds);
+  manager.questionFactories = getEnabledFactories();
+  renderSettings();
+  if (!manager.questionFactories.length) {
+    renderEmptyState();
+  } else {
+    const next = manager.nextQuestion();
+    renderQuestion(next);
+  }
 }
 
 submitBtn.addEventListener("click", () => {
@@ -242,4 +362,22 @@ submitBtn.addEventListener("click", () => {
   }
 });
 
+settingsToggleBtn.addEventListener("click", () => {
+  const isHidden = settingsPanel.hasAttribute("hidden");
+  if (isHidden) {
+    settingsPanel.removeAttribute("hidden");
+  } else {
+    settingsPanel.setAttribute("hidden", "");
+  }
+});
+
+settingsSelectAll.addEventListener("click", () => {
+  setAllTypes(true);
+});
+
+settingsSelectNone.addEventListener("click", () => {
+  setAllTypes(false);
+});
+
+renderSettings();
 start();

@@ -15,6 +15,17 @@
 </head>
 <body>
   <main class="game">
+    <button id="settings-toggle" class="settings-btn" type="button" aria-label="Settings">
+      <i class="fa-solid fa-gear"></i>
+    </button>
+    <aside id="settings-panel" class="settings-panel" hidden>
+      <div class="settings-panel__header">Question Types</div>
+      <div class="settings-panel__actions">
+        <button id="settings-select-all" type="button">Select all</button>
+        <button id="settings-select-none" type="button">Select none</button>
+      </div>
+      <div id="settings-list" class="settings-panel__list"></div>
+    </aside>
     <header class="game__header">
       <div>
         <h1>Kiddo Quiz</h1>

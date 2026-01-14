@@ -34,6 +34,63 @@ body {
   gap: 20px;
 }
 
+.settings-btn {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+.settings-panel {
+  position: fixed;
+  top: 64px;
+  right: 18px;
+  width: 260px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  padding: 12px;
+  z-index: 20;
+}
+
+.settings-panel__header {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.settings-panel__actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.settings-panel__actions button {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+}
+
+.settings-panel__list {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
 .game__header {
   display: flex;
   flex-wrap: wrap;
@@ -97,6 +154,22 @@ h1 {
 
 .question__body .q-icon {
   font-size: 2.4rem;
+}
+
+.scatter-field {
+  position: relative;
+  min-height: 220px;
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  background: linear-gradient(135deg, rgba(255, 244, 230, 0.7), rgba(232, 245, 255, 0.8));
+  overflow: hidden;
+}
+
+.scatter-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1;
 }
 
 .math-stack {

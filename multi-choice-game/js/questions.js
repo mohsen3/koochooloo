@@ -1,8 +1,9 @@
 let questionCounter = 1;
 
-function createQuestion({ type, body, options, correct, allowMultiple = false, hint = "" }) {
+function createQuestion({ typeId, type, body, options, correct, allowMultiple = false, hint = "" }) {
   return {
     id: `q-${questionCounter++}`,
+    typeId,
     type,
     body,
     options,
@@ -46,6 +47,7 @@ export function teenNumberAdditionQuestion() {
   }));
 
   return createQuestion({
+    typeId: "teen-add-10",
     type: "Teen number addition",
     body: [
       { kind: "text", value: "What is the result?" },
@@ -75,6 +77,21 @@ const SHAPES = [
   { name: "triangle", icon: "fa-solid fa-caret-up" },
   { name: "diamond", icon: "fa-solid fa-diamond" },
 ];
+
+const COUNT_ICONS = [
+  { name: "frog", plural: "frogs", icon: "fa-solid fa-frog" },
+  { name: "bird", plural: "birds", icon: "fa-solid fa-dove" },
+  { name: "butterfly", plural: "butterflies", icon: "fa-solid fa-butterfly" },
+  { name: "cat", plural: "cats", icon: "fa-solid fa-cat" },
+  { name: "dog", plural: "dogs", icon: "fa-solid fa-dog" },
+  { name: "fish", plural: "fish", icon: "fa-solid fa-fish" },
+  { name: "apple", plural: "apples", icon: "fa-solid fa-apple-whole" },
+  { name: "carrot", plural: "carrots", icon: "fa-solid fa-carrot" },
+  { name: "ice cream", plural: "ice creams", icon: "fa-solid fa-ice-cream" },
+  { name: "star", plural: "stars", icon: "fa-solid fa-star" },
+];
+
+const COUNT_COLORS = ["#ff7043", "#29b6f6", "#66bb6a", "#ffee58", "#ab47bc", "#8d6e63"];
 
 export function coloredShapeQuestion() {
   const color = COLORS[randInt(0, COLORS.length - 1)];
@@ -110,6 +127,7 @@ export function coloredShapeQuestion() {
   const shuffled = shuffle(options);
 
   return createQuestion({
+    typeId: "colored-shape",
     type: "Choose the colored shape",
     body: [
       { kind: "text", value: "Select the shape below:" },
@@ -133,6 +151,7 @@ export function skipCountingQuestion() {
   }));
 
   return createQuestion({
+    typeId: "skip-counting",
     type: "Skip counting",
     body: [
       { kind: "text", value: "What comes next?" },
@@ -155,6 +174,7 @@ export function whatPlusQuestion() {
   }));
 
   return createQuestion({
+    typeId: "what-plus",
     type: "What plus",
     body: [
       { kind: "text", value: "Fill in the blank:" },
@@ -232,6 +252,7 @@ export function makeNineQuestion() {
   const correctId = options.find((opt) => opt.label === correctLabel).id;
 
   return createQuestion({
+    typeId: "make-number",
     type: "Make the number",
     body: [
       { kind: "text", value: `How do you make ${target}?` },
@@ -254,6 +275,7 @@ export function oneMoreLessQuestion() {
   }));
 
   return createQuestion({
+    typeId: "one-more-less",
     type: "One more / one less",
     body: [
       { kind: "text", value: `What is one ${isMore ? "more" : "less"} than ${base}?` },
@@ -275,6 +297,7 @@ export function largestSmallestQuestion() {
   }));
 
   return createQuestion({
+    typeId: "largest-smallest",
     type: "Largest / smallest",
     body: [
       { kind: "text", value: `Choose the ${chooseLargest ? "largest" : "smallest"} number.` },
@@ -312,6 +335,7 @@ export function timeQuestion() {
   }));
 
   return createQuestion({
+    typeId: "read-clock",
     type: "Read the clock",
     body: [
       { kind: "text", value: "What time is it?" },
@@ -358,6 +382,7 @@ export function numberFactsQuestion() {
   }));
 
   return createQuestion({
+    typeId: "number-facts",
     type: "Number facts",
     body: [{ kind: "text", value: fact.prompt }],
     options,
@@ -366,14 +391,92 @@ export function numberFactsQuestion() {
   });
 }
 
-export const QUESTION_FACTORIES = [
-  teenNumberAdditionQuestion,
-  coloredShapeQuestion,
-  skipCountingQuestion,
-  whatPlusQuestion,
-  makeNineQuestion,
-  oneMoreLessQuestion,
-  largestSmallestQuestion,
-  timeQuestion,
-  numberFactsQuestion,
+function buildScatterPositions(total) {
+  const cols = 5;
+  const rows = 4;
+  const cells = [];
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      const x = ((col + 0.5) / cols) * 100;
+      const y = ((row + 0.5) / rows) * 100;
+      cells.push({ x, y });
+    }
+  }
+
+  return shuffle(cells).slice(0, total).map((cell) => ({
+    x: Math.min(95, Math.max(5, cell.x + randInt(-6, 6))),
+    y: Math.min(90, Math.max(10, cell.y + randInt(-6, 6))),
+  }));
+}
+
+export function countObjectsQuestion() {
+  const total = randInt(5, 15);
+  const iconChoices = shuffle(COUNT_ICONS).slice(0, 3);
+  const target = iconChoices[0];
+
+  const maxTarget = Math.min(9, total - (iconChoices.length - 1));
+  const targetCount = randInt(1, Math.max(1, maxTarget));
+  const remaining = total - targetCount;
+
+  const otherCounts = Array(iconChoices.length - 1).fill(1);
+  let extra = remaining - otherCounts.length;
+  while (extra > 0) {
+    otherCounts[randInt(0, otherCounts.length - 1)] += 1;
+    extra -= 1;
+  }
+
+  const items = [];
+  const addItems = (icon, count) => {
+    for (let i = 0; i < count; i += 1) {
+      items.push({
+        iconClass: icon.icon,
+        label: icon.name,
+        color: COUNT_COLORS[randInt(0, COUNT_COLORS.length - 1)],
+      });
+    }
+  };
+
+  addItems(target, targetCount);
+  iconChoices.slice(1).forEach((icon, index) => {
+    addItems(icon, otherCounts[index]);
+  });
+
+  const positions = buildScatterPositions(items.length);
+  const scatterItems = shuffle(items).map((item, index) => ({
+    ...item,
+    x: positions[index].x,
+    y: positions[index].y,
+  }));
+
+  const distractors = uniqueNumbers(2, 1, 9, new Set([targetCount]));
+  const options = shuffle([targetCount, ...distractors]).map((value, index) => ({
+    id: `opt-${index}`,
+    label: String(value),
+  }));
+
+  return createQuestion({
+    typeId: "count-objects",
+    type: "Count the objects",
+    body: [
+      { kind: "text", value: `How many ${target.plural} are there?` },
+      { kind: "scatter", value: { items: scatterItems } },
+    ],
+    options,
+    correct: [options.find((opt) => opt.label === String(targetCount)).id],
+    hint: `Count the ${target.plural}.`,
+  });
+}
+
+export const QUESTION_TYPES = [
+  { id: "teen-add-10", label: "Teen number addition (+10)", factory: teenNumberAdditionQuestion },
+  { id: "colored-shape", label: "Choose the colored shape", factory: coloredShapeQuestion },
+  { id: "skip-counting", label: "Skip counting", factory: skipCountingQuestion },
+  { id: "what-plus", label: "What plus", factory: whatPlusQuestion },
+  { id: "make-number", label: "Make the number", factory: makeNineQuestion },
+  { id: "one-more-less", label: "One more / one less", factory: oneMoreLessQuestion },
+  { id: "largest-smallest", label: "Largest / smallest", factory: largestSmallestQuestion },
+  { id: "read-clock", label: "Read the clock", factory: timeQuestion },
+  { id: "number-facts", label: "Number facts", factory: numberFactsQuestion },
+  { id: "count-objects", label: "Count the objects", factory: countObjectsQuestion },
 ];
