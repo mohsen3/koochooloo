@@ -32,6 +32,20 @@ function createClock(hour, minute) {
     face.appendChild(number);
   }
 
+  const minuteLabels = [
+    { label: "00", position: 12 },
+    { label: "15", position: 3 },
+    { label: "30", position: 6 },
+    { label: "45", position: 9 },
+  ];
+  minuteLabels.forEach((minute) => {
+    const marker = document.createElement("div");
+    marker.className = "clock__minute";
+    marker.textContent = minute.label;
+    marker.style.setProperty("--position", minute.position);
+    face.appendChild(marker);
+  });
+
   const hourHand = document.createElement("div");
   hourHand.className = "clock__hand clock__hand--hour";
 

@@ -118,10 +118,21 @@ h1 {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) rotate(calc(var(--position) * 30deg)) translateY(-72px) rotate(calc(var(--position) * -30deg));
+  transform: translate(-50%, -50%) rotate(calc(var(--position) * 30deg)) translateY(-68px) rotate(calc(var(--position) * -30deg));
   transform-origin: center;
   font-size: 1rem;
   font-weight: 700;
+}
+
+.clock__minute {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(calc(var(--position) * 30deg)) translateY(-102px) rotate(calc(var(--position) * -30deg));
+  transform-origin: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 600;
 }
 
 .clock__hand {
@@ -135,12 +146,12 @@ h1 {
 }
 
 .clock__hand--hour {
-  width: 55px;
+  width: 62px;
   height: 6px;
 }
 
 .clock__hand--minute {
-  width: 70px;
+  width: 78px;
   height: 4px;
 }
 

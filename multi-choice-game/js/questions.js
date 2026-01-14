@@ -318,6 +318,49 @@ export function timeQuestion() {
   });
 }
 
+const NUMBER_FACTS = [
+  { prompt: "How many fingers are on one hand?", answer: 5 },
+  { prompt: "How many fingers are on two hands?", answer: 10 },
+  { prompt: "How many toes are on one foot?", answer: 5 },
+  { prompt: "How many wheels are on a bike?", answer: 2 },
+  { prompt: "How many wheels are on a car?", answer: 4 },
+  { prompt: "How many legs does a dog/cat have?", answer: 4 },
+  { prompt: "How many legs does a spider have?", answer: 8 },
+  { prompt: "How many legs does a bird have?", answer: 2 },
+  { prompt: "How many sides does a triangle have?", answer: 3 },
+  { prompt: "How many sides does a square have?", answer: 4 },
+  { prompt: "How many days are in a week?", answer: 7 },
+  { prompt: "How many months are in a year?", answer: 12 },
+  { prompt: "How many eyes do you have?", answer: 2 },
+  { prompt: "How many ears do you have?", answer: 2 },
+  { prompt: "How many noses do you have?", answer: 1 },
+  { prompt: "How many legs does a person have?", answer: 2 },
+  { prompt: "How many arms does a person have?", answer: 2 },
+  { prompt: "How many wings does a bird have?", answer: 2 },
+  { prompt: "How many wheels does a tricycle have?", answer: 3 },
+  { prompt: "How many corners does a rectangle have?", answer: 4 },
+  { prompt: "How many corners does a triangle have?", answer: 3 },
+  { prompt: "How many sides does a pentagon have?", answer: 5 },
+];
+
+export function numberFactsQuestion() {
+  const fact = NUMBER_FACTS[randInt(0, NUMBER_FACTS.length - 1)];
+  const optionCount = randInt(2, 3);
+  const distractors = uniqueNumbers(optionCount - 1, 0, 12, new Set([fact.answer]));
+  const options = shuffle([fact.answer, ...distractors]).map((value, index) => ({
+    id: `opt-${index}`,
+    label: String(value),
+  }));
+
+  return createQuestion({
+    type: "Number facts",
+    body: [{ kind: "text", value: fact.prompt }],
+    options,
+    correct: [options.find((opt) => opt.label === String(fact.answer)).id],
+    hint: "Pick the best answer.",
+  });
+}
+
 export const QUESTION_FACTORIES = [
   teenNumberAdditionQuestion,
   coloredShapeQuestion,
@@ -327,4 +370,5 @@ export const QUESTION_FACTORIES = [
   oneMoreLessQuestion,
   largestSmallestQuestion,
   timeQuestion,
+  numberFactsQuestion,
 ];
