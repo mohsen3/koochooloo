@@ -100,6 +100,30 @@ function renderBody(bodyItems) {
         icon.style.color = item.color;
       }
       questionBodyEl.appendChild(icon);
+    } else if (item.kind === "stack") {
+      const mathStack = document.createElement("div");
+      mathStack.className = "math-stack";
+
+      const lines = item.value?.lines || [];
+      const width = lines
+        .filter((line) => line !== "---")
+        .reduce((max, line) => Math.max(max, line.length), 0);
+      mathStack.style.setProperty("--math-width", `${Math.max(width, 2)}ch`);
+
+      lines.forEach((line) => {
+        if (line === "---") {
+          const rule = document.createElement("div");
+          rule.className = "math-stack__rule";
+          mathStack.appendChild(rule);
+          return;
+        }
+        const row = document.createElement("div");
+        row.className = "math-stack__line";
+        row.textContent = line;
+        mathStack.appendChild(row);
+      });
+
+      questionBodyEl.appendChild(mathStack);
     } else if (item.kind === "clock") {
       questionBodyEl.appendChild(createClock(item.value.hour, item.value.minute));
     }

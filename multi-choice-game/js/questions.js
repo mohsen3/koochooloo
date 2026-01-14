@@ -49,7 +49,12 @@ export function teenNumberAdditionQuestion() {
     type: "Teen number addition",
     body: [
       { kind: "text", value: "What is the result?" },
-      { kind: "text", value: `${base} + 10 = ?` },
+      {
+        kind: "stack",
+        value: {
+          lines: [String(base), "+10", "---", "[  ]"],
+        },
+      },
     ],
     options,
     correct: [options.find((opt) => opt.label === String(result)).id],
