@@ -93,6 +93,46 @@ const COUNT_ICONS = [
 
 const COUNT_COLORS = ["#ff7043", "#29b6f6", "#66bb6a", "#ffee58", "#ab47bc", "#8d6e63"];
 
+const OPPOSITES = [
+  { left: "big", right: "small" },
+  { left: "hot", right: "cold" },
+  { left: "up", right: "down" },
+  { left: "day", right: "night" },
+  { left: "fast", right: "slow" },
+  { left: "loud", right: "quiet" },
+  { left: "happy", right: "sad" },
+  { left: "wet", right: "dry" },
+  { left: "open", right: "closed" },
+  { left: "full", right: "empty" },
+  { left: "tall", right: "short" },
+  { left: "hard", right: "soft" },
+  { left: "clean", right: "dirty" },
+  { left: "light", right: "heavy" },
+  { left: "push", right: "pull" },
+  { left: "in", right: "out" },
+  { left: "above", right: "below" },
+  { left: "start", right: "finish" },
+  { left: "near", right: "far" },
+  { left: "early", right: "late" },
+  { left: "old", right: "new" },
+  { left: "thick", right: "thin" },
+  { left: "smooth", right: "rough" },
+  { left: "right", right: "left" },
+  { left: "on", right: "off" },
+  { left: "high", right: "low" },
+  { left: "wake", right: "sleep" },
+  { left: "give", right: "take" },
+  { left: "brave", right: "scared" },
+  { left: "same", right: "different" },
+];
+
+function pickUniqueWords(count, exclude = new Set()) {
+  const allWords = [...new Set(OPPOSITES.flatMap((pair) => [pair.left, pair.right]))].filter(
+    (word) => !exclude.has(word),
+  );
+  return shuffle(allWords).slice(0, count);
+}
+
 export function coloredShapeQuestion() {
   const color = COLORS[randInt(0, COLORS.length - 1)];
   const shape = SHAPES[randInt(0, SHAPES.length - 1)];
@@ -468,6 +508,31 @@ export function countObjectsQuestion() {
   });
 }
 
+export function oppositesQuestion() {
+  const pair = OPPOSITES[randInt(0, OPPOSITES.length - 1)];
+  const askLeft = Math.random() > 0.5;
+  const promptWord = askLeft ? pair.left : pair.right;
+  const answerWord = askLeft ? pair.right : pair.left;
+  const distractors = pickUniqueWords(2, new Set([answerWord]));
+
+  const options = shuffle([answerWord, ...distractors]).map((label, index) => ({
+    id: `opt-${index}`,
+    label,
+  }));
+
+  return createQuestion({
+    typeId: "opposites",
+    type: "Opposites",
+    body: [
+      { kind: "text", value: "What is the opposite of:" },
+      { kind: "text", value: promptWord, emphasis: true },
+    ],
+    options,
+    correct: [options.find((opt) => opt.label === answerWord).id],
+    hint: "Pick the word that means the opposite.",
+  });
+}
+
 export const QUESTION_TYPES = [
   { id: "teen-add-10", label: "Teen number addition (+10)", factory: teenNumberAdditionQuestion },
   { id: "colored-shape", label: "Choose the colored shape", factory: coloredShapeQuestion },
@@ -479,4 +544,5 @@ export const QUESTION_TYPES = [
   { id: "read-clock", label: "Read the clock", factory: timeQuestion },
   { id: "number-facts", label: "Number facts", factory: numberFactsQuestion },
   { id: "count-objects", label: "Count the objects", factory: countObjectsQuestion },
+  { id: "opposites", label: "Opposites", factory: oppositesQuestion },
 ];
