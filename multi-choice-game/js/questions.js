@@ -124,6 +124,156 @@ const OPPOSITES = [
   { left: "give", right: "take" },
   { left: "brave", right: "scared" },
   { left: "same", right: "different" },
+  { left: "bright", right: "dim" },
+  { left: "sweet", right: "sour" },
+  { left: "laugh", right: "cry" },
+  { left: "sit", right: "stand" },
+  { left: "go", right: "stop" },
+  { left: "front", right: "back" },
+  { left: "more", right: "less" },
+  { left: "many", right: "few" },
+  { left: "first", right: "last" },
+  { left: "young", right: "old" },
+  { left: "top", right: "bottom" },
+  { left: "straight", right: "crooked" },
+  { left: "strong", right: "weak" },
+  { left: "rich", right: "poor" },
+  { left: "sharp", right: "dull" },
+  { left: "noisy", right: "silent" },
+  { left: "buy", right: "sell" },
+  { left: "borrow", right: "lend" },
+  { left: "enter", right: "exit" },
+  { left: "build", right: "break" },
+  { left: "find", right: "lose" },
+  { left: "catch", right: "throw" },
+  { left: "together", right: "apart" },
+  { left: "safe", right: "dangerous" },
+  { left: "rainy", right: "sunny" },
+  { left: "round", right: "square" },
+  { left: "smile", right: "frown" },
+  { left: "whisper", right: "shout" },
+  { left: "polite", right: "rude" },
+  { left: "asleep", right: "awake" },
+];
+
+const SYNONYMS = [
+  { left: "big", right: "large" },
+  { left: "small", right: "tiny" },
+  { left: "happy", right: "glad" },
+  { left: "sad", right: "unhappy" },
+  { left: "fast", right: "quick" },
+  { left: "slow", right: "not fast" },
+  { left: "smart", right: "clever" },
+  { left: "funny", right: "silly" },
+  { left: "loud", right: "noisy" },
+  { left: "quiet", right: "silent" },
+  { left: "pretty", right: "beautiful" },
+  { left: "strong", right: "powerful" },
+  { left: "weak", right: "not strong" },
+  { left: "clean", right: "tidy" },
+  { left: "dirty", right: "messy" },
+  { left: "hot", right: "warm" },
+  { left: "cold", right: "chilly" },
+  { left: "wet", right: "damp" },
+  { left: "dry", right: "not wet" },
+  { left: "angry", right: "mad" },
+];
+
+const CATEGORY_ITEMS = [
+  { word: "apple", category: "fruit" },
+  { word: "banana", category: "fruit" },
+  { word: "orange", category: "fruit" },
+  { word: "strawberry", category: "fruit" },
+  { word: "grape", category: "fruit" },
+  { word: "carrot", category: "vegetable" },
+  { word: "broccoli", category: "vegetable" },
+  { word: "tomato", category: "vegetable" },
+  { word: "potato", category: "vegetable" },
+  { word: "corn", category: "vegetable" },
+  { word: "dog", category: "animal" },
+  { word: "cat", category: "animal" },
+  { word: "bird", category: "animal" },
+  { word: "fish", category: "animal" },
+  { word: "rabbit", category: "animal" },
+  { word: "lion", category: "animal" },
+  { word: "elephant", category: "animal" },
+  { word: "monkey", category: "animal" },
+  { word: "frog", category: "animal" },
+  { word: "turtle", category: "animal" },
+  { word: "chair", category: "furniture" },
+  { word: "table", category: "furniture" },
+  { word: "bed", category: "furniture" },
+  { word: "sofa", category: "furniture" },
+  { word: "lamp", category: "furniture" },
+  { word: "shirt", category: "clothing" },
+  { word: "pants", category: "clothing" },
+  { word: "shoes", category: "clothing" },
+  { word: "hat", category: "clothing" },
+  { word: "socks", category: "clothing" },
+  { word: "car", category: "vehicle" },
+  { word: "bus", category: "vehicle" },
+  { word: "train", category: "vehicle" },
+  { word: "bike", category: "vehicle" },
+  { word: "airplane", category: "vehicle" },
+  { word: "ball", category: "toy" },
+  { word: "doll", category: "toy" },
+  { word: "blocks", category: "toy" },
+  { word: "puzzle", category: "toy" },
+  { word: "teddy bear", category: "toy" },
+  { word: "sun", category: "sky" },
+  { word: "moon", category: "sky" },
+  { word: "star", category: "sky" },
+  { word: "cloud", category: "sky" },
+  { word: "rainbow", category: "sky" },
+  { word: "pencil", category: "school" },
+  { word: "book", category: "school" },
+  { word: "eraser", category: "school" },
+  { word: "backpack", category: "school" },
+  { word: "ruler", category: "school" },
+  { word: "red", category: "color" },
+  { word: "blue", category: "color" },
+  { word: "green", category: "color" },
+  { word: "yellow", category: "color" },
+  { word: "orange", category: "color" },
+  { word: "purple", category: "color" },
+  { word: "circle", category: "shape" },
+  { word: "square", category: "shape" },
+  { word: "triangle", category: "shape" },
+  { word: "heart", category: "shape" },
+  { word: "oval", category: "shape" },
+  { word: "star", category: "shape" },
+  { word: "head", category: "body" },
+  { word: "arm", category: "body" },
+  { word: "leg", category: "body" },
+  { word: "hand", category: "body" },
+  { word: "foot", category: "body" },
+  { word: "ear", category: "body" },
+  { word: "nose", category: "body" },
+  { word: "eye", category: "body" },
+  { word: "mouth", category: "body" },
+];
+
+const CATEGORY_PROMPTS = {
+  fruit: "Which one is a fruit?",
+  vegetable: "Which one is a vegetable?",
+  animal: "Which one is an animal?",
+  furniture: "Which one is furniture?",
+  clothing: "Which one do you wear?",
+  vehicle: "Which one is a vehicle?",
+  toy: "Which one is a toy?",
+  sky: "Which one is in the sky?",
+  school: "Which one is for school?",
+  color: "Which one is a color?",
+  shape: "Which one is a shape?",
+  body: "Which one is a body part?",
+};
+
+const SEQUENCES = [
+  { prompt: "washing your hands", answer: "dry your hands" },
+  { prompt: "putting on your shoes", answer: "walk" },
+  { prompt: "getting dressed", answer: "go outside" },
+  { prompt: "opening a book", answer: "read it" },
+  { prompt: "playing with your toys", answer: "clean up" },
 ];
 
 function pickUniqueWords(count, exclude = new Set()) {
@@ -131,6 +281,27 @@ function pickUniqueWords(count, exclude = new Set()) {
     (word) => !exclude.has(word),
   );
   return shuffle(allWords).slice(0, count);
+}
+
+function pickUniqueSynonyms(count, exclude = new Set()) {
+  const allWords = [...new Set(SYNONYMS.flatMap((pair) => [pair.left, pair.right]))].filter(
+    (word) => !exclude.has(word),
+  );
+  return shuffle(allWords).slice(0, count);
+}
+
+function pickCategoryDistractors(count, excludeCategory, excludeWords = new Set()) {
+  const choices = CATEGORY_ITEMS.filter(
+    (item) => item.category !== excludeCategory && !excludeWords.has(item.word),
+  ).map((item) => item.word);
+  return shuffle(choices).slice(0, count);
+}
+
+function pickSequenceDistractors(count, excludeAnswers = new Set()) {
+  const allAnswers = SEQUENCES.map((item) => item.answer).filter(
+    (answer) => !excludeAnswers.has(answer),
+  );
+  return shuffle(allAnswers).slice(0, count);
 }
 
 export function coloredShapeQuestion() {
@@ -533,6 +704,72 @@ export function oppositesQuestion() {
   });
 }
 
+export function synonymsQuestion() {
+  const pair = SYNONYMS[randInt(0, SYNONYMS.length - 1)];
+  const askLeft = Math.random() > 0.5;
+  const promptWord = askLeft ? pair.left : pair.right;
+  const answerWord = askLeft ? pair.right : pair.left;
+  const distractors = pickUniqueSynonyms(2, new Set([answerWord]));
+
+  const options = shuffle([answerWord, ...distractors]).map((label, index) => ({
+    id: `opt-${index}`,
+    label,
+  }));
+
+  return createQuestion({
+    typeId: "synonyms",
+    type: "Synonyms",
+    body: [
+      { kind: "text", value: "Which word means the same as:" },
+      { kind: "text", value: promptWord, emphasis: true },
+    ],
+    options,
+    correct: [options.find((opt) => opt.label === answerWord).id],
+    hint: "Pick the word with the same meaning.",
+  });
+}
+
+export function categoriesQuestion() {
+  const item = CATEGORY_ITEMS[randInt(0, CATEGORY_ITEMS.length - 1)];
+  const prompt = CATEGORY_PROMPTS[item.category] || "Which one matches?";
+  const answerWord = item.word;
+  const distractors = pickCategoryDistractors(2, item.category, new Set([answerWord]));
+
+  const options = shuffle([answerWord, ...distractors]).map((label, index) => ({
+    id: `opt-${index}`,
+    label,
+  }));
+
+  return createQuestion({
+    typeId: "categories",
+    type: "Categories",
+    body: [{ kind: "text", value: prompt }],
+    options,
+    correct: [options.find((opt) => opt.label === answerWord).id],
+    hint: "Pick the word that fits the group.",
+  });
+}
+
+export function sequenceQuestion() {
+  const item = SEQUENCES[randInt(0, SEQUENCES.length - 1)];
+  const answer = item.answer;
+  const distractors = pickSequenceDistractors(2, new Set([answer]));
+
+  const options = shuffle([answer, ...distractors]).map((label, index) => ({
+    id: `opt-${index}`,
+    label,
+  }));
+
+  return createQuestion({
+    typeId: "sequence",
+    type: "Next step",
+    body: [{ kind: "text", value: `What do you do after ${item.prompt}?` }],
+    options,
+    correct: [options.find((opt) => opt.label === answer).id],
+    hint: "Pick what comes next.",
+  });
+}
+
 export const QUESTION_TYPES = [
   { id: "teen-add-10", label: "Teen number addition (+10)", factory: teenNumberAdditionQuestion },
   { id: "colored-shape", label: "Choose the colored shape", factory: coloredShapeQuestion },
@@ -545,4 +782,7 @@ export const QUESTION_TYPES = [
   { id: "number-facts", label: "Number facts", factory: numberFactsQuestion },
   { id: "count-objects", label: "Count the objects", factory: countObjectsQuestion },
   { id: "opposites", label: "Opposites", factory: oppositesQuestion },
+  { id: "synonyms", label: "Synonyms", factory: synonymsQuestion },
+  { id: "categories", label: "Categories", factory: categoriesQuestion },
+  { id: "sequence", label: "Next step", factory: sequenceQuestion },
 ];
