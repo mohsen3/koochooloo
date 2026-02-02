@@ -156,6 +156,52 @@ h1 {
   font-size: 2.4rem;
 }
 
+.direction-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(80px, 1fr));
+  gap: 12px;
+  align-items: center;
+  justify-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  background: #fff;
+}
+
+.direction-slot {
+  width: 100%;
+  min-height: 90px;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background: rgba(26, 115, 232, 0.05);
+}
+
+.direction-slot[data-position="left"] {
+  border-color: rgba(26, 115, 232, 0.15);
+}
+
+.direction-slot[data-position="center"] {
+  border-color: rgba(26, 115, 232, 0.2);
+}
+
+.direction-slot[data-position="right"] {
+  border-color: rgba(26, 115, 232, 0.15);
+}
+
+.direction-marker {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  box-shadow: 0 10px 20px rgba(26, 115, 232, 0.25);
+}
 
 .scatter-field {
   position: relative;

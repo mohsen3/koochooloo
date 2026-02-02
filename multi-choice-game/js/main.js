@@ -180,6 +180,25 @@ function renderBody(bodyItems) {
       });
 
       questionBodyEl.appendChild(field);
+    } else if (item.kind === "direction-row") {
+      const row = document.createElement("div");
+      row.className = "direction-row";
+      row.dataset.position = item.value?.position || "center";
+
+      ["left", "center", "right"].forEach((position) => {
+        const slot = document.createElement("div");
+        slot.className = "direction-slot";
+        slot.dataset.position = position;
+        if (position === row.dataset.position) {
+          const marker = document.createElement("div");
+          marker.className = "direction-marker";
+          marker.innerHTML = '<i class="fa-solid fa-star"></i>';
+          slot.appendChild(marker);
+        }
+        row.appendChild(slot);
+      });
+
+      questionBodyEl.appendChild(row);
     }
   });
 }

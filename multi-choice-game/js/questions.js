@@ -276,6 +276,12 @@ const SEQUENCES = [
   { prompt: "playing with your toys", answer: "clean up" },
 ];
 
+const DIRECTIONS = [
+  { label: "left", description: "Left" },
+  { label: "center", description: "Center" },
+  { label: "right", description: "Right" },
+];
+
 function pickUniqueWords(count, exclude = new Set()) {
   const allWords = [...new Set(OPPOSITES.flatMap((pair) => [pair.left, pair.right]))].filter(
     (word) => !exclude.has(word),
@@ -770,6 +776,29 @@ export function sequenceQuestion() {
   });
 }
 
+export function directionQuestion() {
+  const answer = DIRECTIONS[randInt(0, DIRECTIONS.length - 1)];
+  const options = shuffle(DIRECTIONS.map((direction, index) => ({
+    id: `opt-${index}`,
+    label: direction.label,
+  })));
+
+  return createQuestion({
+    typeId: "directions",
+    type: "Left / center / right",
+    body: [
+      { kind: "text", value: "Which direction is highlighted?" },
+      {
+        kind: "direction-row",
+        value: { position: answer.label },
+      },
+    ],
+    options,
+    correct: [options.find((opt) => opt.label === answer.label).id],
+    hint: "Look for where the star is placed.",
+  });
+}
+
 export const QUESTION_TYPES = [
   { id: "teen-add-10", label: "Teen number addition (+10)", factory: teenNumberAdditionQuestion },
   { id: "colored-shape", label: "Choose the colored shape", factory: coloredShapeQuestion },
@@ -785,4 +814,5 @@ export const QUESTION_TYPES = [
   { id: "synonyms", label: "Synonyms", factory: synonymsQuestion },
   { id: "categories", label: "Categories", factory: categoriesQuestion },
   { id: "sequence", label: "Next step", factory: sequenceQuestion },
+  { id: "directions", label: "Left / center / right", factory: directionQuestion },
 ];
