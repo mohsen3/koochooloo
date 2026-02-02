@@ -277,9 +277,24 @@ const SEQUENCES = [
 ];
 
 const DIRECTIONS = [
-  { label: "left", description: "Left" },
-  { label: "center", description: "Center" },
-  { label: "right", description: "Right" },
+  {
+    id: "left",
+    label: "left",
+    iconClass: "fa-solid fa-arrow-left",
+    prompt: "Tap the arrow that points left.",
+  },
+  {
+    id: "center",
+    label: "center",
+    iconClass: "fa-solid fa-square",
+    prompt: "Which one is in the middle?",
+  },
+  {
+    id: "right",
+    label: "right",
+    iconClass: "fa-solid fa-arrow-right",
+    prompt: "Tap the arrow that points right.",
+  },
 ];
 
 function pickUniqueWords(count, exclude = new Set()) {
@@ -778,24 +793,23 @@ export function sequenceQuestion() {
 
 export function directionQuestion() {
   const answer = DIRECTIONS[randInt(0, DIRECTIONS.length - 1)];
-  const options = shuffle(DIRECTIONS.map((direction, index) => ({
+  const options = DIRECTIONS.map((direction, index) => ({
     id: `opt-${index}`,
-    label: direction.label,
-  })));
+    iconClass: direction.iconClass,
+    color: "#1a73e8",
+    label: "",
+    ariaLabel: direction.label,
+  }));
 
   return createQuestion({
     typeId: "directions",
     type: "Left / center / right",
     body: [
-      { kind: "text", value: "Which direction is highlighted?" },
-      {
-        kind: "direction-row",
-        value: { position: answer.label },
-      },
+      { kind: "text", value: answer.prompt },
     ],
     options,
-    correct: [options.find((opt) => opt.label === answer.label).id],
-    hint: "Look for where the star is placed.",
+    correct: [options.find((opt) => opt.ariaLabel === answer.label).id],
+    hint: "Pick the button that matches the direction.",
   });
 }
 
