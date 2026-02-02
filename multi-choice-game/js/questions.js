@@ -276,6 +276,27 @@ const SEQUENCES = [
   { prompt: "playing with your toys", answer: "clean up" },
 ];
 
+const DIRECTIONS = [
+  {
+    id: "left",
+    label: "left",
+    iconClass: "fa-solid fa-arrow-left",
+    prompt: "Tap the arrow that points left.",
+  },
+  {
+    id: "center",
+    label: "center",
+    iconClass: "fa-solid fa-square",
+    prompt: "Which one is in the middle?",
+  },
+  {
+    id: "right",
+    label: "right",
+    iconClass: "fa-solid fa-arrow-right",
+    prompt: "Tap the arrow that points right.",
+  },
+];
+
 function pickUniqueWords(count, exclude = new Set()) {
   const allWords = [...new Set(OPPOSITES.flatMap((pair) => [pair.left, pair.right]))].filter(
     (word) => !exclude.has(word),
@@ -770,6 +791,28 @@ export function sequenceQuestion() {
   });
 }
 
+export function directionQuestion() {
+  const answer = DIRECTIONS[randInt(0, DIRECTIONS.length - 1)];
+  const options = DIRECTIONS.map((direction, index) => ({
+    id: `opt-${index}`,
+    iconClass: direction.iconClass,
+    color: "#1a73e8",
+    label: "",
+    ariaLabel: direction.label,
+  }));
+
+  return createQuestion({
+    typeId: "directions",
+    type: "Left / center / right",
+    body: [
+      { kind: "text", value: answer.prompt },
+    ],
+    options,
+    correct: [options.find((opt) => opt.ariaLabel === answer.label).id],
+    hint: "Pick the button that matches the direction.",
+  });
+}
+
 export const QUESTION_TYPES = [
   { id: "teen-add-10", label: "Teen number addition (+10)", factory: teenNumberAdditionQuestion },
   { id: "colored-shape", label: "Choose the colored shape", factory: coloredShapeQuestion },
@@ -785,4 +828,5 @@ export const QUESTION_TYPES = [
   { id: "synonyms", label: "Synonyms", factory: synonymsQuestion },
   { id: "categories", label: "Categories", factory: categoriesQuestion },
   { id: "sequence", label: "Next step", factory: sequenceQuestion },
+  { id: "directions", label: "Left / center / right", factory: directionQuestion },
 ];
