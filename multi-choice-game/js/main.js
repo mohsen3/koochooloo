@@ -46,6 +46,26 @@ const incorrectEl = document.getElementById("incorrect-count");
 
 let selected = new Set();
 let feedbackTimeout = null;
+let settingsTapCount = 0;
+let settingsTapTimeout = null;
+
+function showSettingsPanel() {
+  settingsPanel.removeAttribute("hidden");
+  settingsToggleBtn.setAttribute("aria-expanded", "true");
+}
+
+function hideSettingsPanel() {
+  settingsPanel.setAttribute("hidden", "");
+  settingsToggleBtn.setAttribute("aria-expanded", "false");
+}
+
+function resetSettingsTapSequence() {
+  settingsTapCount = 0;
+  if (settingsTapTimeout) {
+    clearTimeout(settingsTapTimeout);
+    settingsTapTimeout = null;
+  }
+}
 
 function createClock(hour, minute) {
   const clock = document.createElement("div");
@@ -385,12 +405,34 @@ submitBtn.addEventListener("click", () => {
 });
 
 settingsToggleBtn.addEventListener("click", () => {
-  const isHidden = settingsPanel.hasAttribute("hidden");
-  if (isHidden) {
-    settingsPanel.removeAttribute("hidden");
-  } else {
-    settingsPanel.setAttribute("hidden", "");
+  settingsTapCount += 1;
+
+  if (settingsTapTimeout) {
+    clearTimeout(settingsTapTimeout);
   }
+
+  if (settingsTapCount === 3) {
+    showSettingsPanel();
+    resetSettingsTapSequence();
+    return;
+  }
+
+  settingsTapTimeout = setTimeout(() => {
+    resetSettingsTapSequence();
+  }, 600);
+});
+
+document.addEventListener("click", (event) => {
+  if (settingsPanel.hasAttribute("hidden")) {
+    return;
+  }
+
+  if (settingsPanel.contains(event.target)) {
+    return;
+  }
+
+  hideSettingsPanel();
+  resetSettingsTapSequence();
 });
 
 settingsSelectAll.addEventListener("click", () => {
@@ -402,4 +444,5 @@ settingsSelectNone.addEventListener("click", () => {
 });
 
 renderSettings();
+hideSettingsPanel();
 start();
