@@ -19,12 +19,18 @@
       <i class="fa-solid fa-gear"></i>
     </button>
     <aside id="settings-panel" class="settings-panel" hidden>
-      <div class="settings-panel__header">Question Types</div>
-      <div class="settings-panel__actions">
-        <button id="settings-select-all" type="button">Select all</button>
-        <button id="settings-select-none" type="button">Select none</button>
+      <div class="settings-panel__section">
+        <div class="settings-panel__header">Color Theme</div>
+        <div id="theme-list" class="theme-picker" role="radiogroup" aria-label="Color theme"></div>
       </div>
-      <div id="settings-list" class="settings-panel__list"></div>
+      <div class="settings-panel__section">
+        <div class="settings-panel__header">Question Types</div>
+        <div class="settings-panel__actions">
+          <button id="settings-select-all" type="button">Select all</button>
+          <button id="settings-select-none" type="button">Select none</button>
+        </div>
+        <div id="settings-list" class="settings-panel__list"></div>
+      </div>
     </aside>
     <header class="game__header">
       <div>

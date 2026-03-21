@@ -2,7 +2,30 @@ import { QUESTION_TYPES } from "./questions.js";
 import { QuizManager } from "./manager.js";
 
 const SETTINGS_KEY = "kiddo-quiz-settings";
+const THEME_KEY = "kiddo-quiz-theme";
 const SETTINGS_HOLD_DURATION_MS = 1300;
+const THEMES = [
+  {
+    id: "default",
+    label: "Classic",
+    swatch: "linear-gradient(135deg, #1a73e8 0%, #f7f7f5 100%)",
+  },
+  {
+    id: "ocean",
+    label: "Ocean",
+    swatch: "linear-gradient(135deg, #1f7a8c 0%, #eef6f8 100%)",
+  },
+  {
+    id: "meadow",
+    label: "Meadow",
+    swatch: "linear-gradient(135deg, #6b8f3d 0%, #f5f8ef 100%)",
+  },
+  {
+    id: "sunset",
+    label: "Sunset",
+    swatch: "linear-gradient(135deg, #cf6f4b 0%, #fcf4ee 100%)",
+  },
+];
 
 function loadEnabledTypes() {
   try {
@@ -26,7 +49,24 @@ function saveEnabledTypes(enabledIds) {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify([...enabledIds]));
 }
 
+function loadTheme() {
+  try {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    if (THEMES.some((theme) => theme.id === savedTheme)) {
+      return savedTheme;
+    }
+  } catch (error) {
+    return "default";
+  }
+  return "default";
+}
+
+function saveTheme(themeId) {
+  localStorage.setItem(THEME_KEY, themeId);
+}
+
 let enabledTypeIds = loadEnabledTypes();
+let selectedThemeId = loadTheme();
 const manager = new QuizManager({ questionFactories: getEnabledFactories() });
 
 const questionTypeEl = document.getElementById("question-type");
@@ -40,6 +80,7 @@ const settingsPanel = document.getElementById("settings-panel");
 const settingsList = document.getElementById("settings-list");
 const settingsSelectAll = document.getElementById("settings-select-all");
 const settingsSelectNone = document.getElementById("settings-select-none");
+const themeList = document.getElementById("theme-list");
 
 const levelEl = document.getElementById("level");
 const correctEl = document.getElementById("correct-count");
@@ -49,6 +90,11 @@ let selected = new Set();
 let feedbackTimeout = null;
 let settingsHoldTimeout = null;
 let ignoreMouseHold = false;
+
+function applyTheme(themeId) {
+  selectedThemeId = THEMES.some((theme) => theme.id === themeId) ? themeId : "default";
+  document.documentElement.dataset.theme = selectedThemeId === "default" ? "" : selectedThemeId;
+}
 
 function showSettingsPanel() {
   settingsPanel.removeAttribute("hidden");
@@ -378,6 +424,30 @@ function renderSettings() {
   });
 }
 
+function renderThemePicker() {
+  themeList.innerHTML = "";
+
+  THEMES.forEach((theme) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "theme-swatch";
+    button.style.setProperty("--swatch", theme.swatch);
+    button.setAttribute("role", "radio");
+    button.setAttribute("aria-label", theme.label);
+    button.title = theme.label;
+    button.setAttribute("aria-checked", String(theme.id === selectedThemeId));
+    button.classList.toggle("is-active", theme.id === selectedThemeId);
+
+    button.addEventListener("click", () => {
+      applyTheme(theme.id);
+      saveTheme(selectedThemeId);
+      renderThemePicker();
+    });
+
+    themeList.appendChild(button);
+  });
+}
+
 function setAllTypes(enabled) {
   if (enabled) {
     enabledTypeIds = new Set(QUESTION_TYPES.map((type) => type.id));
@@ -496,5 +566,7 @@ settingsSelectNone.addEventListener("click", () => {
 });
 
 renderSettings();
+applyTheme(selectedThemeId);
+renderThemePicker();
 hideSettingsPanel();
 start();
