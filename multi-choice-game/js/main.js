@@ -48,6 +48,7 @@ const incorrectEl = document.getElementById("incorrect-count");
 let selected = new Set();
 let feedbackTimeout = null;
 let settingsHoldTimeout = null;
+let ignoreMouseHold = false;
 
 function showSettingsPanel() {
   settingsPanel.removeAttribute("hidden");
@@ -72,6 +73,19 @@ function startSettingsHold() {
     showSettingsPanel();
     clearSettingsHoldTimeout();
   }, SETTINGS_HOLD_DURATION_MS);
+}
+
+function startMouseSettingsHold(event) {
+  if (ignoreMouseHold || event.button !== 0) {
+    return;
+  }
+  startSettingsHold();
+}
+
+function startTouchSettingsHold(event) {
+  ignoreMouseHold = true;
+  event.preventDefault();
+  startSettingsHold();
 }
 
 function createClock(hour, minute) {
@@ -411,17 +425,36 @@ submitBtn.addEventListener("click", () => {
   }
 });
 
-settingsToggleBtn.addEventListener("pointerdown", (event) => {
-  if (event.button !== undefined && event.button !== 0) {
-    return;
-  }
-  startSettingsHold();
+settingsToggleBtn.addEventListener("mousedown", (event) => {
+  startMouseSettingsHold(event);
 });
 
-["pointerup", "pointerleave", "pointercancel"].forEach((eventName) => {
+settingsToggleBtn.addEventListener("touchstart", (event) => {
+  startTouchSettingsHold(event);
+}, { passive: false });
+
+["mouseup", "mouseleave"].forEach((eventName) => {
   settingsToggleBtn.addEventListener(eventName, () => {
     clearSettingsHoldTimeout();
   });
+});
+
+["touchend", "touchcancel"].forEach((eventName) => {
+  settingsToggleBtn.addEventListener(eventName, (event) => {
+    event.preventDefault();
+    clearSettingsHoldTimeout();
+    setTimeout(() => {
+      ignoreMouseHold = false;
+    }, 0);
+  }, { passive: false });
+});
+
+settingsToggleBtn.addEventListener("contextmenu", (event) => {
+  event.preventDefault();
+});
+
+settingsToggleBtn.addEventListener("dragstart", (event) => {
+  event.preventDefault();
 });
 
 settingsToggleBtn.addEventListener("click", (event) => {
@@ -433,13 +466,26 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  if (settingsPanel.contains(event.target)) {
+  if (settingsPanel.contains(event.target) || settingsToggleBtn.contains(event.target)) {
     return;
   }
 
   hideSettingsPanel();
   clearSettingsHoldTimeout();
 });
+
+document.addEventListener("touchstart", (event) => {
+  if (settingsPanel.hasAttribute("hidden")) {
+    return;
+  }
+
+  if (settingsPanel.contains(event.target) || settingsToggleBtn.contains(event.target)) {
+    return;
+  }
+
+  hideSettingsPanel();
+  clearSettingsHoldTimeout();
+}, { passive: true });
 
 settingsSelectAll.addEventListener("click", () => {
   setAllTypes(true);
