@@ -120,6 +120,9 @@ function renderBody(bodyItems) {
     if (item.kind === "text") {
       const p = document.createElement("p");
       p.textContent = item.value;
+      if (item.className) {
+        p.classList.add(item.className);
+      }
       if (item.emphasis) {
         const strong = document.createElement("strong");
         strong.textContent = item.value;

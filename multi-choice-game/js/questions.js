@@ -418,6 +418,36 @@ export function whatPlusQuestion() {
   });
 }
 
+export function multiplicationQuestion() {
+  const a = randInt(0, 12);
+  const b = randInt(0, 12);
+  const answer = a * b;
+
+  let incorrect = answer;
+  while (incorrect === answer) {
+    const delta = randInt(1, 12);
+    incorrect = Math.random() > 0.5 ? answer + delta : answer - delta;
+    incorrect = Math.max(0, Math.min(144, incorrect));
+  }
+
+  const options = shuffle([answer, incorrect]).map((value, index) => ({
+    id: `opt-${index}`,
+    label: String(value),
+  }));
+
+  return createQuestion({
+    typeId: "multiplication",
+    type: "Multiplication",
+    body: [
+      { kind: "text", value: "Solve this multiplication:" },
+      { kind: "text", value: `${a} × ${b} = ?`, emphasis: true, className: "question-multiplication" },
+    ],
+    options,
+    correct: [options.find((opt) => opt.label === String(answer)).id],
+    hint: "Pick the correct product.",
+  });
+}
+
 const OPERATORS = [
   { symbol: "+", fn: (a, b) => a + b },
   { symbol: "-", fn: (a, b) => a - b },
@@ -818,6 +848,7 @@ export const QUESTION_TYPES = [
   { id: "colored-shape", label: "Choose the colored shape", factory: coloredShapeQuestion },
   { id: "skip-counting", label: "Skip counting", factory: skipCountingQuestion },
   { id: "what-plus", label: "What plus", factory: whatPlusQuestion },
+  { id: "multiplication", label: "Multiplication (0-12)", factory: multiplicationQuestion },
   { id: "make-number", label: "Make the number", factory: makeNineQuestion },
   { id: "one-more-less", label: "One more / one less", factory: oneMoreLessQuestion },
   { id: "largest-smallest", label: "Largest / smallest", factory: largestSmallestQuestion },
