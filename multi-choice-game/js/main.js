@@ -411,7 +411,7 @@ settingsToggleBtn.addEventListener("click", () => {
     clearTimeout(settingsTapTimeout);
   }
 
-  if (settingsTapCount === 3) {
+  if (settingsTapCount === 2) {
     showSettingsPanel();
     resetSettingsTapSequence();
     return;
