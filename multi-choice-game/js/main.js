@@ -2,6 +2,7 @@ import { QUESTION_TYPES } from "./questions.js";
 import { QuizManager } from "./manager.js";
 
 const SETTINGS_KEY = "kiddo-quiz-settings";
+const SETTINGS_HOLD_DURATION_MS = 1300;
 
 function loadEnabledTypes() {
   try {
@@ -46,8 +47,7 @@ const incorrectEl = document.getElementById("incorrect-count");
 
 let selected = new Set();
 let feedbackTimeout = null;
-let settingsTapCount = 0;
-let settingsTapTimeout = null;
+let settingsHoldTimeout = null;
 
 function showSettingsPanel() {
   settingsPanel.removeAttribute("hidden");
@@ -59,12 +59,19 @@ function hideSettingsPanel() {
   settingsToggleBtn.setAttribute("aria-expanded", "false");
 }
 
-function resetSettingsTapSequence() {
-  settingsTapCount = 0;
-  if (settingsTapTimeout) {
-    clearTimeout(settingsTapTimeout);
-    settingsTapTimeout = null;
+function clearSettingsHoldTimeout() {
+  if (settingsHoldTimeout) {
+    clearTimeout(settingsHoldTimeout);
+    settingsHoldTimeout = null;
   }
+}
+
+function startSettingsHold() {
+  clearSettingsHoldTimeout();
+  settingsHoldTimeout = setTimeout(() => {
+    showSettingsPanel();
+    clearSettingsHoldTimeout();
+  }, SETTINGS_HOLD_DURATION_MS);
 }
 
 function createClock(hour, minute) {
@@ -404,22 +411,21 @@ submitBtn.addEventListener("click", () => {
   }
 });
 
-settingsToggleBtn.addEventListener("click", () => {
-  settingsTapCount += 1;
-
-  if (settingsTapTimeout) {
-    clearTimeout(settingsTapTimeout);
-  }
-
-  if (settingsTapCount === 2) {
-    showSettingsPanel();
-    resetSettingsTapSequence();
+settingsToggleBtn.addEventListener("pointerdown", (event) => {
+  if (event.button !== undefined && event.button !== 0) {
     return;
   }
+  startSettingsHold();
+});
 
-  settingsTapTimeout = setTimeout(() => {
-    resetSettingsTapSequence();
-  }, 600);
+["pointerup", "pointerleave", "pointercancel"].forEach((eventName) => {
+  settingsToggleBtn.addEventListener(eventName, () => {
+    clearSettingsHoldTimeout();
+  });
+});
+
+settingsToggleBtn.addEventListener("click", (event) => {
+  event.preventDefault();
 });
 
 document.addEventListener("click", (event) => {
@@ -432,7 +438,7 @@ document.addEventListener("click", (event) => {
   }
 
   hideSettingsPanel();
-  resetSettingsTapSequence();
+  clearSettingsHoldTimeout();
 });
 
 settingsSelectAll.addEventListener("click", () => {
