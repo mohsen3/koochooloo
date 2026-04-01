@@ -471,7 +471,7 @@
         <div class="header">
             <div class="badges">
                 <div class="badge level" id="levelBadge">Level 1</div>
-                <div class="badge streak" id="streakBadge">3 to level up</div>
+                <div class="badge streak" id="streakBadge">0/10 to level up</div>
                 <div class="badge score" id="scoreBadge">Solved 0</div>
             </div>
         </div>
@@ -504,6 +504,13 @@
                 <div class="progress-dot"></div>
                 <div class="progress-dot"></div>
                 <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
             </div>
         </div>
     </div>
@@ -524,12 +531,32 @@
                 this.slots = [];
                 this.question = null;
                 this.answerLocked = false;
-
-                this.levelDescriptions = {
-                    1: "Start easy: match the glowing outlines.",
-                    2: "The answer is hidden in boxes. A and B still have outlines.",
-                    3: "Now every space is just a box. Think before you drag.",
-                    4: "Watch out for extra digits. You will not use them all."
+                this.stageConfig = {
+                    1: {
+                        description: "Match the outlines first, then the next puzzle starts.",
+                        tip: "Everything is shown. Drag each digit into its matching outline.",
+                        target: 10
+                    },
+                    2: {
+                        description: "Only the answer is hidden now.",
+                        tip: "A and B are shown. Build the answer in the boxes.",
+                        target: 10
+                    },
+                    3: {
+                        description: "One factor digit is hidden. Find the missing number.",
+                        tip: "You will fill one missing factor digit at a time.",
+                        target: 10
+                    },
+                    4: {
+                        description: "Now some missing factors use two digits like 10, 11, or 12.",
+                        tip: "Two boxes mean the hidden factor has two digits.",
+                        target: 10
+                    },
+                    5: {
+                        description: "Hard mode: there are extra digits too.",
+                        tip: "Some digits are tricksters. Leave the extras behind.",
+                        target: 10
+                    }
                 };
 
                 this.levelBadge = document.getElementById("levelBadge");
@@ -567,13 +594,12 @@
             }
 
             updateHud() {
+                const stage = this.stageConfig[this.level];
                 this.levelBadge.textContent = `Level ${this.level}`;
-                this.streakBadge.textContent = `${this.correctStreak}/3 to level up`;
+                this.streakBadge.textContent = `${this.correctStreak}/${stage.target} to level up`;
                 this.scoreBadge.textContent = `Solved ${this.solvedCount}`;
-                this.messageBar.textContent = this.levelDescriptions[this.level];
-                this.tipText.textContent = this.level === 4
-                    ? "Some digits are tricksters. Leave the extras behind."
-                    : "All numbers are between 0 and 12.";
+                this.messageBar.textContent = stage.description;
+                this.tipText.textContent = stage.tip;
                 this.progressDots.forEach((dot, index) => {
                     dot.classList.toggle("filled", index < this.correctStreak);
                 });
@@ -601,16 +627,42 @@
                     const a = this.randomInt(0, 12);
                     const b = this.randomInt(0, 12);
                     const c = a * b;
-                    const baseDigits = [...String(a), ...String(b), ...String(c)];
-                    const extras = this.level === 4 ? this.generateDistractors(baseDigits, a, b, c) : [];
-                    if (this.level < 4 || extras.length > 0) {
-                        candidate = { a, b, c, baseDigits, digits: this.shuffle(baseDigits.concat(extras.slice())) };
+                    const reveal = this.buildRevealPlan(a, b, c);
+                    if (!reveal) {
+                        continue;
+                    }
+                    const baseDigits = reveal.hiddenDigits.slice();
+                    const extras = this.level === 5 ? this.generateDistractors(baseDigits, a, b, c, reveal) : [];
+                    if (this.level < 5 || extras.length > 0) {
+                        candidate = {
+                            a,
+                            b,
+                            c,
+                            reveal,
+                            baseDigits,
+                            digits: this.shuffle(baseDigits.concat(extras.slice()))
+                        };
                         break;
                     }
                 }
 
                 if (!candidate) {
-                    candidate = { a: 3, b: 4, c: 12, baseDigits: ["3", "4", "1", "2"], digits: this.shuffle(["3", "4", "1", "2", "8"]) };
+                    const fallbackEquation = this.level >= 4
+                        ? { a: 12, b: 5, c: 60 }
+                        : { a: 3, b: 4, c: 12 };
+                    const reveal = this.buildRevealPlan(fallbackEquation.a, fallbackEquation.b, fallbackEquation.c) || {
+                        hidden: { A: [], B: [], C: [0, 1] },
+                        hiddenDigits: ["1", "2"],
+                        showOutlineForHidden: false
+                    };
+                    candidate = {
+                        a: fallbackEquation.a,
+                        b: fallbackEquation.b,
+                        c: fallbackEquation.c,
+                        reveal,
+                        baseDigits: reveal.hiddenDigits.slice(),
+                        digits: this.shuffle(reveal.hiddenDigits.concat(["8"]))
+                    };
                 }
 
                 this.question = candidate;
@@ -618,7 +670,75 @@
                 this.renderTiles();
             }
 
-            generateDistractors(baseDigits, a, b, c) {
+            buildRevealPlan(a, b, c) {
+                const digits = {
+                    A: String(a).split(""),
+                    B: String(b).split(""),
+                    C: String(c).split("")
+                };
+
+                if (this.level === 1) {
+                    return {
+                        hidden: {
+                            A: digits.A.map((_, index) => index),
+                            B: digits.B.map((_, index) => index),
+                            C: digits.C.map((_, index) => index)
+                        },
+                        hiddenDigits: [...digits.A, ...digits.B, ...digits.C],
+                        showOutlineForHidden: true
+                    };
+                }
+
+                if (this.level === 2) {
+                    return {
+                        hidden: { A: [], B: [], C: digits.C.map((_, index) => index) },
+                        hiddenDigits: [...digits.C],
+                        showOutlineForHidden: false
+                    };
+                }
+
+                if (this.level === 3) {
+                    const singleDigitSections = [];
+                    if (digits.A.length === 1) {
+                        singleDigitSections.push("A");
+                    }
+                    if (digits.B.length === 1) {
+                        singleDigitSections.push("B");
+                    }
+                    if (singleDigitSections.length === 0) {
+                        return null;
+                    }
+                    const section = singleDigitSections[this.randomInt(0, singleDigitSections.length - 1)];
+                    return {
+                        hidden: { A: [], B: [], C: [] , [section]: [0] },
+                        hiddenDigits: [digits[section][0]],
+                        showOutlineForHidden: false
+                    };
+                }
+
+                if (this.level === 4 || this.level === 5) {
+                    const twoDigitSections = [];
+                    if (digits.A.length === 2) {
+                        twoDigitSections.push("A");
+                    }
+                    if (digits.B.length === 2) {
+                        twoDigitSections.push("B");
+                    }
+                    if (twoDigitSections.length === 0) {
+                        return null;
+                    }
+                    const section = twoDigitSections[this.randomInt(0, twoDigitSections.length - 1)];
+                    return {
+                        hidden: { A: [], B: [], C: [], [section]: [0, 1] },
+                        hiddenDigits: digits[section].slice(),
+                        showOutlineForHidden: false
+                    };
+                }
+
+                return null;
+            }
+
+            generateDistractors(baseDigits, a, b, c, reveal) {
                 const desiredCount = this.randomInt(1, 2);
                 const available = [];
                 for (let digit = 0; digit <= 9; digit += 1) {
@@ -635,7 +755,7 @@
                     }
 
                     const pool = baseDigits.concat(extras);
-                    if (this.hasUniqueSolution(pool, a, b, c)) {
+                    if (this.hasUniqueSolution(pool, a, b, c, reveal)) {
                         return extras;
                     }
                 }
@@ -643,7 +763,7 @@
                 return [];
             }
 
-            hasUniqueSolution(pool, answerA, answerB, answerC) {
+            hasUniqueSolution(pool, answerA, answerB, answerC, reveal) {
                 const counts = {};
                 pool.forEach((digit) => {
                     counts[digit] = (counts[digit] || 0) + 1;
@@ -652,12 +772,21 @@
                 const lenA = String(answerA).length;
                 const lenB = String(answerB).length;
                 const lenC = String(answerC).length;
-                const totalLen = lenA + lenB + lenC;
+                const hiddenA = (reveal.hidden.A || []).length;
+                const hiddenB = (reveal.hidden.B || []).length;
+                const hiddenC = (reveal.hidden.C || []).length;
+                const totalLen = hiddenA + hiddenB + hiddenC;
                 if (pool.length < totalLen) {
                     return false;
                 }
 
                 const uniqueResults = new Set();
+
+                const actualDigits = {
+                    A: String(answerA).split(""),
+                    B: String(answerB).split(""),
+                    C: String(answerC).split("")
+                };
 
                 const enumerate = (prefix, length, remainingCounts, results) => {
                     if (prefix.length === length) {
@@ -677,12 +806,15 @@
                     }
                 };
 
-                const aCandidates = [];
-                enumerate([], lenA, { ...counts }, aCandidates);
+                const aCandidates = hiddenA ? [] : [actualDigits.A.join("")];
+                if (hiddenA) {
+                    enumerate([], lenA, { ...counts }, aCandidates);
+                }
                 for (const aText of aCandidates) {
                     const remainingAfterA = { ...counts };
                     let possible = true;
-                    for (const digit of aText) {
+                    const neededA = reveal.hidden.A.length ? aText : "";
+                    for (const digit of neededA) {
                         if (!remainingAfterA[digit]) {
                             possible = false;
                             break;
@@ -693,12 +825,15 @@
                         continue;
                     }
 
-                    const bCandidates = [];
-                    enumerate([], lenB, remainingAfterA, bCandidates);
+                    const bCandidates = hiddenB ? [] : [actualDigits.B.join("")];
+                    if (hiddenB) {
+                        enumerate([], lenB, remainingAfterA, bCandidates);
+                    }
                     for (const bText of bCandidates) {
                         const remainingAfterB = { ...remainingAfterA };
                         possible = true;
-                        for (const digit of bText) {
+                        const neededB = reveal.hidden.B.length ? bText : "";
+                        for (const digit of neededB) {
                             if (!remainingAfterB[digit]) {
                                 possible = false;
                                 break;
@@ -709,8 +844,10 @@
                             continue;
                         }
 
-                        const cCandidates = [];
-                        enumerate([], lenC, remainingAfterB, cCandidates);
+                        const cCandidates = hiddenC ? [] : [actualDigits.C.join("")];
+                        if (hiddenC) {
+                            enumerate([], lenC, remainingAfterB, cCandidates);
+                        }
                         for (const cText of cCandidates) {
                             if (
                                 (aText.length > 1 && aText.startsWith("0")) ||
@@ -740,6 +877,7 @@
                     digit,
                     id: `${section}-${index}`,
                     section,
+                    index,
                     value: null
                 }));
             }
@@ -761,9 +899,11 @@
                     slot.className = "slot";
                     slot.dataset.slotId = slotData.id;
 
-                    const shouldOutline = this.level === 1 || (this.level === 2 && slotData.section !== "C");
+                    const hiddenIndexes = this.question.reveal.hidden[slotData.section] || [];
+                    const isHidden = hiddenIndexes.includes(slotData.index);
+                    const shouldOutline = isHidden && this.question.reveal.showOutlineForHidden;
                     slot.classList.toggle("show-outline", shouldOutline);
-                    slot.classList.toggle("show-boxes", !shouldOutline);
+                    slot.classList.toggle("show-boxes", isHidden && !shouldOutline);
 
                     const hint = document.createElement("div");
                     hint.className = "hint-digit";
@@ -772,10 +912,17 @@
 
                     const placed = document.createElement("div");
                     placed.className = "placed-digit";
-                    placed.textContent = "";
+                    placed.textContent = isHidden ? "" : slotData.digit;
                     slot.appendChild(placed);
 
-                    slot.addEventListener("pointerdown", (event) => this.handleSlotPointerDown(event, slotData.id));
+                    if (isHidden) {
+                        slotData.value = null;
+                        slot.addEventListener("pointerdown", (event) => this.handleSlotPointerDown(event, slotData.id));
+                    } else {
+                        slotData.value = slotData.digit;
+                        slot.classList.add("filled", "correct");
+                    }
+                    slotData.isHidden = isHidden;
                     slotData.element = slot;
                     slotData.placedElement = placed;
                     slotMap[slotData.section].appendChild(slot);
@@ -962,7 +1109,7 @@
                 let bestDistance = Infinity;
 
                 for (const slot of this.slots) {
-                    if (slot.value !== null) {
+                    if (!slot.isHidden || slot.value !== null) {
                         continue;
                     }
                     const rect = slot.element.getBoundingClientRect();
@@ -1005,7 +1152,7 @@
                 }
 
                 const slot = this.slots.find((item) => item.id === slotId);
-                if (!slot || slot.value === null || !slot.tileId) {
+                if (!slot || !slot.isHidden || slot.value === null || !slot.tileId) {
                     return;
                 }
 
@@ -1075,7 +1222,7 @@
             handleCorrect() {
                 this.correctStreak += 1;
                 this.solvedCount += 1;
-                if (this.correctStreak >= 3 && this.level < 4) {
+                if (this.correctStreak >= this.stageConfig[this.level].target && this.level < 5) {
                     this.level += 1;
                     this.correctStreak = 0;
                 }
