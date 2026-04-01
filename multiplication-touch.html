@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Multiplication Touch</title>
+    <style>
+        :root {
+            --paper: #fff7e8;
+            --paper-line: rgba(207, 183, 146, 0.28);
+            --ink: #173f7a;
+            --pink: #f44362;
+            --orange: #ff9f1c;
+            --yellow: #ffd166;
+            --green: #3aa655;
+            --teal: #2ec4b6;
+            --blue: #4d96ff;
+            --navy: #1b3c88;
+            --shadow: rgba(50, 36, 14, 0.18);
+            --slot: #fffef9;
+            --slot-border: #d8d8d8;
+            --slot-glow: rgba(77, 150, 255, 0.32);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: "Trebuchet MS", "Arial Rounded MT Bold", "Comic Sans MS", sans-serif;
+            background:
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 239, 214, 0.7)),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent 0 35px,
+                    var(--paper-line) 35px 37px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0 35px,
+                    var(--paper-line) 35px 37px
+                ),
+                var(--paper);
+            min-height: 100vh;
+            padding: 18px;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+            color: var(--ink);
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: auto;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            filter: blur(18px);
+            opacity: 0.35;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::before {
+            top: -40px;
+            left: -20px;
+            background: radial-gradient(circle, #ffb703, transparent 68%);
+        }
+
+        body::after {
+            right: -30px;
+            bottom: -30px;
+            background: radial-gradient(circle, #56cfe1, transparent 68%);
+        }
+
+        .screen {
+            position: relative;
+            z-index: 1;
+            max-width: 1300px;
+            height: min(940px, calc(100vh - 36px));
+            margin: 0 auto;
+            background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.9));
+            border: 7px solid rgba(255, 255, 255, 0.7);
+            border-radius: 34px;
+            box-shadow: 0 28px 60px rgba(83, 56, 10, 0.16);
+            display: grid;
+            grid-template-rows: auto auto 1fr auto;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            padding: 22px 26px 10px;
+            flex-wrap: wrap;
+        }
+
+        .title-wrap h1 {
+            font-size: clamp(2.1rem, 4vw, 3.6rem);
+            line-height: 0.95;
+            color: var(--pink);
+            text-shadow: 0 4px 0 rgba(255, 209, 102, 0.95);
+            letter-spacing: 0.04em;
+        }
+
+        .title-wrap p {
+            margin-top: 8px;
+            font-size: clamp(1rem, 1.9vw, 1.25rem);
+            color: #4c6b87;
+            font-weight: 700;
+        }
+
+        .badges {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            min-width: 126px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            color: white;
+            font-weight: 900;
+            font-size: 1.05rem;
+            text-align: center;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .badge.level { background: linear-gradient(135deg, #ff7b54, #ffb703); }
+        .badge.streak { background: linear-gradient(135deg, #2ec4b6, #4d96ff); }
+        .badge.score { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+
+        .message-bar {
+            margin: 0 26px;
+            background: linear-gradient(135deg, rgba(27, 60, 136, 0.96), rgba(77, 150, 255, 0.96));
+            color: white;
+            padding: 14px 18px;
+            border-radius: 22px;
+            font-size: clamp(1rem, 1.7vw, 1.22rem);
+            font-weight: 800;
+            text-align: center;
+            box-shadow: 0 12px 26px rgba(27, 60, 136, 0.16);
+        }
+
+        .play-area {
+            position: relative;
+            padding: 14px 26px 20px;
+            overflow: hidden;
+        }
+
+        .equation-card {
+            position: relative;
+            z-index: 1;
+            min-height: 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 16px 12px;
+        }
+
+        .equation-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            gap: clamp(8px, 1.2vw, 18px);
+            width: 100%;
+            transform: translateY(-6px);
+        }
+
+        .number-group {
+            display: flex;
+            gap: clamp(8px, 1vw, 12px);
+            align-items: center;
+            min-width: 0;
+        }
+
+        .operator {
+            font-size: clamp(3rem, 8vw, 5.4rem);
+            font-weight: 900;
+            color: var(--green);
+            text-shadow: 0 4px 0 rgba(255, 209, 102, 0.85);
+            padding: 0 4px;
+        }
+
+        .slot {
+            position: relative;
+            width: clamp(70px, 10vw, 120px);
+            height: clamp(92px, 13vw, 150px);
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,252,244,0.96));
+            border: 5px dashed var(--slot-border);
+            box-shadow: inset 0 -6px 0 rgba(255, 216, 159, 0.55), 0 12px 22px rgba(90, 68, 30, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+            overflow: hidden;
+        }
+
+        .slot .hint-digit,
+        .slot .placed-digit {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: clamp(3rem, 8vw, 5.6rem);
+            line-height: 1;
+        }
+
+        .slot .hint-digit {
+            opacity: 0.18;
+            color: var(--navy);
+        }
+
+        .slot.show-boxes .hint-digit {
+            opacity: 0;
+        }
+
+        .slot.filled .hint-digit {
+            opacity: 0;
+        }
+
+        .slot.show-outline {
+            border-style: solid;
+            border-color: rgba(255, 159, 28, 0.38);
+            background: linear-gradient(180deg, rgba(255, 243, 228, 0.9), rgba(255,255,255,0.95));
+        }
+
+        .slot.active-target {
+            border-color: var(--blue);
+            transform: scale(1.05);
+            box-shadow: 0 0 0 10px var(--slot-glow), inset 0 -6px 0 rgba(255, 216, 159, 0.55), 0 14px 28px rgba(77, 150, 255, 0.2);
+        }
+
+        .slot.correct {
+            border-color: var(--green);
+            background: linear-gradient(180deg, #e7fff0, #f8fffb);
+        }
+
+        .slot.error {
+            border-color: #ef476f;
+            background: linear-gradient(180deg, #fff0f4, #fffafb);
+            animation: wobble 0.45s ease;
+        }
+
+        .slot.filled {
+            border-style: solid;
+            border-color: rgba(58, 166, 85, 0.45);
+        }
+
+        .placed-digit {
+            color: var(--navy);
+            text-shadow: 0 4px 0 rgba(255, 209, 102, 0.6);
+        }
+
+        .digit-pool {
+            position: relative;
+            z-index: 3;
+            min-height: 320px;
+            border-radius: 28px;
+            background:
+                radial-gradient(circle at 12% 18%, rgba(255, 209, 102, 0.26), transparent 15%),
+                radial-gradient(circle at 86% 26%, rgba(46, 196, 182, 0.2), transparent 16%),
+                linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,250,240,0.96));
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.8), inset 0 -12px 24px rgba(255, 215, 150, 0.3);
+            overflow: hidden;
+        }
+
+        .pool-label {
+            position: absolute;
+            top: 16px;
+            left: 18px;
+            z-index: 1;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.8);
+            color: #52708b;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 0.04em;
+        }
+
+        .digit-tile {
+            position: absolute;
+            z-index: 4;
+            width: clamp(78px, 10vw, 112px);
+            height: clamp(96px, 13vw, 132px);
+            border-radius: 28px;
+            border: 5px solid rgba(255,255,255,0.85);
+            box-shadow: 0 14px 30px var(--shadow), inset 0 -10px 0 rgba(255,255,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(3.2rem, 8vw, 5rem);
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            cursor: grab;
+            touch-action: none;
+            will-change: transform;
+            transition: box-shadow 0.16s ease, filter 0.16s ease;
+        }
+
+        .digit-tile .eye {
+            position: absolute;
+            width: 16px;
+            height: 20px;
+            border-radius: 999px;
+            background: white;
+            top: 14px;
+            box-shadow: inset 0 0 0 3px rgba(0,0,0,0.06);
+        }
+
+        .digit-tile .eye.left { left: 14px; }
+        .digit-tile .eye.right { right: 14px; }
+
+        .digit-tile .eye::after {
+            content: "";
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(31, 57, 102, 0.8);
+            left: 4px;
+            top: 6px;
+        }
+
+        .digit-tile::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: 10px;
+            width: 42px;
+            height: 16px;
+            transform: translateX(-50%);
+            border: 4px solid rgba(255,255,255,0.78);
+            border-top: 0;
+            border-radius: 0 0 28px 28px;
+            opacity: 0.85;
+        }
+
+        .digit-tile.dragging {
+            cursor: grabbing;
+            box-shadow: 0 22px 36px rgba(38, 30, 15, 0.22);
+            filter: brightness(1.04);
+            z-index: 20;
+        }
+
+        .digit-tile.floating {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            margin: 0;
+        }
+
+        .digit-tile.used {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 26px 24px;
+            flex-wrap: wrap;
+        }
+
+        .tip {
+            color: #5d7792;
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 10px;
+        }
+
+        .progress-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(27, 60, 136, 0.15);
+            border: 3px solid rgba(27, 60, 136, 0.12);
+            transition: transform 0.18s ease, background 0.18s ease;
+        }
+
+        .progress-dot.filled {
+            background: linear-gradient(135deg, #ff7b54, #ffb703);
+            border-color: rgba(255,255,255,0.8);
+            transform: scale(1.12);
+        }
+
+        .cheer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .cheer-banner {
+            position: absolute;
+            top: 18%;
+            left: 50%;
+            transform: translate(-50%, -10px) scale(0.9);
+            background: linear-gradient(135deg, #ff7b54, #ff4d6d);
+            color: white;
+            padding: 18px 34px;
+            border-radius: 999px;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            box-shadow: 0 18px 34px rgba(255, 77, 109, 0.24);
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .cheer-banner.show {
+            opacity: 1;
+            transform: translate(-50%, 0) scale(1);
+        }
+
+        .confetti {
+            position: absolute;
+            width: 16px;
+            height: 24px;
+            border-radius: 6px;
+            opacity: 0.95;
+        }
+
+        @keyframes wobble {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(-4px); }
+        }
+
+        @media (max-width: 980px) {
+            .screen {
+                height: calc(100vh - 24px);
+            }
+
+            .equation-row {
+                gap: 8px;
+            }
+
+            .play-area {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .header,
+            .footer {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 10px;
+            }
+
+            .screen {
+                height: calc(100vh - 20px);
+                border-radius: 26px;
+            }
+
+            .header {
+                padding-top: 16px;
+                gap: 10px;
+            }
+
+            .message-bar {
+                margin: 0 16px;
+                padding: 12px 14px;
+            }
+
+            .digit-pool {
+                min-height: 280px;
+            }
+
+            .footer {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="screen">
+        <div class="header">
+            <div class="title-wrap">
+                <h1>Multiplication Touch</h1>
+                <p>Drag the number buddies into the right places.</p>
+            </div>
+            <div class="badges">
+                <div class="badge level" id="levelBadge">Level 1</div>
+                <div class="badge streak" id="streakBadge">3 to level up</div>
+                <div class="badge score" id="scoreBadge">Solved 0</div>
+            </div>
+        </div>
+
+        <div class="message-bar" id="messageBar">Start easy: match the glowing outlines.</div>
+
+        <div class="play-area">
+            <div class="equation-card">
+                <div class="equation-row">
+                    <div class="number-group" id="groupA"></div>
+                    <div class="operator">×</div>
+                    <div class="number-group" id="groupB"></div>
+                    <div class="operator">=</div>
+                    <div class="number-group" id="groupC"></div>
+                </div>
+            </div>
+
+            <div class="digit-pool" id="digitPool">
+                <div class="pool-label">Drag these digits</div>
+            </div>
+
+            <div class="cheer" id="cheerLayer">
+                <div class="cheer-banner" id="cheerBanner">Great job!</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="tip" id="tipText">All numbers are between 0 and 12.</div>
+            <div class="progress-dots" id="progressDots">
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MultiplicationTouchGame {
+            constructor() {
+                this.level = 1;
+                this.correctStreak = 0;
+                this.solvedCount = 0;
+                this.questionId = 0;
+                this.draggedTile = null;
+                this.dragPointerId = null;
+                this.dragOffsetX = 0;
+                this.dragOffsetY = 0;
+                this.activeSlot = null;
+                this.physicsTiles = [];
+                this.slots = [];
+                this.question = null;
+                this.answerLocked = false;
+
+                this.levelDescriptions = {
+                    1: "Start easy: match the glowing outlines.",
+                    2: "The answer is hidden in boxes. A and B still have outlines.",
+                    3: "Now every space is just a box. Think before you drag.",
+                    4: "Watch out for extra digits. You will not use them all."
+                };
+
+                this.levelBadge = document.getElementById("levelBadge");
+                this.streakBadge = document.getElementById("streakBadge");
+                this.scoreBadge = document.getElementById("scoreBadge");
+                this.messageBar = document.getElementById("messageBar");
+                this.tipText = document.getElementById("tipText");
+                this.groupA = document.getElementById("groupA");
+                this.groupB = document.getElementById("groupB");
+                this.groupC = document.getElementById("groupC");
+                this.digitPool = document.getElementById("digitPool");
+                this.cheerLayer = document.getElementById("cheerLayer");
+                this.cheerBanner = document.getElementById("cheerBanner");
+                this.progressDots = Array.from(document.querySelectorAll(".progress-dot"));
+
+                this.palette = [
+                    ["#4d96ff", "#1b3c88"],
+                    ["#ff6b6b", "#f44362"],
+                    ["#ffb703", "#fb8500"],
+                    ["#3aa655", "#168aad"],
+                    ["#7b2cbf", "#5a189a"],
+                    ["#2ec4b6", "#1f8f88"]
+                ];
+
+                this.animate = this.animate.bind(this);
+                this.handlePointerMove = this.handlePointerMove.bind(this);
+                this.handlePointerUp = this.handlePointerUp.bind(this);
+
+                document.addEventListener("pointermove", this.handlePointerMove, { passive: false });
+                document.addEventListener("pointerup", this.handlePointerUp);
+                document.addEventListener("pointercancel", this.handlePointerUp);
+
+                this.createQuestion();
+                requestAnimationFrame(this.animate);
+            }
+
+            updateHud() {
+                this.levelBadge.textContent = `Level ${this.level}`;
+                this.streakBadge.textContent = `${this.correctStreak}/3 to level up`;
+                this.scoreBadge.textContent = `Solved ${this.solvedCount}`;
+                this.messageBar.textContent = this.levelDescriptions[this.level];
+                this.tipText.textContent = this.level === 4
+                    ? "Some digits are tricksters. Leave the extras behind."
+                    : "All numbers are between 0 and 12.";
+                this.progressDots.forEach((dot, index) => {
+                    dot.classList.toggle("filled", index < this.correctStreak);
+                });
+            }
+
+            randomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            shuffle(list) {
+                for (let i = list.length - 1; i > 0; i -= 1) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [list[i], list[j]] = [list[j], list[i]];
+                }
+                return list;
+            }
+
+            createQuestion() {
+                this.answerLocked = false;
+                this.questionId += 1;
+                this.updateHud();
+
+                let candidate = null;
+                for (let tries = 0; tries < 800; tries += 1) {
+                    const a = this.randomInt(0, 12);
+                    const b = this.randomInt(0, 12);
+                    const c = a * b;
+                    const baseDigits = [...String(a), ...String(b), ...String(c)];
+                    const extras = this.level === 4 ? this.generateDistractors(baseDigits, a, b, c) : [];
+                    if (this.level < 4 || extras.length > 0) {
+                        candidate = { a, b, c, baseDigits, digits: this.shuffle(baseDigits.concat(extras.slice())) };
+                        break;
+                    }
+                }
+
+                if (!candidate) {
+                    candidate = { a: 3, b: 4, c: 12, baseDigits: ["3", "4", "1", "2"], digits: this.shuffle(["3", "4", "1", "2", "8"]) };
+                }
+
+                this.question = candidate;
+                this.renderEquation();
+                this.renderTiles();
+            }
+
+            generateDistractors(baseDigits, a, b, c) {
+                const desiredCount = this.randomInt(1, 2);
+                const available = [];
+                for (let digit = 0; digit <= 9; digit += 1) {
+                    available.push(String(digit));
+                }
+
+                for (let tries = 0; tries < 500; tries += 1) {
+                    const extras = [];
+                    while (extras.length < desiredCount) {
+                        const nextDigit = available[this.randomInt(0, available.length - 1)];
+                        if (extras.filter((item) => item === nextDigit).length < 2) {
+                            extras.push(nextDigit);
+                        }
+                    }
+
+                    const pool = baseDigits.concat(extras);
+                    if (this.hasUniqueSolution(pool, a, b, c)) {
+                        return extras;
+                    }
+                }
+
+                return [];
+            }
+
+            hasUniqueSolution(pool, answerA, answerB, answerC) {
+                const counts = {};
+                pool.forEach((digit) => {
+                    counts[digit] = (counts[digit] || 0) + 1;
+                });
+
+                const lenA = String(answerA).length;
+                const lenB = String(answerB).length;
+                const lenC = String(answerC).length;
+                const totalLen = lenA + lenB + lenC;
+                if (pool.length < totalLen) {
+                    return false;
+                }
+
+                const uniqueResults = new Set();
+
+                const enumerate = (prefix, length, remainingCounts, results) => {
+                    if (prefix.length === length) {
+                        results.push(prefix.join(""));
+                        return;
+                    }
+                    for (let digit = 0; digit <= 9; digit += 1) {
+                        const char = String(digit);
+                        if (!remainingCounts[char]) {
+                            continue;
+                        }
+                        remainingCounts[char] -= 1;
+                        prefix.push(char);
+                        enumerate(prefix, length, remainingCounts, results);
+                        prefix.pop();
+                        remainingCounts[char] += 1;
+                    }
+                };
+
+                const aCandidates = [];
+                enumerate([], lenA, { ...counts }, aCandidates);
+                for (const aText of aCandidates) {
+                    const remainingAfterA = { ...counts };
+                    let possible = true;
+                    for (const digit of aText) {
+                        if (!remainingAfterA[digit]) {
+                            possible = false;
+                            break;
+                        }
+                        remainingAfterA[digit] -= 1;
+                    }
+                    if (!possible) {
+                        continue;
+                    }
+
+                    const bCandidates = [];
+                    enumerate([], lenB, remainingAfterA, bCandidates);
+                    for (const bText of bCandidates) {
+                        const remainingAfterB = { ...remainingAfterA };
+                        possible = true;
+                        for (const digit of bText) {
+                            if (!remainingAfterB[digit]) {
+                                possible = false;
+                                break;
+                            }
+                            remainingAfterB[digit] -= 1;
+                        }
+                        if (!possible) {
+                            continue;
+                        }
+
+                        const cCandidates = [];
+                        enumerate([], lenC, remainingAfterB, cCandidates);
+                        for (const cText of cCandidates) {
+                            if (
+                                (aText.length > 1 && aText.startsWith("0")) ||
+                                (bText.length > 1 && bText.startsWith("0")) ||
+                                (cText.length > 1 && cText.startsWith("0"))
+                            ) {
+                                continue;
+                            }
+                            const aValue = Number(aText);
+                            const bValue = Number(bText);
+                            const cValue = Number(cText);
+                            if (aValue <= 12 && bValue <= 12 && aValue * bValue === cValue) {
+                                uniqueResults.add(`${aValue}|${bValue}|${cValue}`);
+                                if (uniqueResults.size > 1) {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return uniqueResults.size === 1 && uniqueResults.has(`${answerA}|${answerB}|${answerC}`);
+            }
+
+            buildSlots(value, section) {
+                return String(value).split("").map((digit, index) => ({
+                    digit,
+                    id: `${section}-${index}`,
+                    section,
+                    value: null
+                }));
+            }
+
+            renderEquation() {
+                this.slots = [
+                    ...this.buildSlots(this.question.a, "A"),
+                    ...this.buildSlots(this.question.b, "B"),
+                    ...this.buildSlots(this.question.c, "C")
+                ];
+
+                this.groupA.innerHTML = "";
+                this.groupB.innerHTML = "";
+                this.groupC.innerHTML = "";
+
+                const slotMap = { A: this.groupA, B: this.groupB, C: this.groupC };
+                for (const slotData of this.slots) {
+                    const slot = document.createElement("div");
+                    slot.className = "slot";
+                    slot.dataset.slotId = slotData.id;
+
+                    const shouldOutline = this.level === 1 || (this.level === 2 && slotData.section !== "C");
+                    slot.classList.toggle("show-outline", shouldOutline);
+                    slot.classList.toggle("show-boxes", !shouldOutline);
+
+                    const hint = document.createElement("div");
+                    hint.className = "hint-digit";
+                    hint.textContent = shouldOutline ? slotData.digit : "";
+                    slot.appendChild(hint);
+
+                    const placed = document.createElement("div");
+                    placed.className = "placed-digit";
+                    placed.textContent = "";
+                    slot.appendChild(placed);
+
+                    slot.addEventListener("pointerdown", (event) => this.handleSlotPointerDown(event, slotData.id));
+                    slotData.element = slot;
+                    slotData.placedElement = placed;
+                    slotMap[slotData.section].appendChild(slot);
+                }
+            }
+
+            renderTiles() {
+                this.physicsTiles = [];
+                Array.from(this.digitPool.querySelectorAll(".digit-tile")).forEach((tile) => tile.remove());
+
+                const poolRect = this.digitPool.getBoundingClientRect();
+                const cols = Math.max(3, Math.min(6, this.question.digits.length));
+                const rows = Math.ceil(this.question.digits.length / cols);
+                const tileWidth = Math.min(112, Math.max(78, (poolRect.width - 60) / cols - 14));
+                const tileHeight = tileWidth * 1.18;
+                const gapX = Math.max(10, (poolRect.width - cols * tileWidth - 40) / Math.max(1, cols - 1));
+                const gapY = Math.max(16, Math.min(32, (poolRect.height - rows * tileHeight - 70) / Math.max(1, rows)));
+
+                this.question.digits.forEach((digit, index) => {
+                    const tile = document.createElement("div");
+                    tile.className = "digit-tile";
+                    tile.dataset.digit = digit;
+                    tile.dataset.tileId = `tile-${this.questionId}-${index}`;
+                    tile.innerHTML = `<span class="eye left"></span><span class="eye right"></span><span>${digit}</span>`;
+
+                    const palette = this.palette[index % this.palette.length];
+                    tile.style.background = `linear-gradient(160deg, ${palette[0]}, ${palette[1]})`;
+                    tile.style.width = `${tileWidth}px`;
+                    tile.style.height = `${tileHeight}px`;
+
+                    const col = index % cols;
+                    const row = Math.floor(index / cols);
+                    const homeX = 20 + col * (tileWidth + gapX);
+                    const homeY = 58 + row * (tileHeight + gapY);
+
+                    const physics = {
+                        id: tile.dataset.tileId,
+                        element: tile,
+                        digit,
+                        x: homeX,
+                        y: homeY,
+                        vx: 0,
+                        vy: 0,
+                        homeX,
+                        homeY,
+                        width: tileWidth,
+                        height: tileHeight,
+                        dragging: false,
+                        assignedSlotId: null,
+                        bounce: 0.68
+                    };
+
+                    tile.addEventListener("pointerdown", (event) => this.handlePointerDown(event, physics));
+                    tile.style.transform = `translate(${homeX}px, ${homeY}px)`;
+                    this.digitPool.appendChild(tile);
+                    this.physicsTiles.push(physics);
+                });
+            }
+
+            handlePointerDown(event, physics) {
+                if (this.answerLocked || physics.assignedSlotId) {
+                    return;
+                }
+
+                event.preventDefault();
+                this.draggedTile = physics;
+                this.dragPointerId = event.pointerId;
+                const rect = physics.element.getBoundingClientRect();
+                this.dragOffsetX = event.clientX - rect.left;
+                this.dragOffsetY = event.clientY - rect.top;
+                physics.dragging = true;
+                physics.vx = 0;
+                physics.vy = 0;
+                physics.element.classList.add("dragging");
+                physics.element.classList.add("floating");
+                document.body.appendChild(physics.element);
+                physics.element.style.left = `${rect.left}px`;
+                physics.element.style.top = `${rect.top}px`;
+                physics.element.style.transform = "none";
+                physics.element.setPointerCapture(event.pointerId);
+            }
+
+            handleSlotPointerDown(event, slotId) {
+                if (this.answerLocked) {
+                    return;
+                }
+
+                const slot = this.slots.find((item) => item.id === slotId);
+                if (!slot || slot.value === null || !slot.tileId) {
+                    return;
+                }
+
+                const tile = this.physicsTiles.find((item) => item.id === slot.tileId);
+                if (!tile) {
+                    return;
+                }
+
+                event.preventDefault();
+                this.releaseSlot(slotId, true);
+
+                const poolRect = this.digitPool.getBoundingClientRect();
+                const slotRect = slot.element.getBoundingClientRect();
+                tile.x = slotRect.left - poolRect.left + (slotRect.width - tile.width) / 2;
+                tile.y = slotRect.top - poolRect.top + (slotRect.height - tile.height) / 2;
+                tile.element.style.transform = `translate(${tile.x}px, ${tile.y}px)`;
+
+                this.draggedTile = tile;
+                this.dragPointerId = event.pointerId;
+                this.dragOffsetX = tile.width / 2;
+                this.dragOffsetY = tile.height / 2;
+                tile.dragging = true;
+                tile.vx = 0;
+                tile.vy = 0;
+                tile.element.classList.add("dragging");
+                tile.element.classList.add("floating");
+                document.body.appendChild(tile.element);
+                tile.element.style.left = `${event.clientX - this.dragOffsetX}px`;
+                tile.element.style.top = `${event.clientY - this.dragOffsetY}px`;
+                tile.element.style.transform = "none";
+                tile.element.setPointerCapture(event.pointerId);
+            }
+
+            handlePointerMove(event) {
+                if (!this.draggedTile || event.pointerId !== this.dragPointerId) {
+                    return;
+                }
+
+                event.preventDefault();
+                const poolRect = this.digitPool.getBoundingClientRect();
+                const x = event.clientX - poolRect.left - this.dragOffsetX;
+                const y = event.clientY - poolRect.top - this.dragOffsetY;
+
+                this.draggedTile.vx = x - this.draggedTile.x;
+                this.draggedTile.vy = y - this.draggedTile.y;
+                this.draggedTile.x = x;
+                this.draggedTile.y = y;
+                this.draggedTile.element.style.left = `${event.clientX - this.dragOffsetX}px`;
+                this.draggedTile.element.style.top = `${event.clientY - this.dragOffsetY}px`;
+
+                const candidate = this.findClosestSlot(event.clientX, event.clientY);
+                if (candidate !== this.activeSlot) {
+                    if (this.activeSlot) {
+                        this.activeSlot.element.classList.remove("active-target");
+                    }
+                    this.activeSlot = candidate;
+                    if (this.activeSlot) {
+                        this.activeSlot.element.classList.add("active-target");
+                    }
+                }
+            }
+
+            handlePointerUp(event) {
+                if (!this.draggedTile || event.pointerId !== this.dragPointerId) {
+                    return;
+                }
+
+                const releasedTile = this.draggedTile;
+                releasedTile.dragging = false;
+                releasedTile.element.classList.remove("dragging");
+                releasedTile.element.classList.remove("floating");
+                releasedTile.element.style.left = "";
+                releasedTile.element.style.top = "";
+                this.digitPool.appendChild(releasedTile.element);
+                try {
+                    releasedTile.element.releasePointerCapture(event.pointerId);
+                } catch (error) {
+                    // Ignore release errors from interrupted pointers.
+                }
+
+                if (this.activeSlot) {
+                    this.activeSlot.element.classList.remove("active-target");
+                    this.placeDigit(releasedTile, this.activeSlot);
+                } else {
+                    this.returnTileToHome(releasedTile, true);
+                }
+
+                this.activeSlot = null;
+                this.draggedTile = null;
+                this.dragPointerId = null;
+            }
+
+            findClosestSlot(clientX, clientY) {
+                let best = null;
+                let bestDistance = Infinity;
+
+                for (const slot of this.slots) {
+                    if (slot.value !== null) {
+                        continue;
+                    }
+                    const rect = slot.element.getBoundingClientRect();
+                    const inside = clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    const distance = Math.hypot(centerX - clientX, centerY - clientY);
+                    if (inside || distance < Math.min(rect.width, rect.height) * 0.55) {
+                        if (distance < bestDistance) {
+                            bestDistance = distance;
+                            best = slot;
+                        }
+                    }
+                }
+
+                return best;
+            }
+
+            placeDigit(tile, slot) {
+                tile.assignedSlotId = slot.id;
+                slot.tileId = tile.id;
+                slot.value = tile.digit;
+                slot.placedElement.textContent = tile.digit;
+                this.updateSlotFeedback(slot);
+                tile.element.classList.add("used");
+
+                this.checkIfReady();
+            }
+
+            returnTileToHome(tile, withBoost = false) {
+                tile.assignedSlotId = null;
+                tile.homeX += withBoost ? 0 : 0;
+                tile.vx = withBoost ? tile.vx * 0.25 : 0;
+                tile.vy = withBoost ? tile.vy * 0.25 : 0;
+            }
+
+            releaseSlot(slotId, silent = false) {
+                if (this.answerLocked) {
+                    return;
+                }
+
+                const slot = this.slots.find((item) => item.id === slotId);
+                if (!slot || slot.value === null || !slot.tileId) {
+                    return;
+                }
+
+                const tile = this.physicsTiles.find((item) => item.id === slot.tileId);
+                if (!tile) {
+                    return;
+                }
+
+                slot.value = null;
+                slot.tileId = null;
+                slot.placedElement.textContent = "";
+                this.clearSlotFeedback(slot);
+                tile.assignedSlotId = null;
+                tile.element.classList.remove("used");
+                if (!silent) {
+                    tile.vx = (Math.random() - 0.5) * 8;
+                    tile.vy = -4 - Math.random() * 3;
+                }
+            }
+
+            clearSlotFeedback(slot) {
+                slot.element.classList.remove("filled", "correct", "error");
+            }
+
+            updateSlotFeedback(slot) {
+                this.clearSlotFeedback(slot);
+                slot.element.classList.add("filled");
+                if (slot.value === slot.digit) {
+                    slot.element.classList.add("correct");
+                } else {
+                    slot.element.classList.add("error");
+                }
+            }
+
+            checkIfReady() {
+                if (this.answerLocked) {
+                    return;
+                }
+
+                const allFilled = this.slots.every((slot) => slot.value !== null);
+                if (!allFilled) {
+                    return;
+                }
+
+                const aText = this.slots.filter((slot) => slot.section === "A").map((slot) => slot.value).join("");
+                const bText = this.slots.filter((slot) => slot.section === "B").map((slot) => slot.value).join("");
+                const cText = this.slots.filter((slot) => slot.section === "C").map((slot) => slot.value).join("");
+
+                const aValue = Number(aText);
+                const bValue = Number(bText);
+                const cValue = Number(cText);
+                const isCorrect = aValue === this.question.a && bValue === this.question.b && cValue === this.question.c;
+
+                if (isCorrect) {
+                    this.answerLocked = true;
+                    this.handleCorrect();
+                    return;
+                }
+
+                const hasWrongDigit = this.slots.some((slot) => slot.value !== slot.digit);
+                if (hasWrongDigit) {
+                    this.answerLocked = true;
+                    this.handleWrong();
+                }
+            }
+
+            handleCorrect() {
+                this.correctStreak += 1;
+                this.solvedCount += 1;
+                if (this.correctStreak >= 3 && this.level < 4) {
+                    this.level += 1;
+                    this.correctStreak = 0;
+                }
+
+                this.slots.forEach((slot) => {
+                    slot.element.classList.add("correct");
+                });
+                this.updateHud();
+                this.showCheer("Yay! Nice multiplying!");
+
+                setTimeout(() => {
+                    this.createQuestion();
+                }, 1300);
+            }
+
+            handleWrong() {
+                this.correctStreak = 0;
+                if (this.level > 1) {
+                    this.level -= 1;
+                }
+                this.updateHud();
+
+                this.slots.forEach((slot) => {
+                    this.updateSlotFeedback(slot);
+                });
+                this.showCheer("Try an easier one!");
+
+                setTimeout(() => {
+                    this.createQuestion();
+                }, 1200);
+            }
+
+            showCheer(message) {
+                this.cheerBanner.textContent = message;
+                this.cheerBanner.classList.add("show");
+
+                Array.from(this.cheerLayer.querySelectorAll(".confetti")).forEach((piece) => piece.remove());
+
+                const colors = ["#ff4d6d", "#ffb703", "#2ec4b6", "#4d96ff", "#7b2cbf", "#3aa655"];
+                for (let index = 0; index < 26; index += 1) {
+                    const piece = document.createElement("div");
+                    piece.className = "confetti";
+                    piece.style.background = colors[index % colors.length];
+                    piece.style.left = `${Math.random() * 100}%`;
+                    piece.style.top = `${12 + Math.random() * 12}%`;
+                    piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    piece.style.transition = `transform ${0.95 + Math.random() * 0.55}s ease-out, top ${0.95 + Math.random() * 0.55}s ease-out, opacity 1.1s ease-out`;
+                    this.cheerLayer.appendChild(piece);
+
+                    requestAnimationFrame(() => {
+                        piece.style.top = `${72 + Math.random() * 24}%`;
+                        piece.style.transform = `translate(${(Math.random() - 0.5) * 220}px, ${60 + Math.random() * 120}px) rotate(${Math.random() * 720}deg)`;
+                        piece.style.opacity = "0";
+                    });
+                }
+
+                clearTimeout(this.cheerTimeout);
+                this.cheerTimeout = setTimeout(() => {
+                    this.cheerBanner.classList.remove("show");
+                    Array.from(this.cheerLayer.querySelectorAll(".confetti")).forEach((piece) => piece.remove());
+                }, 1100);
+            }
+
+            animate() {
+                const poolRect = this.digitPool.getBoundingClientRect();
+                for (const tile of this.physicsTiles) {
+                    if (tile.assignedSlotId) {
+                        const slot = this.slots.find((item) => item.id === tile.assignedSlotId);
+                        if (slot) {
+                            const slotRect = slot.element.getBoundingClientRect();
+                            const x = slotRect.left - poolRect.left + (slotRect.width - tile.width) / 2;
+                            const y = slotRect.top - poolRect.top + (slotRect.height - tile.height) / 2;
+                            tile.x += (x - tile.x) * 0.25;
+                            tile.y += (y - tile.y) * 0.25;
+                        }
+                    } else if (!tile.dragging) {
+                        const ax = (tile.homeX - tile.x) * 0.08;
+                        const ay = (tile.homeY - tile.y) * 0.08;
+                        tile.vx += ax;
+                        tile.vy += ay;
+                        tile.vx *= 0.8;
+                        tile.vy *= 0.8;
+                        tile.x += tile.vx;
+                        tile.y += tile.vy;
+
+                        const minX = 0;
+                        const minY = 40;
+                        const maxX = poolRect.width - tile.width;
+                        const maxY = poolRect.height - tile.height;
+
+                        if (tile.x < minX) {
+                            tile.x = minX;
+                            tile.vx *= -tile.bounce;
+                        } else if (tile.x > maxX) {
+                            tile.x = maxX;
+                            tile.vx *= -tile.bounce;
+                        }
+
+                        if (tile.y < minY) {
+                            tile.y = minY;
+                            tile.vy *= -tile.bounce;
+                        } else if (tile.y > maxY) {
+                            tile.y = maxY;
+                            tile.vy *= -tile.bounce;
+                        }
+                    }
+
+                    if (!tile.dragging) {
+                        tile.element.style.transform = `translate(${tile.x}px, ${tile.y}px)`;
+                    }
+                }
+
+                requestAnimationFrame(this.animate);
+            }
+        }
+
+        window.addEventListener("load", () => {
+            new MultiplicationTouchGame();
+        });
+    </script>
+</body>
+</html>

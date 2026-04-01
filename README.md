@@ -79,6 +79,11 @@ Master multiplication tables from 0 to 100! Practice completing full multiplicat
 - **Play:** [multiplication-table.html](multiplication-table.html)
 - **Features:** Progressive levels (0×0 through 100×9), two-column layout with 10 equations per level, clean modern design with blue/green color scheme, real-time validation with smooth animations, automatic focus management, keyboard-friendly input, celebration animations on level completion, confetti effects, boy-friendly rocket and lightning theme
 
+### Multiplication Touch
+Learn multiplication by dragging digit tiles into full equations! Solve `A × B = C` puzzles where `A` and `B` are between 0 and 12, with touch-first gameplay designed for tablets.
+- **Play:** [multiplication-touch.html](multiplication-touch.html)
+- **Features:** Drag individual digits into equation slots, touch and mouse support, playful number-character styling, four adaptive hint levels, level up after 3 correct answers, level down after mistakes, extra distractor digits on harder levels, unique-solution puzzle generation, visual celebration feedback with automatic next-question flow
+
 ### Subtraction Table
 Master subtraction from 0 to 20! Practice with randomized subtraction problems across 21 progressive levels with a cool purple and teal space theme.
 - **Play:** [subtraction-table.html](subtraction-table.html)
