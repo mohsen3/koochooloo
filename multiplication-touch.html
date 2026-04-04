@@ -195,15 +195,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 900;
-            font-size: clamp(3.4rem, 8.8vw, 6.1rem);
-            line-height: 1;
-            letter-spacing: -0.04em;
         }
 
         .slot .hint-digit {
             opacity: 0.18;
             color: var(--navy);
+            font-weight: 900;
+            font-size: clamp(3.4rem, 8.8vw, 6.1rem);
+            line-height: 1;
+            letter-spacing: -0.04em;
         }
 
         .slot.show-boxes .hint-digit {
@@ -243,8 +243,7 @@
         }
 
         .placed-digit {
-            color: var(--navy);
-            text-shadow: 0 4px 0 rgba(255, 209, 102, 0.42);
+            padding: 1px;
         }
 
         .digit-pool {
@@ -260,28 +259,37 @@
         .digit-tile {
             position: absolute;
             z-index: 3;
-            width: clamp(82px, 10.5vw, 118px);
-            height: clamp(102px, 13.4vw, 138px);
+            width: clamp(96px, 11.6vw, 134px);
+            height: clamp(118px, 14.8vw, 156px);
             border-radius: 30px;
-            border: 4px solid rgba(255,255,255,0.82);
-            box-shadow: 0 14px 30px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.34);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(3.7rem, 8.9vw, 5.5rem);
-            font-weight: 900;
-            color: white;
-            text-shadow: 0 3px 10px rgba(17, 34, 68, 0.18);
-            letter-spacing: -0.05em;
             cursor: grab;
             touch-action: none;
             will-change: transform;
-            transition: box-shadow 0.16s ease, filter 0.16s ease, transform 0.16s ease;
+            transition: filter 0.16s ease, transform 0.16s ease;
+            overflow: visible;
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+            --digit-tilt: 0deg;
+        }
+
+        .digit-tile::before {
+            content: "";
+            position: absolute;
+            inset: 18% 12% 10%;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.08) 48%, transparent 62%),
+                radial-gradient(circle at 50% 65%, rgba(87, 62, 18, 0.16), transparent 70%);
+            filter: blur(9px);
+            z-index: 0;
         }
 
         .digit-tile.dragging {
             cursor: grabbing;
-            box-shadow: 0 24px 42px rgba(38, 30, 15, 0.24);
             filter: brightness(1.05);
             z-index: 4;
         }
@@ -296,6 +304,169 @@
         .digit-tile.used {
             opacity: 0;
             pointer-events: none;
+        }
+
+        .digit-art {
+            --digit-fill: #ff8c42;
+            --digit-outline: #ffffff;
+            --digit-shadow: #cf501c;
+            --digit-accent: #ef476f;
+            --digit-blush: #ffd7a1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform: rotate(var(--digit-tilt));
+            filter: drop-shadow(0 14px 18px rgba(74, 49, 13, 0.18));
+            transition: transform 0.16s ease;
+        }
+
+        .slot .digit-art {
+            width: 100%;
+            height: 100%;
+        }
+
+        .digit-tile.dragging .digit-art,
+        .digit-tile.floating .digit-art {
+            transform: scale(0.82) rotate(var(--digit-tilt));
+        }
+
+        .digit-glyph {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Arial Rounded MT Bold", "Trebuchet MS", "Comic Sans MS", sans-serif;
+            font-weight: 900;
+            font-size: clamp(4.6rem, 11.6vw, 7.8rem);
+            line-height: 1;
+            letter-spacing: -0.1em;
+            color: var(--digit-fill);
+            -webkit-text-stroke: 11px var(--digit-outline);
+            paint-order: stroke fill;
+            text-shadow:
+                0 7px 0 var(--digit-shadow),
+                0 16px 22px rgba(66, 41, 12, 0.14);
+        }
+
+        .digit-tile .digit-glyph {
+            font-size: clamp(4.9rem, 11.2vw, 7.1rem);
+        }
+
+        .digit-eye,
+        .digit-cheek,
+        .digit-dot {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .digit-eye {
+            width: 18%;
+            height: 15%;
+            border-radius: 999px;
+            background: #fffdfa;
+            box-shadow: inset 0 -2px 0 rgba(241, 219, 184, 0.85);
+            top: 18%;
+            z-index: 2;
+        }
+
+        .digit-eye::after {
+            content: "";
+            position: absolute;
+            width: 44%;
+            height: 44%;
+            border-radius: 50%;
+            background: var(--digit-accent);
+            left: 34%;
+            top: 30%;
+            box-shadow: inset 0 -1px 0 rgba(18, 33, 63, 0.18);
+        }
+
+        .eye-left { left: 24%; }
+        .eye-right { right: 24%; }
+
+        .digit-cheek {
+            width: 10%;
+            height: 7%;
+            border-radius: 999px;
+            background: var(--digit-blush);
+            top: 52%;
+            opacity: 0.82;
+            z-index: 1;
+        }
+
+        .cheek-left { left: 21%; }
+        .cheek-right { right: 21%; }
+
+        .digit-dot {
+            width: 8.5%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: var(--digit-accent);
+            box-shadow:
+                0 0 0 5px rgba(255, 255, 255, 0.92),
+                0 6px 10px rgba(39, 34, 22, 0.12);
+            z-index: 3;
+        }
+
+        .dot-1 { left: 50%; top: 8%; transform: translateX(-50%); }
+        .dot-2 { right: 18%; top: 14%; }
+        .dot-3 { right: 10%; top: 31%; }
+        .dot-4 { right: 16%; top: 53%; }
+        .dot-5 { left: 50%; bottom: 10%; transform: translateX(-50%); }
+        .dot-6 { left: 16%; top: 53%; }
+        .dot-7 { left: 10%; top: 31%; }
+        .dot-8 { left: 18%; top: 14%; }
+        .dot-9 { left: 50%; top: 29%; transform: translateX(-50%); }
+
+        .digit-art[data-digit="0"] .digit-eye {
+            top: 16%;
+        }
+
+        .digit-art[data-digit="0"] .eye-left { left: 28%; }
+        .digit-art[data-digit="0"] .eye-right { right: 28%; }
+
+        .digit-art[data-digit="1"] .eye-left {
+            left: 43%;
+            top: 12%;
+        }
+
+        .digit-art[data-digit="1"] .eye-right,
+        .digit-art[data-digit="1"] .cheek-right {
+            display: none;
+        }
+
+        .digit-art[data-digit="1"] .cheek-left {
+            left: 40%;
+            top: 46%;
+        }
+
+        .digit-art[data-digit="4"] .eye-left {
+            left: 18%;
+            top: 21%;
+        }
+
+        .digit-art[data-digit="4"] .eye-right {
+            left: 49%;
+            right: auto;
+            top: 8%;
+        }
+
+        .digit-art[data-digit="4"] .cheek-right {
+            display: none;
+        }
+
+        .digit-art[data-digit="7"] .eye-right,
+        .digit-art[data-digit="7"] .cheek-right {
+            display: none;
+        }
+
+        .digit-art[data-digit="7"] .eye-left {
+            left: 29%;
+        }
+
+        .digit-art[data-digit="9"] .cheek-right {
+            display: none;
         }
 
         .footer {
@@ -513,12 +684,16 @@
                 this.progressDots = Array.from(document.querySelectorAll(".progress-dot"));
 
                 this.palette = [
-                    ["#4d96ff", "#1b3c88"],
-                    ["#ff6b6b", "#f44362"],
-                    ["#ffb703", "#fb8500"],
-                    ["#3aa655", "#168aad"],
-                    ["#7b2cbf", "#5a189a"],
-                    ["#2ec4b6", "#1f8f88"]
+                    { fill: "#4d96ff", shadow: "#1b3c88", accent: "#ff9f1c", accent2: "#ffd166", blush: "#ffe1c4" },
+                    { fill: "#ffb703", shadow: "#fb8500", accent: "#ef476f", accent2: "#e76f51", blush: "#ffd9c7" },
+                    { fill: "#f72545", shadow: "#c1121f", accent: "#4cc9f0", accent2: "#ffcad4", blush: "#ffe2ea" },
+                    { fill: "#ffb703", shadow: "#f48c06", accent: "#ef476f", accent2: "#ffd166", blush: "#fee8c8" },
+                    { fill: "#2b9348", shadow: "#10611a", accent: "#b5d200", accent2: "#ffd166", blush: "#e9f7c4" },
+                    { fill: "#1b3c88", shadow: "#0a1f4f", accent: "#ef476f", accent2: "#cddafd", blush: "#e6ebff" },
+                    { fill: "#ff6fb5", shadow: "#d63384", accent: "#4d96ff", accent2: "#ffd6a5", blush: "#ffe1ef" },
+                    { fill: "#4d96ff", shadow: "#1b3c88", accent: "#ef476f", accent2: "#ffd166", blush: "#dff2ff" },
+                    { fill: "#f15bb5", shadow: "#c1126b", accent: "#4d96ff", accent2: "#fee440", blush: "#ffe5f4" },
+                    { fill: "#ff8c42", shadow: "#d95d13", accent: "#ef476f", accent2: "#4d96ff", blush: "#ffe0c1" }
                 ];
 
                 this.animate = this.animate.bind(this);
@@ -820,6 +995,37 @@
                 }));
             }
 
+            getDigitTheme(digit) {
+                return this.palette[Number(digit) % this.palette.length];
+            }
+
+            createFancyDigit(digit, context = "slot") {
+                const theme = this.getDigitTheme(digit);
+                const wrapper = document.createElement("div");
+                wrapper.className = "digit-art";
+                wrapper.dataset.digit = digit;
+                wrapper.style.setProperty("--digit-fill", theme.fill);
+                wrapper.style.setProperty("--digit-shadow", theme.shadow);
+                wrapper.style.setProperty("--digit-accent", theme.accent);
+                wrapper.style.setProperty("--digit-blush", theme.blush);
+                wrapper.style.setProperty("--digit-tilt", context === "tile" ? `${((Number(digit) % 5) - 2) * 2}deg` : "0deg");
+
+                const glyph = document.createElement("span");
+                glyph.className = "digit-glyph";
+                glyph.textContent = digit;
+                wrapper.appendChild(glyph);
+
+                return wrapper;
+            }
+
+            renderFancyDigit(target, digit, context = "slot") {
+                target.replaceChildren();
+                if (digit === "" || digit === null || digit === undefined) {
+                    return;
+                }
+                target.appendChild(this.createFancyDigit(String(digit), context));
+            }
+
             renderEquation() {
                 this.slots = [
                     ...this.buildSlots(this.question.a, "A"),
@@ -850,7 +1056,9 @@
 
                     const placed = document.createElement("div");
                     placed.className = "placed-digit";
-                    placed.textContent = isHidden ? "" : slotData.digit;
+                    if (!isHidden) {
+                        this.renderFancyDigit(placed, slotData.digit, "slot");
+                    }
                     slot.appendChild(placed);
 
                     if (isHidden) {
@@ -884,10 +1092,7 @@
                     tile.className = "digit-tile";
                     tile.dataset.digit = digit;
                     tile.dataset.tileId = `tile-${this.questionId}-${index}`;
-                    tile.innerHTML = `<span>${digit}</span>`;
-
-                    const palette = this.palette[index % this.palette.length];
-                    tile.style.background = `linear-gradient(160deg, ${palette[0]}, ${palette[1]})`;
+                    tile.appendChild(this.createFancyDigit(digit, "tile"));
                     tile.style.width = `${tileWidth}px`;
                     tile.style.height = `${tileHeight}px`;
 
@@ -1070,7 +1275,7 @@
                 tile.assignedSlotId = slot.id;
                 slot.tileId = tile.id;
                 slot.value = tile.digit;
-                slot.placedElement.textContent = tile.digit;
+                this.renderFancyDigit(slot.placedElement, tile.digit, "slot");
                 this.updateSlotFeedback(slot);
                 tile.element.classList.add("used");
 
@@ -1101,7 +1306,7 @@
 
                 slot.value = null;
                 slot.tileId = null;
-                slot.placedElement.textContent = "";
+                slot.placedElement.replaceChildren();
                 this.clearSlotFeedback(slot);
                 tile.assignedSlotId = null;
                 tile.element.classList.remove("used");
