@@ -762,6 +762,7 @@
                 this.soundEnabled = true;
                 this.lastNarrationParts = [];
                 this.speechSynthesis = window.speechSynthesis || null;
+                this.preferredVoice = null;
                 this.stageConfig = {
                     1: {
                         description: "Match the outlines first, then the next puzzle starts.",
@@ -824,10 +825,14 @@
                 this.lastTouchEndAt = 0;
 
                 this.loadSoundPreference();
+                this.loadVoices();
                 this.updateSoundToggle();
                 this.soundToggle.addEventListener("click", () => {
                     this.setSoundEnabled(!this.soundEnabled);
                 });
+                if (this.speechSynthesis) {
+                    this.speechSynthesis.addEventListener("voiceschanged", () => this.loadVoices());
+                }
 
                 document.addEventListener("pointermove", this.handlePointerMove, { passive: false });
                 document.addEventListener("pointerup", this.handlePointerUp);
@@ -905,6 +910,51 @@
                 }
             }
 
+            loadVoices() {
+                if (!this.speechSynthesis) {
+                    return;
+                }
+
+                const voices = this.speechSynthesis.getVoices();
+                if (!voices.length) {
+                    return;
+                }
+
+                const scoreVoice = (voice) => {
+                    let score = 0;
+                    const name = voice.name.toLowerCase();
+                    const lang = (voice.lang || "").toLowerCase();
+
+                    if (lang.startsWith("en-us")) {
+                        score += 6;
+                    } else if (lang.startsWith("en")) {
+                        score += 4;
+                    }
+
+                    if (voice.localService) {
+                        score += 4;
+                    }
+
+                    if (name.includes("samantha") || name.includes("ava") || name.includes("allison")) {
+                        score += 6;
+                    } else if (name.includes("alex") || name.includes("victoria")) {
+                        score += 5;
+                    } else if (name.includes("enhanced") || name.includes("premium") || name.includes("natural")) {
+                        score += 4;
+                    }
+
+                    if (voice.default) {
+                        score += 1;
+                    }
+
+                    return score;
+                };
+
+                this.preferredVoice = voices
+                    .slice()
+                    .sort((a, b) => scoreVoice(b) - scoreVoice(a))[0] || null;
+            }
+
             speakText(text) {
                 if (!text || !this.soundEnabled || !this.speechSynthesis) {
                     return;
@@ -912,8 +962,12 @@
 
                 this.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 0.9;
-                utterance.pitch = 1;
+                if (this.preferredVoice) {
+                    utterance.voice = this.preferredVoice;
+                    utterance.lang = this.preferredVoice.lang;
+                }
+                utterance.rate = 0.82;
+                utterance.pitch = 0.96;
                 utterance.volume = 1;
                 this.speechSynthesis.speak(utterance);
             }
@@ -993,7 +1047,9 @@
                     if (!spokenSection) {
                         break;
                     }
-                    spokenParts.push(spokenSection);
+                    const nextItem = sequence[sequence.indexOf(item) + 1];
+                    const shouldPauseAfter = nextItem && nextItem.type === "operator";
+                    spokenParts.push(shouldPauseAfter ? `${spokenSection},` : spokenSection);
                 }
 
                 return spokenParts;
