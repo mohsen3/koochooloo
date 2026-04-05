@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Multiplication Touch</title>
     <style>
         :root {
@@ -771,13 +771,37 @@
                 this.animate = this.animate.bind(this);
                 this.handlePointerMove = this.handlePointerMove.bind(this);
                 this.handlePointerUp = this.handlePointerUp.bind(this);
+                this.preventViewportZoom = this.preventViewportZoom.bind(this);
+                this.preventDoubleTapZoom = this.preventDoubleTapZoom.bind(this);
+                this.lastTouchEndAt = 0;
 
                 document.addEventListener("pointermove", this.handlePointerMove, { passive: false });
                 document.addEventListener("pointerup", this.handlePointerUp);
                 document.addEventListener("pointercancel", this.handlePointerUp);
+                document.addEventListener("gesturestart", this.preventViewportZoom, { passive: false });
+                document.addEventListener("gesturechange", this.preventViewportZoom, { passive: false });
+                document.addEventListener("gestureend", this.preventViewportZoom, { passive: false });
+                document.addEventListener("dblclick", this.preventViewportZoom, { passive: false });
+                document.addEventListener("touchend", this.preventDoubleTapZoom, { passive: false });
 
                 this.createQuestion();
                 requestAnimationFrame(this.animate);
+            }
+
+            preventViewportZoom(event) {
+                event.preventDefault();
+            }
+
+            preventDoubleTapZoom(event) {
+                if (event.touches.length > 0) {
+                    return;
+                }
+
+                const now = Date.now();
+                if (now - this.lastTouchEndAt < 350) {
+                    event.preventDefault();
+                }
+                this.lastTouchEndAt = now;
             }
 
             updateHud() {
