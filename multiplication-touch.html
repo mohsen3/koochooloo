@@ -760,7 +760,7 @@
                 this.question = null;
                 this.answerLocked = false;
                 this.soundEnabled = true;
-                this.lastNarrationText = null;
+                this.lastNarrationParts = [];
                 this.speechSynthesis = window.speechSynthesis || null;
                 this.stageConfig = {
                     1: {
@@ -882,9 +882,9 @@
                 }
 
                 this.updateSoundToggle();
-                this.lastNarrationText = null;
+                this.lastNarrationParts = [];
                 if (enabled) {
-                    this.syncNarrationProgress();
+                    this.syncNarrationProgress(true);
                 }
             }
 
@@ -964,7 +964,7 @@
                 return this.numberToWords(Number(text));
             }
 
-            buildNarrationText() {
+            buildNarrationParts() {
                 const sequence = [
                     { type: "section", value: "A" },
                     { type: "operator", value: "times" },
@@ -996,21 +996,36 @@
                     spokenParts.push(spokenSection);
                 }
 
-                return spokenParts.join(" ").trim();
+                return spokenParts;
             }
 
-            syncNarrationProgress() {
-                const narrationText = this.buildNarrationText();
-                if (narrationText === this.lastNarrationText) {
+            syncNarrationProgress(forceReplay = false) {
+                const narrationParts = this.buildNarrationParts();
+                const previousParts = forceReplay ? [] : this.lastNarrationParts;
+                let sharedPrefixLength = 0;
+
+                while (
+                    sharedPrefixLength < previousParts.length &&
+                    sharedPrefixLength < narrationParts.length &&
+                    previousParts[sharedPrefixLength] === narrationParts[sharedPrefixLength]
+                ) {
+                    sharedPrefixLength += 1;
+                }
+
+                this.lastNarrationParts = narrationParts.slice();
+
+                if (!forceReplay && narrationParts.length < previousParts.length) {
+                    this.stopSpeech();
                     return;
                 }
 
-                this.lastNarrationText = narrationText;
-                if (narrationText) {
-                    this.speakText(narrationText);
-                } else {
+                const nextText = narrationParts.slice(sharedPrefixLength).join(" ").trim();
+                if (!nextText) {
                     this.stopSpeech();
+                    return;
                 }
+
+                this.speakText(nextText);
             }
 
             updateHud() {
@@ -1038,7 +1053,7 @@
             createQuestion() {
                 this.answerLocked = false;
                 this.questionId += 1;
-                this.lastNarrationText = null;
+                this.lastNarrationParts = [];
                 this.stopSpeech();
                 this.updateHud();
 
@@ -1088,7 +1103,7 @@
                 this.question = candidate;
                 this.renderEquation();
                 this.renderTiles();
-                this.syncNarrationProgress();
+                this.syncNarrationProgress(true);
             }
 
             buildRevealPlan(a, b, c) {
