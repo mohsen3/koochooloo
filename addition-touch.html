@@ -193,21 +193,26 @@
         .equation-board {
             --digit-columns: 3;
             display: grid;
-            grid-template-columns: clamp(34px, 6vw, 54px) repeat(var(--digit-columns), clamp(70px, 10vw, 120px));
-            grid-template-rows: auto auto auto;
-            align-items: center;
+            grid-template-columns: clamp(28px, 4vw, 42px) auto;
+            grid-template-areas:
+                ". carry"
+                ". top"
+                "plus bottom"
+                ". answer";
+            align-items: end;
             gap: 8px 10px;
             padding: 10px 12px 6px;
             margin-left: auto;
+            justify-content: end;
         }
 
         .carry-row {
-            grid-column: 2 / -1;
+            grid-area: carry;
             display: grid;
             grid-template-columns: repeat(var(--digit-columns), clamp(70px, 10vw, 120px));
             gap: 10px;
             min-height: 38px;
-            justify-content: end;
+            width: max-content;
             justify-self: end;
         }
 
@@ -238,25 +243,33 @@
             text-shadow: 0 4px 0 rgba(255, 209, 102, 0.55);
         }
 
-        .operator-cell.blank {
-            visibility: hidden;
+        .plus-cell {
+            grid-area: plus;
+            align-self: center;
+            justify-self: end;
         }
 
         .number-row {
             display: grid;
             grid-template-columns: repeat(var(--digit-columns), clamp(70px, 10vw, 120px));
             gap: 10px;
-            justify-content: end;
+            width: max-content;
             justify-self: end;
         }
 
+        .top-row {
+            grid-area: top;
+        }
+
+        .bottom-row {
+            grid-area: bottom;
+        }
+
         .answer-row {
-            grid-column: 1 / -1;
-            display: grid;
-            grid-template-columns: clamp(34px, 6vw, 54px) repeat(var(--digit-columns), clamp(70px, 10vw, 120px));
-            gap: 8px 10px;
+            grid-area: answer;
             padding-top: 12px;
             border-top: 6px solid rgba(27, 60, 136, 0.82);
+            width: max-content;
             justify-self: end;
         }
 
@@ -653,14 +666,11 @@
         <div class="play-area">
             <div class="equation-card">
                 <div class="equation-board" id="equationBoard">
-                    <div class="operator-cell blank">+</div>
                     <div class="carry-row" id="carryRow"></div>
-                    <div class="operator-cell blank">+</div>
-                    <div class="number-row" id="groupA"></div>
-                    <div class="operator-cell">+</div>
-                    <div class="number-row" id="groupB"></div>
+                    <div class="number-row top-row" id="groupA"></div>
+                    <div class="operator-cell plus-cell">+</div>
+                    <div class="number-row bottom-row" id="groupB"></div>
                     <div class="answer-row" id="answerRow">
-                        <div class="operator-cell blank">+</div>
                         <div class="number-row" id="groupC"></div>
                     </div>
                 </div>
