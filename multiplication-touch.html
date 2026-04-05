@@ -123,6 +123,12 @@
             flex-wrap: wrap;
         }
 
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .badge {
             min-width: 126px;
             padding: 12px 18px;
@@ -138,6 +144,36 @@
         .badge.level { background: linear-gradient(135deg, #f0ae93, #f4c98b); }
         .badge.streak { background: linear-gradient(135deg, #8dd4ca, #9bc4f3); }
         .badge.score { background: linear-gradient(135deg, #9ca3e8, #b8a5df); }
+
+        .sound-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 104px;
+            padding: 12px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(234, 245, 255, 0.95));
+            color: var(--navy);
+            font: inherit;
+            font-size: 1rem;
+            font-weight: 900;
+            box-shadow: 0 8px 18px rgba(39, 56, 95, 0.08);
+            cursor: pointer;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+        }
+
+        .sound-toggle:hover,
+        .sound-toggle:focus-visible {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 22px rgba(39, 56, 95, 0.14);
+            outline: none;
+        }
+
+        .sound-toggle[data-enabled="true"] {
+            background: linear-gradient(135deg, #d8f9e5, #c6e7ff);
+            color: #0d5c1d;
+        }
 
         .play-area {
             position: relative;
@@ -634,6 +670,11 @@
                 justify-content: center;
             }
 
+            .header-controls {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
             .digit-pool {
                 min-height: 280px;
             }
@@ -656,10 +697,13 @@
 <body>
     <div class="screen">
         <div class="header">
-            <div class="badges">
-                <div class="badge level" id="levelBadge">Level 1</div>
-                <div class="badge streak" id="streakBadge">0/10 to level up</div>
-                <div class="badge score" id="scoreBadge">Solved 0</div>
+            <div class="header-controls">
+                <div class="badges">
+                    <div class="badge level" id="levelBadge">Level 1</div>
+                    <div class="badge streak" id="streakBadge">0/10 to level up</div>
+                    <div class="badge score" id="scoreBadge">Solved 0</div>
+                </div>
+                <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true" data-enabled="true">Sound On</button>
             </div>
         </div>
 
@@ -715,6 +759,9 @@
                 this.slots = [];
                 this.question = null;
                 this.answerLocked = false;
+                this.soundEnabled = true;
+                this.lastNarrationText = null;
+                this.speechSynthesis = window.speechSynthesis || null;
                 this.stageConfig = {
                     1: {
                         description: "Match the outlines first, then the next puzzle starts.",
@@ -754,6 +801,7 @@
                 this.cheerBanner = document.getElementById("cheerBanner");
                 this.equationCheer = document.getElementById("equationCheer");
                 this.progressDots = Array.from(document.querySelectorAll(".progress-dot"));
+                this.soundToggle = document.getElementById("soundToggle");
 
                 this.palette = [
                     { fill: "#4d96ff", shadow: "#1b3c88", accent: "#ff9f1c", accent2: "#ffd166", blush: "#ffe1c4" },
@@ -774,6 +822,12 @@
                 this.preventViewportZoom = this.preventViewportZoom.bind(this);
                 this.preventDoubleTapZoom = this.preventDoubleTapZoom.bind(this);
                 this.lastTouchEndAt = 0;
+
+                this.loadSoundPreference();
+                this.updateSoundToggle();
+                this.soundToggle.addEventListener("click", () => {
+                    this.setSoundEnabled(!this.soundEnabled);
+                });
 
                 document.addEventListener("pointermove", this.handlePointerMove, { passive: false });
                 document.addEventListener("pointerup", this.handlePointerUp);
@@ -804,6 +858,161 @@
                 this.lastTouchEndAt = now;
             }
 
+            loadSoundPreference() {
+                try {
+                    const saved = window.localStorage.getItem("multiplication-touch-sound");
+                    if (saved === "off") {
+                        this.soundEnabled = false;
+                    }
+                } catch (error) {
+                    // Ignore storage errors and keep the default.
+                }
+            }
+
+            setSoundEnabled(enabled) {
+                this.soundEnabled = enabled;
+                try {
+                    window.localStorage.setItem("multiplication-touch-sound", enabled ? "on" : "off");
+                } catch (error) {
+                    // Ignore storage errors and keep the in-memory preference.
+                }
+
+                if (!enabled) {
+                    this.stopSpeech();
+                }
+
+                this.updateSoundToggle();
+                this.lastNarrationText = null;
+                if (enabled) {
+                    this.syncNarrationProgress();
+                }
+            }
+
+            updateSoundToggle() {
+                if (!this.soundToggle) {
+                    return;
+                }
+
+                this.soundToggle.textContent = this.soundEnabled ? "Sound On" : "Sound Off";
+                this.soundToggle.dataset.enabled = String(this.soundEnabled);
+                this.soundToggle.setAttribute("aria-pressed", String(this.soundEnabled));
+                this.soundToggle.setAttribute("aria-label", this.soundEnabled ? "Turn sound off" : "Turn sound on");
+            }
+
+            stopSpeech() {
+                if (this.speechSynthesis) {
+                    this.speechSynthesis.cancel();
+                }
+            }
+
+            speakText(text) {
+                if (!text || !this.soundEnabled || !this.speechSynthesis) {
+                    return;
+                }
+
+                this.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                this.speechSynthesis.speak(utterance);
+            }
+
+            numberToWords(value) {
+                const ones = [
+                    "zero", "one", "two", "three", "four",
+                    "five", "six", "seven", "eight", "nine",
+                    "ten", "eleven", "twelve", "thirteen", "fourteen",
+                    "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"
+                ];
+                const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+
+                if (value < 20) {
+                    return ones[value];
+                }
+
+                if (value < 100) {
+                    const tenValue = Math.floor(value / 10);
+                    const remainder = value % 10;
+                    return remainder ? `${tens[tenValue]} ${ones[remainder]}` : tens[tenValue];
+                }
+
+                const hundredValue = Math.floor(value / 100);
+                const remainder = value % 100;
+                return remainder
+                    ? `${ones[hundredValue]} hundred ${this.numberToWords(remainder)}`
+                    : `${ones[hundredValue]} hundred`;
+            }
+
+            getSectionSlots(section) {
+                return this.slots.filter((slot) => slot.section === section);
+            }
+
+            getSectionText(section) {
+                const sectionSlots = this.getSectionSlots(section);
+                if (sectionSlots.some((slot) => slot.value === null)) {
+                    return "";
+                }
+                return sectionSlots.map((slot) => slot.value).join("");
+            }
+
+            getSpokenSection(section) {
+                const text = this.getSectionText(section);
+                if (!text) {
+                    return "";
+                }
+                return this.numberToWords(Number(text));
+            }
+
+            buildNarrationText() {
+                const sequence = [
+                    { type: "section", value: "A" },
+                    { type: "operator", value: "times" },
+                    { type: "section", value: "B" },
+                    { type: "operator", value: "equals" },
+                    { type: "section", value: "C" }
+                ];
+                const spokenParts = [];
+
+                for (const item of sequence) {
+                    if (item.type === "operator") {
+                        if (spokenParts.length > 0) {
+                            spokenParts.push(item.value);
+                        }
+                        continue;
+                    }
+
+                    const sectionSlots = this.getSectionSlots(item.value);
+                    const hasHiddenSlot = sectionSlots.some((slot) => slot.isHidden);
+                    const sectionText = this.getSectionText(item.value);
+                    if (hasHiddenSlot && !sectionText) {
+                        break;
+                    }
+
+                    const spokenSection = this.getSpokenSection(item.value);
+                    if (!spokenSection) {
+                        break;
+                    }
+                    spokenParts.push(spokenSection);
+                }
+
+                return spokenParts.join(" ").trim();
+            }
+
+            syncNarrationProgress() {
+                const narrationText = this.buildNarrationText();
+                if (narrationText === this.lastNarrationText) {
+                    return;
+                }
+
+                this.lastNarrationText = narrationText;
+                if (narrationText) {
+                    this.speakText(narrationText);
+                } else {
+                    this.stopSpeech();
+                }
+            }
+
             updateHud() {
                 const stage = this.stageConfig[this.level];
                 this.levelBadge.textContent = `Level ${this.level}`;
@@ -829,6 +1038,8 @@
             createQuestion() {
                 this.answerLocked = false;
                 this.questionId += 1;
+                this.lastNarrationText = null;
+                this.stopSpeech();
                 this.updateHud();
 
                 let candidate = null;
@@ -877,6 +1088,7 @@
                 this.question = candidate;
                 this.renderEquation();
                 this.renderTiles();
+                this.syncNarrationProgress();
             }
 
             buildRevealPlan(a, b, c) {
@@ -1375,6 +1587,7 @@
                 this.updateSlotFeedback(slot);
                 tile.element.classList.add("used");
 
+                this.syncNarrationProgress();
                 this.checkIfReady();
             }
 
@@ -1410,6 +1623,8 @@
                     tile.vx = (Math.random() - 0.5) * 8;
                     tile.vy = -4 - Math.random() * 3;
                 }
+
+                this.syncNarrationProgress();
             }
 
             clearSlotFeedback(slot) {
