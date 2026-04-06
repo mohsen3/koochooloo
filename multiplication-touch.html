@@ -175,6 +175,31 @@
             color: #0d5c1d;
         }
 
+        .toolbar-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 126px;
+            padding: 12px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(255, 243, 228, 0.96));
+            color: var(--navy);
+            font: inherit;
+            font-size: 1rem;
+            font-weight: 900;
+            box-shadow: 0 8px 18px rgba(39, 56, 95, 0.08);
+            cursor: pointer;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+        }
+
+        .toolbar-button:hover,
+        .toolbar-button:focus-visible {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 22px rgba(39, 56, 95, 0.14);
+            outline: none;
+        }
+
         .play-area {
             position: relative;
             isolation: isolate;
@@ -704,6 +729,7 @@
                     <div class="badge score" id="scoreBadge">Solved 0</div>
                 </div>
                 <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true" data-enabled="true">Sound On</button>
+                <button class="toolbar-button" id="resetMemoryButton" type="button">Reset Memory</button>
             </div>
         </div>
 
@@ -744,6 +770,167 @@
     </div>
 
     <script>
+        function createMultiplicationMemory(options = {}) {
+            const storageKey = options.storageKey || "multiplication-touch-memory-v1";
+            const storage = options.storage || window.localStorage;
+            const nowFn = options.now || (() => Date.now());
+            const questionIntervals = [0, 2, 5, 9, 16, 28];
+            const timeIntervals = [0, 5 * 60 * 1000, 30 * 60 * 1000, 12 * 60 * 60 * 1000, 2 * 24 * 60 * 60 * 1000, 7 * 24 * 60 * 60 * 1000];
+            const state = loadState();
+
+            function defaultEntry() {
+                return {
+                    seenCount: 0,
+                    correctCount: 0,
+                    wrongCount: 0,
+                    box: 0,
+                    lastSeenAt: 0,
+                    lastAnsweredAt: 0,
+                    lastQuestionSeen: -1,
+                    nextQuestionDue: 0,
+                    dueAt: 0,
+                    lastOutcome: null
+                };
+            }
+
+            function loadState() {
+                const fallback = { version: 1, questionCount: 0, facts: {} };
+                try {
+                    const saved = storage.getItem(storageKey);
+                    if (!saved) {
+                        return fallback;
+                    }
+                    const parsed = JSON.parse(saved);
+                    if (!parsed || parsed.version !== 1 || typeof parsed.facts !== "object") {
+                        return fallback;
+                    }
+                    return {
+                        version: 1,
+                        questionCount: Number.isFinite(parsed.questionCount) ? parsed.questionCount : 0,
+                        facts: parsed.facts
+                    };
+                } catch (error) {
+                    return fallback;
+                }
+            }
+
+            function persist() {
+                try {
+                    storage.setItem(storageKey, JSON.stringify(state));
+                } catch (error) {
+                    // Ignore storage errors and keep the in-memory state.
+                }
+            }
+
+            function getEntry(factKey) {
+                if (!state.facts[factKey]) {
+                    state.facts[factKey] = defaultEntry();
+                }
+                return state.facts[factKey];
+            }
+
+            function getFactState(factKey) {
+                return { ...defaultEntry(), ...(state.facts[factKey] || {}) };
+            }
+
+            function isDue(entry, now) {
+                return entry.seenCount > 0 && (state.questionCount >= entry.nextQuestionDue || now >= entry.dueAt);
+            }
+
+            function chooseBest(list, scoreFn) {
+                let bestItem = null;
+                let bestScore = -Infinity;
+                for (const item of list) {
+                    const score = scoreFn(item);
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestItem = item;
+                    }
+                }
+                return bestItem;
+            }
+
+            return {
+                getFactState,
+                pickNextFact({ candidates, recentKeys = [], now = nowFn() }) {
+                    const recentSet = new Set(recentKeys);
+                    const facts = candidates.map((fact) => ({
+                        fact,
+                        entry: getFactState(fact.key)
+                    }));
+
+                    const unseen = facts.filter((item) => item.entry.seenCount === 0);
+                    const unseenPool = unseen.filter((item) => !recentSet.has(item.fact.key));
+                    if (unseenPool.length) {
+                        return unseenPool[0].fact;
+                    }
+                    if (unseen.length) {
+                        return unseen[0].fact;
+                    }
+
+                    const dueFacts = facts.filter((item) => isDue(item.entry, now));
+                    const duePool = dueFacts.filter((item) => !recentSet.has(item.fact.key));
+                    if (duePool.length) {
+                        return chooseBest(duePool, (item) => {
+                            const questionOverdue = state.questionCount - item.entry.nextQuestionDue;
+                            const timeOverdue = Math.floor((now - item.entry.dueAt) / 60000);
+                            return questionOverdue * 1000 + timeOverdue * 10 - item.entry.box * 5 - item.entry.lastSeenAt / 1e13;
+                        }).fact;
+                    }
+                    if (dueFacts.length) {
+                        return chooseBest(dueFacts, (item) => state.questionCount - item.entry.nextQuestionDue).fact;
+                    }
+
+                    const maintenancePool = facts.filter((item) => !recentSet.has(item.fact.key));
+                    const fallbackPool = maintenancePool.length ? maintenancePool : facts;
+                    return chooseBest(fallbackPool, (item) => {
+                        const questionsSinceSeen = Math.max(0, state.questionCount - item.entry.lastQuestionSeen);
+                        const timeSinceSeen = Math.max(0, now - item.entry.lastSeenAt);
+                        return questionsSinceSeen * 120 + timeSinceSeen / 60000 - item.entry.box * 40;
+                    }).fact;
+                },
+                recordPresentation({ factKey, now = nowFn() }) {
+                    const entry = getEntry(factKey);
+                    state.questionCount += 1;
+                    entry.seenCount += 1;
+                    entry.lastSeenAt = now;
+                    entry.lastQuestionSeen = state.questionCount;
+                    persist();
+                },
+                recordResult({ factKey, correct, now = nowFn() }) {
+                    const entry = getEntry(factKey);
+                    entry.lastAnsweredAt = now;
+                    entry.lastOutcome = correct ? "correct" : "wrong";
+                    if (correct) {
+                        entry.correctCount += 1;
+                        entry.box = Math.min(questionIntervals.length - 1, entry.box + 1);
+                    } else {
+                        entry.wrongCount += 1;
+                        entry.box = Math.max(0, entry.box - 1);
+                    }
+
+                    const nextQuestions = correct ? questionIntervals[entry.box] : 1;
+                    const nextTime = correct ? timeIntervals[entry.box] : 30 * 1000;
+                    entry.nextQuestionDue = state.questionCount + nextQuestions;
+                    entry.dueAt = now + nextTime;
+                    persist();
+                },
+                reset() {
+                    state.version = 1;
+                    state.questionCount = 0;
+                    state.facts = {};
+                    try {
+                        storage.removeItem(storageKey);
+                    } catch (error) {
+                        // Ignore storage errors and clear the in-memory state.
+                    }
+                },
+                getSnapshot() {
+                    return JSON.parse(JSON.stringify(state));
+                }
+            };
+        }
+
         class MultiplicationTouchGame {
             constructor() {
                 this.level = 1;
@@ -763,6 +950,10 @@
                 this.lastNarrationParts = [];
                 this.speechSynthesis = window.speechSynthesis || null;
                 this.preferredVoice = null;
+                this.nextQuestionTimeout = null;
+                this.recentFactKeys = [];
+                this.factBank = this.buildFactBank();
+                this.memory = createMultiplicationMemory();
                 this.stageConfig = {
                     1: {
                         description: "Match the outlines first, then the next puzzle starts.",
@@ -803,6 +994,7 @@
                 this.equationCheer = document.getElementById("equationCheer");
                 this.progressDots = Array.from(document.querySelectorAll(".progress-dot"));
                 this.soundToggle = document.getElementById("soundToggle");
+                this.resetMemoryButton = document.getElementById("resetMemoryButton");
 
                 this.palette = [
                     { fill: "#4d96ff", shadow: "#1b3c88", accent: "#ff9f1c", accent2: "#ffd166", blush: "#ffe1c4" },
@@ -829,6 +1021,9 @@
                 this.updateSoundToggle();
                 this.soundToggle.addEventListener("click", () => {
                     this.setSoundEnabled(!this.soundEnabled);
+                });
+                this.resetMemoryButton.addEventListener("click", () => {
+                    this.handleResetMemory();
                 });
                 if (this.speechSynthesis) {
                     this.speechSynthesis.addEventListener("voiceschanged", () => this.loadVoices());
@@ -1094,6 +1289,116 @@
                 });
             }
 
+            buildFactBank() {
+                const facts = [];
+                for (let a = 0; a <= 12; a += 1) {
+                    for (let b = a; b <= 12; b += 1) {
+                        facts.push({
+                            key: `${a}x${b}`,
+                            operands: [a, b]
+                        });
+                    }
+                }
+                return facts;
+            }
+
+            getEligibleFactsForLevel(level) {
+                return this.factBank.filter((fact) => {
+                    const [a, b] = fact.operands;
+                    if (level <= 2) {
+                        return true;
+                    }
+                    if (level === 3) {
+                        return a <= 9 || b <= 9;
+                    }
+                    return a >= 10 || b >= 10;
+                });
+            }
+
+            buildRevealPlanForLevel(level, a, b, c) {
+                const previousLevel = this.level;
+                this.level = level;
+                const reveal = this.buildRevealPlan(a, b, c);
+                this.level = previousLevel;
+                return reveal;
+            }
+
+            createCandidateFromFact(fact) {
+                const [left, right] = fact.operands;
+                const orientations = left === right ? [[left, right]] : [[left, right], [right, left]];
+                const shuffledOrientations = this.shuffle(orientations.slice());
+
+                for (const [a, b] of shuffledOrientations) {
+                    const c = a * b;
+                    const reveal = this.buildRevealPlanForLevel(this.level, a, b, c);
+                    if (!reveal) {
+                        continue;
+                    }
+                    const baseDigits = reveal.hiddenDigits.slice();
+                    const extras = this.level === 5 ? this.generateDistractors(baseDigits, a, b, c, reveal) : [];
+                    if (this.level < 5 || extras.length > 0) {
+                        return {
+                            factKey: fact.key,
+                            a,
+                            b,
+                            c,
+                            reveal,
+                            baseDigits,
+                            digits: this.shuffle(baseDigits.concat(extras.slice()))
+                        };
+                    }
+                }
+
+                return null;
+            }
+
+            rememberFactKey(factKey) {
+                this.recentFactKeys = [factKey, ...this.recentFactKeys.filter((key) => key !== factKey)].slice(0, 4);
+            }
+
+            selectNextCandidate() {
+                const eligibleFacts = this.getEligibleFactsForLevel(this.level);
+                const orderedFacts = this.shuffle(eligibleFacts.slice());
+                const pickedFact = this.memory.pickNextFact({
+                    candidates: orderedFacts,
+                    recentKeys: this.recentFactKeys
+                });
+
+                if (pickedFact) {
+                    const candidate = this.createCandidateFromFact(pickedFact);
+                    if (candidate) {
+                        this.memory.recordPresentation({ factKey: candidate.factKey });
+                        this.rememberFactKey(candidate.factKey);
+                        return candidate;
+                    }
+                }
+
+                for (const fact of orderedFacts) {
+                    const candidate = this.createCandidateFromFact(fact);
+                    if (candidate) {
+                        this.memory.recordPresentation({ factKey: candidate.factKey });
+                        this.rememberFactKey(candidate.factKey);
+                        return candidate;
+                    }
+                }
+
+                return null;
+            }
+
+            handleResetMemory() {
+                const confirmed = window.confirm("Reset all multiplication memory and start the review schedule over?");
+                if (!confirmed) {
+                    return;
+                }
+
+                clearTimeout(this.nextQuestionTimeout);
+                this.nextQuestionTimeout = null;
+                this.memory.reset();
+                this.recentFactKeys = [];
+                this.showCheer("Memory reset!");
+                this.createQuestion();
+            }
+
             randomInt(min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
             }
@@ -1107,35 +1412,15 @@
             }
 
             createQuestion() {
+                clearTimeout(this.nextQuestionTimeout);
+                this.nextQuestionTimeout = null;
                 this.answerLocked = false;
                 this.questionId += 1;
                 this.lastNarrationParts = [];
                 this.stopSpeech();
                 this.updateHud();
 
-                let candidate = null;
-                for (let tries = 0; tries < 800; tries += 1) {
-                    const a = this.randomInt(0, 12);
-                    const b = this.randomInt(0, 12);
-                    const c = a * b;
-                    const reveal = this.buildRevealPlan(a, b, c);
-                    if (!reveal) {
-                        continue;
-                    }
-                    const baseDigits = reveal.hiddenDigits.slice();
-                    const extras = this.level === 5 ? this.generateDistractors(baseDigits, a, b, c, reveal) : [];
-                    if (this.level < 5 || extras.length > 0) {
-                        candidate = {
-                            a,
-                            b,
-                            c,
-                            reveal,
-                            baseDigits,
-                            digits: this.shuffle(baseDigits.concat(extras.slice()))
-                        };
-                        break;
-                    }
-                }
+                let candidate = this.selectNextCandidate();
 
                 if (!candidate) {
                     const fallbackEquation = this.level >= 4
@@ -1147,6 +1432,7 @@
                         showOutlineForHidden: false
                     };
                     candidate = {
+                        factKey: `${Math.min(fallbackEquation.a, fallbackEquation.b)}x${Math.max(fallbackEquation.a, fallbackEquation.b)}`,
                         a: fallbackEquation.a,
                         b: fallbackEquation.b,
                         c: fallbackEquation.c,
@@ -1154,6 +1440,8 @@
                         baseDigits: reveal.hiddenDigits.slice(),
                         digits: this.shuffle(reveal.hiddenDigits.concat(["8"]))
                     };
+                    this.memory.recordPresentation({ factKey: candidate.factKey });
+                    this.rememberFactKey(candidate.factKey);
                 }
 
                 this.question = candidate;
@@ -1745,6 +2033,7 @@
             }
 
             handleCorrect() {
+                this.memory.recordResult({ factKey: this.question.factKey, correct: true });
                 this.correctStreak += 1;
                 this.solvedCount += 1;
                 if (this.correctStreak >= this.stageConfig[this.level].target && this.level < 5) {
@@ -1760,12 +2049,13 @@
                     this.showCheer("Yay! Great job!");
                 }, 500);
 
-                setTimeout(() => {
+                this.nextQuestionTimeout = setTimeout(() => {
                     this.createQuestion();
                 }, 1800);
             }
 
             handleWrong() {
+                this.memory.recordResult({ factKey: this.question.factKey, correct: false });
                 this.correctStreak = 0;
                 if (this.level > 1) {
                     this.level -= 1;
@@ -1777,7 +2067,7 @@
                 });
                 this.showCheer("Try an easier one!");
 
-                setTimeout(() => {
+                this.nextQuestionTimeout = setTimeout(() => {
                     this.createQuestion();
                 }, 1200);
             }
