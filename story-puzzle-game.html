@@ -494,6 +494,96 @@
     <script>
         const STORY_SET = [
             {
+                level: 1,
+                hiddenCount: 1,
+                title: "Red Hat",
+                parts: [
+                    "Mia puts on her red ",
+                    { answer: "hat", style: "outlined-pink" },
+                    " before she goes outside."
+                ]
+            },
+            {
+                level: 1,
+                hiddenCount: 1,
+                title: "Sleepy Cat",
+                parts: [
+                    "The cat takes a nap on the ",
+                    { answer: "rug", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 2,
+                hiddenCount: 1,
+                title: "Big Smile",
+                parts: [
+                    "Jay tells a funny joke. His sister gives a big ",
+                    { answer: "smile", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 2,
+                hiddenCount: 1,
+                title: "Snack Time",
+                parts: [
+                    "Ben peels a yellow ",
+                    { answer: "banana", style: "outlined-teal" },
+                    " for his snack after school."
+                ]
+            },
+            {
+                level: 3,
+                hiddenCount: 2,
+                title: "Park Bench",
+                parts: [
+                    "Ana sits on a ",
+                    { answer: "bench", style: "outlined-blue" },
+                    " at the ",
+                    { answer: "park", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 3,
+                hiddenCount: 2,
+                title: "Bedtime Light",
+                parts: [
+                    "Dad reads a ",
+                    { answer: "book", style: "outlined-pink" },
+                    " and turns off the ",
+                    { answer: "lamp", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 4,
+                hiddenCount: 2,
+                title: "Toy Box",
+                parts: [
+                    "Lena puts her ",
+                    { answer: "blocks", style: "outlined-teal" },
+                    " back in the toy ",
+                    { answer: "box", style: "outlined-orange" },
+                    " after playtime."
+                ]
+            },
+            {
+                level: 4,
+                hiddenCount: 2,
+                title: "Warm Soup",
+                parts: [
+                    "On a cold day, Max eats warm ",
+                    { answer: "soup", style: "outlined-blue" },
+                    " with a ",
+                    { answer: "spoon", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 5,
+                hiddenCount: 2,
                 title: "Birds in the Tree",
                 parts: [
                     "Three ",
@@ -506,6 +596,8 @@
                 ]
             },
             {
+                level: 5,
+                hiddenCount: 2,
                 title: "Apple Basket",
                 parts: [
                     "Mia has four red ",
@@ -518,6 +610,8 @@
                 ]
             },
             {
+                level: 6,
+                hiddenCount: 2,
                 title: "Puddle Jump",
                 parts: [
                     "Sam sees a big ",
@@ -530,6 +624,8 @@
                 ]
             },
             {
+                level: 6,
+                hiddenCount: 2,
                 title: "Blue Ball",
                 parts: [
                     "A little dog finds a blue ",
@@ -542,6 +638,8 @@
                 ]
             },
             {
+                level: 7,
+                hiddenCount: 3,
                 title: "Garden Surprise",
                 parts: [
                     "Lily plants a small ",
@@ -554,6 +652,8 @@
                 ]
             },
             {
+                level: 7,
+                hiddenCount: 3,
                 title: "Kite Day",
                 parts: [
                     "Ella has a yellow ",
@@ -566,6 +666,8 @@
                 ]
             },
             {
+                level: 8,
+                hiddenCount: 3,
                 title: "Fish by the Rock",
                 parts: [
                     "Two ",
@@ -578,6 +680,8 @@
                 ]
             },
             {
+                level: 8,
+                hiddenCount: 3,
                 title: "Rainy Walk",
                 parts: [
                     "Nina wears her ",
@@ -590,6 +694,8 @@
                 ]
             },
             {
+                level: 9,
+                hiddenCount: 3,
                 title: "Balloon Fun",
                 parts: [
                     "Leo has one ",
@@ -602,6 +708,8 @@
                 ]
             },
             {
+                level: 9,
+                hiddenCount: 3,
                 title: "By the Pond",
                 parts: [
                     "Four frogs sit by the ",
@@ -614,6 +722,8 @@
                 ]
             },
             {
+                level: 10,
+                hiddenCount: 3,
                 title: "Sandwich Time",
                 parts: [
                     "A girl makes a sandwich for lunch. She puts ",
@@ -626,6 +736,8 @@
                 ]
             },
             {
+                level: 10,
+                hiddenCount: 3,
                 title: "Snowman Builder",
                 parts: [
                     "A boy builds a snowman in the yard. He gives it a carrot ",
@@ -638,6 +750,8 @@
                 ]
             },
             {
+                level: 11,
+                hiddenCount: 3,
                 title: "Classroom Garden",
                 parts: [
                     "The class plants flowers in the ",
@@ -650,6 +764,8 @@
                 ]
             },
             {
+                level: 11,
+                hiddenCount: 3,
                 title: "Starry Night",
                 parts: [
                     "Noah sees six stars in the sky. A ",
@@ -662,6 +778,8 @@
                 ]
             },
             {
+                level: 12,
+                hiddenCount: 3,
                 title: "Book Time",
                 parts: [
                     "Lucy is reading a book about bears. Her little ",
@@ -674,6 +792,8 @@
                 ]
             },
             {
+                level: 12,
+                hiddenCount: 3,
                 title: "Duck Parade",
                 parts: [
                     "A duck is swimming in the pond. Two more ",
@@ -689,7 +809,7 @@
 
         class StoryPuzzleGame {
             constructor(stories) {
-                this.stories = this.shuffle(stories.slice());
+                this.stories = stories.slice();
                 this.storyIndex = 0;
                 this.selectedTileId = null;
                 this.dragState = null;
@@ -725,7 +845,7 @@
             }
 
             get currentLevel() {
-                return Math.floor(this.completedStories / 2) + 1;
+                return this.currentStory.level;
             }
 
             buildBlankEntries(parts) {
@@ -734,11 +854,11 @@
                     .filter(Boolean);
             }
 
-            getHiddenBlankIds(blanks) {
-                const hiddenCount = Math.min(blanks.length, Math.max(0, this.currentLevel - 1));
+            getHiddenBlankIds(blanks, hiddenCount) {
+                const count = Math.min(blanks.length, Math.max(0, hiddenCount));
                 const rotated = blanks.slice();
                 const offset = this.completedStories % Math.max(1, blanks.length);
-                return new Set(rotated.slice(offset).concat(rotated.slice(0, offset)).slice(0, hiddenCount).map((blank) => blank.blankId));
+                return new Set(rotated.slice(offset).concat(rotated.slice(0, offset)).slice(0, count).map((blank) => blank.blankId));
             }
 
             updateNextButton() {
@@ -754,7 +874,7 @@
 
                 const story = this.currentStory;
                 const blanks = this.buildBlankEntries(story.parts);
-                const hiddenBlankIds = this.getHiddenBlankIds(blanks);
+                const hiddenBlankIds = this.getHiddenBlankIds(blanks, story.hiddenCount ?? blanks.length);
                 const shuffledTiles = this.shuffle(blanks.map((blank, index) => ({
                     id: `tile-${index}`,
                     answer: blank.answer,
