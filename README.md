@@ -99,6 +99,11 @@ Learn essential toddler conversations through interactive fill-in-the-blank exer
 - **Play:** [conversation-game.html](conversation-game.html)
 - **Features:** 30 essential toddler conversations covering greetings, basic needs, playing, sharing, feelings, and manners; fill-in-the-blank with 2-3 characters per word; automatic focus management; real-time validation with color feedback; personalized greeting with name customization; localStorage persistence; celebration animations; confetti effects; toddler-friendly natural language
 
+### Story Puzzle Game
+Complete short first-grade stories by dragging outlined words into the matching spaces on a paper-style page.
+- **Play:** [story-puzzle-game.html](story-puzzle-game.html)
+- **Features:** notebook-paper presentation inspired by classroom sentence puzzles, short 2-3 sentence stories, draggable outlined word tiles, touch and mouse support, tap-to-place fallback for tablets, green success feedback on correct matches, automatic progression to the next story, hint button, responsive layout
+
 ### Toddler Reading & Speaking Game
 Help toddlers learn reading and speaking with interactive speech recognition! Progress through 10 adaptive difficulty levels from simple words to complex phrases.
 - **Play:** [toddler-reading-game.html](toddler-reading-game.html)
