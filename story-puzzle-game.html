@@ -141,6 +141,42 @@
             align-items: center;
         }
 
+        .story-stage {
+            width: 100%;
+            display: grid;
+            gap: 18px;
+        }
+
+        .story-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .story-title {
+            font-size: clamp(1rem, 1.8vw, 1.35rem);
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: rgba(43, 70, 115, 0.72);
+        }
+
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(79, 149, 255, 0.12);
+            border: 2px solid rgba(79, 149, 255, 0.22);
+            color: var(--blue);
+            font-size: 1rem;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
         .story-text {
             font-size: clamp(2rem, 4.2vw, 3.6rem);
             line-height: 1.45;
@@ -221,6 +257,13 @@
             box-shadow: 0 10px 18px rgba(56, 184, 108, 0.18);
         }
 
+        .story-text .blank.hint-hidden {
+            color: transparent;
+            -webkit-text-stroke: 0;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+        }
+
         .story-text .blank.wrong {
             background: rgba(255, 94, 120, 0.08);
             border-color: #ff6b8b;
@@ -235,10 +278,10 @@
         }
 
         .word-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: end;
+            gap: 14px;
         }
 
         .word-bank {
@@ -247,6 +290,7 @@
             align-items: center;
             align-content: flex-start;
             gap: 18px;
+            min-height: var(--word-bank-height, 0px);
         }
 
         .word-tile {
@@ -281,6 +325,46 @@
 
         .word-tile.used {
             display: none;
+        }
+
+        .next-button {
+            appearance: none;
+            -webkit-appearance: none;
+            min-width: 108px;
+            min-height: 68px;
+            padding: 12px 20px;
+            border: 4px solid #2e78ea;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #4f95ff, #2e78ea);
+            color: #fff;
+            font: inherit;
+            font-size: clamp(1.15rem, 2vw, 1.45rem);
+            font-weight: 900;
+            line-height: 1;
+            box-shadow: 0 12px 20px rgba(61, 139, 253, 0.24);
+            cursor: pointer;
+            align-self: end;
+            white-space: nowrap;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+        }
+
+        .next-button:hover,
+        .next-button:focus-visible {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 26px rgba(61, 139, 253, 0.28);
+        }
+
+        .next-button:active {
+            transform: translateY(0);
+        }
+
+        .next-button:disabled {
+            background: linear-gradient(180deg, #c9d8ee, #b9c7dc);
+            border-color: #b9c7dc;
+            box-shadow: none;
+            color: rgba(43, 70, 115, 0.65);
+            cursor: not-allowed;
+            transform: none;
         }
 
         .celebration {
@@ -343,6 +427,7 @@
             pointer-events: none;
             z-index: 30;
             margin: 0;
+            will-change: left, top, transform;
         }
 
         @media (max-width: 980px) {
@@ -370,6 +455,13 @@
                 font-size: clamp(1.4rem, 7vw, 2rem);
                 -webkit-text-fill-color: currentColor;
             }
+
+            .next-button {
+                min-width: 86px;
+                min-height: 56px;
+                padding: 10px 14px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -378,11 +470,18 @@
         <section class="paper-board">
             <div class="story-card">
                 <div class="story-panel">
-                    <div class="story-text" id="storyText" aria-live="polite"></div>
+                    <div class="story-stage">
+                        <div class="story-status">
+                            <div class="story-title" id="storyTitle"></div>
+                            <div class="level-badge" id="levelBadge"></div>
+                        </div>
+                        <div class="story-text" id="storyText" aria-live="polite"></div>
+                    </div>
                 </div>
 
                 <aside class="word-panel">
                     <div class="word-bank" id="wordBank"></div>
+                    <button class="next-button" id="nextButton" type="button" aria-label="Go to the next story" disabled>Next</button>
                 </aside>
             </div>
         </section>
@@ -594,11 +693,20 @@
                 this.storyIndex = 0;
                 this.selectedTileId = null;
                 this.dragState = null;
-                this.autoNextTimer = null;
 
                 this.storyText = document.getElementById("storyText");
+                this.storyTitle = document.getElementById("storyTitle");
+                this.levelBadge = document.getElementById("levelBadge");
                 this.wordBank = document.getElementById("wordBank");
                 this.celebration = document.getElementById("celebration");
+                this.nextButton = document.getElementById("nextButton");
+                this.wordBankHeight = 0;
+                this.completedStories = 0;
+                this.puzzleSolved = false;
+                this.boundPointerMove = (moveEvent) => this.handlePointerMove(moveEvent);
+                this.boundPointerUp = (upEvent) => this.handlePointerUp(upEvent);
+
+                this.nextButton.addEventListener("click", () => this.nextStory());
 
                 this.renderStory();
             }
@@ -616,19 +724,37 @@
                 return this.stories[this.storyIndex];
             }
 
+            get currentLevel() {
+                return Math.floor(this.completedStories / 2) + 1;
+            }
+
             buildBlankEntries(parts) {
                 return parts
                     .map((part, index) => typeof part === "string" ? null : { ...part, blankId: `blank-${index}` })
                     .filter(Boolean);
             }
 
+            getHiddenBlankIds(blanks) {
+                const hiddenCount = Math.min(blanks.length, Math.max(0, this.currentLevel - 1));
+                const rotated = blanks.slice();
+                const offset = this.completedStories % Math.max(1, blanks.length);
+                return new Set(rotated.slice(offset).concat(rotated.slice(0, offset)).slice(0, hiddenCount).map((blank) => blank.blankId));
+            }
+
+            updateNextButton() {
+                this.nextButton.disabled = !this.puzzleSolved;
+            }
+
             renderStory() {
-                clearTimeout(this.autoNextTimer);
                 this.selectedTileId = null;
-                this.dragState = null;
+                this.puzzleSolved = false;
+                this.updateNextButton();
+                this.clearDragState();
+                this.wordBank.style.removeProperty("--word-bank-height");
 
                 const story = this.currentStory;
                 const blanks = this.buildBlankEntries(story.parts);
+                const hiddenBlankIds = this.getHiddenBlankIds(blanks);
                 const shuffledTiles = this.shuffle(blanks.map((blank, index) => ({
                     id: `tile-${index}`,
                     answer: blank.answer,
@@ -647,6 +773,9 @@
                     return map;
                 }, {});
 
+                this.storyTitle.textContent = story.title;
+                this.levelBadge.textContent = `Level ${this.currentLevel}`;
+
                 this.storyText.innerHTML = "";
                 story.parts.forEach((part, index) => {
                     if (typeof part === "string") {
@@ -662,7 +791,11 @@
                     blank.className = `blank ${part.style}`;
                     blank.dataset.blankId = `blank-${index}`;
                     blank.dataset.answer = part.answer;
-                    blank.setAttribute("aria-label", `Place the word ${part.answer}`);
+                    blank.style.minWidth = `${Math.max(1.9, part.answer.length * 0.82)}em`;
+                    blank.setAttribute("aria-label", hiddenBlankIds.has(blank.dataset.blankId) ? "Place the missing word" : `Place the word ${part.answer}`);
+                    if (hiddenBlankIds.has(blank.dataset.blankId)) {
+                        blank.classList.add("hint-hidden");
+                    }
                     blank.textContent = part.answer;
                     blank.addEventListener("click", () => this.handleBlankClick(blank.dataset.blankId));
                     this.storyText.appendChild(blank);
@@ -679,9 +812,6 @@
                     button.textContent = tile.answer;
 
                     button.addEventListener("click", () => this.handleTileClick(tile.id));
-                    button.addEventListener("dragstart", (event) => this.handleNativeDragStart(event, tile.id));
-                    button.addEventListener("dragend", () => this.clearBlankFocus());
-                    button.draggable = true;
                     button.addEventListener("pointerdown", (event) => this.handlePointerDown(event, tile.id));
 
                     this.wordBank.appendChild(button);
@@ -690,6 +820,11 @@
                 Array.from(this.storyText.querySelectorAll(".blank")).forEach((blank) => {
                     blank.addEventListener("dragover", (event) => event.preventDefault());
                     blank.addEventListener("drop", (event) => this.handleDrop(event, blank.dataset.blankId));
+                });
+
+                requestAnimationFrame(() => {
+                    this.wordBankHeight = this.wordBank.getBoundingClientRect().height;
+                    this.wordBank.style.setProperty("--word-bank-height", `${this.wordBankHeight}px`);
                 });
             }
 
@@ -736,19 +871,6 @@
                 });
             }
 
-            handleNativeDragStart(event, tileId) {
-                const tile = this.activeTiles.find((entry) => entry.id === tileId);
-                if (!tile || tile.used) {
-                    event.preventDefault();
-                    return;
-                }
-
-                event.dataTransfer.setData("text/plain", tileId);
-                this.selectedTileId = tileId;
-                this.syncSelectedTile();
-                this.highlightTarget(tile.blankId);
-            }
-
             handleDrop(event, blankId) {
                 event.preventDefault();
                 const tileId = event.dataTransfer.getData("text/plain") || this.selectedTileId;
@@ -766,6 +888,7 @@
                 }
 
                 event.preventDefault();
+                this.clearDragState();
                 const tileElement = this.getTileElement(tileId);
                 const rect = tileElement.getBoundingClientRect();
                 const clone = tileElement.cloneNode(true);
@@ -779,24 +902,40 @@
                 this.syncSelectedTile();
                 this.highlightTarget(tile.blankId);
 
-                const offsetX = event.clientX - rect.left;
-                const offsetY = event.clientY - rect.top;
-
-                this.dragState = { tileId, clone, offsetX, offsetY };
+                this.dragState = {
+                    tileId,
+                    clone,
+                    pointerId: event.pointerId,
+                    sourceElement: tileElement,
+                    lastX: event.clientX,
+                    lastY: event.clientY,
+                    frame: null
+                };
                 this.positionClone(event.clientX, event.clientY);
 
                 tileElement.setPointerCapture(event.pointerId);
-                tileElement.addEventListener("pointermove", this.boundPointerMove = (moveEvent) => this.handlePointerMove(moveEvent));
-                tileElement.addEventListener("pointerup", this.boundPointerUp = (upEvent) => this.handlePointerUp(upEvent));
+                tileElement.addEventListener("pointermove", this.boundPointerMove);
+                tileElement.addEventListener("pointerup", this.boundPointerUp);
                 tileElement.addEventListener("pointercancel", this.boundPointerUp);
             }
 
             handlePointerMove(event) {
-                if (!this.dragState) {
+                if (!this.dragState || event.pointerId !== this.dragState.pointerId) {
                     return;
                 }
 
-                this.positionClone(event.clientX, event.clientY);
+                this.dragState.lastX = event.clientX;
+                this.dragState.lastY = event.clientY;
+                if (!this.dragState.frame) {
+                    this.dragState.frame = requestAnimationFrame(() => {
+                        if (!this.dragState) {
+                            return;
+                        }
+
+                        this.dragState.frame = null;
+                        this.positionClone(this.dragState.lastX, this.dragState.lastY);
+                    });
+                }
 
                 const target = document.elementFromPoint(event.clientX, event.clientY);
                 const blank = target && target.closest(".blank");
@@ -807,7 +946,7 @@
             }
 
             handlePointerUp(event) {
-                if (!this.dragState) {
+                if (!this.dragState || event.pointerId !== this.dragState.pointerId) {
                     return;
                 }
 
@@ -822,14 +961,11 @@
                 }
 
                 if (tileElement) {
-                    tileElement.classList.remove("dragging");
-                    tileElement.removeEventListener("pointermove", this.boundPointerMove);
-                    tileElement.removeEventListener("pointerup", this.boundPointerUp);
-                    tileElement.removeEventListener("pointercancel", this.boundPointerUp);
+                    this.clearDragState(tileElement);
+                    return;
                 }
 
-                this.dragState.clone.remove();
-                this.dragState = null;
+                this.clearDragState();
             }
 
             positionClone(clientX, clientY) {
@@ -837,9 +973,32 @@
                     return;
                 }
 
-                const x = clientX - this.dragState.offsetX;
-                const y = clientY - this.dragState.offsetY;
-                this.dragState.clone.style.transform = `translate(${x}px, ${y}px) rotate(-3deg)`;
+                this.dragState.clone.style.left = `${clientX}px`;
+                this.dragState.clone.style.top = `${clientY}px`;
+                this.dragState.clone.style.transform = "translate(-50%, -50%) rotate(-3deg)";
+            }
+
+            clearDragState(tileElement = this.dragState && this.dragState.sourceElement) {
+                if (!this.dragState) {
+                    return;
+                }
+
+                if (this.dragState.frame) {
+                    cancelAnimationFrame(this.dragState.frame);
+                }
+
+                if (tileElement) {
+                    tileElement.classList.remove("dragging");
+                    tileElement.removeEventListener("pointermove", this.boundPointerMove);
+                    tileElement.removeEventListener("pointerup", this.boundPointerUp);
+                    tileElement.removeEventListener("pointercancel", this.boundPointerUp);
+                    if (this.dragState.pointerId != null && tileElement.hasPointerCapture?.(this.dragState.pointerId)) {
+                        tileElement.releasePointerCapture(this.dragState.pointerId);
+                    }
+                }
+
+                this.dragState.clone.remove();
+                this.dragState = null;
             }
 
             highlightTarget(blankId) {
@@ -887,8 +1046,9 @@
             }
 
             handleStoryComplete() {
+                this.puzzleSolved = true;
+                this.updateNextButton();
                 this.launchCelebration();
-                this.autoNextTimer = setTimeout(() => this.nextStory(), 1500);
             }
 
             launchCelebration() {
@@ -910,6 +1070,11 @@
             }
 
             nextStory() {
+                if (!this.puzzleSolved) {
+                    return;
+                }
+
+                this.completedStories += 1;
                 this.storyIndex = (this.storyIndex + 1) % this.stories.length;
                 this.renderStory();
             }
