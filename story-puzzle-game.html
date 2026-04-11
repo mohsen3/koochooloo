@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Story Puzzle Game</title>
+    <style>
+        :root {
+            --paper: #fcfbf6;
+            --paper-shadow: rgba(37, 48, 88, 0.12);
+            --line: rgba(111, 151, 214, 0.22);
+            --ink: #2b4673;
+            --blue: #3d8bfd;
+            --teal: #28b0b8;
+            --orange: #ff9f1c;
+            --pink: #ff5d8f;
+            --purple: #7657d9;
+            --green: #38b86c;
+            --green-soft: #e8fff0;
+            --slot: #fdfdfd;
+            --slot-border: #9dc7f8;
+            --shadow: rgba(44, 60, 110, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+        }
+
+        body {
+            font-family: "Trebuchet MS", "Arial Rounded MT Bold", "Comic Sans MS", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 10% 18%, rgba(255, 205, 140, 0.2), transparent 26%),
+                radial-gradient(circle at 82% 14%, rgba(104, 189, 255, 0.17), transparent 24%),
+                radial-gradient(circle at 78% 82%, rgba(255, 130, 179, 0.16), transparent 28%),
+                linear-gradient(180deg, rgba(255,255,255,0.95), rgba(248, 247, 242, 0.98)),
+                repeating-linear-gradient(
+                    180deg,
+                    transparent 0 38px,
+                    var(--line) 38px 40px
+                ),
+                var(--paper);
+            overflow-x: hidden;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            background:
+                linear-gradient(90deg, rgba(255, 117, 154, 0.22) 0 6px, transparent 6px),
+                linear-gradient(180deg, rgba(255,255,255,0.42), transparent 20%);
+            background-size: 100% 100%, 100% 100%;
+            opacity: 0.45;
+        }
+
+        body::after {
+            background:
+                radial-gradient(circle at center, transparent 62%, rgba(46, 58, 96, 0.06) 100%),
+                repeating-linear-gradient(
+                    45deg,
+                    rgba(255,255,255,0.05) 0 2px,
+                    transparent 2px 6px
+                );
+            opacity: 0.7;
+        }
+
+        .app {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 22px 18px 28px;
+            display: flex;
+        }
+
+        .paper-board {
+            position: relative;
+            flex: 1;
+            min-height: calc(100vh - 50px);
+            padding: clamp(18px, 4vw, 38px);
+            background: rgba(255, 255, 255, 0.58);
+            border-radius: 30px;
+            box-shadow: 0 28px 50px var(--paper-shadow);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 22px;
+            align-items: stretch;
+        }
+
+        .paper-board::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.54), transparent 42%),
+                radial-gradient(circle at 14% 18%, rgba(98, 178, 248, 0.08), transparent 20%),
+                radial-gradient(circle at 86% 80%, rgba(255, 162, 0, 0.06), transparent 24%);
+            pointer-events: none;
+        }
+
+        .story-card {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            grid-template-rows: minmax(0, 1fr) auto;
+            gap: 24px;
+            align-items: stretch;
+            min-height: 100%;
+        }
+
+        .story-panel,
+        .word-panel {
+            background: rgba(255, 255, 255, 0.72);
+            border-radius: 28px;
+            border: 2px solid rgba(76, 108, 172, 0.08);
+            box-shadow: 0 18px 34px rgba(42, 61, 104, 0.08);
+            padding: clamp(18px, 3vw, 30px);
+        }
+
+        .story-panel {
+            min-height: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .story-text {
+            font-size: clamp(2rem, 4.2vw, 3.6rem);
+            line-height: 1.45;
+            font-weight: 800;
+            color: var(--ink);
+        }
+
+        .story-text .chunk {
+            white-space: pre-wrap;
+        }
+
+        .story-text .blank,
+        .word-tile {
+            appearance: none;
+            -webkit-appearance: none;
+            font-family: inherit;
+            font-weight: 900;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+        }
+
+        .story-text .blank {
+            min-width: 1.9em;
+            margin: 0 0.12em;
+            padding: 0.05em 0.26em 0.08em;
+            border: 4px dashed var(--slot-border);
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1em;
+            line-height: inherit;
+            -webkit-text-stroke: 2px currentColor;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            vertical-align: baseline;
+            cursor: pointer;
+        }
+
+        .story-text .blank.outlined-blue,
+        .word-tile.outlined-blue {
+            color: #4f95ff;
+        }
+
+        .story-text .blank.outlined-orange,
+        .word-tile.outlined-orange {
+            color: #ff9d3e;
+        }
+
+        .story-text .blank.outlined-teal,
+        .word-tile.outlined-teal {
+            color: #26b8ba;
+        }
+
+        .story-text .blank.outlined-pink,
+        .word-tile.outlined-pink {
+            color: #ff5b95;
+        }
+
+        .story-text .blank.outlined-purple,
+        .word-tile.outlined-purple {
+            color: #8660f0;
+        }
+
+        .story-text .blank.active {
+            transform: scale(1.04);
+            box-shadow: 0 0 0 8px rgba(85, 146, 255, 0.14);
+            border-style: solid;
+        }
+
+        .story-text .blank.correct {
+            background: var(--green-soft);
+            border-color: var(--green);
+            border-style: solid;
+            color: var(--green);
+            -webkit-text-stroke: 0;
+            -webkit-text-fill-color: currentColor;
+            box-shadow: 0 10px 18px rgba(56, 184, 108, 0.18);
+        }
+
+        .story-text .blank.wrong {
+            background: rgba(255, 94, 120, 0.08);
+            border-color: #ff6b8b;
+            border-style: solid;
+            animation: shake 0.36s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-7px); }
+            75% { transform: translateX(7px); }
+        }
+
+        .word-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            align-content: flex-start;
+            gap: 18px;
+        }
+
+        .word-tile {
+            min-width: 108px;
+            min-height: 68px;
+            padding: 12px 20px;
+            border: 4px solid currentColor;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 12px 20px var(--shadow);
+            font-size: clamp(2rem, 3vw, 3rem);
+            line-height: 1;
+            cursor: grab;
+            touch-action: none;
+            -webkit-text-stroke: 0;
+            -webkit-text-fill-color: currentColor;
+        }
+
+        .word-tile:nth-child(3n + 1) { transform: rotate(-4deg); }
+        .word-tile:nth-child(3n + 2) { transform: rotate(3deg); }
+        .word-tile:nth-child(3n + 3) { transform: rotate(-2deg); }
+
+        .word-tile:hover,
+        .word-tile.selected {
+            box-shadow: 0 16px 28px rgba(44, 60, 110, 0.2);
+            transform: translateY(-4px) scale(1.04);
+        }
+
+        .word-tile.dragging {
+            opacity: 0.45;
+            cursor: grabbing;
+        }
+
+        .word-tile.used {
+            display: none;
+        }
+
+        .celebration {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .celebration.active {
+            animation: fadeCelebrate 1s ease;
+        }
+
+        .celebration-message {
+            padding: 18px 28px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.92);
+            color: var(--green);
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 900;
+            box-shadow: 0 18px 34px rgba(56, 184, 108, 0.18);
+        }
+
+        @keyframes fadeCelebrate {
+            0% { opacity: 0; transform: scale(0.7); }
+            35% { opacity: 1; transform: scale(1.04); }
+            100% { opacity: 0; transform: scale(1.15); }
+        }
+
+        .confetti {
+            position: fixed;
+            top: -8vh;
+            width: 14px;
+            height: 22px;
+            border-radius: 6px;
+            pointer-events: none;
+            z-index: 9;
+            animation: confetti-fall 1.35s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            from {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(112vh) rotate(540deg);
+                opacity: 0;
+            }
+        }
+
+        .drag-clone {
+            position: fixed;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+            z-index: 30;
+            margin: 0;
+        }
+
+        @media (max-width: 980px) {
+            .story-panel {
+                min-height: 280px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .app {
+                padding: 14px 10px 20px;
+            }
+
+            .paper-board {
+                min-height: calc(100vh - 34px);
+            }
+
+            .story-text {
+                font-size: clamp(1.55rem, 7vw, 2.2rem);
+            }
+
+            .word-tile {
+                min-width: 86px;
+                min-height: 56px;
+                font-size: clamp(1.4rem, 7vw, 2rem);
+                -webkit-text-fill-color: currentColor;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="app">
+        <section class="paper-board">
+            <div class="story-card">
+                <div class="story-panel">
+                    <div class="story-text" id="storyText" aria-live="polite"></div>
+                </div>
+
+                <aside class="word-panel">
+                    <div class="word-bank" id="wordBank"></div>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <div class="celebration" id="celebration">
+        <div class="celebration-message">Great job!</div>
+    </div>
+
+    <script>
+        const STORY_SET = [
+            {
+                title: "Birds in the Tree",
+                parts: [
+                    "Three ",
+                    { answer: "birds", style: "outlined-orange" },
+                    " are sitting in a ",
+                    { answer: "tree", style: "outlined-blue" },
+                    ". One bird flies away. Now ",
+                    { answer: "two", style: "outlined-teal" },
+                    " birds are still in the tree."
+                ]
+            },
+            {
+                title: "Apple Basket",
+                parts: [
+                    "Mia has four red ",
+                    { answer: "apples", style: "outlined-pink" },
+                    " in her ",
+                    { answer: "basket", style: "outlined-orange" },
+                    ". She gives one apple to her brother. Now she has ",
+                    { answer: "three", style: "outlined-blue" },
+                    " apples left."
+                ]
+            },
+            {
+                title: "Puddle Jump",
+                parts: [
+                    "Sam sees a big ",
+                    { answer: "puddle", style: "outlined-blue" },
+                    " after the ",
+                    { answer: "rain", style: "outlined-teal" },
+                    ". He jumps in it with both feet. His boots make a loud ",
+                    { answer: "splash", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                title: "Blue Ball",
+                parts: [
+                    "A little dog finds a blue ",
+                    { answer: "ball", style: "outlined-pink" },
+                    " in the ",
+                    { answer: "yard", style: "outlined-teal" },
+                    ". He rolls it with his nose. Then he ",
+                    { answer: "runs", style: "outlined-orange" },
+                    " after it."
+                ]
+            },
+            {
+                title: "Garden Surprise",
+                parts: [
+                    "Lily plants a small ",
+                    { answer: "seed", style: "outlined-teal" },
+                    " in the ",
+                    { answer: "dirt", style: "outlined-orange" },
+                    ". She gives it water every day. Soon a green ",
+                    { answer: "sprout", style: "outlined-blue" },
+                    " pops up."
+                ]
+            },
+            {
+                title: "Kite Day",
+                parts: [
+                    "Ella has a yellow ",
+                    { answer: "kite", style: "outlined-orange" },
+                    ". The ",
+                    { answer: "wind", style: "outlined-blue" },
+                    " blows hard at the park. Her kite goes high in the ",
+                    { answer: "sky", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                title: "Fish by the Rock",
+                parts: [
+                    "Two ",
+                    { answer: "fish", style: "outlined-teal" },
+                    " swim under the water. One fish hides behind a ",
+                    { answer: "rock", style: "outlined-purple" },
+                    ". Now only ",
+                    { answer: "one", style: "outlined-orange" },
+                    " fish can be seen."
+                ]
+            },
+            {
+                title: "Rainy Walk",
+                parts: [
+                    "Nina wears her ",
+                    { answer: "raincoat", style: "outlined-blue" },
+                    " on a cloudy ",
+                    { answer: "day", style: "outlined-pink" },
+                    ". Soon the rain starts to ",
+                    { answer: "fall", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                title: "Balloon Fun",
+                parts: [
+                    "Leo has one ",
+                    { answer: "balloon", style: "outlined-pink" },
+                    " at the ",
+                    { answer: "fair", style: "outlined-orange" },
+                    ". His dad buys him another one. Now Leo has ",
+                    { answer: "two", style: "outlined-blue" },
+                    " balloons."
+                ]
+            },
+            {
+                title: "By the Pond",
+                parts: [
+                    "Four frogs sit by the ",
+                    { answer: "pond", style: "outlined-teal" },
+                    ". One frog jumps into the ",
+                    { answer: "water", style: "outlined-blue" },
+                    ". Now ",
+                    { answer: "three", style: "outlined-orange" },
+                    " frogs are sitting by the pond."
+                ]
+            },
+            {
+                title: "Sandwich Time",
+                parts: [
+                    "A girl makes a sandwich for lunch. She puts ",
+                    { answer: "cheese", style: "outlined-orange" },
+                    " between two pieces of ",
+                    { answer: "bread", style: "outlined-blue" },
+                    ". Then she cuts it in ",
+                    { answer: "half", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                title: "Snowman Builder",
+                parts: [
+                    "A boy builds a snowman in the yard. He gives it a carrot ",
+                    { answer: "nose", style: "outlined-purple" },
+                    " and two stick ",
+                    { answer: "arms", style: "outlined-teal" },
+                    ". Then he ",
+                    { answer: "smiles", style: "outlined-orange" },
+                    " at his work."
+                ]
+            },
+            {
+                title: "Classroom Garden",
+                parts: [
+                    "The class plants flowers in the ",
+                    { answer: "garden", style: "outlined-teal" },
+                    ". They dig little ",
+                    { answer: "holes", style: "outlined-orange" },
+                    " in the soil. Then they place the flowers ",
+                    { answer: "inside", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                title: "Starry Night",
+                parts: [
+                    "Noah sees six stars in the sky. A ",
+                    { answer: "cloud", style: "outlined-blue" },
+                    " covers ",
+                    { answer: "two", style: "outlined-orange" },
+                    " of them. Now he can see ",
+                    { answer: "four", style: "outlined-teal" },
+                    " stars."
+                ]
+            },
+            {
+                title: "Book Time",
+                parts: [
+                    "Lucy is reading a book about bears. Her little ",
+                    { answer: "brother", style: "outlined-pink" },
+                    " sits beside her. They look at the ",
+                    { answer: "pictures", style: "outlined-blue" },
+                    " ",
+                    { answer: "together", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                title: "Duck Parade",
+                parts: [
+                    "A duck is swimming in the pond. Two more ",
+                    { answer: "ducks", style: "outlined-orange" },
+                    " join her in the ",
+                    { answer: "water", style: "outlined-blue" },
+                    ". Now ",
+                    { answer: "three", style: "outlined-pink" },
+                    " ducks swim together."
+                ]
+            }
+        ];
+
+        class StoryPuzzleGame {
+            constructor(stories) {
+                this.stories = this.shuffle(stories.slice());
+                this.storyIndex = 0;
+                this.selectedTileId = null;
+                this.dragState = null;
+                this.autoNextTimer = null;
+
+                this.storyText = document.getElementById("storyText");
+                this.wordBank = document.getElementById("wordBank");
+                this.celebration = document.getElementById("celebration");
+
+                this.renderStory();
+            }
+
+            shuffle(items) {
+                const copy = items.slice();
+                for (let i = copy.length - 1; i > 0; i -= 1) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [copy[i], copy[j]] = [copy[j], copy[i]];
+                }
+                return copy;
+            }
+
+            get currentStory() {
+                return this.stories[this.storyIndex];
+            }
+
+            buildBlankEntries(parts) {
+                return parts
+                    .map((part, index) => typeof part === "string" ? null : { ...part, blankId: `blank-${index}` })
+                    .filter(Boolean);
+            }
+
+            renderStory() {
+                clearTimeout(this.autoNextTimer);
+                this.selectedTileId = null;
+                this.dragState = null;
+
+                const story = this.currentStory;
+                const blanks = this.buildBlankEntries(story.parts);
+                const shuffledTiles = this.shuffle(blanks.map((blank, index) => ({
+                    id: `tile-${index}`,
+                    answer: blank.answer,
+                    style: blank.style,
+                    blankId: blank.blankId,
+                    used: false
+                })));
+
+                this.activeTiles = shuffledTiles;
+                this.activeBlanks = blanks.reduce((map, blank) => {
+                    map[blank.blankId] = {
+                        answer: blank.answer,
+                        style: blank.style,
+                        filled: false
+                    };
+                    return map;
+                }, {});
+
+                this.storyText.innerHTML = "";
+                story.parts.forEach((part, index) => {
+                    if (typeof part === "string") {
+                        const span = document.createElement("span");
+                        span.className = "chunk";
+                        span.textContent = part;
+                        this.storyText.appendChild(span);
+                        return;
+                    }
+
+                    const blank = document.createElement("button");
+                    blank.type = "button";
+                    blank.className = `blank ${part.style}`;
+                    blank.dataset.blankId = `blank-${index}`;
+                    blank.dataset.answer = part.answer;
+                    blank.setAttribute("aria-label", `Place the word ${part.answer}`);
+                    blank.textContent = part.answer;
+                    blank.addEventListener("click", () => this.handleBlankClick(blank.dataset.blankId));
+                    this.storyText.appendChild(blank);
+                });
+
+                this.wordBank.innerHTML = "";
+                this.activeTiles.forEach((tile) => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = `word-tile ${tile.style}`;
+                    button.dataset.tileId = tile.id;
+                    button.dataset.answer = tile.answer;
+                    button.dataset.blankId = tile.blankId;
+                    button.textContent = tile.answer;
+
+                    button.addEventListener("click", () => this.handleTileClick(tile.id));
+                    button.addEventListener("dragstart", (event) => this.handleNativeDragStart(event, tile.id));
+                    button.addEventListener("dragend", () => this.clearBlankFocus());
+                    button.draggable = true;
+                    button.addEventListener("pointerdown", (event) => this.handlePointerDown(event, tile.id));
+
+                    this.wordBank.appendChild(button);
+                });
+
+                Array.from(this.storyText.querySelectorAll(".blank")).forEach((blank) => {
+                    blank.addEventListener("dragover", (event) => event.preventDefault());
+                    blank.addEventListener("drop", (event) => this.handleDrop(event, blank.dataset.blankId));
+                });
+            }
+
+            getTileElement(tileId) {
+                return this.wordBank.querySelector(`[data-tile-id="${tileId}"]`);
+            }
+
+            getBlankElement(blankId) {
+                return this.storyText.querySelector(`[data-blank-id="${blankId}"]`);
+            }
+
+            handleTileClick(tileId) {
+                const tile = this.activeTiles.find((entry) => entry.id === tileId);
+                if (!tile || tile.used) {
+                    return;
+                }
+
+                if (this.selectedTileId === tileId) {
+                    this.selectedTileId = null;
+                } else {
+                    this.selectedTileId = tileId;
+                }
+
+                this.syncSelectedTile();
+            }
+
+            handleBlankClick(blankId) {
+                if (!this.selectedTileId) {
+                    return;
+                }
+
+                this.tryPlaceTile(this.selectedTileId, blankId);
+            }
+
+            syncSelectedTile() {
+                Array.from(this.wordBank.children).forEach((tile) => {
+                    tile.classList.toggle("selected", tile.dataset.tileId === this.selectedTileId);
+                });
+            }
+
+            clearBlankFocus() {
+                Array.from(this.storyText.querySelectorAll(".blank")).forEach((blank) => {
+                    blank.classList.remove("active");
+                });
+            }
+
+            handleNativeDragStart(event, tileId) {
+                const tile = this.activeTiles.find((entry) => entry.id === tileId);
+                if (!tile || tile.used) {
+                    event.preventDefault();
+                    return;
+                }
+
+                event.dataTransfer.setData("text/plain", tileId);
+                this.selectedTileId = tileId;
+                this.syncSelectedTile();
+                this.highlightTarget(tile.blankId);
+            }
+
+            handleDrop(event, blankId) {
+                event.preventDefault();
+                const tileId = event.dataTransfer.getData("text/plain") || this.selectedTileId;
+                this.tryPlaceTile(tileId, blankId);
+            }
+
+            handlePointerDown(event, tileId) {
+                const tile = this.activeTiles.find((entry) => entry.id === tileId);
+                if (!tile || tile.used) {
+                    return;
+                }
+
+                if (event.pointerType === "mouse" && event.button !== 0) {
+                    return;
+                }
+
+                event.preventDefault();
+                const tileElement = this.getTileElement(tileId);
+                const rect = tileElement.getBoundingClientRect();
+                const clone = tileElement.cloneNode(true);
+                clone.classList.add("drag-clone");
+                clone.style.width = `${rect.width}px`;
+                clone.style.height = `${rect.height}px`;
+                document.body.appendChild(clone);
+
+                tileElement.classList.add("dragging");
+                this.selectedTileId = tileId;
+                this.syncSelectedTile();
+                this.highlightTarget(tile.blankId);
+
+                const offsetX = event.clientX - rect.left;
+                const offsetY = event.clientY - rect.top;
+
+                this.dragState = { tileId, clone, offsetX, offsetY };
+                this.positionClone(event.clientX, event.clientY);
+
+                tileElement.setPointerCapture(event.pointerId);
+                tileElement.addEventListener("pointermove", this.boundPointerMove = (moveEvent) => this.handlePointerMove(moveEvent));
+                tileElement.addEventListener("pointerup", this.boundPointerUp = (upEvent) => this.handlePointerUp(upEvent));
+                tileElement.addEventListener("pointercancel", this.boundPointerUp);
+            }
+
+            handlePointerMove(event) {
+                if (!this.dragState) {
+                    return;
+                }
+
+                this.positionClone(event.clientX, event.clientY);
+
+                const target = document.elementFromPoint(event.clientX, event.clientY);
+                const blank = target && target.closest(".blank");
+                this.clearBlankFocus();
+                if (blank && !blank.classList.contains("correct")) {
+                    blank.classList.add("active");
+                }
+            }
+
+            handlePointerUp(event) {
+                if (!this.dragState) {
+                    return;
+                }
+
+                const tileElement = this.getTileElement(this.dragState.tileId);
+                const target = document.elementFromPoint(event.clientX, event.clientY);
+                const blank = target && target.closest(".blank");
+
+                if (blank) {
+                    this.tryPlaceTile(this.dragState.tileId, blank.dataset.blankId);
+                } else {
+                    this.clearBlankFocus();
+                }
+
+                if (tileElement) {
+                    tileElement.classList.remove("dragging");
+                    tileElement.removeEventListener("pointermove", this.boundPointerMove);
+                    tileElement.removeEventListener("pointerup", this.boundPointerUp);
+                    tileElement.removeEventListener("pointercancel", this.boundPointerUp);
+                }
+
+                this.dragState.clone.remove();
+                this.dragState = null;
+            }
+
+            positionClone(clientX, clientY) {
+                if (!this.dragState) {
+                    return;
+                }
+
+                const x = clientX - this.dragState.offsetX;
+                const y = clientY - this.dragState.offsetY;
+                this.dragState.clone.style.transform = `translate(${x}px, ${y}px) rotate(-3deg)`;
+            }
+
+            highlightTarget(blankId) {
+                this.clearBlankFocus();
+                const blank = this.getBlankElement(blankId);
+                if (blank && !blank.classList.contains("correct")) {
+                    blank.classList.add("active");
+                }
+            }
+
+            tryPlaceTile(tileId, blankId) {
+                const tile = this.activeTiles.find((entry) => entry.id === tileId);
+                const blankState = this.activeBlanks[blankId];
+                const blankElement = this.getBlankElement(blankId);
+                const tileElement = this.getTileElement(tileId);
+
+                if (!tile || !blankState || !blankElement || !tileElement || tile.used || blankState.filled) {
+                    return;
+                }
+
+                this.clearBlankFocus();
+
+                if (tile.blankId !== blankId) {
+                    blankElement.classList.remove("wrong");
+                    void blankElement.offsetWidth;
+                    blankElement.classList.add("wrong");
+                    return;
+                }
+
+                tile.used = true;
+                blankState.filled = true;
+                this.selectedTileId = null;
+                this.syncSelectedTile();
+
+                blankElement.classList.remove("active", "wrong");
+                blankElement.classList.add("correct");
+                blankElement.textContent = tile.answer;
+
+                tileElement.classList.remove("selected", "dragging");
+                tileElement.classList.add("used");
+
+                if (this.activeTiles.every((entry) => entry.used)) {
+                    this.handleStoryComplete();
+                }
+            }
+
+            handleStoryComplete() {
+                this.launchCelebration();
+                this.autoNextTimer = setTimeout(() => this.nextStory(), 1500);
+            }
+
+            launchCelebration() {
+                this.celebration.classList.remove("active");
+                void this.celebration.offsetWidth;
+                this.celebration.classList.add("active");
+
+                const colors = ["#ff9f1c", "#38b86c", "#4f95ff", "#ff5b95", "#8c6df2"];
+                for (let i = 0; i < 20; i += 1) {
+                    const confetti = document.createElement("div");
+                    confetti.className = "confetti";
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    confetti.style.background = colors[i % colors.length];
+                    confetti.style.animationDelay = `${Math.random() * 0.15}s`;
+                    confetti.style.transform = `rotate(${Math.random() * 180}deg)`;
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 1500);
+                }
+            }
+
+            nextStory() {
+                this.storyIndex = (this.storyIndex + 1) % this.stories.length;
+                this.renderStory();
+            }
+        }
+
+        new StoryPuzzleGame(STORY_SET);
+    </script>
+</body>
+</html>
