@@ -188,6 +188,15 @@
             white-space: pre-wrap;
         }
 
+        .story-text .story-word {
+            display: inline;
+            font: inherit;
+            font-weight: 900;
+            -webkit-text-stroke: 2px currentColor;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+        }
+
         .story-text .blank,
         .word-tile {
             appearance: none;
@@ -804,8 +813,733 @@
                     { answer: "three", style: "outlined-pink" },
                     " ducks swim together."
                 ]
+            },
+            {
+                level: 1,
+                hiddenCount: 1,
+                title: "Blue Cup",
+                parts: [
+                    "Omar drinks water from his blue ",
+                    { answer: "cup", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 1,
+                hiddenCount: 1,
+                title: "Soft Pillow",
+                parts: [
+                    "Sara rests her head on a soft ",
+                    { answer: "pillow", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 2,
+                hiddenCount: 1,
+                title: "Tiny Bug",
+                parts: [
+                    "A tiny ",
+                    { answer: "bug", style: "outlined-orange" },
+                    " crawls on the leaf."
+                ]
+            },
+            {
+                level: 2,
+                hiddenCount: 1,
+                title: "Milk Glass",
+                parts: [
+                    "Zoe pours cold milk into a ",
+                    { answer: "glass", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 3,
+                hiddenCount: 2,
+                title: "Bus Stop",
+                parts: [
+                    "Tim waits for the ",
+                    { answer: "bus", style: "outlined-blue" },
+                    " at the ",
+                    { answer: "stop", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 3,
+                hiddenCount: 2,
+                title: "Cookie Plate",
+                parts: [
+                    "Mom puts a warm ",
+                    { answer: "cookie", style: "outlined-pink" },
+                    " on a small ",
+                    { answer: "plate", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 4,
+                hiddenCount: 2,
+                title: "Beach Bucket",
+                parts: [
+                    "Kai fills his ",
+                    { answer: "bucket", style: "outlined-teal" },
+                    " with sand by the ",
+                    { answer: "beach", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 4,
+                hiddenCount: 2,
+                title: "Morning Shirt",
+                parts: [
+                    "Emma buttons her ",
+                    { answer: "shirt", style: "outlined-blue" },
+                    " before eating ",
+                    { answer: "breakfast", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 5,
+                hiddenCount: 2,
+                title: "Cherry Bowl",
+                parts: [
+                    "Five red ",
+                    { answer: "cherries", style: "outlined-orange" },
+                    " sit in a ",
+                    { answer: "bowl", style: "outlined-blue" },
+                    ". Dad eats one. Now ",
+                    { answer: "four", style: "outlined-teal" },
+                    " cherries are left."
+                ]
+            },
+            {
+                level: 5,
+                hiddenCount: 2,
+                title: "Toy Cars",
+                parts: [
+                    "Luca has three toy ",
+                    { answer: "cars", style: "outlined-pink" },
+                    " on the ",
+                    { answer: "floor", style: "outlined-orange" },
+                    ". He gives one to a friend. Now he has ",
+                    { answer: "two", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 6,
+                hiddenCount: 2,
+                title: "Mud Trail",
+                parts: [
+                    "After the storm, the ",
+                    { answer: "path", style: "outlined-blue" },
+                    " is full of sticky ",
+                    { answer: "mud", style: "outlined-teal" },
+                    ". Ava steps carefully in her boots and keeps her feet ",
+                    { answer: "clean", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 6,
+                hiddenCount: 2,
+                title: "Lost Feather",
+                parts: [
+                    "A gray bird drops a ",
+                    { answer: "feather", style: "outlined-pink" },
+                    " near the ",
+                    { answer: "fence", style: "outlined-purple" },
+                    ". Ben picks it up and puts it in his ",
+                    { answer: "pocket", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 7,
+                hiddenCount: 3,
+                title: "Picnic Blanket",
+                parts: [
+                    "The family spreads a wide ",
+                    { answer: "blanket", style: "outlined-teal" },
+                    " on the ",
+                    { answer: "grass", style: "outlined-orange" },
+                    ". They sit down together and open a basket of ",
+                    { answer: "snacks", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 7,
+                hiddenCount: 3,
+                title: "Mailbox Helper",
+                parts: [
+                    "Nora carries a small ",
+                    { answer: "letter", style: "outlined-orange" },
+                    " to the red ",
+                    { answer: "mailbox", style: "outlined-blue" },
+                    ". She lifts the flag and drops it ",
+                    { answer: "inside", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 8,
+                hiddenCount: 3,
+                title: "Farm Morning",
+                parts: [
+                    "At sunrise, the ",
+                    { answer: "rooster", style: "outlined-teal" },
+                    " stands on the ",
+                    { answer: "fence", style: "outlined-purple" },
+                    ". Its loud crow wakes the whole ",
+                    { answer: "farm", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 8,
+                hiddenCount: 3,
+                title: "Treasure Map",
+                parts: [
+                    "Milo draws an ",
+                    { answer: "island", style: "outlined-blue" },
+                    " on his paper map. He marks the tall ",
+                    { answer: "palm", style: "outlined-pink" },
+                    " tree and puts an X by the hidden ",
+                    { answer: "chest", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 9,
+                hiddenCount: 3,
+                title: "Library Steps",
+                parts: [
+                    "Ivy walks into the ",
+                    { answer: "library", style: "outlined-pink" },
+                    " with her ",
+                    { answer: "card", style: "outlined-orange" },
+                    ". She borrows two books and carries them home in a ",
+                    { answer: "bag", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 9,
+                hiddenCount: 3,
+                title: "Puppy Bath",
+                parts: [
+                    "The puppy splashes in the ",
+                    { answer: "tub", style: "outlined-teal" },
+                    " while Mia rubs in ",
+                    { answer: "soap", style: "outlined-blue" },
+                    ". At the end, she wraps him in a dry ",
+                    { answer: "towel", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 10,
+                hiddenCount: 3,
+                title: "Camping Night",
+                parts: [
+                    "The children zip the ",
+                    { answer: "tent", style: "outlined-orange" },
+                    " before the night grows ",
+                    { answer: "cold", style: "outlined-blue" },
+                    ". Outside, they hear an owl ",
+                    { answer: "hoot", style: "outlined-pink" },
+                    " in the dark."
+                ]
+            },
+            {
+                level: 10,
+                hiddenCount: 3,
+                title: "Market Basket",
+                parts: [
+                    "At the market, Grandma picks ripe ",
+                    { answer: "peaches", style: "outlined-purple" },
+                    " and fresh ",
+                    { answer: "corn", style: "outlined-teal" },
+                    ". She sets them gently in her woven ",
+                    { answer: "basket", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 11,
+                hiddenCount: 3,
+                title: "Music Practice",
+                parts: [
+                    "Eli opens the ",
+                    { answer: "music", style: "outlined-teal" },
+                    " book on the stand. He taps his foot to keep the ",
+                    { answer: "beat", style: "outlined-orange" },
+                    " and plays each note with steady ",
+                    { answer: "hands", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 11,
+                hiddenCount: 3,
+                title: "River Stones",
+                parts: [
+                    "On the riverbank, June finds smooth ",
+                    { answer: "stones", style: "outlined-pink" },
+                    " in the shallow ",
+                    { answer: "water", style: "outlined-blue" },
+                    ". She lines them up to make a tiny ",
+                    { answer: "bridge", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 12,
+                hiddenCount: 3,
+                title: "Moonlit Ride",
+                parts: [
+                    "After dinner, the family rides their ",
+                    { answer: "bikes", style: "outlined-orange" },
+                    " along the quiet ",
+                    { answer: "trail", style: "outlined-blue" },
+                    ". The rising moon shines on their helmets and lights the ",
+                    { answer: "path", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 12,
+                hiddenCount: 3,
+                title: "Baker's Morning",
+                parts: [
+                    "Before sunrise, the baker kneads the ",
+                    { answer: "dough", style: "outlined-teal" },
+                    " on a floured ",
+                    { answer: "table", style: "outlined-orange" },
+                    ". Soon the warm smell of fresh bread fills the whole ",
+                    { answer: "shop", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 12,
+                hiddenCount: 3,
+                title: "Lantern Festival",
+                parts: [
+                    "At the festival, children carry glowing ",
+                    { answer: "lanterns", style: "outlined-purple" },
+                    " through the busy ",
+                    { answer: "street", style: "outlined-teal" },
+                    ". Music floats through the air while families watch the bright colors ",
+                    { answer: "dance", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 1,
+                hiddenCount: 1,
+                title: "Green Socks",
+                parts: [
+                    "Tariq pulls on his green ",
+                    { answer: "socks", style: "outlined-teal" },
+                    " before school."
+                ]
+            },
+            {
+                level: 1,
+                hiddenCount: 1,
+                title: "Pet Bowl",
+                parts: [
+                    "The puppy drinks water from his silver ",
+                    { answer: "bowl", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 1,
+                hiddenCount: 1,
+                title: "Sunny Cap",
+                parts: [
+                    "Rina wears a bright ",
+                    { answer: "cap", style: "outlined-orange" },
+                    " in the sun."
+                ]
+            },
+            {
+                level: 2,
+                hiddenCount: 1,
+                title: "Dusty Boots",
+                parts: [
+                    "After the walk, Eli wipes his muddy ",
+                    { answer: "boots", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 2,
+                hiddenCount: 1,
+                title: "Jam Toast",
+                parts: [
+                    "Grandma spreads sweet ",
+                    { answer: "jam", style: "outlined-pink" },
+                    " on warm toast."
+                ]
+            },
+            {
+                level: 2,
+                hiddenCount: 1,
+                title: "Paper Boat",
+                parts: [
+                    "Noah folds a paper ",
+                    { answer: "boat", style: "outlined-blue" },
+                    " for the puddle."
+                ]
+            },
+            {
+                level: 3,
+                hiddenCount: 2,
+                title: "Window Plant",
+                parts: [
+                    "A green ",
+                    { answer: "plant", style: "outlined-teal" },
+                    " sits by the sunny ",
+                    { answer: "window", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 3,
+                hiddenCount: 2,
+                title: "Lunch Bell",
+                parts: [
+                    "The ",
+                    { answer: "bell", style: "outlined-blue" },
+                    " rings at ",
+                    { answer: "lunch", style: "outlined-pink" },
+                    " time."
+                ]
+            },
+            {
+                level: 3,
+                hiddenCount: 2,
+                title: "Corner Shop",
+                parts: [
+                    "Mom buys milk at the corner ",
+                    { answer: "shop", style: "outlined-orange" },
+                    " on our ",
+                    { answer: "street", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 4,
+                hiddenCount: 2,
+                title: "Autumn Leaves",
+                parts: [
+                    "The wind blows orange ",
+                    { answer: "leaves", style: "outlined-orange" },
+                    " across the front ",
+                    { answer: "steps", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 4,
+                hiddenCount: 2,
+                title: "Pencil Case",
+                parts: [
+                    "Mina zips her ",
+                    { answer: "pencil", style: "outlined-teal" },
+                    " case after putting away her best ",
+                    { answer: "eraser", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 4,
+                hiddenCount: 2,
+                title: "Lemon Drink",
+                parts: [
+                    "On a hot day, Dad pours cold ",
+                    { answer: "lemonade", style: "outlined-blue" },
+                    " into a tall ",
+                    { answer: "pitcher", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 5,
+                hiddenCount: 2,
+                title: "Marble Jar",
+                parts: [
+                    "Nico keeps six ",
+                    { answer: "marbles", style: "outlined-pink" },
+                    " in a glass ",
+                    { answer: "jar", style: "outlined-blue" },
+                    ". He gives one to his cousin. Now he has ",
+                    { answer: "five", style: "outlined-orange" },
+                    " left."
+                ]
+            },
+            {
+                level: 5,
+                hiddenCount: 2,
+                title: "Cookie Count",
+                parts: [
+                    "There are four ",
+                    { answer: "cookies", style: "outlined-orange" },
+                    " on the ",
+                    { answer: "tray", style: "outlined-teal" },
+                    ". Two are eaten after dinner. Now ",
+                    { answer: "two", style: "outlined-blue" },
+                    " cookies remain."
+                ]
+            },
+            {
+                level: 6,
+                hiddenCount: 2,
+                title: "Windy Porch",
+                parts: [
+                    "A strong ",
+                    { answer: "wind", style: "outlined-blue" },
+                    " shakes the porch ",
+                    { answer: "swing", style: "outlined-orange" },
+                    ". Maya holds her hat and stays safely ",
+                    { answer: "inside", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 6,
+                hiddenCount: 2,
+                title: "Shell Pocket",
+                parts: [
+                    "At the shore, Ben finds a striped ",
+                    { answer: "shell", style: "outlined-teal" },
+                    " near the wet ",
+                    { answer: "sand", style: "outlined-blue" },
+                    ". He slips it into his jacket ",
+                    { answer: "pocket", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 7,
+                hiddenCount: 3,
+                title: "Butterfly Chase",
+                parts: [
+                    "A yellow ",
+                    { answer: "butterfly", style: "outlined-orange" },
+                    " lands on a purple ",
+                    { answer: "flower", style: "outlined-pink" },
+                    ". Zoe tiptoes closer, but it lifts away into the bright ",
+                    { answer: "air", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 7,
+                hiddenCount: 3,
+                title: "Pancake Morning",
+                parts: [
+                    "Dad flips a round ",
+                    { answer: "pancake", style: "outlined-teal" },
+                    " in the hot ",
+                    { answer: "pan", style: "outlined-purple" },
+                    ". When it is done, he adds a spoonful of sweet ",
+                    { answer: "syrup", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 8,
+                hiddenCount: 3,
+                title: "Harbor Gulls",
+                parts: [
+                    "White ",
+                    { answer: "gulls", style: "outlined-blue" },
+                    " circle above the small ",
+                    { answer: "boats", style: "outlined-teal" },
+                    ". Their cries echo over the quiet ",
+                    { answer: "harbor", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 8,
+                hiddenCount: 3,
+                title: "Cave Echo",
+                parts: [
+                    "Inside the dark ",
+                    { answer: "cave", style: "outlined-purple" },
+                    ", Omar claps his ",
+                    { answer: "hands", style: "outlined-orange" },
+                    ". The sound bounces back as a soft ",
+                    { answer: "echo", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 9,
+                hiddenCount: 3,
+                title: "Firefly Field",
+                parts: [
+                    "At dusk, tiny ",
+                    { answer: "fireflies", style: "outlined-pink" },
+                    " blink above the tall ",
+                    { answer: "grass", style: "outlined-teal" },
+                    ". Ava watches their little lights drift across the ",
+                    { answer: "field", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 9,
+                hiddenCount: 3,
+                title: "Art Table",
+                parts: [
+                    "The class covers the ",
+                    { answer: "table", style: "outlined-orange" },
+                    " with paper before opening the paint ",
+                    { answer: "jars", style: "outlined-teal" },
+                    ". Soon every child is mixing a new ",
+                    { answer: "color", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 10,
+                hiddenCount: 3,
+                title: "Mountain Picnic",
+                parts: [
+                    "After a long climb, the hikers reach a flat ",
+                    { answer: "rock", style: "outlined-purple" },
+                    " near the top. They open their lunch ",
+                    { answer: "packs", style: "outlined-orange" },
+                    " and enjoy the cool ",
+                    { answer: "breeze", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 10,
+                hiddenCount: 3,
+                title: "Train Ride",
+                parts: [
+                    "Lena finds a window ",
+                    { answer: "seat", style: "outlined-blue" },
+                    " on the train. She watches farms and bridges rush ",
+                    { answer: "past", style: "outlined-pink" },
+                    " while the wheels clatter on the ",
+                    { answer: "tracks", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 11,
+                hiddenCount: 3,
+                title: "Science Table",
+                parts: [
+                    "During science time, the students pour clear ",
+                    { answer: "water", style: "outlined-blue" },
+                    " into a glass ",
+                    { answer: "tube", style: "outlined-teal" },
+                    ". Then they write down each careful ",
+                    { answer: "result", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 11,
+                hiddenCount: 3,
+                title: "Orchard Ladder",
+                parts: [
+                    "In the orchard, Uncle Ray leans a wooden ",
+                    { answer: "ladder", style: "outlined-orange" },
+                    " against the apple ",
+                    { answer: "tree", style: "outlined-blue" },
+                    ". He reaches up slowly and fills a basket with ripe ",
+                    { answer: "fruit", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 11,
+                hiddenCount: 3,
+                title: "Chess Lesson",
+                parts: [
+                    "Grandpa shows Mina how each ",
+                    { answer: "piece", style: "outlined-purple" },
+                    " moves across the checkered ",
+                    { answer: "board", style: "outlined-blue" },
+                    ". She studies the game in silence, then makes a clever ",
+                    { answer: "move", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 12,
+                hiddenCount: 3,
+                title: "First Frost",
+                parts: [
+                    "Early in the morning, silver ",
+                    { answer: "frost", style: "outlined-teal" },
+                    " covers the garden ",
+                    { answer: "gate", style: "outlined-orange" },
+                    ". When the sun rises higher, the icy edges begin to ",
+                    { answer: "melt", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 12,
+                hiddenCount: 3,
+                title: "Theater Curtain",
+                parts: [
+                    "Behind the red ",
+                    { answer: "curtain", style: "outlined-pink" },
+                    ", the actors whisper their last ",
+                    { answer: "lines", style: "outlined-purple" },
+                    ". A moment later, the music starts and the whole stage grows ",
+                    { answer: "bright", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 12,
+                hiddenCount: 3,
+                title: "Harbor Lighthouse",
+                parts: [
+                    "As evening falls, the tall ",
+                    { answer: "lighthouse", style: "outlined-blue" },
+                    " shines across the dark ",
+                    { answer: "water", style: "outlined-teal" },
+                    ". Its steady beam helps every fishing boat find the safe ",
+                    { answer: "shore", style: "outlined-orange" },
+                    "."
+                ]
             }
         ];
+
+        const GENERATED_WORD_STYLES = [
+            "outlined-blue",
+            "outlined-orange",
+            "outlined-teal",
+            "outlined-pink",
+            "outlined-purple"
+        ];
+
+        const NON_CANDIDATE_WORDS = new Set([
+            "a", "an", "and", "are", "as", "at", "be", "before", "behind", "by", "for",
+            "from", "he", "her", "his", "i", "in", "into", "is", "it", "its", "later",
+            "my", "near", "now", "of", "on", "out", "she", "than", "that", "the", "their",
+            "them", "then", "there", "they", "this", "to", "together", "up", "while", "with"
+        ]);
 
         class StoryPuzzleGame {
             constructor(stories) {
@@ -848,17 +1582,173 @@
                 return this.currentStory.level;
             }
 
-            buildBlankEntries(parts) {
-                return parts
-                    .map((part, index) => typeof part === "string" ? null : { ...part, blankId: `blank-${index}` })
-                    .filter(Boolean);
+            getGeneratedWordStyle(seed) {
+                return GENERATED_WORD_STYLES[seed % GENERATED_WORD_STYLES.length];
             }
 
-            getHiddenBlankIds(blanks, hiddenCount) {
-                const count = Math.min(blanks.length, Math.max(0, hiddenCount));
-                const rotated = blanks.slice();
-                const offset = this.completedStories % Math.max(1, blanks.length);
-                return new Set(rotated.slice(offset).concat(rotated.slice(0, offset)).slice(0, count).map((blank) => blank.blankId));
+            isGeneratedCandidate(word, previousWord, nextWord) {
+                const lowerWord = word.toLowerCase();
+                const lowerPrevious = previousWord ? previousWord.toLowerCase() : "";
+                const lowerNext = nextWord ? nextWord.toLowerCase() : "";
+
+                if (word !== lowerWord || NON_CANDIDATE_WORDS.has(lowerWord)) {
+                    return false;
+                }
+
+                if (!/^[a-z]+(?:'[a-z]+)?$/.test(lowerWord)) {
+                    return false;
+                }
+
+                if (lowerWord.length < 4 && !["one", "two", "three", "four", "five", "half"].includes(lowerWord)) {
+                    return false;
+                }
+
+                if (["the", "a", "an", "my", "his", "her", "their", "our"].includes(lowerPrevious)) {
+                    return true;
+                }
+
+                if (["is", "are", "was", "were", "looks", "sounds", "feels"].includes(lowerNext)) {
+                    return true;
+                }
+
+                return lowerWord.length >= 5;
+            }
+
+            scoreCandidate(candidate) {
+                const lowerWord = candidate.answer.toLowerCase();
+                const previousWord = candidate.previousWord ? candidate.previousWord.toLowerCase() : "";
+                let score = candidate.source === "authored" ? 6 : 2;
+
+                if (["the", "a", "an", "my", "his", "her", "their", "our"].includes(previousWord)) {
+                    score += 2;
+                }
+
+                if (lowerWord.length >= 6) {
+                    score += 1;
+                }
+
+                if (["one", "two", "three", "four", "five", "half"].includes(lowerWord)) {
+                    score -= 1;
+                }
+
+                return score;
+            }
+
+            buildStoryCandidates(story) {
+                const units = [];
+                const wordPattern = /([A-Za-z]+(?:'[A-Za-z]+)?)/g;
+
+                story.parts.forEach((part, partIndex) => {
+                    if (typeof part !== "string") {
+                        units.push({
+                            type: "candidate",
+                            key: `authored-${partIndex}`,
+                            answer: part.answer,
+                            style: part.style,
+                            source: "authored",
+                            previousWord: "",
+                            nextWord: ""
+                        });
+                        return;
+                    }
+
+                    const matches = Array.from(part.matchAll(wordPattern));
+                    if (!matches.length) {
+                        units.push({ type: "text", text: part });
+                        return;
+                    }
+
+                    let lastIndex = 0;
+                    matches.forEach((match, matchIndex) => {
+                        const [word] = match;
+                        const wordIndex = match.index ?? 0;
+
+                        if (wordIndex > lastIndex) {
+                            units.push({ type: "text", text: part.slice(lastIndex, wordIndex) });
+                        }
+
+                        const previousWord = matches[matchIndex - 1]?.[0] ?? "";
+                        const nextWord = matches[matchIndex + 1]?.[0] ?? "";
+                        if (this.isGeneratedCandidate(word, previousWord, nextWord)) {
+                            units.push({
+                                type: "candidate",
+                                key: `generated-${partIndex}-${wordIndex}`,
+                                answer: word,
+                                style: this.getGeneratedWordStyle(partIndex + matchIndex),
+                                source: "generated",
+                                previousWord,
+                                nextWord
+                            });
+                        } else {
+                            units.push({ type: "text", text: word });
+                        }
+
+                        lastIndex = wordIndex + word.length;
+                    });
+
+                    if (lastIndex < part.length) {
+                        units.push({ type: "text", text: part.slice(lastIndex) });
+                    }
+                });
+
+                return units;
+            }
+
+            pickPuzzleWords(candidates, hiddenCount) {
+                const count = Math.min(candidates.length, Math.max(1, hiddenCount));
+                const weighted = candidates
+                    .map((candidate) => ({
+                        ...candidate,
+                        random: Math.random(),
+                        score: this.scoreCandidate(candidate)
+                    }))
+                    .sort((left, right) => {
+                        if (right.score !== left.score) {
+                            return right.score - left.score;
+                        }
+
+                        return left.random - right.random;
+                    });
+
+                const shortlistSize = Math.min(weighted.length, Math.max(count + 2, count));
+                const shortlist = this.shuffle(weighted.slice(0, shortlistSize));
+                return new Set(shortlist.slice(0, count).map((candidate) => candidate.key));
+            }
+
+            prepareStoryRound(story) {
+                const units = this.buildStoryCandidates(story);
+                const candidates = units.filter((unit) => unit.type === "candidate");
+                const selectedKeys = this.pickPuzzleWords(candidates, story.hiddenCount ?? candidates.length);
+                let blankIndex = 0;
+
+                const renderUnits = units.map((unit) => {
+                    if (unit.type !== "candidate") {
+                        return unit;
+                    }
+
+                    if (!selectedKeys.has(unit.key)) {
+                        return {
+                            type: "word",
+                            text: unit.answer,
+                            style: unit.style,
+                            source: unit.source
+                        };
+                    }
+
+                    const blankId = `blank-${blankIndex}`;
+                    blankIndex += 1;
+                    return {
+                        type: "blank",
+                        blankId,
+                        answer: unit.answer,
+                        style: unit.style
+                    };
+                });
+
+                return {
+                    blanks: renderUnits.filter((unit) => unit.type === "blank"),
+                    renderUnits
+                };
             }
 
             updateNextButton() {
@@ -873,8 +1763,7 @@
                 this.wordBank.style.removeProperty("--word-bank-height");
 
                 const story = this.currentStory;
-                const blanks = this.buildBlankEntries(story.parts);
-                const hiddenBlankIds = this.getHiddenBlankIds(blanks, story.hiddenCount ?? blanks.length);
+                const { blanks, renderUnits } = this.prepareStoryRound(story);
                 const shuffledTiles = this.shuffle(blanks.map((blank, index) => ({
                     id: `tile-${index}`,
                     answer: blank.answer,
@@ -897,25 +1786,30 @@
                 this.levelBadge.textContent = `Level ${this.currentLevel}`;
 
                 this.storyText.innerHTML = "";
-                story.parts.forEach((part, index) => {
-                    if (typeof part === "string") {
+                renderUnits.forEach((part) => {
+                    if (part.type === "text") {
                         const span = document.createElement("span");
                         span.className = "chunk";
-                        span.textContent = part;
+                        span.textContent = part.text;
                         this.storyText.appendChild(span);
+                        return;
+                    }
+
+                    if (part.type === "word") {
+                        const word = document.createElement("span");
+                        word.className = part.source === "authored" ? `story-word ${part.style}` : "chunk";
+                        word.textContent = part.text;
+                        this.storyText.appendChild(word);
                         return;
                     }
 
                     const blank = document.createElement("button");
                     blank.type = "button";
-                    blank.className = `blank ${part.style}`;
-                    blank.dataset.blankId = `blank-${index}`;
+                    blank.className = `blank ${part.style} hint-hidden`;
+                    blank.dataset.blankId = part.blankId;
                     blank.dataset.answer = part.answer;
                     blank.style.minWidth = `${Math.max(1.9, part.answer.length * 0.82)}em`;
-                    blank.setAttribute("aria-label", hiddenBlankIds.has(blank.dataset.blankId) ? "Place the missing word" : `Place the word ${part.answer}`);
-                    if (hiddenBlankIds.has(blank.dataset.blankId)) {
-                        blank.classList.add("hint-hidden");
-                    }
+                    blank.setAttribute("aria-label", "Place the missing word");
                     blank.textContent = part.answer;
                     blank.addEventListener("click", () => this.handleBlankClick(blank.dataset.blankId));
                     this.storyText.appendChild(blank);
