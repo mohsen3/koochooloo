@@ -1033,7 +1033,7 @@
                 this.selectedTileId = null;
                 this.syncSelectedTile();
 
-                blankElement.classList.remove("active", "wrong");
+                blankElement.classList.remove("active", "wrong", "hint-hidden");
                 blankElement.classList.add("correct");
                 blankElement.textContent = tile.answer;
 
