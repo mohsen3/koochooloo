@@ -44,6 +44,11 @@ Learn to count by 2s, 5s, 10s, and more! Master skip counting patterns with inte
 - **Play:** [skip-counting-game.html](skip-counting-game.html)
 - **Features:** 11 boxes (0 through 10 × k), count by 1-10 with selectable levels, basic mode (2, 5, 10) and advanced mode (all 1-10), first 4 boxes show placeholder hints, auto-advance to next box on correct input, multi-digit number support, red/green visual feedback, localStorage to remember level preference, celebration animations and confetti
 
+### Number Sequence Puzzle Game
+Complete skip-counting and sorting patterns by dragging the right number into each blank in order.
+- **Play:** [number-sequence-puzzle-game.html](number-sequence-puzzle-game.html)
+- **Features:** 14 authored levels with gentler early pacing, multiple count-by-2 and count-by-5 rounds before harder jumps, ascending and descending sorting levels, one active blank at a time, outlined and solid hint numbers, unique solutions, touch and mouse drag-and-drop, green success feedback, wrong drops rejected, celebration animations and confetti
+
 ### English Words Typing Tutor
 Practice typing 300 common English words with progressive difficulty! Words get longer and more complex as you advance.
 - **Play:** [english-words.html](english-words.html)
