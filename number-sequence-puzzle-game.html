@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Number Sequence Puzzle Game</title>
+    <style>
+        :root {
+            --paper: #fcfbf6;
+            --paper-shadow: rgba(37, 48, 88, 0.12);
+            --line: rgba(111, 151, 214, 0.22);
+            --ink: #2b4673;
+            --blue: #3d8bfd;
+            --teal: #28b0b8;
+            --orange: #ff9f1c;
+            --pink: #ff5d8f;
+            --green: #38b86c;
+            --green-soft: #e8fff0;
+            --slot: rgba(255, 255, 255, 0.94);
+            --slot-border: #9dc7f8;
+            --shadow: rgba(44, 60, 110, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+        }
+
+        body {
+            font-family: "Trebuchet MS", "Arial Rounded MT Bold", "Comic Sans MS", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 10% 18%, rgba(255, 205, 140, 0.2), transparent 26%),
+                radial-gradient(circle at 82% 14%, rgba(104, 189, 255, 0.17), transparent 24%),
+                radial-gradient(circle at 78% 82%, rgba(255, 130, 179, 0.16), transparent 28%),
+                linear-gradient(180deg, rgba(255,255,255,0.95), rgba(248, 247, 242, 0.98)),
+                repeating-linear-gradient(180deg, transparent 0 38px, var(--line) 38px 40px),
+                var(--paper);
+            overflow-x: hidden;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            background:
+                linear-gradient(90deg, rgba(255, 117, 154, 0.22) 0 6px, transparent 6px),
+                linear-gradient(180deg, rgba(255,255,255,0.42), transparent 20%);
+            opacity: 0.45;
+        }
+
+        body::after {
+            background:
+                radial-gradient(circle at center, transparent 62%, rgba(46, 58, 96, 0.06) 100%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 6px);
+            opacity: 0.7;
+        }
+
+        .app {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            max-width: 1380px;
+            margin: 0 auto;
+            padding: 22px 18px 28px;
+            display: flex;
+        }
+
+        .paper-board {
+            position: relative;
+            flex: 1;
+            min-height: calc(100vh - 50px);
+            padding: clamp(18px, 4vw, 38px);
+            background: rgba(255, 255, 255, 0.58);
+            border-radius: 30px;
+            box-shadow: 0 28px 50px var(--paper-shadow);
+            overflow: hidden;
+            display: grid;
+            gap: 22px;
+        }
+
+        .paper-board::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.54), transparent 42%),
+                radial-gradient(circle at 14% 18%, rgba(98, 178, 248, 0.08), transparent 20%),
+                radial-gradient(circle at 86% 80%, rgba(255, 162, 0, 0.06), transparent 24%);
+            pointer-events: none;
+        }
+
+        .game-card {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 20px;
+            min-height: 100%;
+        }
+
+        .status-panel,
+        .board-panel,
+        .bank-panel {
+            background: rgba(255, 255, 255, 0.72);
+            border-radius: 28px;
+            border: 2px solid rgba(76, 108, 172, 0.08);
+            box-shadow: 0 18px 34px rgba(42, 61, 104, 0.08);
+            padding: clamp(18px, 3vw, 30px);
+        }
+
+        .status-panel {
+            display: grid;
+            gap: 14px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .game-title {
+            font-size: clamp(1rem, 1.8vw, 1.35rem);
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: rgba(43, 70, 115, 0.72);
+        }
+
+        .level-badge,
+        .instruction-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border-radius: 999px;
+            font-size: 1rem;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .level-badge {
+            background: rgba(79, 149, 255, 0.12);
+            border: 2px solid rgba(79, 149, 255, 0.22);
+            color: var(--blue);
+        }
+
+        .instruction-pill {
+            background: rgba(40, 176, 184, 0.12);
+            border: 2px solid rgba(40, 176, 184, 0.22);
+            color: var(--teal);
+        }
+
+        .helper-text {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            font-weight: 800;
+            color: rgba(43, 70, 115, 0.82);
+        }
+
+        .board-panel {
+            display: grid;
+            align-content: start;
+            gap: 20px;
+        }
+
+        .mix-strip {
+            display: none;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .mix-strip.active {
+            display: flex;
+        }
+
+        #mixNumbers {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .mix-label {
+            font-size: 0.98rem;
+            font-weight: 900;
+            color: rgba(43, 70, 115, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .mix-chip {
+            min-width: 54px;
+            min-height: 48px;
+            padding: 8px 14px;
+            border-radius: 16px;
+            border: 3px solid rgba(255, 159, 28, 0.32);
+            background: rgba(255, 249, 240, 0.94);
+            color: var(--orange);
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 900;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sequence-track {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+            min-height: 160px;
+        }
+
+        .sequence-slot,
+        .number-tile,
+        .next-button {
+            appearance: none;
+            -webkit-appearance: none;
+            font-family: inherit;
+            font-weight: 900;
+            border-radius: 22px;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+        }
+
+        .sequence-slot {
+            min-width: clamp(72px, 10vw, 96px);
+            min-height: clamp(72px, 10vw, 96px);
+            padding: 10px;
+            border: 4px dashed var(--slot-border);
+            background: var(--slot);
+            color: var(--blue);
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 20px var(--shadow);
+        }
+
+        .sequence-slot.filled-solid {
+            border-style: solid;
+            color: var(--ink);
+        }
+
+        .sequence-slot.filled-outline {
+            border-style: solid;
+            background: rgba(255, 255, 255, 0.92);
+            color: transparent;
+            -webkit-text-stroke: 3px var(--orange);
+        }
+
+        .sequence-slot.blank {
+            color: transparent;
+        }
+
+        .sequence-slot.blank::after {
+            content: "?";
+            color: rgba(79, 149, 255, 0.42);
+            -webkit-text-stroke: 0;
+        }
+
+        .sequence-slot.blank.correct::after {
+            content: "";
+        }
+
+        .sequence-slot.blank.locked {
+            opacity: 0.5;
+            border-color: rgba(157, 199, 248, 0.7);
+            transform: scale(0.98);
+        }
+
+        .sequence-slot.blank.active {
+            opacity: 1;
+            border-style: solid;
+            color: transparent;
+            box-shadow: 0 0 0 8px rgba(85, 146, 255, 0.14), 0 14px 24px rgba(44, 60, 110, 0.14);
+            transform: scale(1.04);
+        }
+
+        .sequence-slot.blank.ready {
+            border-color: var(--teal);
+            background: rgba(236, 255, 255, 0.98);
+        }
+
+        .sequence-slot.correct {
+            border-style: solid;
+            border-color: var(--green);
+            background: var(--green-soft);
+            color: var(--green);
+            box-shadow: 0 10px 18px rgba(56, 184, 108, 0.18);
+        }
+
+        .sequence-slot.wrong {
+            border-style: solid;
+            border-color: #ff6b8b;
+            background: rgba(255, 94, 120, 0.08);
+            animation: shake 0.36s ease;
+        }
+
+        .arrow {
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 900;
+            color: rgba(43, 70, 115, 0.45);
+        }
+
+        .bank-panel {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 14px;
+            align-items: end;
+        }
+
+        .number-bank {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 18px;
+            min-height: var(--bank-height, 0px);
+        }
+
+        .number-tile {
+            min-width: 108px;
+            min-height: 68px;
+            padding: 12px 20px;
+            border: 4px solid currentColor;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 12px 20px var(--shadow);
+            font-size: clamp(2rem, 3vw, 3rem);
+            line-height: 1;
+            cursor: grab;
+            touch-action: none;
+            color: var(--pink);
+        }
+
+        .number-tile:nth-child(3n + 1) { transform: rotate(-4deg); }
+        .number-tile:nth-child(3n + 2) { transform: rotate(3deg); }
+        .number-tile:nth-child(3n + 3) { transform: rotate(-2deg); }
+
+        .number-tile:hover,
+        .number-tile.selected {
+            box-shadow: 0 16px 28px rgba(44, 60, 110, 0.2);
+            transform: translateY(-4px) scale(1.04);
+        }
+
+        .number-tile.dragging {
+            opacity: 0.45;
+            cursor: grabbing;
+        }
+
+        .number-tile.used {
+            display: none;
+        }
+
+        .number-tile.correct-flash {
+            border-color: var(--green);
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .next-button {
+            min-width: 108px;
+            min-height: 68px;
+            padding: 12px 20px;
+            border: 4px solid #2e78ea;
+            background: linear-gradient(180deg, #4f95ff, #2e78ea);
+            color: #fff;
+            font-size: clamp(1.15rem, 2vw, 1.45rem);
+            line-height: 1;
+            box-shadow: 0 12px 20px rgba(61, 139, 253, 0.24);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .next-button:hover,
+        .next-button:focus-visible {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 26px rgba(61, 139, 253, 0.28);
+        }
+
+        .next-button:disabled {
+            background: linear-gradient(180deg, #c9d8ee, #b9c7dc);
+            border-color: #b9c7dc;
+            box-shadow: none;
+            color: rgba(43, 70, 115, 0.65);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .celebration {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .celebration.active {
+            animation: fadeCelebrate 1s ease;
+        }
+
+        .celebration-message {
+            padding: 18px 28px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.92);
+            color: var(--green);
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 900;
+            box-shadow: 0 18px 34px rgba(56, 184, 108, 0.18);
+        }
+
+        .confetti {
+            position: fixed;
+            top: -8vh;
+            width: 14px;
+            height: 22px;
+            border-radius: 6px;
+            pointer-events: none;
+            z-index: 9;
+            animation: confetti-fall 1.35s linear forwards;
+        }
+
+        .drag-clone {
+            position: fixed;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+            z-index: 30;
+            margin: 0;
+            will-change: left, top, transform;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-7px); }
+            75% { transform: translateX(7px); }
+        }
+
+        @keyframes fadeCelebrate {
+            0% { opacity: 0; transform: scale(0.7); }
+            35% { opacity: 1; transform: scale(1.04); }
+            100% { opacity: 0; transform: scale(1.15); }
+        }
+
+        @keyframes confetti-fall {
+            from {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(112vh) rotate(540deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .app {
+                padding: 14px 10px 20px;
+            }
+
+            .paper-board {
+                min-height: calc(100vh - 34px);
+            }
+
+            .sequence-track {
+                gap: 10px;
+                min-height: 0;
+            }
+
+            .sequence-slot {
+                min-width: 64px;
+                min-height: 64px;
+                font-size: clamp(1.45rem, 7vw, 2rem);
+                border-width: 3px;
+            }
+
+            .number-tile {
+                min-width: 86px;
+                min-height: 56px;
+                font-size: clamp(1.4rem, 7vw, 2rem);
+            }
+
+            .next-button {
+                min-width: 86px;
+                min-height: 56px;
+                padding: 10px 14px;
+                font-size: 1rem;
+            }
+
+            .bank-panel {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="app">
+        <section class="paper-board">
+            <div class="game-card">
+                <section class="status-panel">
+                    <div class="status-row">
+                        <div class="game-title" id="gameTitle">Number Train</div>
+                        <div class="level-badge" id="levelBadge"></div>
+                    </div>
+                    <div class="status-row">
+                        <div class="instruction-pill" id="instructionPill"></div>
+                        <div class="helper-text" id="helperText">Fill the next blank.</div>
+                    </div>
+                </section>
+
+                <section class="board-panel">
+                    <div class="mix-strip" id="mixStrip">
+                        <span class="mix-label">Mix</span>
+                        <div id="mixNumbers"></div>
+                    </div>
+                    <div class="sequence-track" id="sequenceTrack" aria-live="polite"></div>
+                </section>
+
+                <section class="bank-panel">
+                    <div class="number-bank" id="numberBank"></div>
+                    <button class="next-button" id="nextButton" type="button" disabled>Next</button>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <div class="celebration" id="celebration">
+        <div class="celebration-message">Great job!</div>
+    </div>
+
+    <script>
+        const LEVELS = [
+            {
+                level: 1,
+                title: "Number Train",
+                instruction: "Count by 2",
+                helper: "Fill the next blank.",
+                mix: [],
+                slots: [
+                    { value: 0, kind: "solid" },
+                    { value: 2, kind: "blank" },
+                    { value: 4, kind: "blank" },
+                    { value: 6, kind: "outline" }
+                ]
+            },
+            {
+                level: 2,
+                title: "Number Train",
+                instruction: "Count by 2",
+                helper: "Keep going by 2.",
+                mix: [],
+                slots: [
+                    { value: 0, kind: "solid" },
+                    { value: 2, kind: "outline" },
+                    { value: 4, kind: "blank" },
+                    { value: 6, kind: "solid" },
+                    { value: 8, kind: "blank" },
+                    { value: 10, kind: "outline" }
+                ]
+            },
+            {
+                level: 3,
+                title: "Number Train",
+                instruction: "Count by 2",
+                helper: "Fill each blank in order.",
+                mix: [],
+                slots: [
+                    { value: 2, kind: "outline" },
+                    { value: 4, kind: "blank" },
+                    { value: 6, kind: "solid" },
+                    { value: 8, kind: "blank" },
+                    { value: 10, kind: "blank" },
+                    { value: 12, kind: "outline" }
+                ]
+            },
+            {
+                level: 4,
+                title: "Number Train",
+                instruction: "Count by 2",
+                helper: "Keep going by 2.",
+                mix: [],
+                slots: [
+                    { value: 6, kind: "solid" },
+                    { value: 8, kind: "blank" },
+                    { value: 10, kind: "outline" },
+                    { value: 12, kind: "blank" },
+                    { value: 14, kind: "blank" },
+                    { value: 16, kind: "solid" }
+                ]
+            },
+            {
+                level: 5,
+                title: "Big Jumps",
+                instruction: "Count by 5",
+                helper: "Use the next number.",
+                mix: [],
+                slots: [
+                    { value: 0, kind: "outline" },
+                    { value: 5, kind: "blank" },
+                    { value: 10, kind: "solid" },
+                    { value: 15, kind: "blank" },
+                    { value: 20, kind: "outline" }
+                ]
+            },
+            {
+                level: 6,
+                title: "Big Jumps",
+                instruction: "Count by 5",
+                helper: "Keep counting by 5.",
+                mix: [],
+                slots: [
+                    { value: 5, kind: "outline" },
+                    { value: 10, kind: "blank" },
+                    { value: 15, kind: "solid" },
+                    { value: 20, kind: "blank" },
+                    { value: 25, kind: "outline" }
+                ]
+            },
+            {
+                level: 7,
+                title: "Big Jumps",
+                instruction: "Count by 5",
+                helper: "Drag the next number.",
+                mix: [],
+                slots: [
+                    { value: 10, kind: "solid" },
+                    { value: 15, kind: "blank" },
+                    { value: 20, kind: "outline" },
+                    { value: 25, kind: "blank" },
+                    { value: 30, kind: "blank" },
+                    { value: 35, kind: "solid" }
+                ]
+            },
+            {
+                level: 8,
+                title: "Steady Steps",
+                instruction: "Count by 3",
+                helper: "One blank at a time.",
+                mix: [],
+                slots: [
+                    { value: 3, kind: "solid" },
+                    { value: 6, kind: "blank" },
+                    { value: 9, kind: "outline" },
+                    { value: 12, kind: "blank" },
+                    { value: 15, kind: "solid" }
+                ]
+            },
+            {
+                level: 9,
+                title: "Steady Steps",
+                instruction: "Count by 4",
+                helper: "Drag the next number.",
+                mix: [],
+                slots: [
+                    { value: 4, kind: "outline" },
+                    { value: 8, kind: "blank" },
+                    { value: 12, kind: "blank" },
+                    { value: 16, kind: "solid" },
+                    { value: 20, kind: "blank" },
+                    { value: 24, kind: "outline" }
+                ]
+            },
+            {
+                level: 10,
+                title: "Big Tens",
+                instruction: "Count by 10",
+                helper: "Keep the order.",
+                mix: [],
+                slots: [
+                    { value: 10, kind: "solid" },
+                    { value: 20, kind: "blank" },
+                    { value: 30, kind: "outline" },
+                    { value: 40, kind: "blank" },
+                    { value: 50, kind: "blank" },
+                    { value: 60, kind: "solid" }
+                ]
+            },
+            {
+                level: 11,
+                title: "Sorting Time",
+                instruction: "Small to big",
+                helper: "Sort from least to most.",
+                mix: [8, 2, 6, 4],
+                slots: [
+                    { value: 2, kind: "outline" },
+                    { value: 4, kind: "blank" },
+                    { value: 6, kind: "blank" },
+                    { value: 8, kind: "solid" }
+                ]
+            },
+            {
+                level: 12,
+                title: "Sorting Time",
+                instruction: "Small to big",
+                helper: "Place the next smallest.",
+                mix: [15, 7, 11, 3, 19],
+                slots: [
+                    { value: 3, kind: "outline" },
+                    { value: 7, kind: "blank" },
+                    { value: 11, kind: "blank" },
+                    { value: 15, kind: "blank" },
+                    { value: 19, kind: "solid" }
+                ]
+            },
+            {
+                level: 13,
+                title: "Reverse Sort",
+                instruction: "Big to small",
+                helper: "Start with the biggest.",
+                mix: [14, 2, 10, 6],
+                slots: [
+                    { value: 14, kind: "solid" },
+                    { value: 10, kind: "blank" },
+                    { value: 6, kind: "blank" },
+                    { value: 2, kind: "outline" }
+                ]
+            },
+            {
+                level: 14,
+                title: "Reverse Sort",
+                instruction: "Big to small",
+                helper: "Keep going down.",
+                mix: [21, 5, 17, 9, 13, 1],
+                slots: [
+                    { value: 21, kind: "solid" },
+                    { value: 17, kind: "blank" },
+                    { value: 13, kind: "blank" },
+                    { value: 9, kind: "blank" },
+                    { value: 5, kind: "blank" },
+                    { value: 1, kind: "outline" }
+                ]
+            }
+        ];
+
+        class NumberSequencePuzzleGame {
+            constructor(levels) {
+                this.levels = levels.slice();
+                this.levelIndex = 0;
+                this.selectedTileId = null;
+                this.dragState = null;
+                this.bankHeight = 0;
+                this.completed = false;
+
+                this.gameTitle = document.getElementById("gameTitle");
+                this.levelBadge = document.getElementById("levelBadge");
+                this.instructionPill = document.getElementById("instructionPill");
+                this.helperText = document.getElementById("helperText");
+                this.mixStrip = document.getElementById("mixStrip");
+                this.mixNumbers = document.getElementById("mixNumbers");
+                this.sequenceTrack = document.getElementById("sequenceTrack");
+                this.numberBank = document.getElementById("numberBank");
+                this.nextButton = document.getElementById("nextButton");
+                this.celebration = document.getElementById("celebration");
+
+                this.boundPointerMove = (event) => this.handlePointerMove(event);
+                this.boundPointerUp = (event) => this.handlePointerUp(event);
+
+                this.nextButton.addEventListener("click", () => this.nextLevel());
+
+                this.renderLevel();
+            }
+
+            get currentLevel() {
+                return this.levels[this.levelIndex];
+            }
+
+            shuffle(items) {
+                const copy = items.slice();
+                for (let i = copy.length - 1; i > 0; i -= 1) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [copy[i], copy[j]] = [copy[j], copy[i]];
+                }
+                return copy;
+            }
+
+            prepareLevel(level) {
+                let blankIndex = 0;
+                const blanks = [];
+
+                const renderSlots = level.slots.map((slot, index) => {
+                    if (slot.kind !== "blank") {
+                        return { ...slot, index };
+                    }
+
+                    const blankId = `blank-${blankIndex}`;
+                    blankIndex += 1;
+                    const blank = { ...slot, index, blankId, filled: false };
+                    blanks.push(blank);
+                    return blank;
+                });
+
+                const tiles = this.shuffle(blanks.map((blank, index) => ({
+                    id: `tile-${index}`,
+                    value: blank.value,
+                    blankId: blank.blankId,
+                    used: false
+                })));
+
+                return { renderSlots, blanks, tiles };
+            }
+
+            renderLevel() {
+                this.completed = false;
+                this.updateNextButton();
+                this.selectedTileId = null;
+                this.clearDragState();
+                this.numberBank.style.removeProperty("--bank-height");
+
+                const level = this.currentLevel;
+                const { renderSlots, blanks, tiles } = this.prepareLevel(level);
+                this.renderSlots = renderSlots;
+                this.activeTiles = tiles;
+                this.activeBlanks = blanks.reduce((map, blank) => {
+                    map[blank.blankId] = { ...blank };
+                    return map;
+                }, {});
+                this.blankOrder = blanks.map((blank) => blank.blankId);
+
+                this.gameTitle.textContent = level.title;
+                this.levelBadge.textContent = `Level ${level.level}`;
+                this.instructionPill.textContent = level.instruction;
+                this.helperText.textContent = level.helper;
+
+                this.renderMix(level.mix);
+                this.renderSequence();
+                this.renderBank();
+            }
+
+            renderMix(numbers) {
+                this.mixNumbers.innerHTML = "";
+                if (!numbers.length) {
+                    this.mixStrip.classList.remove("active");
+                    return;
+                }
+
+                this.mixStrip.classList.add("active");
+                numbers.forEach((number) => {
+                    const chip = document.createElement("span");
+                    chip.className = "mix-chip";
+                    chip.textContent = number;
+                    this.mixNumbers.appendChild(chip);
+                });
+            }
+
+            renderSequence() {
+                this.sequenceTrack.innerHTML = "";
+                const activeBlankId = this.getCurrentBlankId();
+
+                this.renderSlots.forEach((slot, index) => {
+                    const slotElement = document.createElement("button");
+                    slotElement.type = "button";
+                    slotElement.className = "sequence-slot";
+
+                    if (slot.kind === "solid") {
+                        slotElement.classList.add("filled-solid");
+                        slotElement.textContent = slot.value;
+                    } else if (slot.kind === "outline") {
+                        slotElement.classList.add("filled-outline");
+                        slotElement.textContent = slot.value;
+                    } else {
+                        slotElement.dataset.blankId = slot.blankId;
+                        slotElement.dataset.value = slot.value;
+                        slotElement.classList.add("blank");
+                        const isFilled = this.activeBlanks[slot.blankId].filled;
+                        const isActive = activeBlankId === slot.blankId;
+
+                        if (isFilled) {
+                            slotElement.classList.add("correct");
+                            slotElement.textContent = slot.value;
+                        } else if (isActive) {
+                            slotElement.classList.add("active");
+                            slotElement.addEventListener("click", () => this.handleBlankClick(slot.blankId));
+                        } else {
+                            slotElement.classList.add("locked");
+                        }
+                    }
+
+                    this.sequenceTrack.appendChild(slotElement);
+
+                    if (index < this.renderSlots.length - 1) {
+                        const arrow = document.createElement("span");
+                        arrow.className = "arrow";
+                        arrow.textContent = "→";
+                        this.sequenceTrack.appendChild(arrow);
+                    }
+                });
+            }
+
+            renderBank() {
+                this.numberBank.innerHTML = "";
+
+                this.activeTiles.forEach((tile) => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "number-tile";
+                    button.dataset.tileId = tile.id;
+                    button.dataset.blankId = tile.blankId;
+                    button.textContent = tile.value;
+
+                    button.addEventListener("click", () => this.handleTileClick(tile.id));
+                    button.addEventListener("pointerdown", (event) => this.handlePointerDown(event, tile.id));
+
+                    if (tile.used) {
+                        button.classList.add("used");
+                    }
+
+                    this.numberBank.appendChild(button);
+                });
+
+                this.syncSelectedTile();
+
+                requestAnimationFrame(() => {
+                    this.bankHeight = this.numberBank.getBoundingClientRect().height;
+                    this.numberBank.style.setProperty("--bank-height", `${this.bankHeight}px`);
+                });
+            }
+
+            getTile(tileId) {
+                return this.activeTiles.find((entry) => entry.id === tileId);
+            }
+
+            getTileElement(tileId) {
+                return this.numberBank.querySelector(`[data-tile-id="${tileId}"]`);
+            }
+
+            getBlankElement(blankId) {
+                return this.sequenceTrack.querySelector(`[data-blank-id="${blankId}"]`);
+            }
+
+            getCurrentBlankId() {
+                return this.blankOrder.find((blankId) => !this.activeBlanks[blankId].filled) ?? null;
+            }
+
+            updateNextButton() {
+                this.nextButton.disabled = !this.completed;
+            }
+
+            handleTileClick(tileId) {
+                const tile = this.getTile(tileId);
+                if (!tile || tile.used) {
+                    return;
+                }
+
+                this.selectedTileId = this.selectedTileId === tileId ? null : tileId;
+                this.syncSelectedTile();
+                this.highlightCurrentBlank();
+            }
+
+            handleBlankClick(blankId) {
+                if (!this.selectedTileId) {
+                    return;
+                }
+
+                this.tryPlaceTile(this.selectedTileId, blankId);
+            }
+
+            syncSelectedTile() {
+                Array.from(this.numberBank.children).forEach((tileElement) => {
+                    tileElement.classList.toggle("selected", tileElement.dataset.tileId === this.selectedTileId);
+                });
+            }
+
+            clearBlankFocus() {
+                Array.from(this.sequenceTrack.querySelectorAll(".sequence-slot.blank")).forEach((blank) => {
+                    blank.classList.remove("ready");
+                });
+            }
+
+            highlightCurrentBlank() {
+                this.clearBlankFocus();
+                const blankId = this.getCurrentBlankId();
+                if (!blankId) {
+                    return;
+                }
+
+                const blank = this.getBlankElement(blankId);
+                if (blank) {
+                    blank.classList.add("ready");
+                }
+            }
+
+            handlePointerDown(event, tileId) {
+                const tile = this.getTile(tileId);
+                if (!tile || tile.used) {
+                    return;
+                }
+
+                if (event.pointerType === "mouse" && event.button !== 0) {
+                    return;
+                }
+
+                event.preventDefault();
+                this.clearDragState();
+
+                const tileElement = this.getTileElement(tileId);
+                const rect = tileElement.getBoundingClientRect();
+                const clone = tileElement.cloneNode(true);
+                clone.classList.add("drag-clone");
+                clone.style.width = `${rect.width}px`;
+                clone.style.height = `${rect.height}px`;
+                document.body.appendChild(clone);
+
+                tileElement.classList.add("dragging");
+                this.selectedTileId = tileId;
+                this.syncSelectedTile();
+                this.highlightCurrentBlank();
+
+                this.dragState = {
+                    tileId,
+                    clone,
+                    pointerId: event.pointerId,
+                    sourceElement: tileElement,
+                    lastX: event.clientX,
+                    lastY: event.clientY,
+                    frame: null
+                };
+
+                this.positionClone(event.clientX, event.clientY);
+                tileElement.setPointerCapture(event.pointerId);
+                tileElement.addEventListener("pointermove", this.boundPointerMove);
+                tileElement.addEventListener("pointerup", this.boundPointerUp);
+                tileElement.addEventListener("pointercancel", this.boundPointerUp);
+            }
+
+            handlePointerMove(event) {
+                if (!this.dragState || event.pointerId !== this.dragState.pointerId) {
+                    return;
+                }
+
+                this.dragState.lastX = event.clientX;
+                this.dragState.lastY = event.clientY;
+                if (!this.dragState.frame) {
+                    this.dragState.frame = requestAnimationFrame(() => {
+                        if (!this.dragState) {
+                            return;
+                        }
+
+                        this.dragState.frame = null;
+                        this.positionClone(this.dragState.lastX, this.dragState.lastY);
+                    });
+                }
+
+                const target = document.elementFromPoint(event.clientX, event.clientY);
+                const blank = target && target.closest(".sequence-slot.blank");
+                this.clearBlankFocus();
+                const currentBlankId = this.getCurrentBlankId();
+                if (blank && blank.dataset.blankId === currentBlankId) {
+                    blank.classList.add("ready");
+                }
+            }
+
+            handlePointerUp(event) {
+                if (!this.dragState || event.pointerId !== this.dragState.pointerId) {
+                    return;
+                }
+
+                const tileElement = this.getTileElement(this.dragState.tileId);
+                const target = document.elementFromPoint(event.clientX, event.clientY);
+                const blank = target && target.closest(".sequence-slot.blank");
+
+                if (blank) {
+                    this.tryPlaceTile(this.dragState.tileId, blank.dataset.blankId);
+                } else {
+                    this.clearBlankFocus();
+                }
+
+                if (tileElement) {
+                    this.clearDragState(tileElement);
+                    return;
+                }
+
+                this.clearDragState();
+            }
+
+            positionClone(clientX, clientY) {
+                if (!this.dragState) {
+                    return;
+                }
+
+                this.dragState.clone.style.left = `${clientX}px`;
+                this.dragState.clone.style.top = `${clientY}px`;
+                this.dragState.clone.style.transform = "translate(-50%, -50%) rotate(-3deg)";
+            }
+
+            clearDragState(tileElement = this.dragState && this.dragState.sourceElement) {
+                if (!this.dragState) {
+                    return;
+                }
+
+                if (this.dragState.frame) {
+                    cancelAnimationFrame(this.dragState.frame);
+                }
+
+                if (tileElement) {
+                    tileElement.classList.remove("dragging");
+                    tileElement.removeEventListener("pointermove", this.boundPointerMove);
+                    tileElement.removeEventListener("pointerup", this.boundPointerUp);
+                    tileElement.removeEventListener("pointercancel", this.boundPointerUp);
+                    if (this.dragState.pointerId != null && tileElement.hasPointerCapture?.(this.dragState.pointerId)) {
+                        tileElement.releasePointerCapture(this.dragState.pointerId);
+                    }
+                }
+
+                this.dragState.clone.remove();
+                this.dragState = null;
+            }
+
+            flashWrong(blankElement) {
+                blankElement.classList.remove("wrong");
+                void blankElement.offsetWidth;
+                blankElement.classList.add("wrong");
+            }
+
+            tryPlaceTile(tileId, blankId) {
+                const tile = this.getTile(tileId);
+                const blankState = this.activeBlanks[blankId];
+                const blankElement = this.getBlankElement(blankId);
+                const tileElement = this.getTileElement(tileId);
+                const currentBlankId = this.getCurrentBlankId();
+
+                if (!tile || !blankState || !blankElement || !tileElement || tile.used || blankState.filled) {
+                    return;
+                }
+
+                this.clearBlankFocus();
+
+                if (blankId !== currentBlankId || tile.blankId !== blankId) {
+                    this.flashWrong(blankElement);
+                    this.highlightCurrentBlank();
+                    return;
+                }
+
+                tile.used = true;
+                blankState.filled = true;
+                this.selectedTileId = null;
+                this.syncSelectedTile();
+
+                blankElement.classList.remove("active", "ready", "wrong", "locked");
+                blankElement.classList.add("correct");
+                blankElement.textContent = tile.value;
+
+                tileElement.classList.remove("selected", "dragging");
+                tileElement.classList.add("used", "correct-flash");
+                setTimeout(() => tileElement.classList.remove("correct-flash"), 250);
+
+                if (this.blankOrder.every((entry) => this.activeBlanks[entry].filled)) {
+                    this.handleLevelComplete();
+                    return;
+                }
+
+                this.renderSequence();
+            }
+
+            handleLevelComplete() {
+                this.completed = true;
+                this.updateNextButton();
+                this.launchCelebration();
+
+                if (this.levelIndex === this.levels.length - 1) {
+                    this.nextButton.textContent = "Again";
+                } else {
+                    this.nextButton.textContent = "Next";
+                }
+            }
+
+            launchCelebration() {
+                this.celebration.classList.remove("active");
+                void this.celebration.offsetWidth;
+                this.celebration.classList.add("active");
+
+                const colors = ["#ff9f1c", "#38b86c", "#4f95ff", "#ff5b95", "#28b0b8"];
+                for (let i = 0; i < 20; i += 1) {
+                    const confetti = document.createElement("div");
+                    confetti.className = "confetti";
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    confetti.style.background = colors[i % colors.length];
+                    confetti.style.animationDelay = `${Math.random() * 0.15}s`;
+                    confetti.style.transform = `rotate(${Math.random() * 180}deg)`;
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 1500);
+                }
+            }
+
+            nextLevel() {
+                if (!this.completed) {
+                    return;
+                }
+
+                this.levelIndex = (this.levelIndex + 1) % this.levels.length;
+                this.nextButton.textContent = "Next";
+                this.renderLevel();
+            }
+        }
+
+        new NumberSequencePuzzleGame(LEVELS);
+    </script>
+</body>
+</html>
