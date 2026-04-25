@@ -205,6 +205,7 @@
                 this.currentShapeIndex = 0;
                 this.penLifted = true;
                 this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.pathCache = new Map();
 
                 // Difficulty scoring system
                 this.difficultyScore = 30.0; // Internal floating point score (1-100)
@@ -257,85 +258,486 @@
                 return points;
             }
 
-            getLetterPaths(letter) {
-                // Farsi letter pen stroke definitions (how you actually write them)
-                // Each path represents a pen stroke, not an outline
-                const letterPaths = {
-                    'ا': [ // Alef - single vertical stroke from top to bottom
-                        [[300, 150], [300, 320]]
-                    ],
-                    'ب': [ // Be - curved base + dot below (larger dot)
-                        [[350, 260], [330, 270], [300, 275], [270, 270], [250, 260]],
-                        [[300, 300], [305, 300], [305, 305], [300, 305], [300, 300]] // larger filled dot
-                    ],
-                    'پ': [ // Pe - curved base + 3 dots below (larger dots)
-                        [[350, 260], [330, 270], [300, 275], [270, 270], [250, 260]],
-                        [[270, 300], [275, 300], [275, 305], [270, 305], [270, 300]], // left dot
-                        [[298, 300], [303, 300], [303, 305], [298, 305], [298, 300]], // middle dot
-                        [[326, 300], [331, 300], [331, 305], [326, 305], [326, 300]]  // right dot
-                    ],
-                    'د': [ // Dal - curved stroke from right to left
-                        [[350, 240], [340, 250], [320, 260], [300, 265], [280, 268], [260, 268], [245, 265], [235, 258], [230, 245]]
-                    ],
-                    'م': [ // Mim - circular stroke
-                        [[340, 200], [360, 220], [365, 250], [360, 280], [340, 300], [310, 310], [280, 310], [250, 300], [235, 280], [230, 250], [235, 220], [255, 200], [285, 190], [315, 190], [340, 200]]
-                    ],
-                    'ن': [ // Nun - curved base + dot above (larger dot)
-                        [[350, 260], [330, 270], [300, 275], [270, 270], [250, 260]],
-                        [[300, 230], [305, 230], [305, 235], [300, 235], [300, 230]] // larger filled dot above
-                    ],
-                    'و': [ // Vav - small oval/circle
-                        [[300, 220], [280, 225], [265, 240], [265, 265], [280, 285], [300, 290], [320, 285], [335, 265], [335, 240], [320, 225], [300, 220]]
-                    ],
-                    'ل': [ // Lam - tall vertical with curve at bottom
-                        [[290, 150], [290, 270], [295, 285], [305, 295], [320, 300], [340, 300]]
-                    ],
-                    'ر': [ // Re - curved stroke swooping down
-                        [[280, 240], [290, 235], [310, 235], [330, 242], [345, 255], [350, 275], [345, 295], [330, 310], [310, 315], [290, 315]]
-                    ],
-                    'س': [ // Sin - three connected humps (written right to left)
-                        [[350, 270], [340, 255], [330, 250], [315, 255], [305, 270], [295, 275], [280, 270], [270, 255], [260, 250], [245, 255], [235, 270]]
-                    ],
-                    'گ': [ // Gaf - like 'ک' with line above
-                        [[260, 180], [340, 180]], // top line
-                        [[300, 180], [300, 240]], // vertical stroke
-                        [[240, 240], [360, 240]], // horizontal base
-                        [[300, 240], [300, 280], [310, 295], [330, 300]]  // descender
-                    ],
-                    'ت': [ // Te - curved base + 2 dots above (larger dots)
-                        [[350, 260], [330, 270], [300, 275], [270, 270], [250, 260]],
-                        [[280, 230], [285, 230], [285, 235], [280, 235], [280, 230]], // left dot
-                        [[315, 230], [320, 230], [320, 235], [315, 235], [315, 230]]  // right dot
-                    ],
-                    'آ': [ // Alef with hamza on top
-                        [[300, 170], [300, 320]], // vertical line
-                        [[295, 145], [300, 140], [305, 145], [305, 155], [295, 155], [295, 145]] // hamza (larger)
-                    ]
-                };
-                return letterPaths[letter] || [];
-            }
+            getShapePaths(shape) {
+                const text = shape.type === 'letter' ? shape.letter : shape.word;
+                if (!text) return [];
 
-            getWordPaths(word) {
-                // Generate paths for a word by placing letters side by side
-                const letterSpacing = 90;
-                const startX = 300 - (word.length * letterSpacing / 2);
-                const paths = [];
-
-                for (let i = 0; i < word.length; i++) {
-                    const letter = word[i];
-                    const letterPaths = this.getLetterPaths(letter);
-                    const offsetX = startX + i * letterSpacing - 300;
-
-                    letterPaths.forEach(path => {
-                        const transformedPath = path.map(point => [
-                            point[0] + offsetX,
-                            point[1]
-                        ]);
-                        paths.push(transformedPath);
-                    });
+                if (!this.pathCache.has(text)) {
+                    this.pathCache.set(text, this.generateTextTracePaths(text));
                 }
 
+                return this.pathCache.get(text);
+            }
+
+            generateTextTracePaths(text) {
+                const render = this.renderTextMask(text);
+                if (!render) return [];
+
+                const { mask, bounds, fontSize } = render;
+                const components = this.findConnectedComponents(mask);
+                if (!components.length) return [];
+
+                const largestArea = Math.max(...components.map(component => component.pixels.length));
+                const paths = [];
+
+                components.forEach(component => {
+                    if (this.isDotComponent(component, largestArea, fontSize)) {
+                        paths.push(this.componentToEllipsePath(component));
+                        return;
+                    }
+
+                    const componentMask = this.createComponentMask(component, mask[0].length, mask.length);
+                    const skeleton = this.zhangSuenThinning(componentMask);
+                    const componentPaths = this.traceSkeletonPaths(skeleton);
+
+                    componentPaths.forEach(path => {
+                        if (path.length >= 2) {
+                            paths.push(path);
+                        }
+                    });
+                });
+
+                return this.normalizePathsToCanvas(paths, bounds);
+            }
+
+            renderTextMask(text) {
+                const width = 1200;
+                const height = 700;
+                const padding = 80;
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+                let fontSize = text.length > 3 ? 260 : 300;
+                ctx.textBaseline = 'alphabetic';
+                ctx.textAlign = 'right';
+                ctx.direction = 'rtl';
+
+                while (fontSize > 140) {
+                    ctx.font = `900 ${fontSize}px Vazir, Tahoma, Arial, sans-serif`;
+                    if (ctx.measureText(text).width <= width - padding * 2) {
+                        break;
+                    }
+                    fontSize -= 10;
+                }
+
+                ctx.clearRect(0, 0, width, height);
+                ctx.fillStyle = '#000';
+                ctx.fillText(text, width - padding, height * 0.66);
+
+                const imageData = ctx.getImageData(0, 0, width, height);
+                const bounds = this.findOpaqueBounds(imageData, width, height);
+                if (!bounds) return null;
+
+                const paddedBounds = {
+                    minX: Math.max(0, bounds.minX - 10),
+                    minY: Math.max(0, bounds.minY - 10),
+                    maxX: Math.min(width - 1, bounds.maxX + 10),
+                    maxY: Math.min(height - 1, bounds.maxY + 10)
+                };
+
+                const mask = [];
+                for (let y = paddedBounds.minY; y <= paddedBounds.maxY; y++) {
+                    const row = [];
+                    for (let x = paddedBounds.minX; x <= paddedBounds.maxX; x++) {
+                        const alpha = imageData.data[(y * width + x) * 4 + 3];
+                        row.push(alpha > 20 ? 1 : 0);
+                    }
+                    mask.push(row);
+                }
+
+                return { mask, bounds: paddedBounds, fontSize };
+            }
+
+            findOpaqueBounds(imageData, width, height) {
+                let minX = width;
+                let minY = height;
+                let maxX = -1;
+                let maxY = -1;
+
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        const alpha = imageData.data[(y * width + x) * 4 + 3];
+                        if (alpha > 20) {
+                            minX = Math.min(minX, x);
+                            minY = Math.min(minY, y);
+                            maxX = Math.max(maxX, x);
+                            maxY = Math.max(maxY, y);
+                        }
+                    }
+                }
+
+                if (maxX === -1) return null;
+                return { minX, minY, maxX, maxY };
+            }
+
+            findConnectedComponents(mask) {
+                const height = mask.length;
+                const width = mask[0].length;
+                const visited = Array.from({ length: height }, () => Array(width).fill(false));
+                const components = [];
+
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        if (!mask[y][x] || visited[y][x]) continue;
+
+                        const queue = [[x, y]];
+                        const pixels = [];
+                        visited[y][x] = true;
+                        let minX = x;
+                        let minY = y;
+                        let maxX = x;
+                        let maxY = y;
+
+                        while (queue.length) {
+                            const [cx, cy] = queue.pop();
+                            pixels.push([cx, cy]);
+                            minX = Math.min(minX, cx);
+                            minY = Math.min(minY, cy);
+                            maxX = Math.max(maxX, cx);
+                            maxY = Math.max(maxY, cy);
+
+                            for (let ny = cy - 1; ny <= cy + 1; ny++) {
+                                for (let nx = cx - 1; nx <= cx + 1; nx++) {
+                                    if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+                                    if (!mask[ny][nx] || visited[ny][nx]) continue;
+                                    visited[ny][nx] = true;
+                                    queue.push([nx, ny]);
+                                }
+                            }
+                        }
+
+                        components.push({
+                            pixels,
+                            bbox: { minX, minY, maxX, maxY },
+                            width: maxX - minX + 1,
+                            height: maxY - minY + 1
+                        });
+                    }
+                }
+
+                return components;
+            }
+
+            isDotComponent(component, largestArea, fontSize) {
+                const area = component.pixels.length;
+                const maxDotSize = fontSize * 0.28;
+                const aspectRatio = Math.max(component.width, component.height) / Math.max(1, Math.min(component.width, component.height));
+                return area < largestArea * 0.12 &&
+                    component.width <= maxDotSize &&
+                    component.height <= maxDotSize &&
+                    aspectRatio <= 1.8;
+            }
+
+            componentToEllipsePath(component) {
+                const centerX = (component.bbox.minX + component.bbox.maxX) / 2;
+                const centerY = (component.bbox.minY + component.bbox.maxY) / 2;
+                const radiusX = Math.max(5, component.width / 2);
+                const radiusY = Math.max(5, component.height / 2);
+                const points = [];
+                const samples = 20;
+
+                for (let i = 0; i <= samples; i++) {
+                    const angle = (i / samples) * Math.PI * 2;
+                    points.push([
+                        centerX + Math.cos(angle) * radiusX,
+                        centerY + Math.sin(angle) * radiusY
+                    ]);
+                }
+
+                return points;
+            }
+
+            createComponentMask(component, width, height) {
+                const componentMask = Array.from({ length: height }, () => Array(width).fill(0));
+                component.pixels.forEach(([x, y]) => {
+                    componentMask[y][x] = 1;
+                });
+                return componentMask;
+            }
+
+            zhangSuenThinning(mask) {
+                const skeleton = mask.map(row => row.slice());
+                const height = skeleton.length;
+                const width = skeleton[0].length;
+                let changed = true;
+
+                while (changed) {
+                    changed = false;
+                    const toRemove = [];
+
+                    for (let y = 1; y < height - 1; y++) {
+                        for (let x = 1; x < width - 1; x++) {
+                            if (skeleton[y][x] !== 1) continue;
+                            const neighbors = this.getSkeletonNeighbors(skeleton, x, y);
+                            const count = neighbors.reduce((sum, value) => sum + value, 0);
+                            const transitions = this.countNeighborTransitions(neighbors);
+
+                            if (
+                                count >= 2 && count <= 6 &&
+                                transitions === 1 &&
+                                neighbors[0] * neighbors[2] * neighbors[4] === 0 &&
+                                neighbors[2] * neighbors[4] * neighbors[6] === 0
+                            ) {
+                                toRemove.push([x, y]);
+                            }
+                        }
+                    }
+
+                    if (toRemove.length) {
+                        changed = true;
+                        toRemove.forEach(([x, y]) => {
+                            skeleton[y][x] = 0;
+                        });
+                    }
+
+                    toRemove.length = 0;
+
+                    for (let y = 1; y < height - 1; y++) {
+                        for (let x = 1; x < width - 1; x++) {
+                            if (skeleton[y][x] !== 1) continue;
+                            const neighbors = this.getSkeletonNeighbors(skeleton, x, y);
+                            const count = neighbors.reduce((sum, value) => sum + value, 0);
+                            const transitions = this.countNeighborTransitions(neighbors);
+
+                            if (
+                                count >= 2 && count <= 6 &&
+                                transitions === 1 &&
+                                neighbors[0] * neighbors[2] * neighbors[6] === 0 &&
+                                neighbors[0] * neighbors[4] * neighbors[6] === 0
+                            ) {
+                                toRemove.push([x, y]);
+                            }
+                        }
+                    }
+
+                    if (toRemove.length) {
+                        changed = true;
+                        toRemove.forEach(([x, y]) => {
+                            skeleton[y][x] = 0;
+                        });
+                    }
+                }
+
+                return skeleton;
+            }
+
+            getSkeletonNeighbors(mask, x, y) {
+                return [
+                    mask[y - 1][x],
+                    mask[y - 1][x + 1],
+                    mask[y][x + 1],
+                    mask[y + 1][x + 1],
+                    mask[y + 1][x],
+                    mask[y + 1][x - 1],
+                    mask[y][x - 1],
+                    mask[y - 1][x - 1]
+                ];
+            }
+
+            countNeighborTransitions(neighbors) {
+                let transitions = 0;
+                for (let i = 0; i < neighbors.length; i++) {
+                    const current = neighbors[i];
+                    const next = neighbors[(i + 1) % neighbors.length];
+                    if (current === 0 && next === 1) {
+                        transitions++;
+                    }
+                }
+                return transitions;
+            }
+
+            traceSkeletonPaths(skeleton) {
+                const nodes = new Map();
+                const edges = new Set();
+                const height = skeleton.length;
+                const width = skeleton[0].length;
+
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        if (!skeleton[y][x]) continue;
+                        const key = `${x},${y}`;
+                        const neighbors = [];
+
+                        for (let ny = y - 1; ny <= y + 1; ny++) {
+                            for (let nx = x - 1; nx <= x + 1; nx++) {
+                                if ((nx === x && ny === y) || nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+                                if (skeleton[ny][nx]) {
+                                    neighbors.push(`${nx},${ny}`);
+                                    edges.add(this.makeEdgeKey(key, `${nx},${ny}`));
+                                }
+                            }
+                        }
+
+                        nodes.set(key, neighbors);
+                    }
+                }
+
+                const visitedEdges = new Set();
+                const paths = [];
+                const importantNodes = [...nodes.keys()].filter(key => {
+                    const degree = nodes.get(key).length;
+                    return degree !== 2;
+                });
+
+                importantNodes.forEach(startKey => {
+                    nodes.get(startKey).forEach(nextKey => {
+                        const edgeKey = this.makeEdgeKey(startKey, nextKey);
+                        if (visitedEdges.has(edgeKey)) return;
+                        const path = this.walkSkeletonPath(startKey, nextKey, nodes, visitedEdges);
+                        if (path.length > 1) {
+                            paths.push(this.simplifyPath(path));
+                        }
+                    });
+                });
+
+                edges.forEach(edgeKey => {
+                    if (visitedEdges.has(edgeKey)) return;
+                    const [startKey, nextKey] = edgeKey.split('|');
+                    const path = this.walkSkeletonPath(startKey, nextKey, nodes, visitedEdges, true);
+                    if (path.length > 1) {
+                        paths.push(this.simplifyPath(path));
+                    }
+                });
+
                 return paths;
+            }
+
+            walkSkeletonPath(startKey, nextKey, nodes, visitedEdges, closeCycle = false) {
+                const path = [this.parsePointKey(startKey)];
+                let previousKey = startKey;
+                let currentKey = nextKey;
+
+                while (currentKey) {
+                    path.push(this.parsePointKey(currentKey));
+                    const edgeKey = this.makeEdgeKey(previousKey, currentKey);
+                    visitedEdges.add(edgeKey);
+
+                    const neighbors = nodes.get(currentKey) || [];
+                    const unvisitedNeighbors = neighbors.filter(candidate => {
+                        if (candidate === previousKey) return false;
+                        return !visitedEdges.has(this.makeEdgeKey(currentKey, candidate));
+                    });
+
+                    if (!unvisitedNeighbors.length) {
+                        if (closeCycle && currentKey !== startKey) {
+                            const cycleEdge = this.makeEdgeKey(currentKey, startKey);
+                            if (nodes.get(currentKey).includes(startKey) && !visitedEdges.has(cycleEdge)) {
+                                previousKey = currentKey;
+                                currentKey = startKey;
+                                continue;
+                            }
+                        }
+                        break;
+                    }
+
+                    previousKey = currentKey;
+                    currentKey = unvisitedNeighbors[0];
+
+                    if (!closeCycle && nodes.get(previousKey).length !== 2) {
+                        break;
+                    }
+                }
+
+                return path;
+            }
+
+            makeEdgeKey(a, b) {
+                return [a, b].sort().join('|');
+            }
+
+            parsePointKey(key) {
+                return key.split(',').map(Number);
+            }
+
+            simplifyPath(path) {
+                if (path.length <= 2) return path;
+                const simplified = this.rdp(path, 1.8);
+                return this.resamplePath(simplified, 8);
+            }
+
+            rdp(points, epsilon) {
+                if (points.length < 3) return points;
+
+                let maxDistance = 0;
+                let index = 0;
+                const start = points[0];
+                const end = points[points.length - 1];
+
+                for (let i = 1; i < points.length - 1; i++) {
+                    const distance = this.distanceToLineSegment(
+                        { x: points[i][0], y: points[i][1] },
+                        { x: start[0], y: start[1] },
+                        { x: end[0], y: end[1] }
+                    );
+                    if (distance > maxDistance) {
+                        maxDistance = distance;
+                        index = i;
+                    }
+                }
+
+                if (maxDistance <= epsilon) {
+                    return [start, end];
+                }
+
+                const left = this.rdp(points.slice(0, index + 1), epsilon);
+                const right = this.rdp(points.slice(index), epsilon);
+                return left.slice(0, -1).concat(right);
+            }
+
+            resamplePath(path, spacing) {
+                if (path.length < 2) return path;
+
+                const result = [path[0]];
+                let lastPoint = path[0];
+                let accumulated = 0;
+
+                for (let i = 1; i < path.length; i++) {
+                    let start = lastPoint;
+                    let end = path[i];
+                    let segmentLength = Math.hypot(end[0] - start[0], end[1] - start[1]);
+
+                    while (accumulated + segmentLength >= spacing) {
+                        const ratio = (spacing - accumulated) / segmentLength;
+                        const point = [
+                            start[0] + (end[0] - start[0]) * ratio,
+                            start[1] + (end[1] - start[1]) * ratio
+                        ];
+                        result.push(point);
+                        start = point;
+                        segmentLength = Math.hypot(end[0] - start[0], end[1] - start[1]);
+                        accumulated = 0;
+                    }
+
+                    accumulated += segmentLength;
+                    lastPoint = end;
+                }
+
+                const lastResult = result[result.length - 1];
+                const lastPath = path[path.length - 1];
+                if (lastResult[0] !== lastPath[0] || lastResult[1] !== lastPath[1]) {
+                    result.push(path[path.length - 1]);
+                }
+
+                return result;
+            }
+
+            normalizePathsToCanvas(paths, bounds) {
+                if (!paths.length) return [];
+
+                const sourceWidth = bounds.maxX - bounds.minX + 1;
+                const sourceHeight = bounds.maxY - bounds.minY + 1;
+                const availableWidth = this.canvas.width - 120;
+                const availableHeight = this.canvas.height - 120;
+                const scale = Math.min(availableWidth / sourceWidth, availableHeight / sourceHeight);
+                const offsetX = (this.canvas.width - sourceWidth * scale) / 2;
+                const offsetY = (this.canvas.height - sourceHeight * scale) / 2;
+
+                return paths.map(path => path.map(([x, y]) => [
+                    offsetX + x * scale,
+                    offsetY + y * scale
+                ]));
             }
 
             init() {
@@ -487,8 +889,7 @@
                 this.ctx.lineJoin = 'round';
 
                 if (shape.type === 'letter') {
-                    // Draw letter
-                    const paths = this.getLetterPaths(shape.letter);
+                    const paths = this.getShapePaths(shape);
                     paths.forEach(path => {
                         this.ctx.beginPath();
                         this.ctx.moveTo(path[0][0], path[0][1]);
@@ -498,8 +899,7 @@
                         this.ctx.stroke();
                     });
                 } else if (shape.type === 'word') {
-                    // Draw word
-                    const paths = this.getWordPaths(shape.word);
+                    const paths = this.getShapePaths(shape);
                     paths.forEach(path => {
                         this.ctx.beginPath();
                         this.ctx.moveTo(path[0][0], path[0][1]);
@@ -687,10 +1087,10 @@
                     }
                     segments.push(circlePoints);
                 } else if (shape.type === 'letter') {
-                    const paths = this.getLetterPaths(shape.letter);
+                    const paths = this.getShapePaths(shape);
                     paths.forEach(path => segments.push(path));
                 } else if (shape.type === 'word') {
-                    const paths = this.getWordPaths(shape.word);
+                    const paths = this.getShapePaths(shape);
                     paths.forEach(path => segments.push(path));
                 } else if (shape.type === 'multiline') {
                     shape.paths.forEach(path => segments.push(path));
@@ -737,7 +1137,7 @@
                 if (shape.type === 'circle') {
                     length = 2 * Math.PI * shape.radius;
                 } else if (shape.type === 'letter') {
-                    const paths = this.getLetterPaths(shape.letter);
+                    const paths = this.getShapePaths(shape);
                     paths.forEach(path => {
                         for (let i = 0; i < path.length - 1; i++) {
                             const dx = path[i+1][0] - path[i][0];
@@ -746,7 +1146,7 @@
                         }
                     });
                 } else if (shape.type === 'word') {
-                    const paths = this.getWordPaths(shape.word);
+                    const paths = this.getShapePaths(shape);
                     paths.forEach(path => {
                         for (let i = 0; i < path.length - 1; i++) {
                             const dx = path[i+1][0] - path[i][0];
