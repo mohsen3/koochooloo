@@ -6,20 +6,23 @@
     <title>Story Puzzle Game</title>
     <style>
         :root {
-            --paper: #fcfbf6;
-            --paper-shadow: rgba(37, 48, 88, 0.12);
-            --line: rgba(111, 151, 214, 0.22);
-            --ink: #2b4673;
-            --blue: #3d8bfd;
-            --teal: #28b0b8;
-            --orange: #ff9f1c;
-            --pink: #ff5d8f;
-            --purple: #7657d9;
-            --green: #38b86c;
-            --green-soft: #e8fff0;
-            --slot: #fdfdfd;
-            --slot-border: #9dc7f8;
-            --shadow: rgba(44, 60, 110, 0.14);
+            --paper: #fff8ef;
+            --paper-shadow: rgba(87, 73, 45, 0.14);
+            --line: rgba(210, 167, 113, 0.2);
+            --ink: #33415c;
+            --ink-soft: rgba(51, 65, 92, 0.72);
+            --blue: #4d8cf7;
+            --teal: #2fa7a0;
+            --orange: #f59f44;
+            --pink: #eb6f92;
+            --purple: #7a67d8;
+            --green: #3aa76d;
+            --green-soft: #ecfff3;
+            --slot: #fffdfa;
+            --slot-border: #b8cfee;
+            --panel: rgba(255, 255, 255, 0.82);
+            --panel-border: rgba(163, 134, 92, 0.12);
+            --shadow: rgba(81, 73, 60, 0.15);
         }
 
         * {
@@ -37,10 +40,10 @@
             font-family: "Trebuchet MS", "Arial Rounded MT Bold", "Comic Sans MS", sans-serif;
             color: var(--ink);
             background:
-                radial-gradient(circle at 10% 18%, rgba(255, 205, 140, 0.2), transparent 26%),
-                radial-gradient(circle at 82% 14%, rgba(104, 189, 255, 0.17), transparent 24%),
-                radial-gradient(circle at 78% 82%, rgba(255, 130, 179, 0.16), transparent 28%),
-                linear-gradient(180deg, rgba(255,255,255,0.95), rgba(248, 247, 242, 0.98)),
+                radial-gradient(circle at 10% 18%, rgba(245, 168, 96, 0.2), transparent 26%),
+                radial-gradient(circle at 82% 14%, rgba(115, 170, 255, 0.16), transparent 24%),
+                radial-gradient(circle at 78% 82%, rgba(235, 111, 146, 0.14), transparent 28%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 246, 235, 0.98)),
                 repeating-linear-gradient(
                     180deg,
                     transparent 0 38px,
@@ -62,10 +65,10 @@
 
         body::before {
             background:
-                linear-gradient(90deg, rgba(255, 117, 154, 0.22) 0 6px, transparent 6px),
-                linear-gradient(180deg, rgba(255,255,255,0.42), transparent 20%);
+                linear-gradient(90deg, rgba(244, 149, 94, 0.18) 0 6px, transparent 6px),
+                linear-gradient(180deg, rgba(255,255,255,0.38), transparent 20%);
             background-size: 100% 100%, 100% 100%;
-            opacity: 0.45;
+            opacity: 0.55;
         }
 
         body::after {
@@ -94,9 +97,10 @@
             flex: 1;
             min-height: calc(100vh - 50px);
             padding: clamp(18px, 4vw, 38px);
-            background: rgba(255, 255, 255, 0.58);
+            background: rgba(255, 252, 247, 0.72);
+            border: 1px solid rgba(197, 161, 116, 0.18);
             border-radius: 30px;
-            box-shadow: 0 28px 50px var(--paper-shadow);
+            box-shadow: 0 24px 48px var(--paper-shadow);
             overflow: hidden;
             display: grid;
             grid-template-columns: minmax(0, 1fr);
@@ -109,9 +113,9 @@
             position: absolute;
             inset: 0;
             background:
-                linear-gradient(135deg, rgba(255,255,255,0.54), transparent 42%),
+                linear-gradient(135deg, rgba(255,255,255,0.58), transparent 42%),
                 radial-gradient(circle at 14% 18%, rgba(98, 178, 248, 0.08), transparent 20%),
-                radial-gradient(circle at 86% 80%, rgba(255, 162, 0, 0.06), transparent 24%);
+                radial-gradient(circle at 86% 80%, rgba(245, 159, 68, 0.08), transparent 24%);
             pointer-events: none;
         }
 
@@ -128,10 +132,10 @@
 
         .story-panel,
         .word-panel {
-            background: rgba(255, 255, 255, 0.72);
+            background: var(--panel);
             border-radius: 28px;
-            border: 2px solid rgba(76, 108, 172, 0.08);
-            box-shadow: 0 18px 34px rgba(42, 61, 104, 0.08);
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 14px 30px rgba(82, 67, 44, 0.09);
             padding: clamp(18px, 3vw, 30px);
         }
 
@@ -144,7 +148,7 @@
         .story-stage {
             width: 100%;
             display: grid;
-            gap: 18px;
+            gap: 20px;
         }
 
         .story-status {
@@ -153,6 +157,8 @@
             justify-content: space-between;
             gap: 16px;
             flex-wrap: wrap;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(180, 149, 110, 0.18);
         }
 
         .story-title {
@@ -160,7 +166,7 @@
             font-weight: 900;
             letter-spacing: 0.04em;
             text-transform: uppercase;
-            color: rgba(43, 70, 115, 0.72);
+            color: var(--ink-soft);
         }
 
         .level-badge {
@@ -169,12 +175,40 @@
             justify-content: center;
             padding: 10px 16px;
             border-radius: 999px;
-            background: rgba(79, 149, 255, 0.12);
-            border: 2px solid rgba(79, 149, 255, 0.22);
+            background: rgba(77, 140, 247, 0.12);
+            border: 2px solid rgba(77, 140, 247, 0.18);
             color: var(--blue);
             font-size: 1rem;
             font-weight: 900;
             white-space: nowrap;
+        }
+
+        .story-hint-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .story-hint,
+        .progress-pill {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 0.95rem;
+            font-weight: 800;
+        }
+
+        .story-hint {
+            background: rgba(245, 159, 68, 0.12);
+            color: #9a6223;
+        }
+
+        .progress-pill {
+            background: rgba(47, 167, 160, 0.12);
+            color: #247e79;
         }
 
         .story-text {
@@ -215,7 +249,7 @@
             margin: 0 0.12em;
             padding: 0.05em 0.26em 0.08em;
             border: 4px dashed var(--slot-border);
-            background: rgba(255, 255, 255, 0.9);
+            background: var(--slot);
             font-size: 1em;
             line-height: inherit;
             -webkit-text-stroke: 2px currentColor;
@@ -223,6 +257,7 @@
             text-shadow: none;
             vertical-align: baseline;
             cursor: pointer;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
         }
 
         .story-text .blank.outlined-blue,
@@ -252,7 +287,7 @@
 
         .story-text .blank.active {
             transform: scale(1.04);
-            box-shadow: 0 0 0 8px rgba(85, 146, 255, 0.14);
+            box-shadow: 0 0 0 8px rgba(77, 140, 247, 0.14);
             border-style: solid;
         }
 
@@ -291,6 +326,8 @@
             grid-template-columns: minmax(0, 1fr) auto;
             align-items: end;
             gap: 14px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 249, 242, 0.94));
         }
 
         .word-bank {
@@ -307,7 +344,7 @@
             min-height: 68px;
             padding: 12px 20px;
             border: 4px solid currentColor;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             box-shadow: 0 12px 20px var(--shadow);
             font-size: clamp(2rem, 3vw, 3rem);
             line-height: 1;
@@ -342,15 +379,15 @@
             min-width: 108px;
             min-height: 68px;
             padding: 12px 20px;
-            border: 4px solid #2e78ea;
+            border: 4px solid #3978dc;
             border-radius: 18px;
-            background: linear-gradient(180deg, #4f95ff, #2e78ea);
+            background: linear-gradient(180deg, #5e9bff, #3978dc);
             color: #fff;
             font: inherit;
             font-size: clamp(1.15rem, 2vw, 1.45rem);
             font-weight: 900;
             line-height: 1;
-            box-shadow: 0 12px 20px rgba(61, 139, 253, 0.24);
+            box-shadow: 0 12px 20px rgba(77, 140, 247, 0.24);
             cursor: pointer;
             align-self: end;
             white-space: nowrap;
@@ -385,20 +422,39 @@
             pointer-events: none;
             opacity: 0;
             z-index: 10;
+            padding: 18px;
         }
 
         .celebration.active {
-            animation: fadeCelebrate 1s ease;
+            animation: fadeCelebrate 1.15s ease;
         }
 
         .celebration-message {
-            padding: 18px 28px;
-            border-radius: 24px;
-            background: rgba(255,255,255,0.92);
+            min-width: min(520px, 100%);
+            padding: 22px 26px;
+            border-radius: 28px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,249,242,0.95));
+            color: var(--ink);
+            border: 1px solid rgba(175, 150, 112, 0.18);
+            box-shadow: 0 22px 40px rgba(76, 85, 59, 0.16);
+            text-align: center;
+        }
+
+        .celebration-title {
+            display: block;
             color: var(--green);
-            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-size: clamp(1.7rem, 4vw, 2.85rem);
             font-weight: 900;
-            box-shadow: 0 18px 34px rgba(56, 184, 108, 0.18);
+            line-height: 1.05;
+        }
+
+        .celebration-detail {
+            display: block;
+            margin-top: 10px;
+            color: var(--ink-soft);
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            font-weight: 800;
         }
 
         @keyframes fadeCelebrate {
@@ -454,6 +510,10 @@
                 min-height: calc(100vh - 34px);
             }
 
+            .story-hint-row {
+                align-items: stretch;
+            }
+
             .story-text {
                 font-size: clamp(1.55rem, 7vw, 2.2rem);
             }
@@ -484,6 +544,10 @@
                             <div class="story-title" id="storyTitle"></div>
                             <div class="level-badge" id="levelBadge"></div>
                         </div>
+                        <div class="story-hint-row">
+                            <div class="story-hint" id="storyHint">Pick a word and place it in the blank.</div>
+                            <div class="progress-pill" id="progressPill">Story 1 of 129</div>
+                        </div>
                         <div class="story-text" id="storyText" aria-live="polite"></div>
                     </div>
                 </div>
@@ -497,7 +561,10 @@
     </main>
 
     <div class="celebration" id="celebration">
-        <div class="celebration-message">Great job!</div>
+        <div class="celebration-message" aria-live="polite">
+            <span class="celebration-title" id="celebrationTitle">Great job!</span>
+            <span class="celebration-detail" id="celebrationDetail">You solved the story.</span>
+        </div>
     </div>
 
     <script>
@@ -2191,6 +2258,14 @@
             "them", "then", "there", "they", "this", "to", "together", "up", "while", "with"
         ]);
 
+        const CELEBRATION_LINES = [
+            { title: "Great job!", detail: "You solved this story." },
+            { title: "Nice work!", detail: "Every missing word is in the right place." },
+            { title: "You did it!", detail: "That story is complete and ready for the next one." },
+            { title: "Excellent reading!", detail: "You matched every word correctly." },
+            { title: "Brilliant!", detail: "The whole story makes sense now." }
+        ];
+
         class StoryPuzzleGame {
             constructor(stories) {
                 this.stories = this.shuffle(stories);
@@ -2201,8 +2276,12 @@
                 this.storyText = document.getElementById("storyText");
                 this.storyTitle = document.getElementById("storyTitle");
                 this.levelBadge = document.getElementById("levelBadge");
+                this.storyHint = document.getElementById("storyHint");
+                this.progressPill = document.getElementById("progressPill");
                 this.wordBank = document.getElementById("wordBank");
                 this.celebration = document.getElementById("celebration");
+                this.celebrationTitle = document.getElementById("celebrationTitle");
+                this.celebrationDetail = document.getElementById("celebrationDetail");
                 this.nextButton = document.getElementById("nextButton");
                 this.wordBankHeight = 0;
                 this.completedStories = 0;
@@ -2434,6 +2513,8 @@
 
                 this.storyTitle.textContent = story.title;
                 this.levelBadge.textContent = `Level ${this.currentLevel}`;
+                this.storyHint.textContent = `Find ${blanks.length === 1 ? "the missing word" : `all ${blanks.length} missing words`}.`;
+                this.progressPill.textContent = `Story ${this.completedStories + 1} of ${this.stories.length}`;
 
                 this.storyText.innerHTML = "";
                 renderUnits.forEach((part) => {
@@ -2716,6 +2797,9 @@
             }
 
             launchCelebration() {
+                const feedback = CELEBRATION_LINES[Math.floor(Math.random() * CELEBRATION_LINES.length)];
+                this.celebrationTitle.textContent = feedback.title;
+                this.celebrationDetail.textContent = `${feedback.detail} ${this.currentStory.title} is done.`;
                 this.celebration.classList.remove("active");
                 void this.celebration.offsetWidth;
                 this.celebration.classList.add("active");
