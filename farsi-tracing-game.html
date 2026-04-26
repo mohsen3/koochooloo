@@ -891,8 +891,12 @@
                 this.penLifted = true;
 
                 if (this.currentPath.length > 0) {
-                    this.drawnPaths.push([...this.currentPath]);
+                    const acceptedSubpaths = this.filterAcceptedSubpaths(this.currentPath);
+                    if (acceptedSubpaths.length) {
+                        this.drawnPaths.push(...acceptedSubpaths);
+                    }
                     this.currentPath = [];
+                    this.redrawCanvas();
                 }
 
                 // Check if tracing is valid
@@ -984,6 +988,187 @@
                 this.ctx.restore();
             }
 
+            redrawCanvas() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.drawCurrentShape();
+                this.redrawAcceptedPaths();
+            }
+
+            redrawAcceptedPaths() {
+                this.ctx.save();
+                this.ctx.strokeStyle = '#4fa3d1';
+                this.ctx.lineWidth = 4;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+
+                this.drawnPaths.forEach(path => {
+                    if (path.length < 2) return;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(path[0].x, path[0].y);
+                    for (let i = 1; i < path.length; i++) {
+                        this.ctx.lineTo(path[i].x, path[i].y);
+                    }
+                    this.ctx.stroke();
+                });
+
+                this.ctx.restore();
+            }
+
+            getTraceAcceptanceThreshold() {
+                if (this.difficultyScore <= 50) {
+                    return 50 - (this.difficultyScore / 50) * 30;
+                }
+
+                const progressAbove50 = (this.difficultyScore - 50) / 50;
+                const exponentialFactor = Math.pow(progressAbove50, 1.8);
+                return 20 - exponentialFactor * 17;
+            }
+
+            sampleShapeCoveragePoints(shape, spacing = 8) {
+                const segments = this.getShapeSegments(shape);
+                const samples = [];
+
+                segments.forEach(segment => {
+                    if (!segment.length) return;
+
+                    samples.push({ x: segment[0][0], y: segment[0][1] });
+
+                    for (let i = 0; i < segment.length - 1; i++) {
+                        const start = { x: segment[i][0], y: segment[i][1] };
+                        const end = { x: segment[i + 1][0], y: segment[i + 1][1] };
+                        const length = Math.hypot(end.x - start.x, end.y - start.y);
+                        const steps = Math.max(1, Math.ceil(length / spacing));
+
+                        for (let step = 1; step <= steps; step++) {
+                            const t = step / steps;
+                            samples.push({
+                                x: start.x + (end.x - start.x) * t,
+                                y: start.y + (end.y - start.y) * t
+                            });
+                        }
+                    }
+                });
+
+                return samples;
+            }
+
+            getCoveredShapeSampleIndices(paths, samples, threshold) {
+                const covered = new Set();
+
+                samples.forEach((sample, sampleIndex) => {
+                    const isCovered = paths.some(path => this.pathCoversSample(path, sample, threshold));
+                    if (isCovered) {
+                        covered.add(sampleIndex);
+                    }
+                });
+
+                return covered;
+            }
+
+            pathCoversSample(path, sample, threshold) {
+                if (!path.length) return false;
+
+                for (let i = 0; i < path.length; i++) {
+                    const pointDistance = Math.hypot(path[i].x - sample.x, path[i].y - sample.y);
+                    if (pointDistance <= threshold) {
+                        return true;
+                    }
+
+                    if (i === 0) continue;
+
+                    const segmentDistance = this.distanceToLineSegment(
+                        sample,
+                        path[i - 1],
+                        path[i]
+                    );
+                    if (segmentDistance <= threshold) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            getNearestSampleDistance(point, samples) {
+                let nearestDistance = Infinity;
+
+                samples.forEach(sample => {
+                    const distance = Math.hypot(point.x - sample.x, point.y - sample.y);
+                    if (distance < nearestDistance) {
+                        nearestDistance = distance;
+                    }
+                });
+
+                return nearestDistance;
+            }
+
+            getNewCoverageForPoint(point, samples, coveredIndices, threshold) {
+                const newIndices = [];
+
+                samples.forEach((sample, sampleIndex) => {
+                    if (coveredIndices.has(sampleIndex)) return;
+                    const distance = Math.hypot(point.x - sample.x, point.y - sample.y);
+                    if (distance <= threshold) {
+                        newIndices.push(sampleIndex);
+                    }
+                });
+
+                return newIndices;
+            }
+
+            filterAcceptedSubpaths(path) {
+                if (path.length < 2) return [];
+
+                const shape = this.shapes[this.currentShapeIndex];
+                const threshold = this.getTraceAcceptanceThreshold();
+                const samples = this.sampleShapeCoveragePoints(shape);
+                const coveredIndices = this.getCoveredShapeSampleIndices(this.drawnPaths, samples, threshold);
+                const pointStates = path.map(point => {
+                    const nearShape = this.getNearestSampleDistance(point, samples) <= threshold;
+                    const newCoverage = nearShape
+                        ? this.getNewCoverageForPoint(point, samples, coveredIndices, threshold)
+                        : [];
+
+                    return {
+                        point,
+                        nearShape,
+                        contributes: newCoverage.length > 0,
+                        newCoverage
+                    };
+                });
+
+                const acceptedFlags = pointStates.map((state, index, states) => {
+                    if (!state.nearShape) return false;
+                    if (state.contributes) return true;
+
+                    const prevContributes = index > 0 && states[index - 1].contributes;
+                    const nextContributes = index < states.length - 1 && states[index + 1].contributes;
+                    return prevContributes || nextContributes;
+                });
+
+                const acceptedSubpaths = [];
+                let currentAcceptedPath = [];
+
+                pointStates.forEach((state, index) => {
+                    if (!acceptedFlags[index]) {
+                        if (currentAcceptedPath.length >= 2) {
+                            acceptedSubpaths.push(currentAcceptedPath);
+                        }
+                        currentAcceptedPath = [];
+                        return;
+                    }
+
+                    currentAcceptedPath.push(state.point);
+                    state.newCoverage.forEach(sampleIndex => coveredIndices.add(sampleIndex));
+                });
+
+                if (currentAcceptedPath.length >= 2) {
+                    acceptedSubpaths.push(currentAcceptedPath);
+                }
+
+                return acceptedSubpaths;
+            }
+
             isTracingValid() {
                 const shape = this.shapes[this.currentShapeIndex];
 
@@ -1024,16 +1209,7 @@
                 // Score 70: 12px tolerance
                 // Score 90: 6px tolerance
                 // Score 100: 3px tolerance (almost impossible)
-                let threshold;
-                if (this.difficultyScore <= 50) {
-                    // Linear from score 1-50
-                    threshold = 50 - (this.difficultyScore / 50) * 30; // 50px to 20px
-                } else {
-                    // Exponential curve from 50-100
-                    const progressAbove50 = (this.difficultyScore - 50) / 50; // 0 to 1
-                    const exponentialFactor = Math.pow(progressAbove50, 1.8); // More aggressive curve
-                    threshold = 20 - exponentialFactor * 17; // 20px to 3px
-                }
+                const threshold = this.getTraceAcceptanceThreshold();
 
                 // Get shape segments (for multi-stroke shapes like letters)
                 const shapeSegments = this.getShapeSegments(shape);
@@ -1236,9 +1412,8 @@
             }
 
             clearCanvas() {
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.drawnPaths = [];
-                this.drawCurrentShape();
+                this.redrawCanvas();
             }
 
             nextShape() {
