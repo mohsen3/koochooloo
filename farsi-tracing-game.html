@@ -942,50 +942,82 @@
                 this.ctx.lineWidth = 3;
                 this.ctx.lineCap = 'round';
                 this.ctx.lineJoin = 'round';
+                this.drawGuidePaths(shape);
+                this.ctx.restore();
 
-                if (shape.type === 'letter') {
-                    const paths = this.getShapePaths(shape);
-                    paths.forEach(path => {
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(path[0][0], path[0][1]);
-                        for (let i = 1; i < path.length; i++) {
-                            this.ctx.lineTo(path[i][0], path[i][1]);
-                        }
-                        this.ctx.stroke();
-                    });
-                } else if (shape.type === 'word') {
-                    const paths = this.getShapePaths(shape);
-                    paths.forEach(path => {
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(path[0][0], path[0][1]);
-                        for (let i = 1; i < path.length; i++) {
-                            this.ctx.lineTo(path[i][0], path[i][1]);
-                        }
-                        this.ctx.stroke();
-                    });
-                } else if (shape.type === 'circle') {
+                this.drawAcceptedGuideOverlay(shape);
+            }
+
+            drawGuidePaths(shape) {
+                const segments = this.getShapeSegments(shape);
+
+                segments.forEach(segment => {
+                    if (segment.length < 2) return;
                     this.ctx.beginPath();
-                    this.ctx.arc(shape.center[0], shape.center[1], shape.radius, 0, Math.PI * 2);
-                    this.ctx.stroke();
-                } else if (shape.type === 'multiline') {
-                    shape.paths.forEach(path => {
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(path[0][0], path[0][1]);
-                        for (let i = 1; i < path.length; i++) {
-                            this.ctx.lineTo(path[i][0], path[i][1]);
-                        }
-                        this.ctx.stroke();
-                    });
-                } else {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(shape.points[0][0], shape.points[0][1]);
-                    for (let i = 1; i < shape.points.length; i++) {
-                        this.ctx.lineTo(shape.points[i][0], shape.points[i][1]);
+                    this.ctx.moveTo(segment[0][0], segment[0][1]);
+                    for (let i = 1; i < segment.length; i++) {
+                        this.ctx.lineTo(segment[i][0], segment[i][1]);
                     }
                     this.ctx.stroke();
-                }
+                });
+            }
+
+            drawAcceptedGuideOverlay(shape) {
+                if (!this.drawnPaths.length) return;
+
+                const threshold = this.getTraceAcceptanceThreshold();
+                const samples = this.sampleShapeCoveragePoints(shape);
+                const coveredIndices = this.getCoveredShapeSampleIndices(this.drawnPaths, samples, threshold);
+                if (!coveredIndices.size) return;
+
+                this.ctx.save();
+                this.ctx.setLineDash([10, 10]);
+                this.ctx.strokeStyle = '#6bcf7f';
+                this.ctx.lineWidth = 5;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+                this.ctx.shadowColor = 'rgba(107, 207, 127, 0.65)';
+                this.ctx.shadowBlur = 12;
+
+                const segments = this.getShapeSegments(shape);
+                let sampleIndexOffset = 0;
+
+                segments.forEach(segment => {
+                    if (segment.length < 2) return;
+
+                    const segmentSamples = this.sampleSegmentPoints(segment);
+                    const litPath = [];
+
+                    segmentSamples.forEach((sample, localIndex) => {
+                        const isCovered = coveredIndices.has(sampleIndexOffset + localIndex);
+                        if (!isCovered) {
+                            if (litPath.length >= 2) {
+                                this.strokeLitSegment(litPath);
+                            }
+                            litPath.length = 0;
+                            return;
+                        }
+
+                        litPath.push([sample.x, sample.y]);
+                    });
+
+                    if (litPath.length >= 2) {
+                        this.strokeLitSegment(litPath);
+                    }
+
+                    sampleIndexOffset += segmentSamples.length;
+                });
 
                 this.ctx.restore();
+            }
+
+            strokeLitSegment(points) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(points[0][0], points[0][1]);
+                for (let i = 1; i < points.length; i++) {
+                    this.ctx.lineTo(points[i][0], points[i][1]);
+                }
+                this.ctx.stroke();
             }
 
             redrawCanvas() {
@@ -1029,25 +1061,31 @@
                 const samples = [];
 
                 segments.forEach(segment => {
-                    if (!segment.length) return;
-
-                    samples.push({ x: segment[0][0], y: segment[0][1] });
-
-                    for (let i = 0; i < segment.length - 1; i++) {
-                        const start = { x: segment[i][0], y: segment[i][1] };
-                        const end = { x: segment[i + 1][0], y: segment[i + 1][1] };
-                        const length = Math.hypot(end.x - start.x, end.y - start.y);
-                        const steps = Math.max(1, Math.ceil(length / spacing));
-
-                        for (let step = 1; step <= steps; step++) {
-                            const t = step / steps;
-                            samples.push({
-                                x: start.x + (end.x - start.x) * t,
-                                y: start.y + (end.y - start.y) * t
-                            });
-                        }
-                    }
+                    samples.push(...this.sampleSegmentPoints(segment, spacing));
                 });
+
+                return samples;
+            }
+
+            sampleSegmentPoints(segment, spacing = 8) {
+                if (!segment.length) return [];
+
+                const samples = [{ x: segment[0][0], y: segment[0][1] }];
+
+                for (let i = 0; i < segment.length - 1; i++) {
+                    const start = { x: segment[i][0], y: segment[i][1] };
+                    const end = { x: segment[i + 1][0], y: segment[i + 1][1] };
+                    const length = Math.hypot(end.x - start.x, end.y - start.y);
+                    const steps = Math.max(1, Math.ceil(length / spacing));
+
+                    for (let step = 1; step <= steps; step++) {
+                        const t = step / steps;
+                        samples.push({
+                            x: start.x + (end.x - start.x) * t,
+                            y: start.y + (end.y - start.y) * t
+                        });
+                    }
+                }
 
                 return samples;
             }
