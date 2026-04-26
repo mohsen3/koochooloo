@@ -6,10 +6,10 @@
     <title>بازی ردیابی</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Koodak:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --farsi-font: 'Koodak', 'B Koodak', 'Vazir', 'Tahoma', 'Arial', sans-serif;
+            --farsi-font: 'Koodak', 'B Koodak', 'Vazirmatn', 'Vazir', 'Tahoma', 'Arial', sans-serif;
         }
 
         * {
@@ -207,13 +207,14 @@
             constructor() {
                 this.canvas = document.getElementById('canvas');
                 this.ctx = this.canvas.getContext('2d');
-                this.fontStack = "'Koodak', 'B Koodak', 'Vazir', 'Tahoma', 'Arial', sans-serif";
+                this.fontStack = "'Koodak', 'B Koodak', 'Vazirmatn', 'Vazir', 'Tahoma', 'Arial', sans-serif";
                 this.drawing = false;
                 this.currentShapeIndex = 0;
                 this.traceCache = new Map();
                 this.fontReady = false;
                 this.successPending = false;
                 this.activePointerId = null;
+                this.lastTracePoint = null;
                 this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
                 // Difficulty scoring system
@@ -489,10 +490,10 @@
                 const sampleSpacing = isDot ? 10 : 12;
                 const litRadius = isDot
                     ? Math.max(component.width, component.height) * transform.scale
-                    : Math.max(16, estimatedThickness * transform.scale * 0.85);
+                    : Math.max(9, estimatedThickness * transform.scale * 0.34);
                 const hitPadding = isDot
                     ? Math.max(2, estimatedThickness * 0.1)
-                    : Math.max(3, estimatedThickness * 0.22);
+                    : Math.max(4, estimatedThickness * 0.3);
 
                 const samplesBySegment = guideSegments.map((segment, segmentIndex) =>
                     this.sampleSegmentPoints(segment, sampleSpacing).map((sample, order) => ({
@@ -511,6 +512,8 @@
                     samplesBySegment,
                     hitPadding,
                     litRadius,
+                    interactionCount: 0,
+                    minInteractions: isDot ? 1 : Math.max(5, Math.ceil(guideSegments.reduce((sum, segment) => sum + segment.length, 0) / 18)),
                     completed: false
                 };
             }
@@ -865,8 +868,8 @@
                 try {
                     await Promise.race([
                         Promise.all([
-                            document.fonts.load('400 160px "Koodak"'),
-                            document.fonts.load('700 160px "Koodak"'),
+                            document.fonts.load('400 160px "Vazirmatn"'),
+                            document.fonts.load('700 160px "Vazirmatn"'),
                             document.fonts.ready
                         ]),
                         new Promise(resolve => setTimeout(resolve, 1800))
@@ -953,6 +956,7 @@
                     this.canvas.setPointerCapture(this.activePointerId);
                 }
 
+                this.lastTracePoint = null;
                 this.processTracePoint(this.getCoordinates(e));
             }
 
@@ -978,6 +982,7 @@
                     }
                 }
                 this.activePointerId = null;
+                this.lastTracePoint = null;
             }
 
             drawCurrentShape() {
@@ -1100,10 +1105,10 @@
 
             getTraceAcceptanceThreshold() {
                 if (this.difficultyScore <= 50) {
-                    return 0.62 + (this.difficultyScore / 50) * 0.12;
+                    return 0.78 + (this.difficultyScore / 50) * 0.08;
                 }
 
-                return 0.74 + ((this.difficultyScore - 50) / 50) * 0.12;
+                return 0.86 + ((this.difficultyScore - 50) / 50) * 0.08;
             }
 
             sampleSegmentPoints(segment, spacing = 8) {
@@ -1134,7 +1139,8 @@
                 const model = this.getTraceModel(shape);
                 if (!model || this.successPending) return;
 
-                const changed = this.applyTracePointToModel(point, model);
+                const changed = this.applyTraceSegmentToModel(this.lastTracePoint, point, model);
+                this.lastTracePoint = point;
                 if (!changed) return;
 
                 this.redrawCanvas();
@@ -1147,6 +1153,27 @@
                         this.nextShape();
                     }, 1200);
                 }
+            }
+
+            applyTraceSegmentToModel(fromPoint, toPoint, model) {
+                if (!fromPoint) {
+                    return this.applyTracePointToModel(toPoint, model);
+                }
+
+                const distance = Math.hypot(toPoint.x - fromPoint.x, toPoint.y - fromPoint.y);
+                const steps = Math.max(1, Math.ceil(distance / 6));
+                let changed = false;
+
+                for (let step = 1; step <= steps; step++) {
+                    const t = step / steps;
+                    const point = {
+                        x: fromPoint.x + (toPoint.x - fromPoint.x) * t,
+                        y: fromPoint.y + (toPoint.y - fromPoint.y) * t
+                    };
+                    changed = this.applyTracePointToModel(point, model) || changed;
+                }
+
+                return changed;
             }
 
             applyTracePointToModel(point, model) {
@@ -1226,34 +1253,36 @@
 
             lightStrokeComponent(component, point) {
                 let changed = false;
+                let nearestSegment = null;
+                let nearestIndex = -1;
+                let nearestDistance = Infinity;
 
                 component.samplesBySegment.forEach(samples => {
-                    let nearestIndex = -1;
-                    let nearestDistance = Infinity;
-
                     samples.forEach((sample, index) => {
                         const distance = Math.hypot(sample.x - point.x, sample.y - point.y);
                         if (distance < nearestDistance) {
                             nearestDistance = distance;
                             nearestIndex = index;
-                        }
-
-                        if (!sample.lit && distance <= component.litRadius) {
-                            sample.lit = true;
-                            changed = true;
+                            nearestSegment = samples;
                         }
                     });
-
-                    if (nearestIndex === -1) return;
-
-                    const neighborRadius = nearestDistance <= component.litRadius ? 2 : 1;
-                    for (let i = Math.max(0, nearestIndex - neighborRadius); i <= Math.min(samples.length - 1, nearestIndex + neighborRadius); i++) {
-                        if (!samples[i].lit) {
-                            samples[i].lit = true;
-                            changed = true;
-                        }
-                    }
                 });
+
+                if (!nearestSegment || nearestIndex === -1) {
+                    return false;
+                }
+
+                const spreadRadius = nearestDistance <= component.litRadius ? 1 : 0;
+                for (let i = Math.max(0, nearestIndex - spreadRadius); i <= Math.min(nearestSegment.length - 1, nearestIndex + spreadRadius); i++) {
+                    if (!nearestSegment[i].lit) {
+                        nearestSegment[i].lit = true;
+                        changed = true;
+                    }
+                }
+
+                if (changed) {
+                    component.interactionCount++;
+                }
 
                 return changed;
             }
@@ -1277,7 +1306,12 @@
                         litSamples += samples.filter(sample => sample.lit).length;
                     });
 
-                    return totalSamples > 0 && (litSamples / totalSamples) >= requiredCoverage;
+                    const coverage = totalSamples > 0 ? (litSamples / totalSamples) : 0;
+                    const minimumLitSamples = Math.max(5, Math.ceil(totalSamples * 0.4));
+
+                    return coverage >= requiredCoverage &&
+                        litSamples >= minimumLitSamples &&
+                        component.interactionCount >= component.minInteractions;
                 });
             }
 
@@ -1390,6 +1424,7 @@
                 if (model) {
                     model.components.forEach(component => {
                         component.completed = false;
+                        component.interactionCount = 0;
                         component.samplesBySegment.forEach(samples => {
                             samples.forEach(sample => {
                                 sample.lit = false;
@@ -1397,6 +1432,7 @@
                         });
                     });
                 }
+                this.lastTracePoint = null;
                 this.redrawCanvas();
             }
 
