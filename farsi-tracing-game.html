@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بازی ردیابی</title>
-    <link href="https://fonts.googleapis.com/css2?family=Koodak&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Koodak:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --farsi-font: 'Koodak', 'B Koodak', 'Vazir', 'Tahoma', 'Arial', sans-serif;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +19,7 @@
         }
 
         body {
-            font-family: 'Koodak', 'B Koodak', 'Vazir', 'Tahoma', 'Arial', sans-serif;
+            font-family: var(--farsi-font);
             background: linear-gradient(135deg, #e6f5ff 0%, #f0f8ff 50%, #fafcff 100%);
             min-height: 100vh;
             display: flex;
@@ -22,6 +28,7 @@
             overflow: hidden;
             position: relative;
             padding: 20px;
+            -webkit-text-size-adjust: 100%;
         }
 
         /* Background dots pattern */
@@ -202,12 +209,12 @@
                 this.ctx = this.canvas.getContext('2d');
                 this.fontStack = "'Koodak', 'B Koodak', 'Vazir', 'Tahoma', 'Arial', sans-serif";
                 this.drawing = false;
-                this.currentPath = [];
-                this.drawnPaths = [];
                 this.currentShapeIndex = 0;
-                this.penLifted = true;
+                this.traceCache = new Map();
+                this.fontReady = false;
+                this.successPending = false;
+                this.activePointerId = null;
                 this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                this.pathCache = new Map();
 
                 // Difficulty scoring system
                 this.difficultyScore = 30.0; // Internal floating point score (1-100)
@@ -260,46 +267,60 @@
                 return points;
             }
 
-            getShapePaths(shape) {
-                const text = shape.type === 'letter' ? shape.letter : shape.word;
-                if (!text) return [];
-
-                if (!this.pathCache.has(text)) {
-                    this.pathCache.set(text, this.generateTextTracePaths(text));
-                }
-
-                return this.pathCache.get(text);
+            getShapeText(shape) {
+                return shape.type === 'letter' ? shape.letter : shape.word;
             }
 
-            generateTextTracePaths(text) {
+            getTraceModel(shape) {
+                const text = this.getShapeText(shape);
+                if (!text) return null;
+
+                if (!this.traceCache.has(text)) {
+                    this.traceCache.set(text, this.generateTextTraceModel(text));
+                }
+
+                return this.traceCache.get(text);
+            }
+
+            getShapePaths(shape) {
+                const model = this.getTraceModel(shape);
+                return model ? model.segments : [];
+            }
+
+            generateTextTraceModel(text) {
                 const render = this.renderTextMask(text);
-                if (!render) return [];
+                if (!render) return null;
 
                 const { mask, bounds, fontSize } = render;
                 const components = this.findConnectedComponents(mask);
-                if (!components.length) return [];
+                if (!components.length) return null;
 
+                const transform = this.getTextBoundsTransform(bounds);
                 const largestArea = Math.max(...components.map(component => component.pixels.length));
-                const paths = [];
+                const model = {
+                    text,
+                    bounds,
+                    transform,
+                    components: [],
+                    segments: []
+                };
 
                 components.forEach(component => {
-                    if (this.isDotComponent(component, largestArea, fontSize)) {
-                        paths.push(this.componentToEllipsePath(component));
-                        return;
-                    }
+                    const traceComponent = this.buildTraceComponent(
+                        component,
+                        mask[0].length,
+                        mask.length,
+                        transform,
+                        largestArea,
+                        fontSize
+                    );
 
-                    const componentMask = this.createComponentMask(component, mask[0].length, mask.length);
-                    const skeleton = this.zhangSuenThinning(componentMask);
-                    const componentPaths = this.traceSkeletonPaths(skeleton);
-
-                    componentPaths.forEach(path => {
-                        if (path.length >= 2) {
-                            paths.push(path);
-                        }
-                    });
+                    if (!traceComponent) return;
+                    model.components.push(traceComponent);
+                    traceComponent.guideSegments.forEach(segment => model.segments.push(segment));
                 });
 
-                return this.normalizePathsToCanvas(paths, bounds);
+                return model;
             }
 
             renderTextMask(text) {
@@ -449,6 +470,63 @@
                 }
 
                 return points;
+            }
+
+            buildTraceComponent(component, width, height, transform, largestArea, fontSize) {
+                const localMask = this.createComponentMask(component, width, height);
+                const isDot = this.isDotComponent(component, largestArea, fontSize);
+                const localGuidePaths = isDot
+                    ? [this.componentToEllipsePath(component)]
+                    : this.traceSkeletonPaths(this.zhangSuenThinning(localMask)).filter(path => path.length >= 2);
+
+                if (!localGuidePaths.length) return null;
+
+                const guideSegments = this.normalizePathsToCanvas(localGuidePaths, transform);
+                const strokeLength = this.calculatePathCollectionLength(localGuidePaths);
+                const estimatedThickness = isDot
+                    ? Math.max(component.width, component.height)
+                    : Math.max(10, component.pixels.length / Math.max(1, strokeLength));
+                const sampleSpacing = isDot ? 10 : 12;
+                const litRadius = isDot
+                    ? Math.max(component.width, component.height) * transform.scale
+                    : Math.max(16, estimatedThickness * transform.scale * 0.85);
+                const hitPadding = isDot
+                    ? Math.max(2, estimatedThickness * 0.1)
+                    : Math.max(3, estimatedThickness * 0.22);
+
+                const samplesBySegment = guideSegments.map((segment, segmentIndex) =>
+                    this.sampleSegmentPoints(segment, sampleSpacing).map((sample, order) => ({
+                        ...sample,
+                        lit: false,
+                        segmentIndex,
+                        order
+                    }))
+                );
+
+                return {
+                    type: isDot ? 'dot' : 'stroke',
+                    localMask,
+                    localBBox: component.bbox,
+                    guideSegments,
+                    samplesBySegment,
+                    hitPadding,
+                    litRadius,
+                    completed: false
+                };
+            }
+
+            calculatePathCollectionLength(paths) {
+                let length = 0;
+
+                paths.forEach(path => {
+                    for (let i = 0; i < path.length - 1; i++) {
+                        const dx = path[i + 1][0] - path[i][0];
+                        const dy = path[i + 1][1] - path[i][1];
+                        length += Math.hypot(dx, dy);
+                    }
+                });
+
+                return length;
             }
 
             createComponentMask(component, width, height) {
@@ -725,10 +803,9 @@
                 return result;
             }
 
-            normalizePathsToCanvas(paths, bounds) {
+            normalizePathsToCanvas(paths, transform) {
                 if (!paths.length) return [];
-
-                const { scale, offsetX, offsetY } = this.getTextBoundsTransform(bounds);
+                const { scale, offsetX, offsetY } = transform;
 
                 return paths.map(path => path.map(([x, y]) => [
                     offsetX + x * scale,
@@ -771,26 +848,40 @@
                 this.ctx.restore();
             }
 
-            init() {
+            async init() {
                 this.createBackgroundDots();
                 this.setupEventListeners();
+                await this.ensureFontReady();
                 this.drawCurrentShape();
                 this.updateScoreDisplay();
-                this.setupFontLoading();
             }
 
-            setupFontLoading() {
-                if (!document.fonts || !document.fonts.load) return;
+            async ensureFontReady() {
+                if (!document.fonts || !document.fonts.load) {
+                    this.fontReady = true;
+                    return;
+                }
 
-                Promise.all([
-                    document.fonts.load('400 160px Koodak'),
-                    document.fonts.ready
-                ]).then(() => {
-                    this.pathCache.clear();
-                    this.clearCanvas();
-                }).catch(() => {
-                    // Keep existing fallback rendering if the webfont fails to load.
-                });
+                try {
+                    await Promise.race([
+                        Promise.all([
+                            document.fonts.load('400 160px "Koodak"'),
+                            document.fonts.load('700 160px "Koodak"'),
+                            document.fonts.ready
+                        ]),
+                        new Promise(resolve => setTimeout(resolve, 1800))
+                    ]);
+                } catch (error) {
+                    // Fall through and draw with whatever font stack the browser resolved.
+                }
+
+                this.fontReady = true;
+                this.traceCache.clear();
+                this.redrawCanvas();
+                setTimeout(() => {
+                    this.traceCache.clear();
+                    this.redrawCanvas();
+                }, 350);
             }
 
             createBackgroundDots() {
@@ -855,72 +946,44 @@
             }
 
             startDrawing(e) {
-                // Prevent default to avoid scrolling/zooming while drawing
                 e.preventDefault();
-
                 this.drawing = true;
-                this.penLifted = false;
-                const coords = this.getCoordinates(e);
-                this.currentPath = [coords];
+                this.activePointerId = typeof e.pointerId === 'number' ? e.pointerId : null;
+                if (this.activePointerId !== null && this.canvas.setPointerCapture) {
+                    this.canvas.setPointerCapture(this.activePointerId);
+                }
 
-                this.ctx.beginPath();
-                this.ctx.moveTo(coords.x, coords.y);
+                this.processTracePoint(this.getCoordinates(e));
             }
 
             draw(e) {
                 if (!this.drawing) return;
-
-                // Prevent default to avoid scrolling/zooming while drawing
                 e.preventDefault();
+                if (typeof e.pointerId === 'number' && this.activePointerId !== null && e.pointerId !== this.activePointerId) {
+                    return;
+                }
 
-                const coords = this.getCoordinates(e);
-                this.currentPath.push(coords);
-
-                this.ctx.lineTo(coords.x, coords.y);
-                this.ctx.strokeStyle = '#4fa3d1';
-                this.ctx.lineWidth = 4;
-                this.ctx.lineCap = 'round';
-                this.ctx.lineJoin = 'round';
-                this.ctx.stroke();
+                this.processTracePoint(this.getCoordinates(e));
             }
 
             stopDrawing(e) {
                 if (!this.drawing) return;
 
                 this.drawing = false;
-                this.penLifted = true;
-
-                if (this.currentPath.length > 0) {
-                    const acceptedSubpaths = this.filterAcceptedSubpaths(this.currentPath);
-                    if (acceptedSubpaths.length) {
-                        this.drawnPaths.push(...acceptedSubpaths);
+                if (typeof e.pointerId === 'number' && this.activePointerId !== null && this.canvas.releasePointerCapture) {
+                    try {
+                        this.canvas.releasePointerCapture(this.activePointerId);
+                    } catch (error) {
+                        // Ignore capture release failures from browsers that already released it.
                     }
-                    this.currentPath = [];
-                    this.redrawCanvas();
                 }
-
-                // Check if tracing is valid
-                if (this.isTracingValid()) {
-                    this.onSuccess();
-                    this.celebrate();
-                    setTimeout(() => {
-                        this.nextShape();
-                    }, 1500);
-                } else if (this.isCanvasTooMessy()) {
-                    // Failed attempt - canvas is too messy
-                    this.onFailure();
-                    // Clear canvas if too messy and pen is lifted
-                    setTimeout(() => {
-                        if (this.penLifted) {
-                            this.clearCanvas();
-                        }
-                    }, 100);
-                }
+                this.activePointerId = null;
             }
 
             drawCurrentShape() {
                 const shape = this.shapes[this.currentShapeIndex];
-                const text = shape.type === 'letter' ? shape.letter : shape.type === 'word' ? shape.word : null;
+                const text = this.getShapeText(shape);
+                const model = this.getTraceModel(shape);
 
                 // Update instructions based on category
                 const instructions = document.getElementById('instructions');
@@ -936,82 +999,62 @@
                     this.drawTextBackdrop(text);
                 }
 
+                if (!model) return;
+                this.drawGuidePaths(model);
+                this.drawAcceptedGuideOverlay(model);
+            }
+
+            drawGuidePaths(model) {
                 this.ctx.save();
                 this.ctx.setLineDash([10, 10]);
-                this.ctx.strokeStyle = 'rgba(79, 163, 209, 0.4)';
-                this.ctx.lineWidth = 3;
+                this.ctx.strokeStyle = 'rgba(79, 163, 209, 0.38)';
+                this.ctx.lineWidth = 4;
                 this.ctx.lineCap = 'round';
                 this.ctx.lineJoin = 'round';
-                this.drawGuidePaths(shape);
+                model.segments.forEach(segment => this.strokeSegment(segment));
                 this.ctx.restore();
-
-                this.drawAcceptedGuideOverlay(shape);
             }
 
-            drawGuidePaths(shape) {
-                const segments = this.getShapeSegments(shape);
-
-                segments.forEach(segment => {
-                    if (segment.length < 2) return;
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(segment[0][0], segment[0][1]);
-                    for (let i = 1; i < segment.length; i++) {
-                        this.ctx.lineTo(segment[i][0], segment[i][1]);
-                    }
-                    this.ctx.stroke();
-                });
-            }
-
-            drawAcceptedGuideOverlay(shape) {
-                if (!this.drawnPaths.length) return;
-
-                const threshold = this.getTraceAcceptanceThreshold();
-                const samples = this.sampleShapeCoveragePoints(shape);
-                const coveredIndices = this.getCoveredShapeSampleIndices(this.drawnPaths, samples, threshold);
-                if (!coveredIndices.size) return;
-
+            drawAcceptedGuideOverlay(model) {
                 this.ctx.save();
                 this.ctx.setLineDash([10, 10]);
                 this.ctx.strokeStyle = '#6bcf7f';
-                this.ctx.lineWidth = 5;
+                this.ctx.lineWidth = 7;
                 this.ctx.lineCap = 'round';
                 this.ctx.lineJoin = 'round';
-                this.ctx.shadowColor = 'rgba(107, 207, 127, 0.65)';
-                this.ctx.shadowBlur = 12;
+                this.ctx.shadowColor = 'rgba(107, 207, 127, 0.72)';
+                this.ctx.shadowBlur = 14;
 
-                const segments = this.getShapeSegments(shape);
-                let sampleIndexOffset = 0;
+                model.components.forEach(component => {
+                    component.samplesBySegment.forEach(samples => {
+                        const litPath = [];
 
-                segments.forEach(segment => {
-                    if (segment.length < 2) return;
-
-                    const segmentSamples = this.sampleSegmentPoints(segment);
-                    const litPath = [];
-
-                    segmentSamples.forEach((sample, localIndex) => {
-                        const isCovered = coveredIndices.has(sampleIndexOffset + localIndex);
-                        if (!isCovered) {
-                            if (litPath.length >= 2) {
-                                this.strokeLitSegment(litPath);
+                        samples.forEach(sample => {
+                            if (!sample.lit) {
+                                if (litPath.length >= 2) {
+                                    this.strokeLitSegment(litPath);
+                                }
+                                litPath.length = 0;
+                                return;
                             }
-                            litPath.length = 0;
-                            return;
-                        }
 
-                        litPath.push([sample.x, sample.y]);
+                            litPath.push([sample.x, sample.y]);
+                        });
+
+                        if (litPath.length >= 2) {
+                            this.strokeLitSegment(litPath);
+                        }
                     });
 
-                    if (litPath.length >= 2) {
-                        this.strokeLitSegment(litPath);
+                    if (component.type === 'dot' && component.completed) {
+                        this.fillCompletedDot(component);
                     }
-
-                    sampleIndexOffset += segmentSamples.length;
                 });
 
                 this.ctx.restore();
             }
 
-            strokeLitSegment(points) {
+            strokeSegment(points) {
                 this.ctx.beginPath();
                 this.ctx.moveTo(points[0][0], points[0][1]);
                 for (let i = 1; i < points.length; i++) {
@@ -1020,51 +1063,47 @@
                 this.ctx.stroke();
             }
 
+            strokeLitSegment(points) {
+                this.strokeSegment(points);
+            }
+
+            fillCompletedDot(component) {
+                const segment = component.guideSegments[0];
+                if (!segment || !segment.length) return;
+
+                const center = segment.reduce((acc, point) => ({
+                    x: acc.x + point[0],
+                    y: acc.y + point[1]
+                }), { x: 0, y: 0 });
+                center.x /= segment.length;
+                center.y /= segment.length;
+
+                const radius = Math.max(
+                    10,
+                    ...segment.map(point => Math.hypot(point[0] - center.x, point[1] - center.y))
+                );
+
+                this.ctx.save();
+                this.ctx.fillStyle = '#6bcf7f';
+                this.ctx.shadowColor = 'rgba(107, 207, 127, 0.72)';
+                this.ctx.shadowBlur = 18;
+                this.ctx.beginPath();
+                this.ctx.arc(center.x, center.y, radius * 0.8, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.restore();
+            }
+
             redrawCanvas() {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.drawCurrentShape();
-                this.redrawAcceptedPaths();
-            }
-
-            redrawAcceptedPaths() {
-                this.ctx.save();
-                this.ctx.strokeStyle = '#4fa3d1';
-                this.ctx.lineWidth = 4;
-                this.ctx.lineCap = 'round';
-                this.ctx.lineJoin = 'round';
-
-                this.drawnPaths.forEach(path => {
-                    if (path.length < 2) return;
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(path[0].x, path[0].y);
-                    for (let i = 1; i < path.length; i++) {
-                        this.ctx.lineTo(path[i].x, path[i].y);
-                    }
-                    this.ctx.stroke();
-                });
-
-                this.ctx.restore();
             }
 
             getTraceAcceptanceThreshold() {
                 if (this.difficultyScore <= 50) {
-                    return 50 - (this.difficultyScore / 50) * 30;
+                    return 0.62 + (this.difficultyScore / 50) * 0.12;
                 }
 
-                const progressAbove50 = (this.difficultyScore - 50) / 50;
-                const exponentialFactor = Math.pow(progressAbove50, 1.8);
-                return 20 - exponentialFactor * 17;
-            }
-
-            sampleShapeCoveragePoints(shape, spacing = 8) {
-                const segments = this.getShapeSegments(shape);
-                const samples = [];
-
-                segments.forEach(segment => {
-                    samples.push(...this.sampleSegmentPoints(segment, spacing));
-                });
-
-                return samples;
+                return 0.74 + ((this.difficultyScore - 50) / 50) * 0.12;
             }
 
             sampleSegmentPoints(segment, spacing = 8) {
@@ -1090,249 +1129,156 @@
                 return samples;
             }
 
-            getCoveredShapeSampleIndices(paths, samples, threshold) {
-                const covered = new Set();
+            processTracePoint(point) {
+                const shape = this.shapes[this.currentShapeIndex];
+                const model = this.getTraceModel(shape);
+                if (!model || this.successPending) return;
 
-                samples.forEach((sample, sampleIndex) => {
-                    const isCovered = paths.some(path => this.pathCoversSample(path, sample, threshold));
-                    if (isCovered) {
-                        covered.add(sampleIndex);
-                    }
-                });
+                const changed = this.applyTracePointToModel(point, model);
+                if (!changed) return;
 
-                return covered;
+                this.redrawCanvas();
+
+                if (this.isTracingValid()) {
+                    this.successPending = true;
+                    this.onSuccess();
+                    this.celebrate();
+                    setTimeout(() => {
+                        this.nextShape();
+                    }, 1200);
+                }
             }
 
-            pathCoversSample(path, sample, threshold) {
-                if (!path.length) return false;
+            applyTracePointToModel(point, model) {
+                let changed = false;
 
-                for (let i = 0; i < path.length; i++) {
-                    const pointDistance = Math.hypot(path[i].x - sample.x, path[i].y - sample.y);
-                    if (pointDistance <= threshold) {
-                        return true;
+                model.components.forEach(component => {
+                    if (!this.isPointInsideComponent(point, component, model.transform)) {
+                        return;
                     }
 
-                    if (i === 0) continue;
+                    if (component.type === 'dot') {
+                        changed = this.completeDot(component) || changed;
+                        return;
+                    }
 
-                    const segmentDistance = this.distanceToLineSegment(
-                        sample,
-                        path[i - 1],
-                        path[i]
-                    );
-                    if (segmentDistance <= threshold) {
-                        return true;
+                    changed = this.lightStrokeComponent(component, point) || changed;
+                });
+
+                return changed;
+            }
+
+            isPointInsideComponent(point, component, transform) {
+                const localPoint = this.canvasPointToLocal(point, transform);
+                const x = Math.round(localPoint.x);
+                const y = Math.round(localPoint.y);
+
+                if (
+                    x < component.localBBox.minX - component.hitPadding ||
+                    x > component.localBBox.maxX + component.hitPadding ||
+                    y < component.localBBox.minY - component.hitPadding ||
+                    y > component.localBBox.maxY + component.hitPadding
+                ) {
+                    return false;
+                }
+
+                const searchRadius = Math.ceil(component.hitPadding);
+                for (let offsetY = -searchRadius; offsetY <= searchRadius; offsetY++) {
+                    for (let offsetX = -searchRadius; offsetX <= searchRadius; offsetX++) {
+                        const sampleX = x + offsetX;
+                        const sampleY = y + offsetY;
+                        if (
+                            sampleY < 0 ||
+                            sampleY >= component.localMask.length ||
+                            sampleX < 0 ||
+                            sampleX >= component.localMask[0].length
+                        ) {
+                            continue;
+                        }
+
+                        if (component.localMask[sampleY][sampleX]) {
+                            return true;
+                        }
                     }
                 }
 
                 return false;
             }
 
-            getNearestSampleDistance(point, samples) {
-                let nearestDistance = Infinity;
-
-                samples.forEach(sample => {
-                    const distance = Math.hypot(point.x - sample.x, point.y - sample.y);
-                    if (distance < nearestDistance) {
-                        nearestDistance = distance;
-                    }
-                });
-
-                return nearestDistance;
+            canvasPointToLocal(point, transform) {
+                return {
+                    x: (point.x - transform.offsetX) / transform.scale,
+                    y: (point.y - transform.offsetY) / transform.scale
+                };
             }
 
-            getNewCoverageForPoint(point, samples, coveredIndices, threshold) {
-                const newIndices = [];
+            completeDot(component) {
+                if (component.completed) return false;
 
-                samples.forEach((sample, sampleIndex) => {
-                    if (coveredIndices.has(sampleIndex)) return;
-                    const distance = Math.hypot(point.x - sample.x, point.y - sample.y);
-                    if (distance <= threshold) {
-                        newIndices.push(sampleIndex);
-                    }
+                component.completed = true;
+                component.samplesBySegment.forEach(samples => {
+                    samples.forEach(sample => {
+                        sample.lit = true;
+                    });
                 });
-
-                return newIndices;
+                return true;
             }
 
-            filterAcceptedSubpaths(path) {
-                if (path.length < 2) return [];
+            lightStrokeComponent(component, point) {
+                let changed = false;
 
-                const shape = this.shapes[this.currentShapeIndex];
-                const threshold = this.getTraceAcceptanceThreshold();
-                const samples = this.sampleShapeCoveragePoints(shape);
-                const coveredIndices = this.getCoveredShapeSampleIndices(this.drawnPaths, samples, threshold);
-                const pointStates = path.map(point => {
-                    const nearShape = this.getNearestSampleDistance(point, samples) <= threshold;
-                    const newCoverage = nearShape
-                        ? this.getNewCoverageForPoint(point, samples, coveredIndices, threshold)
-                        : [];
+                component.samplesBySegment.forEach(samples => {
+                    let nearestIndex = -1;
+                    let nearestDistance = Infinity;
 
-                    return {
-                        point,
-                        nearShape,
-                        contributes: newCoverage.length > 0,
-                        newCoverage
-                    };
-                });
-
-                const acceptedFlags = pointStates.map((state, index, states) => {
-                    if (!state.nearShape) return false;
-                    if (state.contributes) return true;
-
-                    const prevContributes = index > 0 && states[index - 1].contributes;
-                    const nextContributes = index < states.length - 1 && states[index + 1].contributes;
-                    return prevContributes || nextContributes;
-                });
-
-                const acceptedSubpaths = [];
-                let currentAcceptedPath = [];
-
-                pointStates.forEach((state, index) => {
-                    if (!acceptedFlags[index]) {
-                        if (currentAcceptedPath.length >= 2) {
-                            acceptedSubpaths.push(currentAcceptedPath);
+                    samples.forEach((sample, index) => {
+                        const distance = Math.hypot(sample.x - point.x, sample.y - point.y);
+                        if (distance < nearestDistance) {
+                            nearestDistance = distance;
+                            nearestIndex = index;
                         }
-                        currentAcceptedPath = [];
-                        return;
-                    }
 
-                    currentAcceptedPath.push(state.point);
-                    state.newCoverage.forEach(sampleIndex => coveredIndices.add(sampleIndex));
+                        if (!sample.lit && distance <= component.litRadius) {
+                            sample.lit = true;
+                            changed = true;
+                        }
+                    });
+
+                    if (nearestIndex === -1) return;
+
+                    const neighborRadius = nearestDistance <= component.litRadius ? 2 : 1;
+                    for (let i = Math.max(0, nearestIndex - neighborRadius); i <= Math.min(samples.length - 1, nearestIndex + neighborRadius); i++) {
+                        if (!samples[i].lit) {
+                            samples[i].lit = true;
+                            changed = true;
+                        }
+                    }
                 });
 
-                if (currentAcceptedPath.length >= 2) {
-                    acceptedSubpaths.push(currentAcceptedPath);
-                }
-
-                return acceptedSubpaths;
+                return changed;
             }
 
             isTracingValid() {
                 const shape = this.shapes[this.currentShapeIndex];
+                const model = this.getTraceModel(shape);
+                if (!model) return false;
 
-                // Calculate expected shape length
-                let expectedLength = this.calculateShapeLength(shape);
+                const requiredCoverage = this.getTraceAcceptanceThreshold();
 
-                // Calculate total drawn length
-                let totalDrawnLength = 0;
-                this.drawnPaths.forEach(path => {
-                    for (let i = 1; i < path.length; i++) {
-                        const dx = path[i].x - path[i-1].x;
-                        const dy = path[i].y - path[i-1].y;
-                        totalDrawnLength += Math.sqrt(dx * dx + dy * dy);
-                    }
-                });
-
-                // Penalty for excessive drawing (duplicate traces, long unnecessary lines)
-                // At score 30: allow up to 2.5x the shape length
-                // At score 50+: exponentially stricter
-                let maxAllowedLength;
-                if (this.difficultyScore <= 50) {
-                    // Linear scaling for scores 1-50
-                    maxAllowedLength = expectedLength * (3.0 - (this.difficultyScore / 50) * 0.5);
-                } else {
-                    // Exponential scaling for scores 50-100
-                    const progressAbove50 = (this.difficultyScore - 50) / 50; // 0 to 1
-                    maxAllowedLength = expectedLength * (2.5 - progressAbove50 * 1.3);
-                }
-
-                // Fail if drawing is too long (too messy, duplicate traces)
-                if (totalDrawnLength > maxAllowedLength) {
-                    return false;
-                }
-
-                // Dynamic tolerance based on difficulty score with exponential curve
-                // Score 30: 35px tolerance (keep baseline)
-                // Score 50: 20px tolerance
-                // Score 70: 12px tolerance
-                // Score 90: 6px tolerance
-                // Score 100: 3px tolerance (almost impossible)
-                const threshold = this.getTraceAcceptanceThreshold();
-
-                // Get shape segments (for multi-stroke shapes like letters)
-                const shapeSegments = this.getShapeSegments(shape);
-
-                // BIDIRECTIONAL VALIDATION:
-                // 1. Check that each segment of the shape is covered by drawing (forward check)
-                // 2. Check that drawn points are actually near the shape (reverse check)
-
-                // Forward check: verify each segment is covered
-                for (let segment of shapeSegments) {
-                    const samplesPerSegment = Math.max(10, Math.floor(this.difficultyScore / 5));
-                    let segmentPoints = [];
-
-                    for (let i = 0; i < segment.length - 1; i++) {
-                        for (let j = 0; j <= samplesPerSegment; j++) {
-                            const t = j / samplesPerSegment;
-                            segmentPoints.push({
-                                x: segment[i][0] + (segment[i+1][0] - segment[i][0]) * t,
-                                y: segment[i][1] + (segment[i+1][1] - segment[i][1]) * t
-                            });
-                        }
+                return model.components.every(component => {
+                    if (component.type === 'dot') {
+                        return component.completed;
                     }
 
-                    // Count coverage for this specific segment
-                    let coveredPoints = 0;
-                    segmentPoints.forEach(sp => {
-                        const isCovered = this.drawnPaths.some(path => {
-                            return path.some(dp => {
-                                const dist = Math.sqrt(Math.pow(sp.x - dp.x, 2) + Math.pow(sp.y - dp.y, 2));
-                                return dist < threshold;
-                            });
-                        });
-                        if (isCovered) coveredPoints++;
+                    let totalSamples = 0;
+                    let litSamples = 0;
+                    component.samplesBySegment.forEach(samples => {
+                        totalSamples += samples.length;
+                        litSamples += samples.filter(sample => sample.lit).length;
                     });
 
-                    const segmentCoverage = coveredPoints / segmentPoints.length;
-
-                    // Each segment must be individually covered
-                    // Require high coverage per segment to ensure all parts are drawn
-                    let requiredSegmentCoverage;
-                    if (this.difficultyScore <= 50) {
-                        requiredSegmentCoverage = 0.70 + (this.difficultyScore / 50) * 0.10; // 70% to 80%
-                    } else {
-                        const progressAbove50 = (this.difficultyScore - 50) / 50;
-                        const exponentialFactor = Math.pow(progressAbove50, 1.5);
-                        requiredSegmentCoverage = 0.80 + exponentialFactor * 0.17; // 80% to 97%
-                    }
-
-                    if (segmentCoverage < requiredSegmentCoverage) {
-                        return false; // This segment is not sufficiently covered
-                    }
-                }
-
-                // Reverse check: verify drawn points are actually on the shape
-                // Sample all drawn points and check if they're near the shape
-                let drawnPointsOnShape = 0;
-                let totalDrawnPoints = 0;
-
-                this.drawnPaths.forEach(path => {
-                    path.forEach(dp => {
-                        totalDrawnPoints++;
-
-                        // Check if this drawn point is near any segment
-                        const isNearShape = shapeSegments.some(segment => {
-                            return this.isPointNearSegment(dp, segment, threshold);
-                        });
-
-                        if (isNearShape) drawnPointsOnShape++;
-                    });
+                    return totalSamples > 0 && (litSamples / totalSamples) >= requiredCoverage;
                 });
-
-                const drawnAccuracy = drawnPointsOnShape / totalDrawnPoints;
-
-                // Require that most drawn points are actually on the shape
-                // This prevents random scribbling
-                let requiredAccuracy;
-                if (this.difficultyScore <= 50) {
-                    requiredAccuracy = 0.60 + (this.difficultyScore / 50) * 0.15; // 60% to 75%
-                } else {
-                    const progressAbove50 = (this.difficultyScore - 50) / 50;
-                    const exponentialFactor = Math.pow(progressAbove50, 1.5);
-                    requiredAccuracy = 0.75 + exponentialFactor * 0.20; // 75% to 95%
-                }
-
-                return drawnAccuracy >= requiredAccuracy;
             }
 
             getShapeSegments(shape) {
@@ -1438,23 +1384,24 @@
                 return length;
             }
 
-            isCanvasTooMessy() {
-                // Count total drawn points
-                let totalPoints = 0;
-                this.drawnPaths.forEach(path => {
-                    totalPoints += path.length;
-                });
-
-                // Consider messy if more than 300 points drawn
-                return totalPoints > 300;
-            }
-
             clearCanvas() {
-                this.drawnPaths = [];
+                const shape = this.shapes[this.currentShapeIndex];
+                const model = this.getTraceModel(shape);
+                if (model) {
+                    model.components.forEach(component => {
+                        component.completed = false;
+                        component.samplesBySegment.forEach(samples => {
+                            samples.forEach(sample => {
+                                sample.lit = false;
+                            });
+                        });
+                    });
+                }
                 this.redrawCanvas();
             }
 
             nextShape() {
+                this.successPending = false;
                 this.currentShapeIndex = (this.currentShapeIndex + 1) % this.shapes.length;
                 this.clearCanvas();
             }
