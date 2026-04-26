@@ -510,7 +510,7 @@
                 const sampleSpacing = isDot ? 10 : 12;
                 const litRadius = isDot
                     ? Math.max(component.width, component.height) * transform.scale
-                    : Math.max(9, estimatedThickness * transform.scale * 0.34);
+                    : Math.max(12, estimatedThickness * transform.scale * 0.5);
                 const hitPadding = isDot
                     ? Math.max(2, estimatedThickness * 0.1)
                     : Math.max(4, estimatedThickness * 0.3);
@@ -533,7 +533,7 @@
                     hitPadding,
                     litRadius,
                     interactionCount: 0,
-                    minInteractions: isDot ? 1 : Math.max(5, Math.ceil(guideSegments.reduce((sum, segment) => sum + segment.length, 0) / 18)),
+                    minInteractions: isDot ? 1 : Math.max(3, Math.ceil(strokeLength / 150)),
                     completed: false
                 };
             }
@@ -1125,10 +1125,10 @@
 
             getTraceAcceptanceThreshold() {
                 if (this.difficultyScore <= 50) {
-                    return 0.78 + (this.difficultyScore / 50) * 0.08;
+                    return 0.68 + (this.difficultyScore / 50) * 0.08;
                 }
 
-                return 0.86 + ((this.difficultyScore - 50) / 50) * 0.08;
+                return 0.76 + ((this.difficultyScore - 50) / 50) * 0.08;
             }
 
             sampleSegmentPoints(segment, spacing = 8) {
@@ -1292,7 +1292,7 @@
                     return false;
                 }
 
-                const spreadRadius = nearestDistance <= component.litRadius ? 1 : 0;
+                const spreadRadius = nearestDistance <= component.litRadius ? 2 : 1;
                 for (let i = Math.max(0, nearestIndex - spreadRadius); i <= Math.min(nearestSegment.length - 1, nearestIndex + spreadRadius); i++) {
                     if (!nearestSegment[i].lit) {
                         nearestSegment[i].lit = true;
@@ -1327,7 +1327,7 @@
                     });
 
                     const coverage = totalSamples > 0 ? (litSamples / totalSamples) : 0;
-                    const minimumLitSamples = Math.max(5, Math.ceil(totalSamples * 0.4));
+                    const minimumLitSamples = Math.max(4, Math.ceil(totalSamples * 0.25));
 
                     return coverage >= requiredCoverage &&
                         litSamples >= minimumLitSamples &&
