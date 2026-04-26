@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بازی ردیابی</title>
+    <link href="https://fonts.googleapis.com/css2?family=Koodak&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,7 +13,7 @@
         }
 
         body {
-            font-family: 'Vazir', 'Tahoma', 'Arial', sans-serif;
+            font-family: 'Koodak', 'Vazir', 'Tahoma', 'Arial', sans-serif;
             background: linear-gradient(135deg, #e6f5ff 0%, #f0f8ff 50%, #fafcff 100%);
             min-height: 100vh;
             display: flex;
@@ -315,7 +316,7 @@
                 ctx.direction = 'rtl';
 
                 while (fontSize > 140) {
-                    ctx.font = `900 ${fontSize}px Vazir, Tahoma, Arial, sans-serif`;
+                    ctx.font = `900 ${fontSize}px Koodak, Vazir, Tahoma, Arial, sans-serif`;
                     if (ctx.measureText(text).width <= width - padding * 2) {
                         break;
                     }
@@ -323,7 +324,7 @@
                 }
 
                 ctx.clearRect(0, 0, width, height);
-                ctx.fillStyle = '#000';
+                ctx.fillStyle = '#4fa3d1';
                 ctx.fillText(text, width - padding, height * 0.66);
 
                 const imageData = ctx.getImageData(0, 0, width, height);
@@ -347,7 +348,7 @@
                     mask.push(row);
                 }
 
-                return { mask, bounds: paddedBounds, fontSize };
+                return { canvas, mask, bounds: paddedBounds, fontSize };
             }
 
             findOpaqueBounds(imageData, width, height) {
@@ -726,6 +727,15 @@
             normalizePathsToCanvas(paths, bounds) {
                 if (!paths.length) return [];
 
+                const { scale, offsetX, offsetY } = this.getTextBoundsTransform(bounds);
+
+                return paths.map(path => path.map(([x, y]) => [
+                    offsetX + x * scale,
+                    offsetY + y * scale
+                ]));
+            }
+
+            getTextBoundsTransform(bounds) {
                 const sourceWidth = bounds.maxX - bounds.minX + 1;
                 const sourceHeight = bounds.maxY - bounds.minY + 1;
                 const availableWidth = this.canvas.width - 120;
@@ -734,10 +744,30 @@
                 const offsetX = (this.canvas.width - sourceWidth * scale) / 2;
                 const offsetY = (this.canvas.height - sourceHeight * scale) / 2;
 
-                return paths.map(path => path.map(([x, y]) => [
-                    offsetX + x * scale,
-                    offsetY + y * scale
-                ]));
+                return { sourceWidth, sourceHeight, scale, offsetX, offsetY };
+            }
+
+            drawTextBackdrop(text) {
+                const render = this.renderTextMask(text);
+                if (!render) return;
+
+                const { canvas, bounds } = render;
+                const { sourceWidth, sourceHeight, scale, offsetX, offsetY } = this.getTextBoundsTransform(bounds);
+
+                this.ctx.save();
+                this.ctx.globalAlpha = 0.18;
+                this.ctx.drawImage(
+                    canvas,
+                    bounds.minX,
+                    bounds.minY,
+                    sourceWidth,
+                    sourceHeight,
+                    offsetX,
+                    offsetY,
+                    sourceWidth * scale,
+                    sourceHeight * scale
+                );
+                this.ctx.restore();
             }
 
             init() {
@@ -870,6 +900,7 @@
 
             drawCurrentShape() {
                 const shape = this.shapes[this.currentShapeIndex];
+                const text = shape.type === 'letter' ? shape.letter : shape.type === 'word' ? shape.word : null;
 
                 // Update instructions based on category
                 const instructions = document.getElementById('instructions');
@@ -879,6 +910,10 @@
                 } else if (shape.category === 'word') {
                     instructions.textContent = 'کلمه را دنبال کن!';
                     document.getElementById('shape-indicator').textContent = `کلمه: ${shape.name}`;
+                }
+
+                if (text) {
+                    this.drawTextBackdrop(text);
                 }
 
                 this.ctx.save();
