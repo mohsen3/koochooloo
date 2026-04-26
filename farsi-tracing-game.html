@@ -13,7 +13,7 @@
         }
 
         body {
-            font-family: 'Koodak', 'Vazir', 'Tahoma', 'Arial', sans-serif;
+            font-family: 'Koodak', 'B Koodak', 'Vazir', 'Tahoma', 'Arial', sans-serif;
             background: linear-gradient(135deg, #e6f5ff 0%, #f0f8ff 50%, #fafcff 100%);
             min-height: 100vh;
             display: flex;
@@ -200,6 +200,7 @@
             constructor() {
                 this.canvas = document.getElementById('canvas');
                 this.ctx = this.canvas.getContext('2d');
+                this.fontStack = "'Koodak', 'B Koodak', 'Vazir', 'Tahoma', 'Arial', sans-serif";
                 this.drawing = false;
                 this.currentPath = [];
                 this.drawnPaths = [];
@@ -316,7 +317,7 @@
                 ctx.direction = 'rtl';
 
                 while (fontSize > 140) {
-                    ctx.font = `900 ${fontSize}px Koodak, Vazir, Tahoma, Arial, sans-serif`;
+                    ctx.font = `400 ${fontSize}px ${this.fontStack}`;
                     if (ctx.measureText(text).width <= width - padding * 2) {
                         break;
                     }
@@ -775,6 +776,21 @@
                 this.setupEventListeners();
                 this.drawCurrentShape();
                 this.updateScoreDisplay();
+                this.setupFontLoading();
+            }
+
+            setupFontLoading() {
+                if (!document.fonts || !document.fonts.load) return;
+
+                Promise.all([
+                    document.fonts.load('400 160px Koodak'),
+                    document.fonts.ready
+                ]).then(() => {
+                    this.pathCache.clear();
+                    this.clearCanvas();
+                }).catch(() => {
+                    // Keep existing fallback rendering if the webfont fails to load.
+                });
             }
 
             createBackgroundDots() {
