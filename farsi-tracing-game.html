@@ -8,6 +8,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'Koodak';
+            src: url('./public/koodak.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: block;
+        }
+
         :root {
             --farsi-font: 'Koodak', 'B Koodak', 'Vazirmatn', 'Vazir', 'Tahoma', 'Arial', sans-serif;
         }
@@ -880,8 +888,8 @@
                 try {
                     await Promise.race([
                         Promise.all([
+                            document.fonts.load('400 160px "Koodak"'),
                             document.fonts.load('400 160px "Vazirmatn"'),
-                            document.fonts.load('700 160px "Vazirmatn"'),
                             document.fonts.ready
                         ]),
                         new Promise(resolve => setTimeout(resolve, 1800))
