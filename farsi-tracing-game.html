@@ -497,9 +497,12 @@
             buildTraceComponent(component, width, height, transform, largestArea, fontSize) {
                 const localMask = this.createComponentMask(component, width, height);
                 const isDot = this.isDotComponent(component, largestArea, fontSize);
-                const localGuidePaths = isDot
+                const rawGuidePaths = isDot
                     ? [this.componentToEllipsePath(component)]
                     : this.traceSkeletonPaths(this.zhangSuenThinning(localMask)).filter(path => path.length >= 2);
+                const localGuidePaths = isDot
+                    ? rawGuidePaths
+                    : this.filterMinorGuidePaths(rawGuidePaths, fontSize);
 
                 if (!localGuidePaths.length) return null;
 
@@ -524,17 +527,30 @@
                         order
                     }))
                 );
+                const guideLength = this.calculatePathCollectionLength(guideSegments);
+                const isMinorStrokeComponent = !isDot &&
+                    guideLength < Math.max(26, fontSize * transform.scale * 0.16) &&
+                    component.pixels.length < largestArea * 0.08;
+
+                if (isMinorStrokeComponent) {
+                    samplesBySegment.forEach(samples => {
+                        samples.forEach(sample => {
+                            sample.lit = true;
+                        });
+                    });
+                }
 
                 return {
                     type: isDot ? 'dot' : 'stroke',
                     localMask,
                     localBBox: component.bbox,
                     guideSegments,
+                    guideLength,
                     samplesBySegment,
                     hitPadding,
                     litRadius,
                     interactionCount: 0,
-                    completed: false
+                    completed: isMinorStrokeComponent
                 };
             }
 
@@ -550,6 +566,22 @@
                 });
 
                 return length;
+            }
+
+            filterMinorGuidePaths(paths, fontSize) {
+                if (paths.length <= 1) return paths;
+
+                const pathEntries = paths.map(path => ({
+                    path,
+                    length: this.calculatePathCollectionLength([path])
+                }));
+                const longestLength = Math.max(...pathEntries.map(entry => entry.length));
+                const minimumLength = Math.max(18, fontSize * 0.075, longestLength * 0.12);
+                const filtered = pathEntries
+                    .filter(entry => entry.length >= minimumLength)
+                    .map(entry => entry.path);
+
+                return filtered.length ? filtered : [pathEntries.sort((a, b) => b.length - a.length)[0].path];
             }
 
             createComponentMask(component, width, height) {
