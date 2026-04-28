@@ -3,389 +3,544 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koochooloo - Educational Games for Kids</title>
+    <title>Koochooloo Game Library</title>
     <style>
+        :root {
+            --bg: #f4efe6;
+            --bg-accent: #f7d8a8;
+            --panel: rgba(255, 251, 245, 0.86);
+            --panel-strong: #fffaf2;
+            --ink: #18222f;
+            --muted: #566273;
+            --line: rgba(24, 34, 47, 0.1);
+            --warm: #ea7a3d;
+            --warm-deep: #c85b1f;
+            --green: #2f8f62;
+            --blue: #2d6f93;
+            --shadow: 0 24px 70px rgba(24, 34, 47, 0.14);
+            --radius-xl: 32px;
+            --radius-lg: 24px;
+            --radius-md: 18px;
+            --max: 1180px;
+        }
+
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
-            background: linear-gradient(135deg, #a8e6cf 0%, #ffd3b6 50%, #ffaaa5 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
+            margin: 0;
+            font-family: Georgia, "Avenir Next", "Trebuchet MS", serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(247, 216, 168, 0.75), transparent 32%),
+                radial-gradient(circle at top right, rgba(45, 111, 147, 0.18), transparent 26%),
+                linear-gradient(180deg, #f8f1e5 0%, #f2ebe1 48%, #ece4d8 100%);
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .page-shell {
+            width: min(var(--max), calc(100% - 32px));
+            margin: 0 auto;
+            padding: 28px 0 56px;
+        }
+
+        .hero {
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
+            padding: 36px;
+            border-radius: var(--radius-xl);
+            background:
+                linear-gradient(135deg, rgba(255, 250, 242, 0.96), rgba(255, 245, 227, 0.93)),
+                var(--panel-strong);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.55);
         }
 
-        body::before {
-            content: '⭐';
+        .hero::before,
+        .hero::after {
+            content: "";
             position: absolute;
-            font-size: 2em;
-            animation: float 3s ease-in-out infinite;
-            top: 10%;
-            left: 10%;
-            opacity: 0.4;
-        }
-
-        body::after {
-            content: '⚡';
-            position: absolute;
-            font-size: 2.5em;
-            animation: float 4s ease-in-out infinite;
-            bottom: 10%;
-            right: 10%;
-            opacity: 0.4;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(8deg); }
-        }
-
-        .star-decoration {
-            position: absolute;
-            font-size: 1.5em;
-            animation: twinkle 2s ease-in-out infinite;
+            border-radius: 999px;
             pointer-events: none;
-            opacity: 0.4;
         }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.15); }
+        .hero::before {
+            width: 260px;
+            height: 260px;
+            right: -70px;
+            top: -70px;
+            background: radial-gradient(circle, rgba(234, 122, 61, 0.22), transparent 70%);
         }
 
-        .container {
-            background: linear-gradient(135deg, #ffffff 0%, #fff5f7 100%);
-            border-radius: 30px;
-            padding: 40px 50px;
-            box-shadow: 0 20px 60px rgba(255,105,180,0.3), 0 0 0 6px rgba(255,182,193,0.5);
-            text-align: center;
-            max-width: 1000px;
-            width: 100%;
-            border: 6px solid transparent;
-            background-clip: padding-box;
-            position: relative;
+        .hero::after {
+            width: 220px;
+            height: 220px;
+            left: -70px;
+            bottom: -90px;
+            background: radial-gradient(circle, rgba(47, 143, 98, 0.18), transparent 70%);
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            right: -6px;
-            bottom: -6px;
-            background: linear-gradient(45deg, #ff6b9d, #c44569, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff6b9d);
-            border-radius: 36px;
-            z-index: -1;
-            animation: rainbow 3s linear infinite;
-            background-size: 300% 300%;
-        }
-
-        @keyframes rainbow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--blue);
+            background: rgba(45, 111, 147, 0.08);
         }
 
         h1 {
-            color: #ff6b9d;
-            font-size: 3em;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 0px #ffa45b, 4px 4px 0px #ffd93d;
-            animation: titleBounce 2s ease-in-out infinite;
-            letter-spacing: 2px;
+            margin: 18px 0 14px;
+            max-width: 10ch;
+            font-size: clamp(2.8rem, 7vw, 5.2rem);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
         }
 
-        @keyframes titleBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+        .hero-copy {
+            max-width: 720px;
+            font-size: 1.08rem;
+            line-height: 1.7;
+            color: var(--muted);
         }
 
-        .subtitle {
-            color: white;
-            font-size: 1.3em;
-            margin-bottom: 40px;
-            opacity: 0.9;
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 28px;
         }
 
-        .games-grid {
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0 20px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+
+        .button:hover,
+        .button:focus-visible {
+            transform: translateY(-1px);
+        }
+
+        .button-primary {
+            color: #fff8f0;
+            background: linear-gradient(135deg, var(--warm), var(--warm-deep));
+            box-shadow: 0 18px 30px rgba(200, 91, 31, 0.22);
+        }
+
+        .button-secondary {
+            color: var(--ink);
+            background: rgba(24, 34, 47, 0.06);
+        }
+
+        .hero-meta {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+            margin-top: 30px;
+        }
+
+        .meta-card {
+            padding: 16px 18px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.62);
+            border: 1px solid rgba(24, 34, 47, 0.06);
+        }
+
+        .meta-card strong {
+            display: block;
+            font-size: 1.55rem;
+            margin-bottom: 4px;
+        }
+
+        .meta-card span {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .jump-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 26px 0 0;
+        }
+
+        .jump-links a {
+            padding: 10px 14px;
+            border-radius: 999px;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .section {
+            margin-top: 34px;
+            padding: 28px;
+            border-radius: var(--radius-lg);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.52);
+            backdrop-filter: blur(12px);
+        }
+
+        .section-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: end;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+            letter-spacing: -0.03em;
+        }
+
+        .section-header p {
+            margin: 0;
+            max-width: 620px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .count-badge {
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--blue);
+            background: rgba(45, 111, 147, 0.08);
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
         }
 
         .game-card {
-            background: linear-gradient(135deg, #fff5f7, #ffffff);
-            border-radius: 20px;
-            padding: 30px 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 100%;
+            padding: 18px;
+            border-radius: 22px;
             text-decoration: none;
-            color: #ff6b9d;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(255,107,157,0.3);
-            border: 3px solid #ffd3b6;
-            cursor: pointer;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(24, 34, 47, 0.08);
+            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
         }
 
-        .game-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(255, 164, 91, 0.5);
-            border-color: #ffa45b;
-            background: linear-gradient(135deg, #fffafc, #fff5f7);
+        .game-card:hover,
+        .game-card:focus-visible {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 34px rgba(24, 34, 47, 0.12);
+            border-color: rgba(234, 122, 61, 0.28);
         }
 
-        .game-icon {
-            font-size: 3.5em;
-            margin-bottom: 15px;
-            animation: iconFloat 2s ease-in-out infinite;
+        .card-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        @keyframes iconFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        .icon {
+            flex: 0 0 auto;
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(234, 122, 61, 0.14), rgba(47, 143, 98, 0.14));
+            font-size: 1.5rem;
         }
 
-        .game-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #ff6b9d;
+        .game-card h3 {
+            margin: 0;
+            font-size: 1.08rem;
+            line-height: 1.25;
         }
 
-        .game-description {
-            font-size: 1em;
-            color: #6bcf7f;
-            opacity: 0.9;
-            line-height: 1.5;
+        .game-card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+            font-size: 0.96rem;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            color: var(--blue);
+            font-weight: 700;
+            font-size: 0.94rem;
+        }
+
+        .card-footer span:last-child {
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 0.86rem;
         }
 
         .footer {
-            margin-top: 30px;
-            color: white;
-            opacity: 0.7;
-            font-size: 0.9em;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 24px;
+            color: var(--muted);
+            font-size: 0.95rem;
         }
 
         .footer a {
-            color: #ff6b9d;
+            color: var(--blue);
             text-decoration: none;
-            transition: color 0.3s ease;
+            font-weight: 700;
         }
 
-        .footer a:hover {
-            color: #ffa45b;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
+        @media (max-width: 720px) {
+            .page-shell {
+                width: min(var(--max), calc(100% - 20px));
+                padding-top: 18px;
             }
 
-            .subtitle {
-                font-size: 1.1em;
+            .hero,
+            .section {
+                padding: 22px;
+                border-radius: 24px;
             }
 
-            .games-grid {
-                grid-template-columns: 1fr;
+            .hero-copy {
+                font-size: 1rem;
+            }
+
+            .jump-links {
+                margin-top: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Floating decorations -->
-    <div class="star-decoration" style="top: 5%; left: 15%;">🚀</div>
-    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">⚡</div>
-    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">⚽</div>
-    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">🏀</div>
-    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🎮</div>
-    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🦖</div>
-
-    <div class="container">
-        <h1>🎮 Koochooloo Games 🚀</h1>
-        <p class="subtitle">Fun Educational Games for Kids!</p>
-
-        <div class="games-grid">
-            <a href="counting-fruits.html" class="game-card">
-                <div class="game-icon">🍎</div>
-                <div class="game-title">Counting Fruits</div>
-                <div class="game-description">
-                    Learn to count from 1 to 10 with colorful fruits!
+    <main class="page-shell">
+        <section class="hero">
+            <div class="eyebrow">Koochooloo Game Library</div>
+            <h1>Pick a game and start fast.</h1>
+            <p class="hero-copy">
+                This page is the front door for every playable game in the repository. The list is grouped by skill area so it is easier to choose something by topic instead of scanning one long wall of links.
+            </p>
+            <div class="hero-actions">
+                <a class="button button-primary" href="https://mohsen3.github.io/koochooloo/">Play the games</a>
+                <a class="button button-secondary" href="#categories">Browse by category</a>
+            </div>
+            <div class="hero-meta">
+                <div class="meta-card">
+                    <strong>22</strong>
+                    <span>playable games</span>
                 </div>
-            </a>
-
-            <a href="greater-than-less-than-game.html" class="game-card">
-                <div class="game-icon">⚖️</div>
-                <div class="game-title">Greater Than / Less Than</div>
-                <div class="game-description">
-                    Compare numbers and learn greater than, less than concepts!
+                <div class="meta-card">
+                    <strong>4</strong>
+                    <span>skill categories</span>
                 </div>
-            </a>
-
-            <a href="math-addition-game.html" class="game-card">
-                <div class="game-icon">➕</div>
-                <div class="game-title">Math Addition</div>
-                <div class="game-description">
-                    Practice addition with adaptive difficulty and visual dots!
+                <div class="meta-card">
+                    <strong>Static</strong>
+                    <span>simple browser-friendly pages</span>
                 </div>
-            </a>
+            </div>
+            <nav class="jump-links" id="categories" aria-label="Game categories">
+                <a href="#math">Math & Numbers</a>
+                <a href="#reading">Reading & Speaking</a>
+                <a href="#tracing">Tracing & Handwriting</a>
+                <a href="#farsi">Farsi & Bilingual</a>
+            </nav>
+        </section>
 
-            <a href="math-addition-three-numbers.html" class="game-card">
-                <div class="game-icon">➕➕</div>
-                <div class="game-title">Addition - Three Numbers</div>
-                <div class="game-description">
-                    Add three numbers together with visual dots and progressive difficulty!
+        <section class="section" id="math">
+            <div class="section-header">
+                <div>
+                    <h2>Math & Numbers</h2>
+                    <p>Counting, comparisons, arithmetic fluency, tables, and pattern work.</p>
                 </div>
-            </a>
+                <div class="count-badge">13 games</div>
+            </div>
+            <div class="game-grid">
+                <a class="game-card" href="counting-fruits.html">
+                    <div class="card-top"><div class="icon">🍎</div><h3>Counting Fruits</h3></div>
+                    <p>Count colorful fruit sets and build early number recognition.</p>
+                    <div class="card-footer"><span>Open game</span><span>Counting</span></div>
+                </a>
+                <a class="game-card" href="greater-than-less-than-game.html">
+                    <div class="card-top"><div class="icon">⚖️</div><h3>Greater Than / Less Than</h3></div>
+                    <p>Compare two values and practice bigger, smaller, and equal.</p>
+                    <div class="card-footer"><span>Open game</span><span>Comparison</span></div>
+                </a>
+                <a class="game-card" href="math-addition-game.html">
+                    <div class="card-top"><div class="icon">➕</div><h3>Math Addition</h3></div>
+                    <p>Practice basic addition with visual dot support and quick feedback.</p>
+                    <div class="card-footer"><span>Open game</span><span>Addition</span></div>
+                </a>
+                <a class="game-card" href="math-addition-three-numbers.html">
+                    <div class="card-top"><div class="icon">🔺</div><h3>Addition: Three Numbers</h3></div>
+                    <p>Solve three-part addition problems with progressive difficulty.</p>
+                    <div class="card-footer"><span>Open game</span><span>Addition</span></div>
+                </a>
+                <a class="game-card" href="math-addition-level2.html">
+                    <div class="card-top"><div class="icon">🎯</div><h3>Addition Level 2</h3></div>
+                    <p>Drag digits into missing spots to complete addition equations.</p>
+                    <div class="card-footer"><span>Open game</span><span>Drag & drop</span></div>
+                </a>
+                <a class="game-card" href="addition-touch.html">
+                    <div class="card-top"><div class="icon">🧩</div><h3>Addition Touch</h3></div>
+                    <p>Use touch-first number tiles to build the right addition answer.</p>
+                    <div class="card-footer"><span>Open game</span><span>Touch math</span></div>
+                </a>
+                <a class="game-card" href="two-digit-addition.html">
+                    <div class="card-top"><div class="icon">🧮</div><h3>Two-Digit Addition</h3></div>
+                    <p>Practice vertical addition with carries in a paper-style layout.</p>
+                    <div class="card-footer"><span>Open game</span><span>Column math</span></div>
+                </a>
+                <a class="game-card" href="addition-table.html">
+                    <div class="card-top"><div class="icon">📊</div><h3>Addition Table</h3></div>
+                    <p>Fill whole addition tables and build repetition-based fluency.</p>
+                    <div class="card-footer"><span>Open game</span><span>Fluency</span></div>
+                </a>
+                <a class="game-card" href="subtraction-table.html">
+                    <div class="card-top"><div class="icon">➖</div><h3>Subtraction Table</h3></div>
+                    <p>Work through subtraction sets with instant right-or-wrong feedback.</p>
+                    <div class="card-footer"><span>Open game</span><span>Subtraction</span></div>
+                </a>
+                <a class="game-card" href="multiplication-table.html">
+                    <div class="card-top"><div class="icon">✖️</div><h3>Multiplication Table</h3></div>
+                    <p>Repeat multiplication tables in a simple structured practice format.</p>
+                    <div class="card-footer"><span>Open game</span><span>Multiplication</span></div>
+                </a>
+                <a class="game-card" href="multiplication-touch.html">
+                    <div class="card-top"><div class="icon">🧲</div><h3>Multiplication Touch</h3></div>
+                    <p>Drag digit tiles into multiplication equations designed for tablets.</p>
+                    <div class="card-footer"><span>Open game</span><span>Touch math</span></div>
+                </a>
+                <a class="game-card" href="skip-counting-game.html">
+                    <div class="card-top"><div class="icon">🔢</div><h3>Skip Counting</h3></div>
+                    <p>Count by 2s, 5s, 10s, and more with fill-in-the-blank sequences.</p>
+                    <div class="card-footer"><span>Open game</span><span>Patterns</span></div>
+                </a>
+                <a class="game-card" href="number-sequence-puzzle-game.html">
+                    <div class="card-top"><div class="icon">🚂</div><h3>Number Sequence Puzzle</h3></div>
+                    <p>Complete ordered number patterns through drag-and-drop puzzle rounds.</p>
+                    <div class="card-footer"><span>Open game</span><span>Sequences</span></div>
+                </a>
+            </div>
+        </section>
 
-            <a href="math-addition-level2.html" class="game-card">
-                <div class="game-icon">🎯</div>
-                <div class="game-title">Addition Level 2</div>
-                <div class="game-description">
-                    Drag and drop digits to complete addition equations up to 25!
+        <section class="section" id="reading">
+            <div class="section-header">
+                <div>
+                    <h2>Reading & Speaking</h2>
+                    <p>Typing, vocabulary, multi-choice questions, and simple speech practice.</p>
                 </div>
-            </a>
+                <div class="count-badge">5 games</div>
+            </div>
+            <div class="game-grid">
+                <a class="game-card" href="english-words.html">
+                    <div class="card-top"><div class="icon">⌨️</div><h3>English Words</h3></div>
+                    <p>Type common English words and reinforce spelling with pronunciation.</p>
+                    <div class="card-footer"><span>Open game</span><span>Typing</span></div>
+                </a>
+                <a class="game-card" href="toddler-reading-game.html">
+                    <div class="card-top"><div class="icon">🎤</div><h3>Toddler Reading Game</h3></div>
+                    <p>Practice saying words and short phrases with speech recognition.</p>
+                    <div class="card-footer"><span>Open game</span><span>Speaking</span></div>
+                </a>
+                <a class="game-card" href="conversation-game.html">
+                    <div class="card-top"><div class="icon">💬</div><h3>Conversation Game</h3></div>
+                    <p>Fill in simple conversation prompts built around everyday language.</p>
+                    <div class="card-footer"><span>Open game</span><span>Language</span></div>
+                </a>
+                <a class="game-card" href="story-puzzle-game.html">
+                    <div class="card-top"><div class="icon">📖</div><h3>Story Puzzle</h3></div>
+                    <p>Place missing words into short stories and read them back in context.</p>
+                    <div class="card-footer"><span>Open game</span><span>Reading</span></div>
+                </a>
+                <a class="game-card" href="multi-choice-game/index.html">
+                    <div class="card-top"><div class="icon">🎲</div><h3>Kiddo Quiz</h3></div>
+                    <p>Answer quick mixed-skill questions with a simple multi-choice format.</p>
+                    <div class="card-footer"><span>Open game</span><span>Mixed skills</span></div>
+                </a>
+            </div>
+        </section>
 
-            <a href="skip-counting-game.html" class="game-card">
-                <div class="game-icon">🔢</div>
-                <div class="game-title">Skip Counting</div>
-                <div class="game-description">
-                    Learn to count by 1s, 2s, 3s... all the way to 10s!
+        <section class="section" id="tracing">
+            <div class="section-header">
+                <div>
+                    <h2>Tracing & Handwriting</h2>
+                    <p>Shape, letter, and handwriting practice built for touch and stylus input.</p>
                 </div>
-            </a>
+                <div class="count-badge">2 games</div>
+            </div>
+            <div class="game-grid">
+                <a class="game-card" href="tracing-game.html">
+                    <div class="card-top"><div class="icon">✏️</div><h3>Tracing Game</h3></div>
+                    <p>Trace shapes, letters, and simple words with guided visual support.</p>
+                    <div class="card-footer"><span>Open game</span><span>Fine motor</span></div>
+                </a>
+                <a class="game-card" href="letter-tracing-game.html">
+                    <div class="card-top"><div class="icon">🔤</div><h3>Letter Tracing</h3></div>
+                    <p>Work through English letters and numbers in a structured tracing grid.</p>
+                    <div class="card-footer"><span>Open game</span><span>Alphabet</span></div>
+                </a>
+            </div>
+        </section>
 
-            <a href="number-sequence-puzzle-game.html" class="game-card">
-                <div class="game-icon">🚂</div>
-                <div class="game-title">Number Sequence Puzzle</div>
-                <div class="game-description">
-                    Drag numbers into skip-counting and sorting sequences, one blank at a time!
+        <section class="section" id="farsi">
+            <div class="section-header">
+                <div>
+                    <h2>Farsi & Bilingual</h2>
+                    <p>Persian typing and tracing games for bilingual reading and writing practice.</p>
                 </div>
-            </a>
+                <div class="count-badge">2 games</div>
+            </div>
+            <div class="game-grid">
+                <a class="game-card" href="farsi-words.html">
+                    <div class="card-top"><div class="icon">فارسی</div><h3>Farsi Words</h3></div>
+                    <p>Type toddler-friendly Persian words with progressive levels.</p>
+                    <div class="card-footer"><span>Open game</span><span>Typing</span></div>
+                </a>
+                <a class="game-card" href="farsi-tracing-game.html">
+                    <div class="card-top"><div class="icon">✍️</div><h3>Farsi Tracing</h3></div>
+                    <p>Trace Persian letters and words with an RTL-friendly practice flow.</p>
+                    <div class="card-footer"><span>Open game</span><span>Tracing</span></div>
+                </a>
+            </div>
+        </section>
 
-            <a href="english-words.html" class="game-card">
-                <div class="game-icon">⌨️</div>
-                <div class="game-title">Typing Tutor</div>
-                <div class="game-description">
-                    Learn to type 300 common English words with pronunciation!
-                </div>
-            </a>
-
-            <a href="farsi-words.html" class="game-card">
-                <div class="game-icon">🔤</div>
-                <div class="game-title">Farsi Typing</div>
-                <div class="game-description">
-                    Practice typing 100 Farsi words with progressive difficulty!
-                </div>
-            </a>
-
-            <a href="tracing-game.html" class="game-card">
-                <div class="game-icon">✏️</div>
-                <div class="game-title">Tracing Game</div>
-                <div class="game-description">
-                    Trace shapes, letters, and words to improve drawing skills!
-                </div>
-            </a>
-
-            <a href="farsi-tracing-game.html" class="game-card">
-                <div class="game-icon">✍️</div>
-                <div class="game-title">Farsi Tracing</div>
-                <div class="game-description">
-                    Practice Farsi letters and words through tracing!
-                </div>
-            </a>
-
-            <a href="letter-tracing-game.html" class="game-card">
-                <div class="game-icon">🔤</div>
-                <div class="game-title">Letter Tracing</div>
-                <div class="game-description">
-                    Trace all English letters and numbers with progressive difficulty!
-                </div>
-            </a>
-
-            <a href="addition-table.html" class="game-card">
-                <div class="game-icon">📊</div>
-                <div class="game-title">Addition Table</div>
-                <div class="game-description">
-                    Master addition tables from 0 to 100 with progressive levels!
-                </div>
-            </a>
-
-            <a href="multiplication-table.html" class="game-card">
-                <div class="game-icon">✖️</div>
-                <div class="game-title">Multiplication Master</div>
-                <div class="game-description">
-                    Master multiplication tables with a cool blue and green theme!
-                </div>
-            </a>
-
-            <a href="multiplication-touch.html" class="game-card">
-                <div class="game-icon">🧲</div>
-                <div class="game-title">Multiplication Touch</div>
-                <div class="game-description">
-                    Drag playful digits into multiplication puzzles with adaptive hint levels!
-                </div>
-            </a>
-
-            <a href="subtraction-table.html" class="game-card">
-                <div class="game-icon">➖</div>
-                <div class="game-title">Subtraction Champion</div>
-                <div class="game-description">
-                    Master subtraction tables with a cosmic purple and teal theme!
-                </div>
-            </a>
-
-            <a href="two-digit-addition.html" class="game-card">
-                <div class="game-icon">🔢</div>
-                <div class="game-title">Two-Digit Addition</div>
-                <div class="game-description">
-                    Practice vertical two-digit addition with automatic carry display!
-                </div>
-            </a>
-
-            <a href="conversation-game.html" class="game-card">
-                <div class="game-icon">💬</div>
-                <div class="game-title">Conversation Learning</div>
-                <div class="game-description">
-                    Learn essential toddler conversations through fun fill-in-the-blank exercises!
-                </div>
-            </a>
-
-            <a href="story-puzzle-game.html" class="game-card">
-                <div class="game-icon">📖</div>
-                <div class="game-title">Story Puzzle</div>
-                <div class="game-description">
-                    Drag outlined words into short stories on a playful paper page.
-                </div>
-            </a>
-
-            <a href="toddler-reading-game.html" class="game-card">
-                <div class="game-icon">🎤</div>
-                <div class="game-title">Reading & Speaking</div>
-                <div class="game-description">
-                    Learn reading and speaking with voice recognition and adaptive difficulty!
-                </div>
-            </a>
-
-            <a href="multi-choice-game/index.html" class="game-card">
-                <div class="game-icon">🧩</div>
-                <div class="game-title">Kiddo Quiz</div>
-                <div class="game-description">
-                    Quick multi-choice questions for early learners with gentle feedback.
-                </div>
-            </a>
-        </div>
-
-        <div class="footer">
-            Made with ❤️ for kids everywhere |
-            <a href="https://github.com/mohsen3/koochooloo" target="_blank">View on GitHub</a>
-        </div>
-    </div>
+        <footer class="footer">
+            <span>All playable HTML entries currently in the repo are listed here.</span>
+            <a href="https://github.com/mohsen3/koochooloo" target="_blank" rel="noreferrer">View source on GitHub</a>
+        </footer>
+    </main>
 </body>
 </html>
