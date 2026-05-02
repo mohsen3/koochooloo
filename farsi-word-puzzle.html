@@ -14,6 +14,7 @@
         }
 
         :root {
+            --app-height: 100dvh;
             --farsi-font: 'Koodak', 'B Koodak', 'Vazirmatn', 'Vazir', 'Tahoma', 'Arial', sans-serif;
             --paper: #f7e7cf;
             --card: #fff9f0;
@@ -27,6 +28,8 @@
             margin: 0;
             font-family: var(--farsi-font);
             min-height: 100vh;
+            min-height: var(--app-height);
+            height: var(--app-height);
             display: grid;
             place-items: center;
             background:
@@ -34,11 +37,13 @@
                 radial-gradient(circle at 80% 20%, rgba(255,220,170,0.45), transparent 20%),
                 linear-gradient(135deg, #f5dfc2, var(--paper));
             overflow: hidden;
+            padding: 8px;
         }
 
         .game {
             width: min(1100px, 95vw);
-            min-height: min(740px, 95vh);
+            height: min(740px, calc(var(--app-height) - 16px));
+            min-height: 0;
             display: flex;
             flex-direction: column;
             border-radius: 28px;
@@ -46,34 +51,37 @@
             box-shadow: 0 20px 60px rgba(89, 60, 32, 0.22);
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 247, 234, 0.95));
             position: relative;
-            padding: 20px;
+            padding: 20px clamp(14px, 2vw, 20px) clamp(14px, 2vw, 20px);
         }
 
         .topbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 12px;
             color: var(--ink);
             margin-bottom: 16px;
         }
         h1 {
             margin: 0;
-            font-size: clamp(30px, 4vw, 50px);
+            font-size: clamp(24px, 3.4vw, 50px);
             letter-spacing: 0.5px;
+            line-height: 1;
         }
         .status {
             background: #fff;
             border: 2px solid #f1d6b1;
             border-radius: 999px;
-            padding: 8px 18px;
-            font-size: clamp(20px, 2.2vw, 30px);
+            padding: 6px 16px;
+            font-size: clamp(18px, 2vw, 30px);
             box-shadow: 0 6px 16px rgba(60, 40, 20, 0.1);
+            white-space: nowrap;
         }
 
         .play-area {
             position: relative;
             flex: 1 1 auto;
-            min-height: 560px;
+            min-height: 0;
             border-radius: 20px;
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 245, 230, 0.8));
             border: 2px dashed rgba(150, 100, 60, 0.2);
@@ -82,7 +90,7 @@
 
         .word-slots {
             position: absolute;
-            top: 120px;
+            top: clamp(18px, 7vmin, 120px);
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -95,7 +103,7 @@
 
         .slot {
             position: relative;
-            height: clamp(171px, 19.4vw, 241px);
+            height: clamp(102px, 18vmin, 241px);
             min-width: 63px;
             padding: 26px var(--pad-right, 14px) 24px var(--pad-left, 14px);
             border: 5px dashed #c99757;
@@ -103,7 +111,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(165px, 17.7vw, 252px);
+            font-size: clamp(96px, 16.7vmin, 252px);
             line-height: 1;
             color: rgba(110, 75, 40, 0.45);
             background: rgba(255, 251, 243, 0.9);
@@ -129,7 +137,7 @@
 
         .tile {
             position: absolute;
-            height: clamp(174px, 19.9vw, 244px);
+            height: clamp(104px, 18.2vmin, 244px);
             min-width: 66px;
             padding: 26px var(--pad-right, 14px) 24px var(--pad-left, 14px);
             border-radius: 24px;
@@ -138,7 +146,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(168px, 18vw, 255px);
+            font-size: clamp(100px, 17vmin, 255px);
             line-height: 1;
             user-select: none;
             touch-action: none;
@@ -244,9 +252,34 @@
         }
         .win.show { opacity: 1; }
 
+        @media (max-height: 900px) and (orientation: landscape) {
+            .game {
+                padding: 14px;
+            }
+
+            .topbar {
+                margin-bottom: 8px;
+            }
+
+            h1 {
+                font-size: clamp(22px, 2.8vw, 34px);
+            }
+
+            .status {
+                padding: 5px 14px;
+                font-size: clamp(17px, 1.8vw, 24px);
+            }
+
+            .word-slots {
+                top: clamp(12px, 4.5vmin, 40px);
+            }
+        }
+
         @media (max-width: 760px) {
-            .game { padding: 12px; }
-            .play-area { min-height: 440px; }
+            .game {
+                height: min(740px, calc(var(--app-height) - 12px));
+                padding: 12px;
+            }
         }
     </style>
 </head>
@@ -336,18 +369,29 @@
                 this.wordSlots = document.getElementById('wordSlots');
                 this.status = document.getElementById('status');
                 this.winMessage = document.getElementById('winMessage');
+                this.slots = [];
                 this.levelIndex = 0;
                 this.tiles = [];
                 this.currentWord = '';
                 this.lockedCount = 0;
                 this.activeTile = null;
                 this.pointerOffset = { x: 0, y: 0 };
+                this.layoutMetrics = null;
+                this.resizeFrame = 0;
                 this.started = false;
+                this.handleResize = this.handleResize.bind(this);
 
                 this.init();
             }
 
             init() {
+                this.syncViewportHeight();
+                window.addEventListener('resize', this.handleResize, { passive: true });
+                window.addEventListener('orientationchange', this.handleResize, { passive: true });
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener('resize', this.handleResize, { passive: true });
+                }
+
                 const begin = () => {
                     if (this.started) return;
                     this.started = true;
@@ -362,6 +406,32 @@
                 } else {
                     setTimeout(begin, 60);
                 }
+            }
+
+            syncViewportHeight() {
+                const viewportHeight = Math.round(window.visualViewport?.height || window.innerHeight || 0);
+                if (viewportHeight > 0) {
+                    document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
+                }
+            }
+
+            clamp(value, min, max) {
+                return Math.min(max, Math.max(min, value));
+            }
+
+            readNumber(value, fallback) {
+                const parsed = parseFloat(value);
+                return Number.isFinite(parsed) ? parsed : fallback;
+            }
+
+            handleResize() {
+                this.syncViewportHeight();
+                if (!this.started) return;
+
+                cancelAnimationFrame(this.resizeFrame);
+                this.resizeFrame = requestAnimationFrame(() => {
+                    this.relayoutLevel();
+                });
             }
 
             charsOf(word) {
@@ -473,12 +543,7 @@
                 });
 
                 const slots = [...this.wordSlots.children];
-                const rect = this.playArea.getBoundingClientRect();
-                const slotsRect = this.wordSlots.getBoundingClientRect();
-                const safeTop = Math.min(
-                    Math.max(300, slotsRect.bottom - rect.top + 28),
-                    rect.height - 90
-                );
+                this.slots = slots;
 
                 tileUnits.forEach((unit, n) => {
                     const tile = document.createElement('div');
@@ -494,23 +559,11 @@
                     tile.innerHTML = `<span class="char">${unit.shaped}</span>`;
 
                     this.playArea.appendChild(tile);
-                    const tileHalfWidth = tile.offsetWidth / 2;
-                    const tileHalfHeight = tile.offsetHeight / 2;
-                    const marginX = 22;
-                    const marginY = 16;
-                    const minX = tileHalfWidth + marginX;
-                    const maxX = Math.max(minX, rect.width - tileHalfWidth - marginX);
-                    const minY = safeTop + tileHalfHeight;
-                    const maxY = Math.max(minY, rect.height - tileHalfHeight - marginY);
-                    const x = minX + Math.random() * (maxX - minX);
-                    const y = minY + Math.random() * (maxY - minY);
-                    tile.style.left = `${x}px`;
-                    tile.style.top = `${y}px`;
-                    tile.dataset.homeX = String(x);
-                    tile.dataset.homeY = String(y);
                     this.wireTile(tile, slots);
                     this.tiles.push(tile);
                 });
+
+                this.relayoutLevel({ randomizeUnlocked: true });
             }
 
             wireTile(tile, slots) {
@@ -607,6 +660,97 @@
             returnToHome(tile) {
                 tile.style.left = `${tile.dataset.homeX}px`;
                 tile.style.top = `${tile.dataset.homeY}px`;
+                this.storeRelativeTilePosition(tile);
+            }
+
+            getTileBounds(tile, rect, trayTop, bottomMargin = 16) {
+                const tileHalfWidth = tile.offsetWidth / 2;
+                const tileHalfHeight = tile.offsetHeight / 2;
+                const marginX = Math.max(12, Math.min(22, rect.width * 0.03));
+                const marginY = Math.max(10, bottomMargin);
+                const minX = tileHalfWidth + marginX;
+                const maxX = Math.max(minX, rect.width - tileHalfWidth - marginX);
+                const desiredMinY = trayTop + tileHalfHeight;
+                const maxY = Math.max(tileHalfHeight + marginY, rect.height - tileHalfHeight - marginY);
+                const minY = Math.min(Math.max(tileHalfHeight + marginY, desiredMinY), maxY);
+
+                return { minX, maxX, minY, maxY };
+            }
+
+            storeRelativeTilePosition(tile, bounds = null) {
+                if (!this.layoutMetrics || tile.classList.contains('locked')) return;
+
+                const safeBounds = bounds || this.getTileBounds(
+                    tile,
+                    { width: this.layoutMetrics.rectWidth, height: this.layoutMetrics.rectHeight },
+                    this.layoutMetrics.trayTop,
+                    this.layoutMetrics.bottomMargin
+                );
+                const left = this.readNumber(tile.style.left, this.readNumber(tile.dataset.homeX, safeBounds.minX));
+                const top = this.readNumber(tile.style.top, this.readNumber(tile.dataset.homeY, safeBounds.minY));
+                const width = safeBounds.maxX - safeBounds.minX;
+                const height = safeBounds.maxY - safeBounds.minY;
+                const relX = width > 0 ? (left - safeBounds.minX) / width : 0.5;
+                const relY = height > 0 ? (top - safeBounds.minY) / height : 0.5;
+
+                tile.dataset.relX = String(this.clamp(relX, 0, 1));
+                tile.dataset.relY = String(this.clamp(relY, 0, 1));
+            }
+
+            relayoutLevel({ randomizeUnlocked = false } = {}) {
+                if (!this.playArea || this.tiles.length === 0 || this.slots.length === 0) return;
+
+                const rect = this.playArea.getBoundingClientRect();
+                if (!rect.width || !rect.height) return;
+
+                const slotsRect = this.wordSlots.getBoundingClientRect();
+                const trayGap = Math.max(12, Math.min(28, rect.height * 0.05));
+                const bottomMargin = Math.max(12, Math.min(22, rect.height * 0.04));
+                const trayTop = slotsRect.bottom - rect.top + trayGap;
+
+                this.layoutMetrics = {
+                    rectWidth: rect.width,
+                    rectHeight: rect.height,
+                    trayTop,
+                    bottomMargin
+                };
+
+                this.tiles.forEach(tile => {
+                    if (tile.classList.contains('locked')) {
+                        const slot = this.slots.find(candidate =>
+                            candidate.dataset.index === tile.dataset.index &&
+                            candidate.dataset.base === tile.dataset.base
+                        );
+                        if (!slot) return;
+
+                        const slotRect = slot.getBoundingClientRect();
+                        const slotCx = slotRect.left + slotRect.width / 2;
+                        const slotCy = slotRect.top + slotRect.height / 2;
+                        tile.style.left = `${slotCx - rect.left}px`;
+                        tile.style.top = `${slotCy - rect.top}px`;
+                        tile.style.setProperty('--rot', '0deg');
+                        tile.style.zIndex = slot.dataset.stackOrder || '20';
+                        return;
+                    }
+
+                    const bounds = this.getTileBounds(tile, rect, trayTop, bottomMargin);
+                    const spanX = bounds.maxX - bounds.minX;
+                    const spanY = bounds.maxY - bounds.minY;
+                    const relX = randomizeUnlocked || tile.dataset.relX === undefined
+                        ? Math.random()
+                        : this.clamp(this.readNumber(tile.dataset.relX, 0.5), 0, 1);
+                    const relY = randomizeUnlocked || tile.dataset.relY === undefined
+                        ? Math.random()
+                        : this.clamp(this.readNumber(tile.dataset.relY, 0.5), 0, 1);
+                    const x = bounds.minX + spanX * relX;
+                    const y = bounds.minY + spanY * relY;
+
+                    tile.style.left = `${x}px`;
+                    tile.style.top = `${y}px`;
+                    tile.dataset.homeX = String(x);
+                    tile.dataset.homeY = String(y);
+                    this.storeRelativeTilePosition(tile, bounds);
+                });
             }
 
             burst(x, y) {
