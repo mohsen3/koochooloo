@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پازل کلمه فارسی</title>
+    <style>
+        @font-face {
+            font-family: 'Koodak';
+            src: url('./public/koodak.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: block;
+        }
+
+        :root {
+            --farsi-font: 'Koodak', 'B Koodak', 'Vazirmatn', 'Vazir', 'Tahoma', 'Arial', sans-serif;
+            --paper: #f7e7cf;
+            --card: #fff9f0;
+            --line: #d9b68a;
+            --ink: #4f3a22;
+            --good: #36b66d;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: var(--farsi-font);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(255,255,255,0.7), transparent 20%),
+                radial-gradient(circle at 80% 20%, rgba(255,220,170,0.45), transparent 20%),
+                linear-gradient(135deg, #f5dfc2, var(--paper));
+            overflow: hidden;
+        }
+
+        .game {
+            width: min(1100px, 95vw);
+            min-height: min(740px, 95vh);
+            display: flex;
+            flex-direction: column;
+            border-radius: 28px;
+            border: 5px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 20px 60px rgba(89, 60, 32, 0.22);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 247, 234, 0.95));
+            position: relative;
+            padding: 20px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--ink);
+            margin-bottom: 16px;
+        }
+        h1 {
+            margin: 0;
+            font-size: clamp(30px, 4vw, 50px);
+            letter-spacing: 0.5px;
+        }
+        .status {
+            background: #fff;
+            border: 2px solid #f1d6b1;
+            border-radius: 999px;
+            padding: 8px 18px;
+            font-size: clamp(20px, 2.2vw, 30px);
+            box-shadow: 0 6px 16px rgba(60, 40, 20, 0.1);
+        }
+
+        .play-area {
+            position: relative;
+            flex: 1 1 auto;
+            min-height: 560px;
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 245, 230, 0.8));
+            border: 2px dashed rgba(150, 100, 60, 0.2);
+            overflow: hidden;
+        }
+
+        .word-slots {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: row;
+            direction: rtl;
+            gap: clamp(0px, 0.15vw, 2px);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .slot {
+            height: clamp(159px, 18.3vw, 225px);
+            min-width: 63px;
+            padding: 9px var(--pad-right, 14px) 15px var(--pad-left, 14px);
+            border: 5px dashed #c99757;
+            border-radius: 21px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(165px, 17.7vw, 252px);
+            line-height: 0.64;
+            color: rgba(110, 75, 40, 0.45);
+            background: rgba(255, 251, 243, 0.9);
+            overflow: hidden;
+            white-space: nowrap;
+            transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+        }
+        .slot.ready {
+            border-color: #e4c8a2;
+            background: rgba(255, 252, 247, 0.85);
+        }
+        .slot.good {
+            border-style: solid;
+            border-color: #8ddeaf;
+            background: rgba(214, 255, 232, 0.95);
+            transform: scale(1.06);
+            animation: pop 260ms ease-out;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.88); }
+            100% { transform: scale(1.06); }
+        }
+
+        .tile {
+            position: absolute;
+            height: clamp(162px, 18.75vw, 228px);
+            min-width: 66px;
+            padding: 9px var(--pad-right, 14px) 15px var(--pad-left, 14px);
+            border-radius: 24px;
+            border: 4px solid rgba(177, 114, 45, 0.45);
+            box-shadow: 0 18px 27px rgba(62, 44, 26, 0.24);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(168px, 18vw, 255px);
+            line-height: 0.64;
+            user-select: none;
+            touch-action: none;
+            cursor: grab;
+            z-index: 3;
+            transform: translate(-50%, -50%) rotate(var(--rot));
+            transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+            background: var(--bg-pattern, #fff4de);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .slot .char,
+        .tile .char {
+            display: block;
+            transform: translateY(1px);
+            transform-origin: center;
+        }
+
+        .slot .char {
+            color: rgba(110, 75, 40, 0.45);
+        }
+
+        .tile .char {
+            color: #4f3a22;
+            -webkit-background-clip: text;
+            background-clip: text;
+            background-image: var(--text-pattern);
+            text-shadow: 2px 2px rgba(255,255,255,0.4);
+            filter: drop-shadow(1px 2px 0 rgba(20, 20, 20, 0.2));
+        }
+
+        .tile.dragging {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.08) rotate(0deg);
+            box-shadow: 0 18px 26px rgba(34, 25, 14, 0.3);
+            z-index: 9;
+        }
+
+        .tile.locked {
+            cursor: default;
+            pointer-events: none;
+            z-index: 4;
+            animation: ding 320ms ease-out;
+        }
+
+        @keyframes ding {
+            0% { filter: saturate(1); }
+            30% { filter: saturate(1.8) brightness(1.14); }
+            100% { filter: saturate(1); }
+        }
+
+        .spark {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff 0%, #ffe46a 55%, transparent 70%);
+            pointer-events: none;
+            animation: spark 500ms ease-out forwards;
+            z-index: 10;
+        }
+
+        @keyframes spark {
+            from { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+            to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.25); opacity: 0; }
+        }
+
+        .win {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 246, 225, 0.78);
+            font-size: clamp(52px, 8vw, 96px);
+            color: #2f8f62;
+            font-weight: 700;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 300ms ease;
+            z-index: 12;
+        }
+        .win.show { opacity: 1; }
+
+        @media (max-width: 760px) {
+            .game { padding: 12px; }
+            .play-area { min-height: 440px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game">
+        <div class="topbar">
+            <h1>پازل کلمه فارسی</h1>
+            <div class="status" id="status">مرحله ۱</div>
+        </div>
+        <div class="play-area" id="playArea">
+            <div class="word-slots" id="wordSlots"></div>
+            <div class="win" id="winMessage">آفرین!</div>
+        </div>
+    </div>
+
+    <script>
+        const WORDS = [
+            'آب', 'نان', 'گل', 'سیب', 'توپ', 'ماه', 'پا', 'دست',
+            'بابا', 'مامان', 'مادر', 'پدر', 'دوست', 'بازی', 'تاب', 'پارک',
+            'خانه', 'کتاب', 'مداد', 'کیف', 'کفش', 'کلاه', 'عروسک', 'ماشین',
+            'میز', 'پنجره', 'ماهی', 'گربه', 'سگ', 'مرغ', 'جوجه', 'پرنده',
+            'باغ', 'برگ', 'درخت', 'ابر', 'باران', 'برف', 'خورشید', 'ستاره',
+            'مدرسه', 'گنجشک', 'خرگوش', 'دوچرخه', 'سرسره',
+            'قرمز', 'آبی', 'زرد', 'سبز', 'سفید', 'سیاه', 'صورتی', 'نارنجی',
+            'گاو', 'اسب', 'بز', 'اردک', 'خرس', 'فیل', 'شیر', 'زرافه',
+            'دفتر', 'پاکن', 'کلاس', 'معلم', 'صندلی', 'تخته', 'زنگ',
+            'ایران', 'برادر', 'چپ', 'راست', 'بالا', 'پایین', 'جلو', 'عقب'
+        ];
+
+        const NON_JOIN_LEFT = new Set(['ا', 'آ', 'د', 'ذ', 'ر', 'ز', 'ژ', 'و']);
+
+        const PRESENTATION_FORMS = {
+            'ا': { isolated: '\uFE8D', final: '\uFE8E' },
+            'آ': { isolated: '\uFE81', final: '\uFE82' },
+            'ب': { isolated: '\uFE8F', final: '\uFE90', initial: '\uFE91', medial: '\uFE92' },
+            'پ': { isolated: '\uFB56', final: '\uFB57', initial: '\uFB58', medial: '\uFB59' },
+            'ت': { isolated: '\uFE95', final: '\uFE96', initial: '\uFE97', medial: '\uFE98' },
+            'ث': { isolated: '\uFE99', final: '\uFE9A', initial: '\uFE9B', medial: '\uFE9C' },
+            'ج': { isolated: '\uFE9D', final: '\uFE9E', initial: '\uFE9F', medial: '\uFEA0' },
+            'چ': { isolated: '\uFB7A', final: '\uFB7B', initial: '\uFB7C', medial: '\uFB7D' },
+            'ح': { isolated: '\uFEA1', final: '\uFEA2', initial: '\uFEA3', medial: '\uFEA4' },
+            'خ': { isolated: '\uFEA5', final: '\uFEA6', initial: '\uFEA7', medial: '\uFEA8' },
+            'د': { isolated: '\uFEA9', final: '\uFEAA' },
+            'ذ': { isolated: '\uFEAB', final: '\uFEAC' },
+            'ر': { isolated: '\uFEAD', final: '\uFEAE' },
+            'ز': { isolated: '\uFEAF', final: '\uFEB0' },
+            'ژ': { isolated: '\uFB8A', final: '\uFB8B' },
+            'س': { isolated: '\uFEB1', final: '\uFEB2', initial: '\uFEB3', medial: '\uFEB4' },
+            'ش': { isolated: '\uFEB5', final: '\uFEB6', initial: '\uFEB7', medial: '\uFEB8' },
+            'ص': { isolated: '\uFEB9', final: '\uFEBA', initial: '\uFEBB', medial: '\uFEBC' },
+            'ض': { isolated: '\uFEBD', final: '\uFEBE', initial: '\uFEBF', medial: '\uFEC0' },
+            'ط': { isolated: '\uFEC1', final: '\uFEC2', initial: '\uFEC3', medial: '\uFEC4' },
+            'ظ': { isolated: '\uFEC5', final: '\uFEC6', initial: '\uFEC7', medial: '\uFEC8' },
+            'ع': { isolated: '\uFEC9', final: '\uFECA', initial: '\uFECB', medial: '\uFECC' },
+            'غ': { isolated: '\uFECD', final: '\uFECE', initial: '\uFECF', medial: '\uFED0' },
+            'ف': { isolated: '\uFED1', final: '\uFED2', initial: '\uFED3', medial: '\uFED4' },
+            'ق': { isolated: '\uFED5', final: '\uFED6', initial: '\uFED7', medial: '\uFED8' },
+            'ک': { isolated: '\uFB8E', final: '\uFB8F', initial: '\uFB90', medial: '\uFB91' },
+            'گ': { isolated: '\uFB92', final: '\uFB93', initial: '\uFB94', medial: '\uFB95' },
+            'ل': { isolated: '\uFEDD', final: '\uFEDE', initial: '\uFEDF', medial: '\uFEE0' },
+            'م': { isolated: '\uFEE1', final: '\uFEE2', initial: '\uFEE3', medial: '\uFEE4' },
+            'ن': { isolated: '\uFEE5', final: '\uFEE6', initial: '\uFEE7', medial: '\uFEE8' },
+            'ه': { isolated: '\uFEE9', final: '\uFEEA', initial: '\uFEEB', medial: '\uFEEC' },
+            'و': { isolated: '\uFEED', final: '\uFEEE' },
+            'ی': { isolated: '\uFBFC', final: '\uFBFD', initial: '\uFBFE', medial: '\uFBFF' }
+        };
+
+        const TEXT_PATTERNS = [
+            'repeating-linear-gradient(45deg,#6a5cff 0 9px,#8a79ff 9px 18px)',
+            'radial-gradient(circle at 25% 30%,#99f2ff 0 24%,#2bb6d9 26% 100%)',
+            'repeating-linear-gradient(0deg,#ff7d7d 0 8px,#ffb35d 8px 16px)',
+            'repeating-linear-gradient(120deg,#82d760 0 9px,#c7ed73 9px 18px)',
+            'repeating-linear-gradient(60deg,#ff65be 0 8px,#ff95df 8px 16px)'
+        ];
+
+        const TILE_BG_PATTERNS = [
+            'linear-gradient(135deg,#fffdf5,#f7f3ff)',
+            'linear-gradient(135deg,#f8fff3,#fff6f0)',
+            'linear-gradient(135deg,#f2ffff,#fff7f7)',
+            'linear-gradient(135deg,#fffde6,#f5f2ff)'
+        ];
+
+        class FarsiWordPuzzleGame {
+            constructor() {
+                this.playArea = document.getElementById('playArea');
+                this.wordSlots = document.getElementById('wordSlots');
+                this.status = document.getElementById('status');
+                this.winMessage = document.getElementById('winMessage');
+                this.levelIndex = 0;
+                this.tiles = [];
+                this.currentWord = '';
+                this.lockedCount = 0;
+                this.activeTile = null;
+                this.pointerOffset = { x: 0, y: 0 };
+                this.started = false;
+
+                this.init();
+            }
+
+            init() {
+                const begin = () => {
+                    if (this.started) return;
+                    this.started = true;
+                    this.startLevel();
+                };
+
+                if (document.fonts && document.fonts.ready) {
+                    Promise.race([
+                        document.fonts.ready,
+                        new Promise(resolve => setTimeout(resolve, 700))
+                    ]).then(begin);
+                } else {
+                    setTimeout(begin, 60);
+                }
+            }
+
+            charsOf(word) {
+                return [...word];
+            }
+
+            canConnectBefore(ch) {
+                return !!PRESENTATION_FORMS[ch];
+            }
+
+            canConnectAfter(ch) {
+                return !!PRESENTATION_FORMS[ch] && !NON_JOIN_LEFT.has(ch);
+            }
+
+            shapedChar(chars, i) {
+                const ch = chars[i];
+                const forms = PRESENTATION_FORMS[ch];
+                if (!forms) return ch;
+
+                const prev = chars[i - 1];
+                const next = chars[i + 1];
+                const joinsPrev = !!prev && this.canConnectAfter(prev) && this.canConnectBefore(ch);
+                const joinsNext = !!next && this.canConnectAfter(ch) && this.canConnectBefore(next);
+
+                if (joinsPrev && joinsNext && forms.medial) return forms.medial;
+                if (joinsPrev && forms.final) return forms.final;
+                if (joinsNext && forms.initial) return forms.initial;
+                return forms.isolated || ch;
+            }
+
+            shapedWordUnits(word) {
+                const chars = this.charsOf(word);
+                return chars.map((base, i) => ({
+                    base,
+                    shaped: this.shapedChar(chars, i),
+                    index: i,
+                    joinsPrev: i > 0 && this.canConnectAfter(chars[i - 1]) && this.canConnectBefore(base),
+                    joinsNext: i < chars.length - 1 && this.canConnectAfter(base) && this.canConnectBefore(chars[i + 1])
+                }));
+            }
+
+            getCardPadding(unit) {
+                const tight = 2;
+                const loose = 7;
+
+                return {
+                    left: unit.joinsNext ? tight : loose,
+                    right: unit.joinsPrev ? tight : loose
+                };
+            }
+
+            applyCardPadding(card, unit) {
+                const { left, right } = this.getCardPadding(unit);
+                card.style.setProperty('--pad-left', `${left}px`);
+                card.style.setProperty('--pad-right', `${right}px`);
+            }
+
+            startLevel() {
+                this.wordSlots.innerHTML = '';
+                this.playArea.querySelectorAll('.tile,.spark').forEach(el => el.remove());
+                this.winMessage.classList.remove('show');
+                this.tiles = [];
+                this.lockedCount = 0;
+
+                this.currentWord = WORDS[this.levelIndex % WORDS.length];
+                const units = this.shapedWordUnits(this.currentWord);
+                this.status.textContent = `مرحله ${this.levelIndex + 1}: ${this.currentWord}`;
+
+                units.forEach(unit => {
+                    const slot = document.createElement('div');
+                    slot.className = 'slot ready';
+                    slot.dataset.index = String(unit.index);
+                    slot.dataset.base = unit.base;
+                    slot.dataset.shaped = unit.shaped;
+                    this.applyCardPadding(slot, unit);
+                    slot.innerHTML = `<span class="char">${unit.shaped}</span>`;
+                    this.wordSlots.appendChild(slot);
+                });
+
+                const slots = [...this.wordSlots.children];
+                const rect = this.playArea.getBoundingClientRect();
+                const slotsRect = this.wordSlots.getBoundingClientRect();
+                const safeTop = Math.min(
+                    Math.max(300, slotsRect.bottom - rect.top + 28),
+                    rect.height - 90
+                );
+
+                units.forEach((unit, n) => {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.dataset.index = String(unit.index);
+                    tile.dataset.base = unit.base;
+                    tile.style.setProperty('--text-pattern', TEXT_PATTERNS[n % TEXT_PATTERNS.length]);
+                    tile.style.setProperty('--bg-pattern', TILE_BG_PATTERNS[n % TILE_BG_PATTERNS.length]);
+                    tile.style.setProperty('--rot', `${(Math.random() * 26 - 13).toFixed(1)}deg`);
+                    this.applyCardPadding(tile, unit);
+                    tile.innerHTML = `<span class="char">${unit.shaped}</span>`;
+
+                    this.playArea.appendChild(tile);
+                    const tileHalfWidth = tile.offsetWidth / 2;
+                    const tileHalfHeight = tile.offsetHeight / 2;
+                    const marginX = 22;
+                    const marginY = 16;
+                    const minX = tileHalfWidth + marginX;
+                    const maxX = Math.max(minX, rect.width - tileHalfWidth - marginX);
+                    const minY = safeTop + tileHalfHeight;
+                    const maxY = Math.max(minY, rect.height - tileHalfHeight - marginY);
+                    const x = minX + Math.random() * (maxX - minX);
+                    const y = minY + Math.random() * (maxY - minY);
+                    tile.style.left = `${x}px`;
+                    tile.style.top = `${y}px`;
+                    tile.dataset.homeX = String(x);
+                    tile.dataset.homeY = String(y);
+                    this.wireTile(tile, slots);
+                    this.tiles.push(tile);
+                });
+            }
+
+            wireTile(tile, slots) {
+                tile.addEventListener('pointerdown', (e) => {
+                    if (tile.classList.contains('locked')) return;
+                    this.activeTile = tile;
+                    tile.classList.add('dragging');
+                    tile.setPointerCapture(e.pointerId);
+                    const tRect = tile.getBoundingClientRect();
+                    this.pointerOffset.x = e.clientX - (tRect.left + tRect.width / 2);
+                    this.pointerOffset.y = e.clientY - (tRect.top + tRect.height / 2);
+                });
+
+                tile.addEventListener('pointermove', (e) => {
+                    if (this.activeTile !== tile) return;
+                    const areaRect = this.playArea.getBoundingClientRect();
+                    tile.style.left = `${e.clientX - areaRect.left - this.pointerOffset.x}px`;
+                    tile.style.top = `${e.clientY - areaRect.top - this.pointerOffset.y}px`;
+                });
+
+                const release = () => {
+                    if (this.activeTile !== tile) return;
+                    tile.classList.remove('dragging');
+                    this.activeTile = null;
+                    this.tryLockTile(tile, slots);
+                };
+
+                tile.addEventListener('pointerup', release);
+                tile.addEventListener('pointercancel', release);
+            }
+
+            getTileChar(tile) {
+                return tile.querySelector('.char');
+            }
+
+            findMatchingSlotForTile(tile, slots) {
+                const tileBase = tile.dataset.base;
+                const tileRect = tile.getBoundingClientRect();
+                const tileCx = tileRect.left + tileRect.width / 2;
+                const tileCy = tileRect.top + tileRect.height / 2;
+                let bestSlot = null;
+                let bestDistance = Infinity;
+
+                slots.forEach(slot => {
+                    if (slot.classList.contains('good')) return;
+                    if (slot.dataset.base !== tileBase) return;
+
+                    const slotRect = slot.getBoundingClientRect();
+                    const slotCx = slotRect.left + slotRect.width / 2;
+                    const slotCy = slotRect.top + slotRect.height / 2;
+                    const dist = Math.hypot(slotCx - tileCx, slotCy - tileCy);
+                    const threshold = Math.max(34, slotRect.width * 0.42);
+
+                    if (dist <= threshold && dist < bestDistance) {
+                        bestDistance = dist;
+                        bestSlot = slot;
+                    }
+                });
+
+                return bestSlot;
+            }
+
+            tryLockTile(tile, slots) {
+                const slot = this.findMatchingSlotForTile(tile, slots);
+                if (!slot) {
+                    this.returnToHome(tile);
+                    return;
+                }
+
+                const slotRect = slot.getBoundingClientRect();
+                const slotCx = slotRect.left + slotRect.width / 2;
+                const slotCy = slotRect.top + slotRect.height / 2;
+                const areaRect = this.playArea.getBoundingClientRect();
+                tile.style.left = `${slotCx - areaRect.left}px`;
+                tile.style.top = `${slotCy - areaRect.top}px`;
+                tile.style.setProperty('--rot', '0deg');
+                tile.classList.add('locked');
+                tile.dataset.index = slot.dataset.index;
+                const charEl = this.getTileChar(tile);
+                if (charEl) {
+                    charEl.textContent = slot.dataset.shaped;
+                }
+                slot.classList.remove('ready');
+                slot.classList.add('good');
+                this.burst(slotCx - areaRect.left, slotCy - areaRect.top);
+                this.lockedCount += 1;
+
+                if (this.lockedCount === slots.length) {
+                    this.finishLevel();
+                }
+            }
+
+            returnToHome(tile) {
+                tile.style.left = `${tile.dataset.homeX}px`;
+                tile.style.top = `${tile.dataset.homeY}px`;
+            }
+
+            burst(x, y) {
+                for (let i = 0; i < 8; i++) {
+                    const spark = document.createElement('div');
+                    spark.className = 'spark';
+                    spark.style.left = `${x}px`;
+                    spark.style.top = `${y}px`;
+                    spark.style.setProperty('--dx', `${(Math.random() * 120 - 60).toFixed(0)}px`);
+                    spark.style.setProperty('--dy', `${(Math.random() * 120 - 60).toFixed(0)}px`);
+                    this.playArea.appendChild(spark);
+                    setTimeout(() => spark.remove(), 540);
+                }
+            }
+
+            finishLevel() {
+                this.winMessage.classList.add('show');
+                setTimeout(() => {
+                    this.levelIndex += 1;
+                    this.startLevel();
+                }, 1400);
+            }
+        }
+
+        new FarsiWordPuzzleGame();
+    </script>
+</body>
+</html>
