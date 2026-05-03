@@ -21,6 +21,13 @@ Use kebab-case for HTML, CSS, and asset filenames such as `letter-tracing-game.h
 ## Testing Guidelines
 There is no automated test suite checked in yet. Validate changes manually in a browser by loading `index.html` and the specific game page you changed. For data updates, rerun the generation scripts and confirm the affected pages still load without console errors.
 
+## Layout & Device Requirements
+Games should default to using the full page without vertical or horizontal scrolling during normal play. Design layouts to fit within the viewport first, then degrade gracefully only when content genuinely cannot be compressed further.
+
+Disable browser zoom in and zoom out on game pages, typically through the viewport meta tag and touch-action choices appropriate for the interaction model. Do not rely on pinch zoom for core usability.
+
+Optimize interaction, sizing, and touch targets for iPad first, then verify the same pages still work well on other tablets, laptops, and phones. Treat tablet landscape and portrait modes as primary layouts, with desktop and mobile as required secondary targets.
+
 ## Special Instructions for Farsi
 Always load `public/koodak.ttf` for Persian UI and content. Use `url("public/koodak.ttf")` from root pages and `url("../public/koodak.ttf")` from `multi-choice-game/`, then put `"Koodak"` first in the font stack.
 
