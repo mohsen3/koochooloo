@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Farsi English Match</title>
+    <style>
+        @font-face {
+            font-family: 'Koodak';
+            src: url("public/koodak.ttf") format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: block;
+        }
+
+        :root {
+            --app-height: 100dvh;
+            --farsi-font: 'Koodak', 'B Koodak', 'Vazirmatn', 'Vazir', 'Tahoma', sans-serif;
+            --ui-font: 'Avenir Next', 'Trebuchet MS', 'Segoe UI', var(--farsi-font);
+            --ink: #1d2742;
+            --ink-soft: #4f5d7a;
+            --panel: rgba(255, 255, 255, 0.8);
+            --panel-strong: rgba(255, 255, 255, 0.94);
+            --line: rgba(29, 39, 66, 0.12);
+            --glow: 0 24px 60px rgba(26, 30, 65, 0.18);
+            --rows: 2;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            min-height: 100%;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: var(--app-height);
+            height: var(--app-height);
+            display: grid;
+            place-items: center;
+            font-family: var(--ui-font);
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 12% 18%, rgba(255, 241, 112, 0.9), transparent 20%),
+                radial-gradient(circle at 84% 12%, rgba(48, 225, 185, 0.45), transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(255, 91, 146, 0.34), transparent 24%),
+                linear-gradient(140deg, #1f2a58 0%, #1b7987 42%, #ff9160 100%);
+            padding: 10px;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: auto;
+            width: 28vmax;
+            height: 28vmax;
+            border-radius: 50%;
+            filter: blur(10px);
+            opacity: 0.18;
+            pointer-events: none;
+        }
+
+        body::before {
+            top: -10vmax;
+            right: -6vmax;
+            background: #ffe766;
+        }
+
+        body::after {
+            bottom: -12vmax;
+            left: -10vmax;
+            background: #3fe0c5;
+        }
+
+        .app {
+            width: min(1240px, calc(100vw - 20px));
+            height: min(860px, calc(var(--app-height) - 20px));
+            border-radius: 34px;
+            padding: clamp(14px, 2vw, 24px);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background:
+                linear-gradient(165deg, rgba(255, 255, 255, 0.86), rgba(255, 246, 229, 0.78)),
+                rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            box-shadow: var(--glow);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .app::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border-radius: 28px;
+            border: 2px dashed rgba(29, 39, 66, 0.08);
+            pointer-events: none;
+        }
+
+        .topbar {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) auto;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .title-block h1 {
+            margin: 0;
+            font-size: clamp(28px, 4vw, 54px);
+            line-height: 0.96;
+            letter-spacing: -0.04em;
+        }
+
+        .title-block p {
+            margin: 8px 0 0;
+            max-width: 720px;
+            font-size: clamp(15px, 1.8vw, 21px);
+            line-height: 1.45;
+            color: var(--ink-soft);
+        }
+
+        .status-strip {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .status-pill {
+            min-width: 120px;
+            padding: 10px 14px;
+            border-radius: 18px;
+            background: var(--panel-strong);
+            border: 1px solid rgba(29, 39, 66, 0.08);
+            box-shadow: 0 12px 30px rgba(20, 30, 60, 0.09);
+            text-align: center;
+        }
+
+        .status-pill span {
+            display: block;
+            font-size: 13px;
+            color: var(--ink-soft);
+        }
+
+        .status-pill strong {
+            display: block;
+            margin-top: 4px;
+            font-size: clamp(19px, 2vw, 28px);
+            line-height: 1.1;
+        }
+
+        .board {
+            position: relative;
+            flex: 1 1 auto;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(150px, 0.46fr) minmax(0, 1fr);
+            gap: clamp(10px, 2vw, 24px);
+            padding: clamp(10px, 1.4vw, 16px);
+            border-radius: 28px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 249, 239, 0.88));
+            border: 1px solid rgba(29, 39, 66, 0.08);
+            overflow: hidden;
+        }
+
+        #connectionCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .column,
+        .lane {
+            position: relative;
+            z-index: 2;
+            min-width: 0;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 0;
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 18px;
+            background: var(--panel);
+            border: 1px solid rgba(29, 39, 66, 0.08);
+        }
+
+        .column-header strong {
+            font-size: clamp(20px, 2vw, 28px);
+        }
+
+        .column-header span {
+            font-size: 14px;
+            color: var(--ink-soft);
+        }
+
+        .word-list {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: grid;
+            grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+            gap: clamp(8px, 1.3vw, 14px);
+        }
+
+        .word-card {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+            padding: 12px 24px;
+            border-radius: 24px;
+            border: 2px solid rgba(29, 39, 66, 0.08);
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 255, 0.92));
+            box-shadow: 0 14px 26px rgba(19, 30, 60, 0.07);
+            transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+            isolation: isolate;
+        }
+
+        .word-card[data-side="left"] {
+            padding-right: 64px;
+        }
+
+        .word-card[data-side="right"] {
+            padding-left: 64px;
+        }
+
+        .word-card.is-origin {
+            transform: scale(1.02);
+            border-color: rgba(255, 145, 96, 0.7);
+            box-shadow: 0 16px 34px rgba(255, 145, 96, 0.22);
+        }
+
+        .word-card.is-hover {
+            transform: scale(1.015);
+            border-color: var(--match-color, rgba(63, 224, 197, 0.8));
+            box-shadow:
+                0 16px 34px rgba(19, 30, 60, 0.12),
+                0 0 0 4px var(--match-color, #3fe0c5);
+        }
+
+        .word-card.matched {
+            transform: scale(1.015);
+            border-color: var(--match-color, #31e1b9);
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(242, 250, 255, 0.96));
+            box-shadow:
+                0 16px 34px rgba(19, 30, 60, 0.12),
+                0 0 0 4px var(--match-color, #31e1b9),
+                inset 0 0 0 2px rgba(255, 255, 255, 0.72);
+        }
+
+        .word-card.wrong {
+            animation: shake 260ms ease;
+            border-color: rgba(255, 86, 115, 0.6);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            30% { transform: translateX(-6px); }
+            70% { transform: translateX(6px); }
+        }
+
+        .word-text {
+            width: 100%;
+            min-width: 0;
+            text-align: center;
+            font-weight: 700;
+            font-size: clamp(18px, 2.2vw, 34px);
+            line-height: 1.15;
+            word-break: break-word;
+        }
+
+        .word-text[lang="fa"] {
+            direction: rtl;
+            font-family: var(--farsi-font);
+            font-size: clamp(22px, 2.6vw, 38px);
+        }
+
+        .word-card::after {
+            content: "✓";
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            width: 26px;
+            height: 26px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            font-size: 15px;
+            font-weight: 900;
+            color: #ffffff;
+            background: var(--match-color, #31e1b9);
+            opacity: 0;
+            transform: scale(0.6);
+            transition: opacity 180ms ease, transform 180ms ease;
+            box-shadow: 0 8px 18px rgba(19, 30, 60, 0.18);
+        }
+
+        .word-card.matched::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .connector {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: clamp(32px, 3.2vw, 40px);
+            height: clamp(32px, 3.2vw, 40px);
+            border-radius: 999px;
+            border: 3px solid rgba(29, 39, 66, 0.18);
+            background:
+                radial-gradient(circle at 34% 30%, #ffffff, #eff6ff 62%, #d8e5ff 100%);
+            box-shadow: 0 10px 18px rgba(17, 31, 62, 0.16);
+            cursor: grab;
+            touch-action: none;
+            transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+        }
+
+        .connector::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(29, 39, 66, 0.22);
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            transition: background 140ms ease;
+        }
+
+        .connector.left {
+            left: 12px;
+        }
+
+        .connector.right {
+            right: 12px;
+        }
+
+        .connector:active,
+        .connector.is-active,
+        .connector.is-hover {
+            transform: translateY(-50%) scale(1.08);
+        }
+
+        .connector.is-active,
+        .connector.is-hover,
+        .connector.matched {
+            border-color: var(--match-color, #31e1b9);
+            box-shadow:
+                0 12px 22px rgba(17, 31, 62, 0.2),
+                0 0 0 4px rgba(255, 255, 255, 0.55);
+        }
+
+        .connector.is-active::before,
+        .connector.is-hover::before,
+        .connector.matched::before {
+            background: var(--match-color, #31e1b9);
+        }
+
+        .connector.matched {
+            cursor: default;
+        }
+
+        .lane {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+        }
+
+        .lane-panel {
+            width: 100%;
+            height: 100%;
+            max-height: 100%;
+            border-radius: 28px;
+            padding: clamp(14px, 2vw, 22px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(240, 249, 255, 0.72));
+            border: 1px solid rgba(29, 39, 66, 0.08);
+            text-align: center;
+        }
+
+        .lane-badge {
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #1dcdb0, #1ca0f0);
+            color: #ffffff;
+            font-size: clamp(16px, 1.6vw, 20px);
+            font-weight: 700;
+            box-shadow: 0 16px 30px rgba(28, 160, 240, 0.22);
+        }
+
+        .lane-panel h2 {
+            margin: 0;
+            font-size: clamp(26px, 2.5vw, 40px);
+            line-height: 1;
+        }
+
+        .lane-panel p {
+            margin: 0;
+            color: var(--ink-soft);
+            font-size: clamp(15px, 1.45vw, 18px);
+            line-height: 1.45;
+        }
+
+        .mini-progress {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mini-progress-track {
+            width: 100%;
+            height: 12px;
+            border-radius: 999px;
+            background: rgba(29, 39, 66, 0.08);
+            overflow: hidden;
+        }
+
+        .mini-progress-fill {
+            width: 0%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #ff7a59, #ffcc4d, #27d7b8);
+            transition: width 220ms ease;
+        }
+
+        .mini-progress-label {
+            font-size: 15px;
+            color: var(--ink-soft);
+        }
+
+        .toast {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.84);
+            padding: 18px 30px;
+            border-radius: 24px;
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 240, 0.98));
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 24px 42px rgba(24, 36, 72, 0.2);
+            font-family: var(--farsi-font);
+            font-size: clamp(30px, 4vw, 54px);
+            line-height: 1;
+            color: var(--toast-color, #ff7a59);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease, transform 180ms ease;
+            z-index: 4;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .spark {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffffff 0%, var(--spark-color, #31e1b9) 58%, transparent 72%);
+            pointer-events: none;
+            animation: spark 520ms ease-out forwards;
+            z-index: 4;
+        }
+
+        @keyframes spark {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(0.4);
+            }
+            to {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.2);
+            }
+        }
+
+        @media (max-width: 960px) {
+            .board {
+                grid-template-columns: minmax(0, 1fr) 126px minmax(0, 1fr);
+            }
+
+            .status-pill {
+                min-width: 104px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .app {
+                padding: 12px;
+            }
+
+            .topbar {
+                grid-template-columns: 1fr;
+            }
+
+            .status-strip {
+                justify-content: flex-start;
+            }
+
+            .board {
+                grid-template-columns: minmax(0, 1fr) 96px minmax(0, 1fr);
+                gap: 8px;
+                padding: 8px;
+            }
+
+            .lane-panel {
+                padding: 12px 8px;
+            }
+
+            .lane-panel p {
+                font-size: 13px;
+            }
+
+            .lane-panel h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="topbar">
+            <div class="title-block">
+                <h1>بازی جور کردن فارسی و انگلیسی</h1>
+                <p>از نقطه هر کلمه بکش تا ترجمه درستش را پیدا کنی. خط اشتباه ناپدید می‌شود و خط درست روی صفحه می‌ماند.</p>
+            </div>
+            <div class="status-strip">
+                <div class="status-pill">
+                    <span>مرحله</span>
+                    <strong id="levelLabel">۱</strong>
+                </div>
+                <div class="status-pill">
+                    <span>صفحه</span>
+                    <strong id="pageLabel">۱ از ۴</strong>
+                </div>
+                <div class="status-pill">
+                    <span>جور شده</span>
+                    <strong id="matchLabel">۰ از ۲</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="board" id="board">
+            <canvas id="connectionCanvas"></canvas>
+
+            <section class="column">
+                <div class="column-header">
+                    <strong>English</strong>
+                    <span>Left side</span>
+                </div>
+                <div class="word-list" id="englishList"></div>
+            </section>
+
+            <section class="lane">
+                <div class="lane-panel">
+                    <div class="lane-badge">Drag the matching translation</div>
+                    <h2 id="wordsLabel">۲ واژه</h2>
+                    <p>هر خط درست رنگ تازه خودش را دارد تا همه مسیرها راحت دیده شوند.</p>
+                    <div class="mini-progress">
+                        <div class="mini-progress-track">
+                            <div class="mini-progress-fill" id="pageProgressFill"></div>
+                        </div>
+                        <div class="mini-progress-label" id="pageProgressText">۰ صفحه کامل شده</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="column">
+                <div class="column-header">
+                    <strong lang="fa" dir="rtl" style="font-family: var(--farsi-font);">فارسی</strong>
+                    <span>Right side</span>
+                </div>
+                <div class="word-list" id="farsiList"></div>
+            </section>
+
+            <div class="toast" id="toast"></div>
+        </div>
+    </div>
+
+    <script>
+        const WORD_BANK = [
+            [
+                { en: 'sun', fa: 'خورشید' },
+                { en: 'moon', fa: 'ماه' },
+                { en: 'water', fa: 'آب' },
+                { en: 'bread', fa: 'نان' },
+                { en: 'apple', fa: 'سیب' },
+                { en: 'flower', fa: 'گل' },
+                { en: 'ball', fa: 'توپ' },
+                { en: 'hand', fa: 'دست' },
+                { en: 'foot', fa: 'پا' },
+                { en: 'milk', fa: 'شیر' },
+                { en: 'cat', fa: 'گربه' },
+                { en: 'fish', fa: 'ماهی' },
+                { en: 'tree', fa: 'درخت' },
+                { en: 'book', fa: 'کتاب' }
+            ],
+            [
+                { en: 'mother', fa: 'مادر' },
+                { en: 'father', fa: 'پدر' },
+                { en: 'sister', fa: 'خواهر' },
+                { en: 'brother', fa: 'برادر' },
+                { en: 'teacher', fa: 'معلم' },
+                { en: 'school', fa: 'مدرسه' },
+                { en: 'pencil', fa: 'مداد' },
+                { en: 'bag', fa: 'کیف' },
+                { en: 'chair', fa: 'صندلی' },
+                { en: 'window', fa: 'پنجره' },
+                { en: 'garden', fa: 'باغ' },
+                { en: 'rabbit', fa: 'خرگوش' },
+                { en: 'bird', fa: 'پرنده' },
+                { en: 'rain', fa: 'باران' }
+            ],
+            [
+                { en: 'snow', fa: 'برف' },
+                { en: 'red', fa: 'قرمز' },
+                { en: 'green', fa: 'سبز' },
+                { en: 'yellow', fa: 'زرد' },
+                { en: 'blue', fa: 'آبی' },
+                { en: 'orange', fa: 'نارنجی' },
+                { en: 'purple', fa: 'بنفش' },
+                { en: 'happy', fa: 'خوشحال' },
+                { en: 'hungry', fa: 'گرسنه' },
+                { en: 'thirsty', fa: 'تشنه' },
+                { en: 'morning', fa: 'صبح' },
+                { en: 'evening', fa: 'عصر' },
+                { en: 'bicycle', fa: 'دوچرخه' },
+                { en: 'butterfly', fa: 'پروانه' }
+            ],
+            [
+                { en: 'blanket', fa: 'پتو' },
+                { en: 'pillow', fa: 'بالش' },
+                { en: 'library', fa: 'کتابخانه' },
+                { en: 'hospital', fa: 'بیمارستان' },
+                { en: 'toothbrush', fa: 'مسواک' },
+                { en: 'refrigerator', fa: 'یخچال' },
+                { en: 'umbrella', fa: 'چتر' },
+                { en: 'necklace', fa: 'گردنبند' },
+                { en: 'rainbow', fa: 'رنگین کمان' },
+                { en: 'waterfall', fa: 'آبشار' },
+                { en: 'mountain', fa: 'کوهستان' },
+                { en: 'village', fa: 'روستا' },
+                { en: 'painting', fa: 'نقاشی' },
+                { en: 'calendar', fa: 'تقویم' }
+            ],
+            [
+                { en: 'suitcase', fa: 'چمدان' },
+                { en: 'sandwich', fa: 'ساندویچ' },
+                { en: 'astronaut', fa: 'فضانورد' },
+                { en: 'telescope', fa: 'تلسکوپ' },
+                { en: 'dinosaur', fa: 'دایناسور' },
+                { en: 'notebook', fa: 'دفترچه' },
+                { en: 'breakfast', fa: 'صبحانه' },
+                { en: 'airplane', fa: 'هواپیما' },
+                { en: 'pharmacy', fa: 'داروخانه' },
+                { en: 'bracelet', fa: 'دستبند' },
+                { en: 'newspaper', fa: 'روزنامه' },
+                { en: 'squirrel', fa: 'سنجاب' },
+                { en: 'forest', fa: 'جنگل' },
+                { en: 'planet', fa: 'سیاره' }
+            ],
+            [
+                { en: 'earthquake', fa: 'زلزله' },
+                { en: 'scientist', fa: 'دانشمند' },
+                { en: 'engineer', fa: 'مهندس' },
+                { en: 'museum', fa: 'موزه' },
+                { en: 'greenhouse', fa: 'گلخانه' },
+                { en: 'strawberry', fa: 'توت فرنگی' },
+                { en: 'helicopter', fa: 'بالگرد' },
+                { en: 'thermometer', fa: 'دماسنج' },
+                { en: 'sunflower', fa: 'آفتابگردان' },
+                { en: 'microscope', fa: 'میکروسکوپ' },
+                { en: 'compass', fa: 'قطب نما' },
+                { en: 'orchestra', fa: 'ارکستر' },
+                { en: 'bakery', fa: 'نانوایی' },
+                { en: 'staircase', fa: 'راه پله' }
+            ]
+        ].map((group, groupIndex) => group.map((pair, pairIndex) => ({
+            ...pair,
+            id: `g${groupIndex + 1}-${pairIndex + 1}`
+        })));
+
+        class TranslationMatchingGame {
+            constructor() {
+                this.board = document.getElementById('board');
+                this.canvas = document.getElementById('connectionCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.englishList = document.getElementById('englishList');
+                this.farsiList = document.getElementById('farsiList');
+                this.levelLabel = document.getElementById('levelLabel');
+                this.pageLabel = document.getElementById('pageLabel');
+                this.matchLabel = document.getElementById('matchLabel');
+                this.wordsLabel = document.getElementById('wordsLabel');
+                this.pageProgressFill = document.getElementById('pageProgressFill');
+                this.pageProgressText = document.getElementById('pageProgressText');
+                this.toast = document.getElementById('toast');
+
+                this.level = 1;
+                this.pagesClearedInLevel = 0;
+                this.matchesMade = 0;
+                this.connectionSerial = 0;
+                this.activeDrag = null;
+                this.connections = [];
+                this.currentPairs = [];
+                this.recentPairIds = [];
+                this.hoverConnector = null;
+                this.resizeFrame = 0;
+                this.pageAdvanceTimeout = 0;
+                this.toastTimeout = 0;
+
+                this.handleResize = this.handleResize.bind(this);
+                this.handlePointerMove = this.handlePointerMove.bind(this);
+                this.handlePointerUp = this.handlePointerUp.bind(this);
+
+                this.init();
+            }
+
+            init() {
+                this.syncViewportHeight();
+                window.addEventListener('resize', this.handleResize, { passive: true });
+                window.addEventListener('orientationchange', this.handleResize, { passive: true });
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener('resize', this.handleResize, { passive: true });
+                }
+
+                const start = () => this.startPage();
+
+                if (document.fonts && document.fonts.ready) {
+                    Promise.race([
+                        document.fonts.ready,
+                        new Promise(resolve => setTimeout(resolve, 700))
+                    ]).then(start);
+                } else {
+                    start();
+                }
+            }
+
+            syncViewportHeight() {
+                const visualViewport = window.visualViewport;
+                const viewportHeight = Math.round((visualViewport ? visualViewport.height : 0) || window.innerHeight || 0);
+                if (viewportHeight > 0) {
+                    document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
+                }
+            }
+
+            handleResize() {
+                this.syncViewportHeight();
+                cancelAnimationFrame(this.resizeFrame);
+                this.resizeFrame = requestAnimationFrame(() => {
+                    this.resizeCanvas();
+                    this.redrawConnections();
+                });
+            }
+
+            wordsPerPage() {
+                return Math.min(2 + (this.level - 1), 7);
+            }
+
+            totalPagesPerLevel() {
+                return 4;
+            }
+
+            toFaNumber(value) {
+                return String(value).replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)]);
+            }
+
+            shuffle(items) {
+                const copy = [...items];
+                for (let index = copy.length - 1; index > 0; index -= 1) {
+                    const swapIndex = Math.floor(Math.random() * (index + 1));
+                    [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+                }
+                return copy;
+            }
+
+            unlockedGroups() {
+                return WORD_BANK.slice(0, Math.min(this.level, WORD_BANK.length));
+            }
+
+            pickPairs() {
+                const count = this.wordsPerPage();
+                const groups = this.unlockedGroups();
+                const currentGroup = groups[groups.length - 1];
+                const unlocked = groups.flat();
+                const recentSet = new Set(this.recentPairIds);
+                const hardCount = Math.max(1, Math.min(count, Math.ceil(count / 2)));
+
+                const fillFrom = source => {
+                    const picked = [];
+                    for (const pair of source) {
+                        if (picked.length >= count) break;
+                        if (picked.some(item => item.id === pair.id)) continue;
+                        picked.push(pair);
+                    }
+                    return picked;
+                };
+
+                let primary = this.shuffle(currentGroup.filter(pair => !recentSet.has(pair.id))).slice(0, hardCount);
+                if (primary.length < hardCount) {
+                    const fallbackPrimary = this.shuffle(currentGroup).filter(pair => !primary.some(item => item.id === pair.id));
+                    primary = primary.concat(fallbackPrimary.slice(0, hardCount - primary.length));
+                }
+
+                let remainderPool = this.shuffle(unlocked.filter(pair => !recentSet.has(pair.id) && !primary.some(item => item.id === pair.id)));
+                let pairs = primary.concat(fillFrom(remainderPool).slice(0, count - primary.length));
+
+                if (pairs.length < count) {
+                    remainderPool = this.shuffle(unlocked.filter(pair => !pairs.some(item => item.id === pair.id)));
+                    pairs = pairs.concat(fillFrom(remainderPool).slice(0, count - pairs.length));
+                }
+
+                return this.shuffle(pairs.slice(0, count));
+            }
+
+            updateRecentPairs(pairs) {
+                this.recentPairIds.push(...pairs.map(pair => pair.id));
+                const maxRecent = 18;
+                if (this.recentPairIds.length > maxRecent) {
+                    this.recentPairIds = this.recentPairIds.slice(-maxRecent);
+                }
+            }
+
+            startPage() {
+                clearTimeout(this.pageAdvanceTimeout);
+                this.clearToast();
+                this.matchesMade = 0;
+                this.connections = [];
+                this.currentPairs = this.pickPairs();
+                this.updateRecentPairs(this.currentPairs);
+                this.activeDrag = null;
+                this.connectionSerial = 0;
+                this.clearHoverConnector();
+                this.renderPage();
+                this.resizeCanvas();
+                this.redrawConnections();
+                this.updateStatus();
+            }
+
+            renderPage() {
+                const wordCount = this.currentPairs.length;
+                this.board.style.setProperty('--rows', String(wordCount));
+                this.englishList.innerHTML = '';
+                this.farsiList.innerHTML = '';
+
+                const leftPairs = this.shuffle(this.currentPairs);
+                const rightPairs = this.shuffle(this.currentPairs);
+
+                for (const pair of leftPairs) {
+                    this.englishList.appendChild(this.createWordCard(pair, 'left'));
+                }
+
+                for (const pair of rightPairs) {
+                    this.farsiList.appendChild(this.createWordCard(pair, 'right'));
+                }
+            }
+
+            createWordCard(pair, side) {
+                const card = document.createElement('article');
+                card.className = 'word-card';
+                card.dataset.pairId = pair.id;
+                card.dataset.side = side;
+
+                const word = document.createElement('div');
+                word.className = 'word-text';
+                if (side === 'left') {
+                    word.lang = 'en';
+                    word.textContent = pair.en;
+                } else {
+                    word.lang = 'fa';
+                    word.dir = 'rtl';
+                    word.textContent = pair.fa;
+                }
+
+                const connector = document.createElement('button');
+                connector.type = 'button';
+                connector.className = `connector ${side === 'left' ? 'right' : 'left'}`;
+                connector.dataset.pairId = pair.id;
+                connector.dataset.side = side;
+                connector.setAttribute('aria-label', `Match ${side === 'left' ? pair.en : pair.fa}`);
+                connector.addEventListener('pointerdown', event => this.beginDrag(event, connector));
+
+                card.append(word, connector);
+                return card;
+            }
+
+            updateStatus() {
+                const pageNumber = this.pagesClearedInLevel + 1;
+                const totalPages = this.totalPagesPerLevel();
+                const words = this.currentPairs.length;
+                const percent = (this.matchesMade / words) * 100;
+
+                this.levelLabel.textContent = this.toFaNumber(this.level);
+                this.pageLabel.textContent = `${this.toFaNumber(pageNumber)} از ${this.toFaNumber(totalPages)}`;
+                this.matchLabel.textContent = `${this.toFaNumber(this.matchesMade)} از ${this.toFaNumber(words)}`;
+                this.wordsLabel.textContent = `${this.toFaNumber(words)} واژه`;
+                this.pageProgressFill.style.width = `${percent}%`;
+                this.pageProgressText.textContent = `${this.toFaNumber(this.pagesClearedInLevel)} صفحه کامل شده`;
+            }
+
+            resizeCanvas() {
+                const rect = this.board.getBoundingClientRect();
+                const ratio = window.devicePixelRatio || 1;
+                this.canvas.width = Math.round(rect.width * ratio);
+                this.canvas.height = Math.round(rect.height * ratio);
+                this.canvas.style.width = `${rect.width}px`;
+                this.canvas.style.height = `${rect.height}px`;
+                this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+            }
+
+            getConnectorPoint(connector) {
+                const connectorRect = connector.getBoundingClientRect();
+                const boardRect = this.board.getBoundingClientRect();
+                return {
+                    x: connectorRect.left - boardRect.left + (connectorRect.width / 2),
+                    y: connectorRect.top - boardRect.top + (connectorRect.height / 2)
+                };
+            }
+
+            beginDrag(event, connector) {
+                if (connector.classList.contains('matched')) return;
+                if (this.activeDrag) return;
+
+                event.preventDefault();
+
+                const pairId = connector.dataset.pairId;
+                const side = connector.dataset.side;
+                const color = this.nextColor();
+                const startCard = connector.closest('.word-card');
+
+                this.activeDrag = {
+                    pairId,
+                    side,
+                    startConnector: connector,
+                    startCard,
+                    color,
+                    pointer: this.clientToBoardPoint(event.clientX, event.clientY)
+                };
+
+                connector.classList.add('is-active');
+                startCard.classList.add('is-origin');
+                startCard.style.setProperty('--match-color', color);
+                connector.style.setProperty('--match-color', color);
+
+                window.addEventListener('pointermove', this.handlePointerMove);
+                window.addEventListener('pointerup', this.handlePointerUp);
+                window.addEventListener('pointercancel', this.handlePointerUp);
+
+                this.redrawConnections();
+            }
+
+            clientToBoardPoint(clientX, clientY) {
+                const rect = this.board.getBoundingClientRect();
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+
+            handlePointerMove(event) {
+                if (!this.activeDrag) return;
+
+                this.activeDrag.pointer = this.clientToBoardPoint(event.clientX, event.clientY);
+                const hovered = this.findConnectorAt(event.clientX, event.clientY);
+                this.setHoverConnector(hovered);
+                this.redrawConnections();
+            }
+
+            handlePointerUp(event) {
+                if (!this.activeDrag) return;
+
+                const drag = this.activeDrag;
+                const target = this.findConnectorAt(event.clientX, event.clientY);
+                const validTarget = target
+                    && target !== drag.startConnector
+                    && target.dataset.side !== drag.side
+                    && !target.classList.contains('matched');
+
+                if (validTarget && target.dataset.pairId === drag.pairId) {
+                    this.completeMatch(drag, target);
+                } else {
+                    if (validTarget) {
+                        this.flashWrong(target.closest('.word-card'));
+                    }
+                    this.resetDragState();
+                }
+
+                window.removeEventListener('pointermove', this.handlePointerMove);
+                window.removeEventListener('pointerup', this.handlePointerUp);
+                window.removeEventListener('pointercancel', this.handlePointerUp);
+            }
+
+            findConnectorAt(clientX, clientY) {
+                const element = document.elementFromPoint(clientX, clientY);
+                const connector = element ? element.closest('.connector') : null;
+                if (!connector) return null;
+                if (!this.activeDrag) return connector;
+                return connector.dataset.side !== this.activeDrag.side ? connector : null;
+            }
+
+            setHoverConnector(connector) {
+                if (this.hoverConnector === connector) return;
+
+                if (this.hoverConnector) {
+                    this.hoverConnector.classList.remove('is-hover');
+                    const previousCard = this.hoverConnector.closest('.word-card');
+                    if (previousCard) {
+                        previousCard.classList.remove('is-hover');
+                    }
+                }
+
+                this.hoverConnector = connector;
+
+                if (connector && this.activeDrag) {
+                    const card = connector.closest('.word-card');
+                    connector.classList.add('is-hover');
+                    connector.style.setProperty('--match-color', this.activeDrag.color);
+                    if (card) {
+                        card.classList.add('is-hover');
+                        card.style.setProperty('--match-color', this.activeDrag.color);
+                    }
+                }
+            }
+
+            clearHoverConnector() {
+                if (!this.hoverConnector) return;
+                this.hoverConnector.classList.remove('is-hover');
+                const card = this.hoverConnector.closest('.word-card');
+                if (card) {
+                    card.classList.remove('is-hover');
+                }
+                this.hoverConnector = null;
+            }
+
+            flashWrong(card) {
+                if (!card) return;
+                card.classList.remove('wrong');
+                void card.offsetWidth;
+                card.classList.add('wrong');
+                setTimeout(() => card.classList.remove('wrong'), 280);
+            }
+
+            completeMatch(drag, targetConnector) {
+                const leftConnector = drag.side === 'left' ? drag.startConnector : targetConnector;
+                const rightConnector = drag.side === 'right' ? drag.startConnector : targetConnector;
+                const color = drag.color;
+
+                this.connections.push({
+                    pairId: drag.pairId,
+                    leftConnector,
+                    rightConnector,
+                    color
+                });
+
+                this.markMatched(leftConnector, color);
+                this.markMatched(rightConnector, color);
+                this.spawnSpark(leftConnector, color);
+                this.spawnSpark(rightConnector, color);
+
+                this.matchesMade += 1;
+                this.resetDragState();
+                this.redrawConnections();
+                this.updateStatus();
+
+                if (this.matchesMade === this.currentPairs.length) {
+                    this.finishPage();
+                }
+            }
+
+            markMatched(connector, color) {
+                const card = connector.closest('.word-card');
+                connector.classList.add('matched');
+                connector.style.setProperty('--match-color', color);
+                card.classList.add('matched');
+                card.style.setProperty('--match-color', color);
+            }
+
+            spawnSpark(connector, color) {
+                const point = this.getConnectorPoint(connector);
+
+                for (let index = 0; index < 6; index += 1) {
+                    const spark = document.createElement('div');
+                    const angle = (Math.PI * 2 * index) / 6;
+                    const distance = 22 + (index % 2) * 8;
+                    spark.className = 'spark';
+                    spark.style.left = `${point.x}px`;
+                    spark.style.top = `${point.y}px`;
+                    spark.style.setProperty('--spark-color', color);
+                    spark.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
+                    spark.style.setProperty('--dy', `${Math.sin(angle) * distance}px`);
+                    this.board.appendChild(spark);
+                    setTimeout(() => spark.remove(), 520);
+                }
+            }
+
+            finishPage() {
+                this.pagesClearedInLevel += 1;
+                const leveledUp = this.pagesClearedInLevel >= this.totalPagesPerLevel();
+
+                if (leveledUp) {
+                    this.level += 1;
+                    this.pagesClearedInLevel = 0;
+                    this.showToast(`مرحله ${this.toFaNumber(this.level)}`);
+                } else {
+                    this.showToast('آفرین');
+                }
+
+                this.pageAdvanceTimeout = window.setTimeout(() => {
+                    this.startPage();
+                }, leveledUp ? 1200 : 900);
+            }
+
+            showToast(text) {
+                clearTimeout(this.toastTimeout);
+                const lastConnection = this.connections[this.connections.length - 1];
+                this.toast.textContent = text;
+                this.toast.style.setProperty('--toast-color', lastConnection ? lastConnection.color : '#ff7a59');
+                this.toast.classList.add('show');
+                this.toastTimeout = window.setTimeout(() => this.clearToast(), 760);
+            }
+
+            clearToast() {
+                this.toast.classList.remove('show');
+            }
+
+            resetDragState() {
+                if (!this.activeDrag) return;
+
+                this.activeDrag.startConnector.classList.remove('is-active');
+                this.activeDrag.startCard.classList.remove('is-origin');
+                this.activeDrag.startCard.classList.remove('is-hover');
+                if (!this.activeDrag.startCard.classList.contains('matched')) {
+                    this.activeDrag.startCard.style.removeProperty('--match-color');
+                    this.activeDrag.startConnector.style.removeProperty('--match-color');
+                }
+
+                this.activeDrag = null;
+                this.clearHoverConnector();
+                this.redrawConnections();
+            }
+
+            nextColor() {
+                const hue = (this.connectionSerial * 47) % 360;
+                this.connectionSerial += 1;
+                return `hsl(${hue} 88% 58%)`;
+            }
+
+            redrawConnections() {
+                const ctx = this.ctx;
+                if (!ctx) return;
+
+                const rect = this.board.getBoundingClientRect();
+                ctx.clearRect(0, 0, rect.width, rect.height);
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                for (const connection of this.connections) {
+                    const start = this.getConnectorPoint(connection.leftConnector);
+                    const end = this.getConnectorPoint(connection.rightConnector);
+                    this.drawCurve(start, end, connection.color, 1);
+                }
+
+                if (this.activeDrag) {
+                    const start = this.getConnectorPoint(this.activeDrag.startConnector);
+                    const end = this.hoverConnector
+                        ? this.getConnectorPoint(this.hoverConnector)
+                        : this.activeDrag.pointer;
+                    this.drawCurve(start, end, this.activeDrag.color, 0.85);
+                }
+            }
+
+            drawCurve(start, end, color, alpha) {
+                const ctx = this.ctx;
+                const midX = (start.x + end.x) / 2;
+                const bend = Math.max(48, Math.abs(end.x - start.x) * 0.2);
+
+                ctx.save();
+                ctx.strokeStyle = color;
+                ctx.globalAlpha = alpha;
+                ctx.lineWidth = 5;
+                ctx.setLineDash([12, 10]);
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                ctx.bezierCurveTo(midX - bend, start.y, midX + bend, end.y, end.x, end.y);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        new TranslationMatchingGame();
+    </script>
+</body>
+</html>
