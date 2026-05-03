@@ -34,7 +34,7 @@
         }
 
         body {
-            font-family: "Trebuchet MS", "Arial Rounded MT Bold", "Comic Sans MS", sans-serif;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
             background:
                 radial-gradient(circle at 14% 18%, rgba(0, 0, 0, 0.045), transparent 30%),
                 radial-gradient(circle at 82% 26%, rgba(0, 0, 0, 0.03), transparent 26%),
@@ -55,10 +55,13 @@
                 var(--paper);
             background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 44px 44px, 44px 44px, auto;
             min-height: 100vh;
+            min-height: 100dvh;
             padding: 10px 14px;
             overflow: hidden;
             touch-action: none;
+            -webkit-user-select: none;
             user-select: none;
+            -webkit-touch-callout: none;
             color: var(--ink);
         }
 
@@ -97,7 +100,7 @@
             position: relative;
             z-index: 1;
             max-width: 1300px;
-            height: min(940px, calc(100vh - 20px));
+            height: min(940px, calc(100dvh - 20px));
             margin: 0 auto;
             background: transparent;
             border: 0;
@@ -411,7 +414,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: "Arial Rounded MT Bold", "Trebuchet MS", "Comic Sans MS", sans-serif;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
             font-weight: 900;
             font-size: clamp(4.6rem, 11.6vw, 7.8rem);
             line-height: 1;
@@ -661,7 +664,7 @@
 
         @media (max-width: 980px) {
             .screen {
-                height: calc(100vh - 24px);
+                height: calc(100dvh - 24px);
             }
 
             .equation-row {
@@ -686,7 +689,7 @@
             }
 
             .screen {
-                height: calc(100vh - 16px);
+                height: calc(100dvh - 16px);
             }
 
             .header {

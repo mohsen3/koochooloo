@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Counting Fruits - Koochooloo</title>
     <style>
         * {
@@ -12,19 +12,24 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
             background: linear-gradient(135deg, #a8e6cf 0%, #ffd3b6 50%, #ffaaa5 100%);
             min-height: 100vh;
+            min-height: 100dvh;
             margin: 0;
             padding: 0;
             overflow: hidden;
+            touch-action: manipulation;
+            -webkit-user-select: none;
             user-select: none;
+            -webkit-touch-callout: none;
             position: relative;
         }
 
         .main-wrapper {
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;

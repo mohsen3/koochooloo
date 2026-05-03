@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Conversation Learning Game</title>
     <style>
         * {
@@ -12,15 +12,21 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
             background: linear-gradient(135deg, #a8e6cf 0%, #ffd3b6 50%, #ffaaa5 100%);
             min-height: 100vh;
+            min-height: 100dvh;
             height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
             position: relative;
             padding: 10px;
         }
@@ -142,7 +148,9 @@
         }
 
         .settings-modal input {
-            font-family: 'Comic Sans MS', cursive;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+            -webkit-user-select: text;
+            user-select: text;
             font-size: 1.5em;
             padding: 15px 25px;
             border: 3px solid #ffa45b;
@@ -154,7 +162,7 @@
         }
 
         .settings-modal button {
-            font-family: 'Comic Sans MS', cursive;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
             font-size: 1.3em;
             padding: 15px 40px;
             background: linear-gradient(135deg, #6bcf7f, #4fa3d1);
@@ -198,7 +206,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 6px rgba(255, 107, 157, 0.3);
             text-align: center;
             max-width: 90vw;
-            max-height: calc(100vh - 60px);
+            max-height: calc(100dvh - 60px);
             overflow: hidden;
             outline: none;
             border: 6px solid transparent;
@@ -334,7 +342,9 @@
         }
 
         .char-input {
-            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+            -webkit-user-select: text;
+            user-select: text;
             font-size: inherit;
             width: 1.2em;
             height: 1.5em;

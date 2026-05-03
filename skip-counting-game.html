@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Skip Counting Game - Count by Numbers!</title>
     <style>
         * {
@@ -12,13 +12,18 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
             background: linear-gradient(135deg, #b3d9ff 0%, #cce7ff 50%, #e6f5ff 100%);
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
             outline: none;
             position: relative;
             padding: 20px;
@@ -179,7 +184,7 @@
             color: #ff6b9d;
             box-shadow: 0 6px 15px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
         }
 
         .number-input::placeholder {
@@ -246,7 +251,7 @@
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(255, 164, 91, 0.4);
             transition: all 0.2s ease;
-            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
         }
 
         .level-btn:hover {
@@ -279,7 +284,7 @@
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(79, 163, 209, 0.4);
             transition: all 0.2s ease;
-            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
             z-index: 100;
         }
 

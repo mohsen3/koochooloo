@@ -2,22 +2,19 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>بازی ردیابی</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
     <style>
         @font-face {
             font-family: 'Koodak';
-            src: url('./public/koodak.ttf') format('truetype');
+            src: url('public/koodak.ttf') format('truetype');
             font-weight: 400;
             font-style: normal;
             font-display: block;
         }
 
         :root {
-            --farsi-font: 'Koodak', 'B Koodak', 'Vazirmatn', 'Vazir', 'Tahoma', 'Arial', sans-serif;
+            --farsi-font: 'Koodak', 'Tahoma', sans-serif;
         }
 
         * {
@@ -30,10 +27,15 @@
             font-family: var(--farsi-font);
             background: linear-gradient(135deg, #e6f5ff 0%, #f0f8ff 50%, #fafcff 100%);
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
             position: relative;
             padding: 20px;
             -webkit-text-size-adjust: 100%;
@@ -229,7 +231,7 @@
             constructor() {
                 this.canvas = document.getElementById('canvas');
                 this.ctx = this.canvas.getContext('2d');
-                this.fontStack = "'Koodak', 'B Koodak', 'Vazirmatn', 'Vazir', 'Tahoma', 'Arial', sans-serif";
+                this.fontStack = "'Koodak', 'Tahoma', sans-serif";
                 this.drawing = false;
                 this.currentShapeIndex = 0;
                 this.traceCache = new Map();
@@ -945,7 +947,6 @@
                     await Promise.race([
                         Promise.all([
                             document.fonts.load('400 160px "Koodak"'),
-                            document.fonts.load('400 160px "Vazirmatn"'),
                             document.fonts.ready
                         ]),
                         new Promise(resolve => setTimeout(resolve, 1800))

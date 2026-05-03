@@ -2,10 +2,20 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>تایپینگ فارسی برای کودکان</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Vazir:wght@400;700&display=swap');
+        @font-face {
+            font-family: 'Koodak';
+            src: url('public/koodak.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: block;
+        }
+
+        :root {
+            --farsi-font: 'Koodak', 'Tahoma', sans-serif;
+        }
 
         * {
             box-sizing: border-box;
@@ -14,17 +24,22 @@
         }
 
         body {
-            font-family: 'Vazir', 'Koodak', 'B Koodak', 'Tahoma', sans-serif;
+            font-family: var(--farsi-font);
             background: linear-gradient(135deg, #a8e6cf 0%, #ffd3b6 50%, #ffaaa5 100%);
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
             outline: none;
-            tabindex: 0;
             overflow: hidden;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
             position: relative;
+            -webkit-text-size-adjust: 100%;
         }
 
         body::before {
@@ -170,7 +185,7 @@
             outline: none;
             width: 300px;
             text-align: center;
-            font-family: 'Vazir', 'Koodak', 'B Koodak', 'Tahoma', sans-serif;
+            font-family: var(--farsi-font);
             direction: rtl;
         }
 
@@ -322,7 +337,7 @@
 
         <div class="word-display" id="wordDisplay"></div>
 
-        <div class="progress" id="progress">کلمه 1 از 175</div>
+        <div class="progress" id="progress">کلمه ۱ از ۱۷۵</div>
 
         <div class="instructions">شروع به تایپ کنید! 🎯</div>
     </div>
@@ -576,8 +591,12 @@
             wordDisplay.innerHTML = html;
         }
 
+        function toPersianDigits(value) {
+            return String(value).replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)]);
+        }
+
         function updateProgress() {
-            progress.textContent = `کلمه ${currentWordIndex + 1} از ${words.length}`;
+            progress.textContent = `کلمه ${toPersianDigits(currentWordIndex + 1)} از ${toPersianDigits(words.length)}`;
         }
 
         function createConfetti() {

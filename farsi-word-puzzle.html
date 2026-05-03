@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>جورچین کلمات فارسی</title>
     <style>
         @font-face {
@@ -15,7 +15,7 @@
 
         :root {
             --app-height: 100dvh;
-            --farsi-font: 'Koodak', 'B Koodak', 'Vazirmatn', 'Vazir', 'Tahoma', 'Arial', sans-serif;
+            --farsi-font: 'Koodak', 'Tahoma', sans-serif;
             --paper: #f7e7cf;
             --card: #fff9f0;
             --line: #d9b68a;
@@ -36,6 +36,7 @@
             margin: 0;
             font-family: var(--farsi-font);
             min-height: 100vh;
+            min-height: 100dvh;
             min-height: var(--app-height);
             height: var(--app-height);
             display: grid;

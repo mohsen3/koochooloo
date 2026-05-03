@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Letter Tracing Game</title>
     <style>
         * {
@@ -12,9 +12,15 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
             background: linear-gradient(135deg, #e6f5ff 0%, #f0f8ff 50%, #fafcff 100%);
+            min-height: 100vh;
+            min-height: 100dvh;
             overflow: hidden;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
             position: relative;
         }
 
@@ -24,6 +30,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
         }
@@ -58,7 +65,7 @@
             grid-template-rows: repeat(4, 1fr);
             gap: 10px;
             padding: 20px;
-            overflow: auto;
+            overflow: hidden;
         }
 
         .letter-box {

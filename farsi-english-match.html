@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Farsi English Match</title>
     <style>
         @font-face {
@@ -15,7 +15,7 @@
 
         :root {
             --app-height: 100dvh;
-            --farsi-font: 'Koodak', 'B Koodak', 'Vazirmatn', 'Vazir', 'Tahoma', sans-serif;
+            --farsi-font: 'Koodak', 'Tahoma', sans-serif;
             --ui-font: 'Avenir Next', 'Trebuchet MS', 'Segoe UI', var(--farsi-font);
             --ink: #1d2742;
             --ink-soft: #4f5d7a;
@@ -44,6 +44,7 @@
 
         body {
             min-height: 100vh;
+            min-height: 100dvh;
             min-height: var(--app-height);
             height: var(--app-height);
             display: grid;

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Story Puzzle Game</title>
     <style>
         :root {
@@ -37,7 +37,7 @@
         }
 
         body {
-            font-family: "Trebuchet MS", "Arial Rounded MT Bold", "Comic Sans MS", sans-serif;
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
             color: var(--ink);
             background:
                 radial-gradient(circle at 10% 18%, rgba(245, 168, 96, 0.2), transparent 26%),
@@ -50,9 +50,11 @@
                     var(--line) 38px 40px
                 ),
                 var(--paper);
-            overflow-x: hidden;
+            overflow: hidden;
+            -webkit-user-select: none;
             user-select: none;
             touch-action: manipulation;
+            -webkit-touch-callout: none;
         }
 
         body::before,
@@ -86,6 +88,7 @@
             position: relative;
             z-index: 1;
             min-height: 100vh;
+            min-height: 100dvh;
             max-width: 1400px;
             margin: 0 auto;
             padding: 22px 18px 28px;
@@ -95,7 +98,7 @@
         .paper-board {
             position: relative;
             flex: 1;
-            min-height: calc(100vh - 50px);
+            min-height: calc(100dvh - 50px);
             padding: clamp(18px, 4vw, 38px);
             background: rgba(255, 252, 247, 0.72);
             border: 1px solid rgba(197, 161, 116, 0.18);
@@ -507,7 +510,7 @@
             }
 
             .paper-board {
-                min-height: calc(100vh - 34px);
+                min-height: calc(100dvh - 34px);
             }
 
             .story-hint-row {
