@@ -13,6 +13,9 @@ There is no build pipeline in this repo. Work from the repository root.
 - `python3 generate_js_data.py` regenerates JS data bundles from the JSON files in `data/`.
 - `python3 add_story.py` is a one-off content helper; review its edits before committing.
 
+## Git Workflow
+This is a personal project. By default, work directly on `main`, commit there, and push `main` without creating a separate branch or pull request unless explicitly requested.
+
 ## Coding Style & Naming Conventions
 Match the style already used in each file instead of reformatting broadly. Use 4 spaces in HTML and Python, and 2 spaces in `multi-choice-game` JavaScript and CSS. Prefer descriptive `const` names, small functions, and simple DOM-focused modules.
 
