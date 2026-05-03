@@ -28,6 +28,7 @@
 
         * {
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         html,
@@ -37,6 +38,8 @@
             min-height: 100%;
             overflow: hidden;
             touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body {
@@ -53,6 +56,7 @@
                 radial-gradient(circle at 82% 88%, rgba(255, 91, 146, 0.34), transparent 24%),
                 linear-gradient(140deg, #1f2a58 0%, #1b7987 42%, #ff9160 100%);
             padding: 10px;
+            -webkit-touch-callout: none;
         }
 
         body::before,
@@ -815,6 +819,10 @@
                 connector.dataset.side = side;
                 connector.setAttribute('aria-label', `Match ${side === 'left' ? pair.en : pair.fa}`);
                 connector.addEventListener('pointerdown', event => this.beginDrag(event, connector));
+                card.addEventListener('pointerdown', event => {
+                    if (event.target.closest('.connector')) return;
+                    this.beginDrag(event, connector);
+                });
 
                 card.append(word, connector);
                 return card;
@@ -925,7 +933,11 @@
 
             findConnectorAt(clientX, clientY) {
                 const element = document.elementFromPoint(clientX, clientY);
-                const connector = element ? element.closest('.connector') : null;
+                let connector = element ? element.closest('.connector') : null;
+                if (!connector) {
+                    const card = element ? element.closest('.word-card') : null;
+                    connector = card ? card.querySelector('.connector') : null;
+                }
                 if (!connector) return null;
                 if (!this.activeDrag) return connector;
                 return connector.dataset.side !== this.activeDrag.side ? connector : null;
