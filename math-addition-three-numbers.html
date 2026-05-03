@@ -13,7 +13,10 @@
 
         body {
             font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
-            background: linear-gradient(180deg, #dff0ff 0%, #f5fbff 100%);
+            background:
+                radial-gradient(circle at top left, rgba(255, 214, 153, 0.5), transparent 28%),
+                radial-gradient(circle at top right, rgba(255, 168, 208, 0.35), transparent 30%),
+                linear-gradient(180deg, #dff0ff 0%, #f9fcff 100%);
             min-height: 100vh;
             min-height: 100dvh;
             display: flex;
@@ -39,24 +42,45 @@
         }
 
         .container {
-            background: #ffffff;
-            border-radius: 24px;
+            background: linear-gradient(180deg, #ffffff 0%, #fffdf8 100%);
+            border-radius: 28px;
             padding: 24px 28px;
-            box-shadow: 0 16px 40px rgba(34, 72, 112, 0.12);
+            box-shadow: 0 18px 46px rgba(34, 72, 112, 0.14);
             text-align: center;
             max-width: 1000px;
             width: 90%;
             outline: none;
-            border: 1px solid rgba(79, 163, 209, 0.18);
+            border: 1px solid rgba(79, 163, 209, 0.16);
             position: relative;
             max-height: 95vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            overflow: hidden;
         }
 
         .container::before {
-            content: none;
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            top: -70px;
+            right: -60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 217, 61, 0.22) 0%, rgba(255, 217, 61, 0) 70%);
+            pointer-events: none;
+        }
+
+        .container::after {
+            content: "";
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            left: -55px;
+            bottom: -70px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(107, 207, 127, 0.18) 0%, rgba(107, 207, 127, 0) 70%);
+            pointer-events: none;
         }
 
         .shake {
@@ -78,6 +102,22 @@
             text-align: left;
             flex: 1;
             min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h1::before {
+            content: "⭐";
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ffe48d, #ffd45c);
+            box-shadow: 0 6px 14px rgba(255, 212, 92, 0.28);
+            flex-shrink: 0;
         }
 
         .top-bar {
@@ -86,18 +126,22 @@
             justify-content: space-between;
             gap: 14px;
             margin-bottom: 14px;
+            padding: 10px 12px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(255, 241, 205, 0.75), rgba(235, 246, 255, 0.92));
+            border: 1px solid rgba(255, 194, 88, 0.16);
         }
 
         .score-info {
             font-size: 1.05em;
-            background: #4fa3d1;
+            background: linear-gradient(135deg, #4fa3d1, #5eb8df);
             color: white;
             margin: 0;
             font-weight: bold;
             padding: 8px 14px;
             border-radius: 999px;
             display: inline-block;
-            box-shadow: 0 4px 12px rgba(79, 163, 209, 0.22);
+            box-shadow: 0 6px 14px rgba(79, 163, 209, 0.24);
             transition: background 0.8s ease, box-shadow 0.8s ease;
             white-space: nowrap;
         }
@@ -110,6 +154,10 @@
             margin: 18px 0;
             gap: 12px;
             flex-wrap: nowrap;
+            padding: 18px 16px;
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(244, 249, 255, 0.95), rgba(255, 246, 250, 0.95));
+            box-shadow: inset 0 0 0 1px rgba(79, 163, 209, 0.1);
         }
 
         .number-with-shapes {
@@ -118,6 +166,9 @@
             align-items: center;
             justify-content: center;
             gap: 15px;
+            padding: 8px 10px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.58);
         }
 
         .shapes-group {
@@ -128,13 +179,17 @@
             min-height: 70px;
             gap: 5px;
             align-items: center;
+            padding: 8px 10px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.85);
         }
 
         .shape {
             width: 26px;
             height: 26px;
             border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.16);
+            border: 2px solid rgba(255, 255, 255, 0.6);
         }
 
         .blue-dot {
@@ -184,22 +239,22 @@
             height: 100px;
             font-size: 5em;
             text-align: center;
-            border: 5px solid #4fa3d1;
-            border-radius: 16px;
+            border: 4px solid #4fa3d1;
+            border-radius: 20px;
             outline: none;
             font-weight: 900;
-            background: #ffffff;
+            background: linear-gradient(180deg, #ffffff 0%, #fdf6ff 100%);
             color: #ff6b9d;
             caret-color: transparent;
             cursor: default;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 18px rgba(60, 95, 126, 0.12);
             transition: all 0.3s ease;
             flex-shrink: 0;
         }
 
         .digit-input:focus {
             border-color: #ff6b9d;
-            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.18);
+            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.16), 0 8px 18px rgba(60, 95, 126, 0.12);
         }
 
         .digit-input.correct {
@@ -281,31 +336,36 @@
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 8px;
+            padding: 12px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(234, 246, 255, 0.95), rgba(255, 244, 237, 0.95));
+            box-shadow: inset 0 0 0 1px rgba(79, 163, 209, 0.1);
         }
 
         .keypad-button {
             min-height: 52px;
             border: none;
             border-radius: 16px;
-            background: #4fa3d1;
+            background: linear-gradient(180deg, #6ac0e6 0%, #4fa3d1 100%);
             color: white;
             font-size: 1.45em;
             font-weight: 900;
-            box-shadow: 0 4px 12px rgba(79, 163, 209, 0.2);
+            box-shadow: 0 6px 12px rgba(79, 163, 209, 0.2);
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: transform 0.12s ease, filter 0.12s ease;
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
         }
 
         .keypad-button:active {
-            background: #438db6;
+            transform: translateY(1px);
+            filter: brightness(0.97);
         }
 
         .keypad-button.keypad-action {
-            background: #ff8b6b;
-            box-shadow: 0 4px 12px rgba(255, 139, 107, 0.2);
+            background: linear-gradient(180deg, #ffad77 0%, #ff8b6b 100%);
+            box-shadow: 0 6px 12px rgba(255, 139, 107, 0.18);
         }
 
         @media (max-width: 900px) {
@@ -317,6 +377,7 @@
             .top-bar {
                 gap: 10px;
                 margin-bottom: 12px;
+                padding: 8px 10px;
             }
 
             h1 {
@@ -330,6 +391,7 @@
 
             .shapes-container {
                 gap: 10px;
+                padding: 14px 12px;
             }
 
             .number,
@@ -346,6 +408,7 @@
 
             .keypad {
                 width: min(246px, 100%);
+                padding: 10px;
             }
         }
 
@@ -357,10 +420,19 @@
             .top-bar {
                 gap: 8px;
                 margin-bottom: 10px;
+                padding: 7px 8px;
             }
 
             h1 {
                 font-size: 1em;
+                gap: 7px;
+            }
+
+            h1::before {
+                width: 28px;
+                height: 28px;
+                border-radius: 10px;
+                font-size: 0.9em;
             }
 
             .score-info {
@@ -371,6 +443,7 @@
             .shapes-container {
                 gap: 8px;
                 margin: 18px 0;
+                padding: 12px 10px;
             }
 
             .number,
@@ -396,11 +469,13 @@
                 max-width: 110px;
                 min-height: 48px;
                 gap: 4px;
+                padding: 6px 8px;
             }
 
             .keypad {
                 gap: 7px;
                 width: min(216px, 100%);
+                padding: 9px;
             }
 
             .keypad-button {
