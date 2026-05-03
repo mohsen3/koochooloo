@@ -28,6 +28,10 @@ Disable browser zoom in and zoom out on game pages, typically through the viewpo
 
 Optimize interaction, sizing, and touch targets for iPad first, then verify the same pages still work well on other tablets, laptops, and phones. Treat tablet landscape and portrait modes as primary layouts, with desktop and mobile as required secondary targets.
 
+The UI should be simple, elegant, and minimal. Positive feedback should feel bold and encouraging, while negative feedback when a kid fails to solve something should stay muted and minimal.
+
+Nothing on the page should be selectable. Prevent text and other UI elements from being highlightable or copy-selectable during normal play.
+
 ## Special Instructions for Farsi
 Always load `public/koodak.ttf` for Persian UI and content. Use `url("public/koodak.ttf")` from root pages and `url("../public/koodak.ttf")` from `multi-choice-game/`, then put `"Koodak"` first in the font stack.
 
