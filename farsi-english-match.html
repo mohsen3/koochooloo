@@ -126,14 +126,6 @@
             letter-spacing: -0.04em;
         }
 
-        .title-block p {
-            margin: 4px 0 0;
-            max-width: 720px;
-            font-size: clamp(12px, 1.2vw, 15px);
-            line-height: 1.35;
-            color: var(--ink-soft);
-        }
-
         .status-strip {
             display: flex;
             flex-wrap: wrap;
@@ -199,26 +191,6 @@
             flex-direction: column;
             gap: 8px;
             min-height: 0;
-        }
-
-        .column-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 8px 10px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.66);
-            border: 1px solid rgba(29, 39, 66, 0.08);
-        }
-
-        .column-header strong {
-            font-size: clamp(18px, 1.8vw, 24px);
-        }
-
-        .column-header span {
-            font-size: 12px;
-            color: var(--ink-soft);
         }
 
         .word-list {
@@ -475,7 +447,6 @@
         <div class="topbar">
             <div class="title-block">
                 <h1>بازی جور کردن فارسی و انگلیسی</h1>
-                <p>از نقطه هر کلمه بکش تا ترجمه درستش را پیدا کنی. خط اشتباه ناپدید می‌شود و خط درست روی صفحه می‌ماند.</p>
             </div>
             <div class="status-strip">
                 <div class="status-pill">
@@ -501,18 +472,10 @@
             <canvas id="connectionCanvas"></canvas>
 
             <section class="column">
-                <div class="column-header">
-                    <strong>English</strong>
-                    <span>Left side</span>
-                </div>
                 <div class="word-list" id="englishList"></div>
             </section>
 
             <section class="column">
-                <div class="column-header">
-                    <strong lang="fa" dir="rtl" style="font-family: var(--farsi-font);">فارسی</strong>
-                    <span>Right side</span>
-                </div>
                 <div class="word-list" id="farsiList"></div>
             </section>
 
