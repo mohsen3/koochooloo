@@ -296,7 +296,7 @@
     </div>
 
     <script>
-        const WORDS = [
+        const PUZZLE_WORD_ORDER = [
             'آب', 'نان', 'گل', 'سیب', 'توپ', 'ماه', 'پا', 'دست',
             'بابا', 'مامان', 'مادر', 'پدر', 'دوست', 'بازی', 'تاب', 'پارک',
             'خانه', 'کتاب', 'مداد', 'کیف', 'کفش', 'کلاه', 'عروسک', 'ماشین',
@@ -308,6 +308,8 @@
             'دفتر', 'پاکن', 'کلاس', 'معلم', 'صندلی', 'تخته', 'زنگ',
             'ایران', 'برادر', 'چپ', 'راست', 'بالا', 'پایین', 'جلو', 'عقب'
         ];
+
+        let WORDS = [];
 
         const NON_JOIN_LEFT = new Set(['ا', 'آ', 'د', 'ذ', 'ر', 'ز', 'ژ', 'و']);
         const BOTTOM_HEAVY_LETTERS = new Set(['ب', 'پ', 'ت', 'ث', 'ج', 'چ', 'خ', 'ی']);
@@ -384,13 +386,37 @@
                 this.init();
             }
 
-            init() {
+            hasWordBreaks(word) {
+                return /[\s\u200C]/.test(word);
+            }
+
+            async loadWords() {
+                const response = await fetch('data/farsi-word-bank.json');
+                if (!response.ok) {
+                    throw new Error(`Failed to load shared Farsi word bank: ${response.status}`);
+                }
+
+                const bank = await response.json();
+                const bankByFa = new Map(bank.map(entry => [entry.fa, entry]));
+
+                return PUZZLE_WORD_ORDER.filter(word => !this.hasWordBreaks(word)).map(word => {
+                    const entry = bankByFa.get(word);
+                    if (!entry) {
+                        throw new Error(`Missing shared bank entry for "${word}"`);
+                    }
+                    return entry.fa;
+                });
+            }
+
+            async init() {
                 this.syncViewportHeight();
                 window.addEventListener('resize', this.handleResize, { passive: true });
                 window.addEventListener('orientationchange', this.handleResize, { passive: true });
                 if (window.visualViewport) {
                     window.visualViewport.addEventListener('resize', this.handleResize, { passive: true });
                 }
+
+                WORDS = await this.loadWords();
 
                 const begin = () => {
                     if (this.started) return;

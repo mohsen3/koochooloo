@@ -332,7 +332,7 @@
     <div class="error-warning" id="errorWarning">حرف اشتباه!</div>
 
     <script>
-        const words = [
+        const TYPING_WORD_ORDER = [
             // مرحله ۱: کلمات بسیار ساده (۱-۲۰) - Very simple words
             "من", "تو", "او", "ما", "آب", "نان", "گل", "سیب", "توپ", "ماه",
             "بابا", "مامان", "نی نی", "بله", "نه", "دم", "پا", "سر", "چشم", "دست",
@@ -370,6 +370,8 @@
             "قو", "اردک", "غاز", "بلبل", "هدهد"
         ];
 
+        let words = [];
+
         let currentWordIndex = 0;
         let currentWord = '';
         let typedText = '';
@@ -379,6 +381,7 @@
         const celebration = document.getElementById('celebration');
         const successMessage = document.getElementById('successMessage');
         const errorWarning = document.getElementById('errorWarning');
+        const instructions = document.querySelector('.instructions');
 
         // Initialize Audio Context for sound effects
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -493,7 +496,34 @@
             }, 800);
         }
 
-        function initGame() {
+        async function loadTypingWords() {
+            const response = await fetch('data/farsi-word-bank.json');
+            if (!response.ok) {
+                throw new Error(`Failed to load shared Farsi word bank: ${response.status}`);
+            }
+
+            const bank = await response.json();
+            const bankByFa = new Map(bank.map(entry => [entry.fa, entry]));
+
+            return TYPING_WORD_ORDER.map(word => {
+                const entry = bankByFa.get(word);
+                if (!entry) {
+                    throw new Error(`Missing shared bank entry for "${word}"`);
+                }
+                return entry.fa;
+            });
+        }
+
+        async function initGame() {
+            try {
+                words = await loadTypingWords();
+            } catch (error) {
+                console.error(error);
+                instructions.textContent = 'بارگذاری واژه‌ها انجام نشد.';
+                progress.textContent = 'خطا';
+                return;
+            }
+
             currentWordIndex = 0;
             showWord();
             
@@ -593,6 +623,8 @@
         }
 
         document.addEventListener('keydown', function(e) {
+            if (!currentWord) return;
+
             // Handle backspace
             if (e.key === 'Backspace') {
                 e.preventDefault();
@@ -677,11 +709,9 @@
             }
         });
 
-        // Initialize the game
-        initGame();
-
         // Ensure focus when page loads
         window.addEventListener('load', function() {
+            void initGame();
             document.body.focus();
         });
 
