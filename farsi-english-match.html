@@ -485,143 +485,7 @@
     </div>
 
     <script>
-        const WORD_BANK = [
-            [
-                { en: 'sun', fa: 'خورشید' },
-                { en: 'moon', fa: 'ماه' },
-                { en: 'water', fa: 'آب' },
-                { en: 'bread', fa: 'نان' },
-                { en: 'apple', fa: 'سیب' },
-                { en: 'flower', fa: 'گل' },
-                { en: 'ball', fa: 'توپ' },
-                { en: 'hand', fa: 'دست' },
-                { en: 'foot', fa: 'پا' },
-                { en: 'milk', fa: 'شیر' },
-                { en: 'cat', fa: 'گربه' },
-                { en: 'fish', fa: 'ماهی' },
-                { en: 'tree', fa: 'درخت' },
-                { en: 'book', fa: 'کتاب' },
-                { en: 'star', fa: 'ستاره' },
-                { en: 'house', fa: 'خانه' },
-                { en: 'egg', fa: 'تخم مرغ' },
-                { en: 'shoe', fa: 'کفش' },
-                { en: 'cup', fa: 'فنجان' },
-                { en: 'door', fa: 'در' }
-            ],
-            [
-                { en: 'mother', fa: 'مادر' },
-                { en: 'father', fa: 'پدر' },
-                { en: 'sister', fa: 'خواهر' },
-                { en: 'brother', fa: 'برادر' },
-                { en: 'teacher', fa: 'معلم' },
-                { en: 'school', fa: 'مدرسه' },
-                { en: 'pencil', fa: 'مداد' },
-                { en: 'bag', fa: 'کیف' },
-                { en: 'chair', fa: 'صندلی' },
-                { en: 'window', fa: 'پنجره' },
-                { en: 'garden', fa: 'باغ' },
-                { en: 'rabbit', fa: 'خرگوش' },
-                { en: 'bird', fa: 'پرنده' },
-                { en: 'rain', fa: 'باران' },
-                { en: 'friend', fa: 'دوست' },
-                { en: 'classroom', fa: 'کلاس' },
-                { en: 'eraser', fa: 'پاک کن' },
-                { en: 'blackboard', fa: 'تخته' },
-                { en: 'clock', fa: 'ساعت' },
-                { en: 'farmer', fa: 'کشاورز' }
-            ],
-            [
-                { en: 'snow', fa: 'برف' },
-                { en: 'red', fa: 'قرمز' },
-                { en: 'green', fa: 'سبز' },
-                { en: 'yellow', fa: 'زرد' },
-                { en: 'blue', fa: 'آبی' },
-                { en: 'orange', fa: 'نارنجی' },
-                { en: 'purple', fa: 'بنفش' },
-                { en: 'happy', fa: 'خوشحال' },
-                { en: 'hungry', fa: 'گرسنه' },
-                { en: 'thirsty', fa: 'تشنه' },
-                { en: 'morning', fa: 'صبح' },
-                { en: 'evening', fa: 'عصر' },
-                { en: 'bicycle', fa: 'دوچرخه' },
-                { en: 'butterfly', fa: 'پروانه' },
-                { en: 'winter', fa: 'زمستان' },
-                { en: 'spring', fa: 'بهار' },
-                { en: 'summer', fa: 'تابستان' },
-                { en: 'autumn', fa: 'پاییز' },
-                { en: 'slow', fa: 'آهسته' },
-                { en: 'fast', fa: 'سریع' }
-            ],
-            [
-                { en: 'blanket', fa: 'پتو' },
-                { en: 'pillow', fa: 'بالش' },
-                { en: 'library', fa: 'کتابخانه' },
-                { en: 'hospital', fa: 'بیمارستان' },
-                { en: 'toothbrush', fa: 'مسواک' },
-                { en: 'refrigerator', fa: 'یخچال' },
-                { en: 'umbrella', fa: 'چتر' },
-                { en: 'necklace', fa: 'گردنبند' },
-                { en: 'rainbow', fa: 'رنگین کمان' },
-                { en: 'waterfall', fa: 'آبشار' },
-                { en: 'mountain', fa: 'کوهستان' },
-                { en: 'village', fa: 'روستا' },
-                { en: 'painting', fa: 'نقاشی' },
-                { en: 'calendar', fa: 'تقویم' },
-                { en: 'carpet', fa: 'فرش' },
-                { en: 'birthday', fa: 'تولد' },
-                { en: 'glasses', fa: 'عینک' },
-                { en: 'kitchen', fa: 'آشپزخانه' },
-                { en: 'backpack', fa: 'کوله پشتی' },
-                { en: 'playground', fa: 'زمین بازی' }
-            ],
-            [
-                { en: 'suitcase', fa: 'چمدان' },
-                { en: 'sandwich', fa: 'ساندویچ' },
-                { en: 'astronaut', fa: 'فضانورد' },
-                { en: 'telescope', fa: 'تلسکوپ' },
-                { en: 'dinosaur', fa: 'دایناسور' },
-                { en: 'notebook', fa: 'دفترچه' },
-                { en: 'breakfast', fa: 'صبحانه' },
-                { en: 'airplane', fa: 'هواپیما' },
-                { en: 'pharmacy', fa: 'داروخانه' },
-                { en: 'bracelet', fa: 'دستبند' },
-                { en: 'newspaper', fa: 'روزنامه' },
-                { en: 'squirrel', fa: 'سنجاب' },
-                { en: 'forest', fa: 'جنگل' },
-                { en: 'planet', fa: 'سیاره' },
-                { en: 'adventure', fa: 'ماجراجویی' },
-                { en: 'firefighter', fa: 'آتش نشان' },
-                { en: 'vacation', fa: 'تعطیلات' },
-                { en: 'lighthouse', fa: 'فانوس دریایی' },
-                { en: 'treasure', fa: 'گنج' },
-                { en: 'volcano', fa: 'آتشفشان' }
-            ],
-            [
-                { en: 'earthquake', fa: 'زلزله' },
-                { en: 'scientist', fa: 'دانشمند' },
-                { en: 'engineer', fa: 'مهندس' },
-                { en: 'museum', fa: 'موزه' },
-                { en: 'greenhouse', fa: 'گلخانه' },
-                { en: 'strawberry', fa: 'توت فرنگی' },
-                { en: 'helicopter', fa: 'بالگرد' },
-                { en: 'thermometer', fa: 'دماسنج' },
-                { en: 'sunflower', fa: 'آفتابگردان' },
-                { en: 'microscope', fa: 'میکروسکوپ' },
-                { en: 'compass', fa: 'قطب نما' },
-                { en: 'orchestra', fa: 'ارکستر' },
-                { en: 'bakery', fa: 'نانوایی' },
-                { en: 'staircase', fa: 'راه پله' },
-                { en: 'electricity', fa: 'برق' },
-                { en: 'laboratory', fa: 'آزمایشگاه' },
-                { en: 'architecture', fa: 'معماری' },
-                { en: 'environment', fa: 'محیط زیست' },
-                { en: 'continent', fa: 'قاره' },
-                { en: 'mathematics', fa: 'ریاضیات' }
-            ]
-        ].map((group, groupIndex) => group.map((pair, pairIndex) => ({
-            ...pair,
-            id: `g${groupIndex + 1}-${pairIndex + 1}`
-        })));
+        let WORD_BANK = [];
 
         class TranslationMatchingGame {
             constructor() {
@@ -656,7 +520,30 @@
                 this.init();
             }
 
-            init() {
+            async loadWordBank() {
+                const response = await fetch('data/farsi-word-bank.json');
+                if (!response.ok) {
+                    throw new Error(`Failed to load shared Farsi word bank: ${response.status}`);
+                }
+
+                const bank = await response.json();
+                const groupSize = 20;
+                const groups = [];
+
+                for (let groupIndex = 0; groupIndex < bank.length; groupIndex += groupSize) {
+                    const chunk = bank.slice(groupIndex, groupIndex + groupSize);
+                    groups.push(chunk.map((entry, pairIndex) => ({
+                        en: entry.en,
+                        fa: entry.fa,
+                        id: `g${Math.floor(groupIndex / groupSize) + 1}-${pairIndex + 1}`
+                    })));
+                }
+
+                return groups;
+            }
+
+            async init() {
+                WORD_BANK = await this.loadWordBank();
                 this.syncViewportHeight();
                 window.addEventListener('resize', this.handleResize, { passive: true });
                 window.addEventListener('orientationchange', this.handleResize, { passive: true });

@@ -211,6 +211,20 @@
     <div class="celebration" id="celebration"></div>
 
     <script>
+        const TRACING_WORD_ORDER = [
+            'بابا', 'ماما', 'آب', 'نان', 'سیب', 'گل', 'پا', 'دست',
+            'خانه', 'ماشین', 'توپ', 'عروسک', 'کتاب', 'مداد', 'پاکن', 'کیف',
+            'کفش', 'جوراب', 'پیراهن', 'شلوار', 'کلاه', 'بینی', 'چشم', 'گوش',
+            'مو', 'لب', 'دهن', 'دندان', 'زبان', 'دستکش', 'خورشید', 'ماه',
+            'ستاره', 'ابر', 'باران', 'برف', 'باد', 'دریا', 'رود', 'ماهی',
+            'پرنده', 'گنجشک', 'گربه', 'سگ', 'خرس', 'خرگوش', 'اردک', 'مرغ',
+            'جوجه', 'اسب', 'گاو', 'بز', 'درخت', 'برگ', 'باغ', 'گلبرگ',
+            'رنگ', 'آبی', 'قرمز', 'زرد', 'سبز', 'صورتی', 'نارنجی', 'بنفش',
+            'شیر', 'پنیر', 'کیک', 'موز', 'انار', 'هلو', 'توت', 'خرما',
+            'اتوبوس', 'دوچرخه', 'قطار', 'پنجره', 'میز', 'صندلی', 'بالش', 'پتو',
+            'مامان', 'بابایی', 'دوست', 'بازی', 'تاب', 'سرسره'
+        ];
+
         class TracingGame {
             constructor() {
                 this.canvas = document.getElementById('canvas');
@@ -245,20 +259,33 @@
                     });
                 });
 
-                // Levels 11+: Simple Farsi words
-                const words = [
-                    'بابا', 'ماما', 'آب', 'نان', 'سیب', 'گل', 'پا', 'دست',
-                    'خانه', 'ماشین', 'توپ', 'عروسک', 'کتاب', 'مداد', 'پاکن', 'کیف',
-                    'کفش', 'جوراب', 'پیراهن', 'شلوار', 'کلاه', 'بینی', 'چشم', 'گوش',
-                    'مو', 'لب', 'دهن', 'دندان', 'زبان', 'دستکش', 'خورشید', 'ماه',
-                    'ستاره', 'ابر', 'باران', 'برف', 'باد', 'دریا', 'رود', 'ماهی',
-                    'پرنده', 'گنجشک', 'گربه', 'سگ', 'خرس', 'خرگوش', 'اردک', 'مرغ',
-                    'جوجه', 'اسب', 'گاو', 'بز', 'درخت', 'برگ', 'باغ', 'گلبرگ',
-                    'رنگ', 'آبی', 'قرمز', 'زرد', 'سبز', 'صورتی', 'نارنجی', 'بنفش',
-                    'شیر', 'پنیر', 'کیک', 'موز', 'انار', 'هلو', 'توت', 'خرما',
-                    'اتوبوس', 'دوچرخه', 'قطار', 'پنجره', 'میز', 'صندلی', 'بالش', 'پتو',
-                    'مامان', 'بابایی', 'دوست', 'بازی', 'تاب', 'سرسره'
-                ];
+                this.wordOrder = TRACING_WORD_ORDER;
+
+                this.shapes = this.levels; // Keep compatibility
+
+                this.init();
+            }
+
+            async loadSharedWords() {
+                const response = await fetch('data/farsi-word-bank.json');
+                if (!response.ok) {
+                    throw new Error(`Failed to load shared Farsi word bank: ${response.status}`);
+                }
+
+                const bank = await response.json();
+                const bankByFa = new Map(bank.map(entry => [entry.fa, entry]));
+
+                return this.wordOrder.map(word => {
+                    const entry = bankByFa.get(word);
+                    if (!entry) {
+                        throw new Error(`Missing shared bank entry for "${word}"`);
+                    }
+                    return entry.fa;
+                });
+            }
+
+            async addWordLevels() {
+                const words = await this.loadSharedWords();
                 words.forEach(word => {
                     this.levels.push({
                         name: word,
@@ -267,10 +294,6 @@
                         word: word
                     });
                 });
-
-                this.shapes = this.levels; // Keep compatibility
-
-                this.init();
             }
 
             generateStarPoints(cx, cy, spikes, outerRadius, innerRadius) {
@@ -906,6 +929,7 @@
             async init() {
                 this.createBackgroundDots();
                 this.setupEventListeners();
+                await this.addWordLevels();
                 await this.ensureFontReady();
                 this.drawCurrentShape();
                 this.updateScoreDisplay();
