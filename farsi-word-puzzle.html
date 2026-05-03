@@ -2,12 +2,12 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>پازل کلمه فارسی</title>
     <style>
         @font-face {
             font-family: 'Koodak';
-            src: url('./public/koodak.ttf') format('truetype');
+            src: url("public/koodak.ttf") format('truetype');
             font-weight: 400;
             font-style: normal;
             font-display: block;
@@ -24,6 +24,14 @@
         }
 
         * { box-sizing: border-box; }
+        html,
+        body,
+        .game,
+        .game * {
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
         body {
             margin: 0;
             font-family: var(--farsi-font);
@@ -38,6 +46,8 @@
                 linear-gradient(135deg, #f5dfc2, var(--paper));
             overflow: hidden;
             padding: 8px;
+            touch-action: manipulation;
+            overscroll-behavior: none;
         }
 
         .game {
@@ -62,6 +72,66 @@
             color: var(--ink);
             margin-bottom: 16px;
         }
+        .topbar-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .guide-toggle {
+            border: 0;
+            border-radius: 999px;
+            padding: 6px 10px 6px 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--ink);
+            box-shadow: 0 6px 16px rgba(60, 40, 20, 0.1);
+            font-family: inherit;
+            font-size: clamp(16px, 1.8vw, 24px);
+            cursor: pointer;
+            transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+        .guide-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(60, 40, 20, 0.14);
+        }
+        .guide-toggle.active {
+            background: linear-gradient(135deg, #fff9df, #f7ffd9);
+        }
+        .guide-label {
+            line-height: 1;
+            white-space: nowrap;
+        }
+        .guide-switch {
+            width: 56px;
+            height: 31px;
+            border-radius: 999px;
+            background: #d7c0a2;
+            position: relative;
+            box-shadow: inset 0 0 0 2px rgba(100, 65, 32, 0.12);
+            transition: background 180ms ease;
+        }
+        .guide-switch::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 23px;
+            height: 23px;
+            border-radius: 50%;
+            background: #fffef7;
+            box-shadow: 0 4px 8px rgba(70, 46, 23, 0.18);
+            transition: transform 180ms ease;
+        }
+        .guide-toggle.active .guide-switch {
+            background: #7dce74;
+        }
+        .guide-toggle.active .guide-switch::after {
+            transform: translateX(-25px);
+        }
         h1 {
             margin: 0;
             font-size: clamp(24px, 3.4vw, 50px);
@@ -76,6 +146,12 @@
             font-size: clamp(18px, 2vw, 30px);
             box-shadow: 0 6px 16px rgba(60, 40, 20, 0.1);
             white-space: nowrap;
+        }
+        .word-status {
+            direction: ltr;
+            text-align: center;
+            font-family: 'Trebuchet MS', 'Arial', sans-serif;
+            letter-spacing: 0.4px;
         }
 
         .play-area {
@@ -103,9 +179,9 @@
 
         .slot {
             position: relative;
-            height: clamp(102px, 18vmin, 241px);
+            height: clamp(112px, 19.2vmin, 255px);
             min-width: 63px;
-            padding: 26px var(--pad-right, 14px) 24px var(--pad-left, 14px);
+            padding: 26px var(--pad-right, 14px) 30px var(--pad-left, 14px);
             border: 5px dashed #c99757;
             border-radius: 21px;
             display: flex;
@@ -123,6 +199,18 @@
             border-color: #e4c8a2;
             background: rgba(255, 252, 247, 0.85);
         }
+        .slot.waiting {
+            opacity: 0.38;
+            filter: saturate(0.72);
+        }
+        .slot.next {
+            border-style: solid;
+            border-color: #ffb446;
+            background: rgba(255, 247, 214, 0.98);
+            color: rgba(110, 75, 40, 0.8);
+            box-shadow: 0 0 0 8px rgba(255, 198, 92, 0.18);
+            animation: guidePulse 1100ms ease-in-out infinite;
+        }
         .slot.good {
             border-style: solid;
             border-color: #8ddeaf;
@@ -134,12 +222,16 @@
             0% { transform: scale(0.88); }
             100% { transform: scale(1.06); }
         }
+        @keyframes guidePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 8px rgba(255, 198, 92, 0.18); }
+            50% { transform: scale(1.03); box-shadow: 0 0 0 12px rgba(255, 198, 92, 0.28); }
+        }
 
         .tile {
             position: absolute;
-            height: clamp(104px, 18.2vmin, 244px);
+            height: clamp(114px, 19.4vmin, 258px);
             min-width: 66px;
-            padding: 26px var(--pad-right, 14px) 24px var(--pad-left, 14px);
+            padding: 26px var(--pad-right, 14px) 30px var(--pad-left, 14px);
             border-radius: 24px;
             border: 4px solid rgba(177, 114, 45, 0.45);
             box-shadow: 0 18px 27px rgba(62, 44, 26, 0.24);
@@ -191,6 +283,15 @@
             cursor: default;
             pointer-events: none;
             animation: ding 320ms ease-out;
+        }
+        .tile.next {
+            box-shadow: 0 20px 28px rgba(62, 44, 26, 0.28), 0 0 0 8px rgba(255, 195, 72, 0.2);
+        }
+        .tile.disabled {
+            opacity: 0.32;
+            filter: grayscale(0.24) saturate(0.7);
+            pointer-events: none;
+            cursor: default;
         }
 
         @keyframes ding {
@@ -281,13 +382,82 @@
                 padding: 12px;
             }
         }
+
+        @media (max-width: 1024px) and (orientation: portrait) {
+            .game {
+                width: min(100vw - 10px, 900px);
+                height: min(980px, calc(var(--app-height) - 10px));
+                border-radius: 22px;
+                padding: 12px 10px;
+            }
+
+            .topbar {
+                margin-bottom: 10px;
+                gap: 8px;
+                align-items: flex-start;
+            }
+
+            .topbar-meta {
+                gap: 8px;
+            }
+
+            .guide-toggle {
+                padding: 5px 8px 5px 12px;
+                gap: 8px;
+                font-size: clamp(15px, 2vw, 21px);
+            }
+
+            .guide-switch {
+                width: 50px;
+                height: 28px;
+            }
+
+            .guide-switch::after {
+                width: 20px;
+                height: 20px;
+            }
+
+            .guide-toggle.active .guide-switch::after {
+                transform: translateX(-22px);
+            }
+
+            h1 {
+                font-size: clamp(22px, 3.8vw, 38px);
+            }
+
+            .status {
+                padding: 5px 12px;
+                font-size: clamp(17px, 2.1vw, 24px);
+            }
+
+            .word-slots {
+                top: clamp(10px, 3.5vmin, 28px);
+            }
+
+            .slot {
+                height: clamp(98px, 13.5vmin, 176px);
+                font-size: clamp(84px, 12.5vmin, 172px);
+            }
+
+            .tile {
+                height: clamp(100px, 13.8vmin, 180px);
+                font-size: clamp(88px, 12.9vmin, 176px);
+            }
+        }
     </style>
 </head>
 <body>
     <div class="game">
         <div class="topbar">
             <h1>پازل کلمه فارسی</h1>
-            <div class="status" id="status">مرحله ۱</div>
+            <div class="topbar-meta">
+                <button type="button" class="guide-toggle" id="guideToggle" role="switch" aria-checked="false" aria-label="راهنمای راست به چپ">
+                    <span class="guide-label">راست به چپ</span>
+                    <span class="guide-switch" aria-hidden="true"></span>
+                </button>
+                <div class="status word-status" id="wordStatus">Water</div>
+                <div class="status" id="status">مرحله ۱</div>
+            </div>
         </div>
         <div class="play-area" id="playArea">
             <div class="word-slots" id="wordSlots"></div>
@@ -370,10 +540,13 @@
                 this.playArea = document.getElementById('playArea');
                 this.wordSlots = document.getElementById('wordSlots');
                 this.status = document.getElementById('status');
+                this.wordStatus = document.getElementById('wordStatus');
                 this.winMessage = document.getElementById('winMessage');
+                this.guideToggle = document.getElementById('guideToggle');
                 this.slots = [];
                 this.levelIndex = 0;
                 this.tiles = [];
+                this.currentEntry = null;
                 this.currentWord = '';
                 this.lockedCount = 0;
                 this.activeTile = null;
@@ -381,6 +554,7 @@
                 this.layoutMetrics = null;
                 this.resizeFrame = 0;
                 this.started = false;
+                this.guidedRtlMode = false;
                 this.handleResize = this.handleResize.bind(this);
 
                 this.init();
@@ -404,12 +578,18 @@
                     if (!entry) {
                         throw new Error(`Missing shared bank entry for "${word}"`);
                     }
-                    return entry.fa;
+                    return {
+                        fa: entry.fa,
+                        en: entry.en
+                    };
                 });
             }
 
             async init() {
                 this.syncViewportHeight();
+                this.guideToggle.addEventListener('click', () => {
+                    this.setGuidedRtlMode(!this.guidedRtlMode);
+                });
                 window.addEventListener('resize', this.handleResize, { passive: true });
                 window.addEventListener('orientationchange', this.handleResize, { passive: true });
                 if (window.visualViewport) {
@@ -448,6 +628,22 @@
             readNumber(value, fallback) {
                 const parsed = parseFloat(value);
                 return Number.isFinite(parsed) ? parsed : fallback;
+            }
+
+            formatEnglishLabel(label) {
+                if (!label) return '';
+                return label.charAt(0).toUpperCase() + label.slice(1);
+            }
+
+            toPersianDigits(value) {
+                return String(value).replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)]);
+            }
+
+            setGuidedRtlMode(enabled) {
+                this.guidedRtlMode = enabled;
+                this.guideToggle.classList.toggle('active', enabled);
+                this.guideToggle.setAttribute('aria-checked', String(enabled));
+                this.syncGuidedState();
             }
 
             handleResize() {
@@ -519,7 +715,7 @@
                 }
 
                 if (BOTTOM_HEAVY_LETTERS.has(unit.base)) {
-                    return { x: 0, y: 1 };
+                    return { x: 0, y: -4 };
                 }
 
                 return { x: 0, y: 4 };
@@ -541,6 +737,42 @@
                 return base + (total - unit.index);
             }
 
+            getNextGuidedIndex() {
+                const nextSlot = this.slots.find(slot => !slot.classList.contains('good'));
+                return nextSlot ? Number(nextSlot.dataset.index) : null;
+            }
+
+            syncGuidedState() {
+                const nextIndex = this.guidedRtlMode ? this.getNextGuidedIndex() : null;
+
+                this.slots.forEach(slot => {
+                    slot.classList.remove('next', 'waiting');
+                    if (!this.guidedRtlMode || slot.classList.contains('good')) return;
+                    slot.classList.add(Number(slot.dataset.index) === nextIndex ? 'next' : 'waiting');
+                });
+
+                this.tiles.forEach(tile => {
+                    const isLocked = tile.classList.contains('locked');
+                    const isNext = nextIndex !== null && Number(tile.dataset.index) === nextIndex;
+                    const shouldDisable = this.guidedRtlMode && !isLocked && !isNext;
+                    tile.classList.toggle('next', this.guidedRtlMode && !isLocked && isNext);
+                    tile.classList.toggle('disabled', shouldDisable);
+                    tile.setAttribute('aria-disabled', String(shouldDisable));
+                });
+
+                if (
+                    this.activeTile &&
+                    this.guidedRtlMode &&
+                    nextIndex !== null &&
+                    Number(this.activeTile.dataset.index) !== nextIndex
+                ) {
+                    const tile = this.activeTile;
+                    tile.classList.remove('dragging');
+                    this.activeTile = null;
+                    this.returnToHome(tile);
+                }
+            }
+
             startLevel() {
                 this.wordSlots.innerHTML = '';
                 this.playArea.querySelectorAll('.tile,.spark').forEach(el => el.remove());
@@ -548,11 +780,13 @@
                 this.tiles = [];
                 this.lockedCount = 0;
 
-                this.currentWord = WORDS[this.levelIndex % WORDS.length];
+                this.currentEntry = WORDS[this.levelIndex % WORDS.length];
+                this.currentWord = this.currentEntry.fa;
                 const units = this.shapedWordUnits(this.currentWord);
                 const tileUnits = [...units].reverse();
                 const totalUnits = units.length;
-                this.status.textContent = `مرحله ${this.levelIndex + 1}: ${this.currentWord}`;
+                this.status.textContent = `مرحله ${this.toPersianDigits(this.levelIndex + 1)}`;
+                this.wordStatus.textContent = this.formatEnglishLabel(this.currentEntry.en);
 
                 units.forEach(unit => {
                     const slot = document.createElement('div');
@@ -590,11 +824,12 @@
                 });
 
                 this.relayoutLevel({ randomizeUnlocked: true });
+                this.syncGuidedState();
             }
 
             wireTile(tile, slots) {
                 tile.addEventListener('pointerdown', (e) => {
-                    if (tile.classList.contains('locked')) return;
+                    if (tile.classList.contains('locked') || tile.classList.contains('disabled')) return;
                     this.activeTile = tile;
                     tile.classList.add('dragging');
                     tile.setPointerCapture(e.pointerId);
@@ -626,6 +861,14 @@
             }
 
             findMatchingSlotForTile(tile, slots) {
+                const tileIndex = Number(tile.dataset.index);
+                if (this.guidedRtlMode) {
+                    const nextIndex = this.getNextGuidedIndex();
+                    if (nextIndex === null || tileIndex !== nextIndex) {
+                        return null;
+                    }
+                }
+
                 const tileBase = tile.dataset.base;
                 const tileRect = tile.getBoundingClientRect();
                 const tileCx = tileRect.left + tileRect.width / 2;
@@ -636,6 +879,7 @@
                 slots.forEach(slot => {
                     if (slot.classList.contains('good')) return;
                     if (slot.dataset.base !== tileBase) return;
+                    if (this.guidedRtlMode && Number(slot.dataset.index) !== tileIndex) return;
 
                     const slotRect = slot.getBoundingClientRect();
                     const slotCx = slotRect.left + slotRect.width / 2;
@@ -677,6 +921,7 @@
                 slot.classList.add('good');
                 this.burst(slotCx - areaRect.left, slotCy - areaRect.top);
                 this.lockedCount += 1;
+                this.syncGuidedState();
 
                 if (this.lockedCount === slots.length) {
                     this.finishLevel();
