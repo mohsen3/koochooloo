@@ -413,6 +413,24 @@
             }
         }
 
+        #resetBtn {
+            cursor: pointer;
+            border: none;
+            font: inherit;
+            color: var(--ink);
+            background: rgba(255, 86, 115, 0.08);
+            transition: background 180ms ease, transform 180ms ease;
+            min-width: 48px;
+            display: grid;
+            place-items: center;
+            line-height: 1;
+        }
+        #resetBtn:hover,
+        #resetBtn:active {
+            background: rgba(255, 86, 115, 0.2);
+            transform: scale(1.04);
+        }
+
         @media (max-width: 960px) {
             .board {
                 gap: clamp(40px, 8vw, 96px);
@@ -467,6 +485,7 @@
                     <span>جور شده</span>
                     <strong id="matchLabel">۰ از ۲</strong>
                 </div>
+                <button class="status-pill" id="resetBtn" type="button" aria-label="Reset progress">↻</button>
             </div>
         </div>
 
@@ -503,6 +522,7 @@
 
                 this.level = 1;
                 this.pagesClearedInLevel = 0;
+                this.loadProgress();
                 this.matchesMade = 0;
                 this.connectionSerial = 0;
                 this.activeDrag = null;
@@ -517,6 +537,11 @@
                 this.handleResize = this.handleResize.bind(this);
                 this.handlePointerMove = this.handlePointerMove.bind(this);
                 this.handlePointerUp = this.handlePointerUp.bind(this);
+
+                const resetBtn = document.getElementById('resetBtn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => this.resetProgress());
+                }
 
                 this.init();
             }
@@ -579,6 +604,36 @@
                     this.resizeCanvas();
                     this.redrawConnections();
                 });
+            }
+
+            loadProgress() {
+                try {
+                    const saved = localStorage.getItem('farsi-english-match-progress');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        if (typeof data.level === 'number') this.level = data.level;
+                        if (typeof data.pagesClearedInLevel === 'number') this.pagesClearedInLevel = data.pagesClearedInLevel;
+                    }
+                } catch (_) { /* ignore */ }
+            }
+
+            saveProgress() {
+                try {
+                    localStorage.setItem('farsi-english-match-progress', JSON.stringify({
+                        level: this.level,
+                        pagesClearedInLevel: this.pagesClearedInLevel
+                    }));
+                } catch (_) { /* ignore */ }
+            }
+
+            resetProgress() {
+                if (!confirm('آیا مطمئن هستید؟ تمام مراحل پاک می‌شوند.')) return;
+                localStorage.removeItem('farsi-english-match-progress');
+                this.level = 1;
+                this.pagesClearedInLevel = 0;
+                this.recentPairIds = [];
+                this.connections = [];
+                this.startPage();
             }
 
             wordsPerPage() {
@@ -937,6 +992,7 @@
                 } else {
                     this.showToast('آفرین');
                 }
+                this.saveProgress();
 
                 this.pageAdvanceTimeout = window.setTimeout(() => {
                     this.startPage();
