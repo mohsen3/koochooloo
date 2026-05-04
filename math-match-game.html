@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Math Match</title>
+    <style>
+        @font-face {
+            font-family: 'Koodak';
+            src: url("public/koodak.ttf") format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: block;
+        }
+
+        :root {
+            --app-height: 100dvh;
+            --ui-font: 'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif;
+            --ink: #1d2742;
+            --ink-soft: #4f5d7a;
+            --panel: rgba(255, 255, 255, 0.8);
+            --panel-strong: rgba(255, 255, 255, 0.94);
+            --line: rgba(29, 39, 66, 0.12);
+            --glow: 0 24px 60px rgba(26, 30, 65, 0.18);
+            --theme-accent: #31e1b9;
+            --theme-accent-soft: rgba(49, 225, 185, 0.2);
+            --rows: 2;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            width: 100%;
+            min-height: 100%;
+            overflow: hidden;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            min-height: var(--app-height);
+            height: var(--app-height);
+            display: grid;
+            place-items: center;
+            font-family: var(--ui-font);
+            color: var(--ink);
+            padding: 10px;
+            -webkit-touch-callout: none;
+            transition: background 600ms ease;
+            background:
+                radial-gradient(circle at 12% 18%, rgba(112, 240, 150, 0.6), transparent 20%),
+                radial-gradient(circle at 84% 12%, rgba(48, 210, 180, 0.4), transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(100, 220, 200, 0.3), transparent 24%),
+                linear-gradient(140deg, #0d3b2e 0%, #1a8a6b 42%, #3ec9a0 100%);
+        }
+
+        html[data-theme="mint"] body {
+            background:
+                radial-gradient(circle at 12% 18%, rgba(112, 240, 150, 0.6), transparent 20%),
+                radial-gradient(circle at 84% 12%, rgba(48, 210, 180, 0.4), transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(100, 220, 200, 0.3), transparent 24%),
+                linear-gradient(140deg, #0d3b2e 0%, #1a8a6b 42%, #3ec9a0 100%);
+            --theme-accent: #2bbf8a;
+            --theme-accent-soft: rgba(43, 191, 138, 0.15);
+        }
+        html[data-theme="sky"] body {
+            background:
+                radial-gradient(circle at 12% 18%, rgba(100, 200, 255, 0.6), transparent 20%),
+                radial-gradient(circle at 84% 12%, rgba(70, 180, 240, 0.4), transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(120, 200, 255, 0.3), transparent 24%),
+                linear-gradient(140deg, #0a2f44 0%, #156b8a 42%, #3aa8c9 100%);
+            --theme-accent: #3a9fd4;
+            --theme-accent-soft: rgba(58, 159, 212, 0.15);
+        }
+        html[data-theme="lilac"] body {
+            background:
+                radial-gradient(circle at 12% 18%, rgba(200, 150, 255, 0.5), transparent 20%),
+                radial-gradient(circle at 84% 12%, rgba(180, 120, 240, 0.35), transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(160, 140, 255, 0.3), transparent 24%),
+                linear-gradient(140deg, #1a0a30 0%, #4a1a6b 42%, #8a4ac9 100%);
+            --theme-accent: #8a5cd6;
+            --theme-accent-soft: rgba(138, 92, 214, 0.15);
+        }
+        html[data-theme="coral"] body {
+            background:
+                radial-gradient(circle at 12% 18%, rgba(255, 180, 140, 0.5), transparent 20%),
+                radial-gradient(circle at 84% 12%, rgba(240, 130, 160, 0.35), transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(255, 160, 120, 0.3), transparent 24%),
+                linear-gradient(140deg, #2a0a0a 0%, #7a2a3a 42%, #c95a5a 100%);
+            --theme-accent: #d4606a;
+            --theme-accent-soft: rgba(212, 96, 106, 0.15);
+        }
+        html[data-theme="ember"] body {
+            background:
+                radial-gradient(circle at 12% 18%, rgba(255, 160, 80, 0.5), transparent 20%),
+                radial-gradient(circle at 84% 12%, rgba(240, 100, 60, 0.35), transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(255, 120, 80, 0.3), transparent 24%),
+                linear-gradient(140deg, #2a0a00 0%, #7a200a 42%, #c9440a 100%);
+            --theme-accent: #d45530;
+            --theme-accent-soft: rgba(212, 85, 48, 0.15);
+        }
+        html[data-theme="cosmic"] body {
+            background:
+                radial-gradient(circle at 12% 18%, rgba(180, 120, 255, 0.4), transparent 20%),
+                radial-gradient(circle at 84% 12%, rgba(100, 80, 240, 0.3), transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(200, 140, 255, 0.25), transparent 24%),
+                linear-gradient(140deg, #0a001a 0%, #1a0a4a 42%, #3a1a8a 100%);
+            --theme-accent: #c9940a;
+            --theme-accent-soft: rgba(201, 148, 10, 0.12);
+        }
+
+        .app {
+            width: min(1240px, calc(100vw - 20px));
+            height: min(860px, calc(var(--app-height) - 20px));
+            border-radius: 34px;
+            padding: clamp(12px, 1.6vw, 18px);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background:
+                linear-gradient(165deg, rgba(255, 255, 255, 0.88), rgba(255, 248, 240, 0.8)),
+                rgba(255, 255, 255, 0.84);
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            box-shadow: var(--glow);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .app::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border-radius: 28px;
+            border: 1px dashed rgba(29, 39, 66, 0.08);
+            pointer-events: none;
+        }
+
+        .topbar {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: center;
+            padding: 4px 2px 0;
+        }
+
+        .title-block h1 {
+            margin: 0;
+            font-size: clamp(22px, 2.8vw, 36px);
+            line-height: 1;
+            letter-spacing: -0.02em;
+            font-weight: 800;
+        }
+        .title-block h1 span {
+            color: var(--theme-accent);
+        }
+
+        .title-block .subtitle {
+            margin: 2px 0 0;
+            font-size: clamp(12px, 1.2vw, 16px);
+            color: var(--ink-soft);
+            font-weight: 500;
+        }
+
+        .status-strip {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .status-pill {
+            min-width: 68px;
+            padding: 7px 8px;
+            border-radius: 14px;
+            background: var(--panel-strong);
+            border: 1px solid rgba(29, 39, 66, 0.08);
+            box-shadow: 0 8px 18px rgba(20, 30, 60, 0.08);
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .status-pill span {
+            display: block;
+            font-size: 11px;
+            color: var(--ink-soft);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .status-pill strong {
+            display: block;
+            margin-top: 2px;
+            font-size: clamp(16px, 1.5vw, 21px);
+            line-height: 1.1;
+        }
+
+        .board {
+            position: relative;
+            flex: 1 1 auto;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: clamp(64px, 10vw, 180px);
+            padding: clamp(10px, 1.2vw, 14px);
+            border-radius: 24px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 250, 245, 0.84));
+            border: 1px solid rgba(29, 39, 66, 0.08);
+            overflow: hidden;
+        }
+
+        #connectionCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .column {
+            position: relative;
+            z-index: 2;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 0;
+        }
+
+        .column-header {
+            text-align: center;
+            font-size: clamp(13px, 1.3vw, 18px);
+            font-weight: 700;
+            color: var(--ink-soft);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 4px 0 2px;
+            opacity: 0.7;
+        }
+
+        .word-list {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: grid;
+            grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+            gap: clamp(8px, 1vw, 12px);
+        }
+
+        .word-card {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+            padding: 10px 20px;
+            border-radius: 18px;
+            border: 2px solid rgba(29, 39, 66, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 18px rgba(19, 30, 60, 0.06);
+            transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+            isolation: isolate;
+        }
+
+        .word-card[data-side="left"] {
+            padding-right: 56px;
+        }
+
+        .word-card[data-side="right"] {
+            padding-left: 56px;
+        }
+
+        .word-card.is-origin {
+            transform: scale(1.02);
+            border-color: var(--theme-accent);
+            box-shadow: 0 16px 34px rgba(19, 30, 60, 0.1);
+        }
+
+        .word-card.is-hover {
+            transform: scale(1.015);
+            border-color: var(--match-color, var(--theme-accent));
+            box-shadow:
+                0 16px 34px rgba(19, 30, 60, 0.12),
+                0 0 0 4px var(--match-color, var(--theme-accent));
+        }
+
+        .word-card.matched {
+            transform: scale(1.015);
+            border-color: var(--match-color, var(--theme-accent));
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(242, 250, 255, 0.96));
+            box-shadow:
+                0 16px 34px rgba(19, 30, 60, 0.12),
+                0 0 0 4px var(--match-color, var(--theme-accent)),
+                inset 0 0 0 2px rgba(255, 255, 255, 0.72);
+        }
+
+        .word-card.wrong {
+            animation: shake 260ms ease;
+            border-color: rgba(255, 86, 115, 0.6);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            30% { transform: translateX(-6px); }
+            70% { transform: translateX(6px); }
+        }
+
+        .word-text {
+            width: 100%;
+            min-width: 0;
+            text-align: center;
+            font-weight: 800;
+            font-size: clamp(22px, 2.4vw, 36px);
+            line-height: 1.15;
+            letter-spacing: 0.02em;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .word-text .eq-sign {
+            color: var(--ink-soft);
+            font-weight: 600;
+            margin: 0 2px;
+            opacity: 0.6;
+        }
+
+        .word-card .badge {
+            position: absolute;
+            top: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--ink-soft);
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .word-card[data-side="left"] .badge { right: 14px; }
+        .word-card[data-side="right"] .badge { left: 14px; }
+
+        .word-card::after {
+            content: "✓";
+            position: absolute;
+            top: 10px;
+            width: 26px;
+            height: 26px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            font-size: 15px;
+            font-weight: 900;
+            color: #ffffff;
+            background: var(--match-color, var(--theme-accent));
+            opacity: 0;
+            transform: scale(0.6);
+            transition: opacity 180ms ease, transform 180ms ease;
+            box-shadow: 0 8px 18px rgba(19, 30, 60, 0.18);
+        }
+        .word-card[data-side="left"]::after { right: 14px; }
+        .word-card[data-side="right"]::after { left: 14px; }
+
+        .word-card.matched::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .connector {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: clamp(28px, 2.8vw, 34px);
+            height: clamp(28px, 2.8vw, 34px);
+            border-radius: 999px;
+            border: 2px solid rgba(29, 39, 66, 0.18);
+            background:
+                radial-gradient(circle at 34% 30%, #ffffff, #eff6ff 62%, #d8e5ff 100%);
+            box-shadow: 0 8px 14px rgba(17, 31, 62, 0.14);
+            cursor: grab;
+            touch-action: none;
+            transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+        }
+
+        .connector::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(29, 39, 66, 0.22);
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            transition: background 140ms ease;
+        }
+
+        .connector.left {
+            left: 10px;
+        }
+
+        .connector.right {
+            right: 10px;
+        }
+
+        .connector:active,
+        .connector.is-active,
+        .connector.is-hover {
+            transform: translateY(-50%) scale(1.08);
+        }
+
+        .connector.is-active,
+        .connector.is-hover,
+        .connector.matched {
+            border-color: var(--match-color, var(--theme-accent));
+            box-shadow:
+                0 12px 22px rgba(17, 31, 62, 0.2),
+                0 0 0 4px rgba(255, 255, 255, 0.55);
+        }
+
+        .connector.is-active::before,
+        .connector.is-hover::before,
+        .connector.matched::before {
+            background: var(--match-color, var(--theme-accent));
+        }
+
+        .connector.matched {
+            cursor: default;
+        }
+
+        .toast {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.84);
+            padding: 18px 30px;
+            border-radius: 24px;
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 240, 0.98));
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 24px 42px rgba(24, 36, 72, 0.2);
+            font-size: clamp(28px, 3.5vw, 48px);
+            font-weight: 800;
+            line-height: 1;
+            color: var(--toast-color, var(--theme-accent));
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease, transform 180ms ease;
+            z-index: 4;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .spark {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffffff 0%, var(--spark-color, var(--theme-accent)) 58%, transparent 72%);
+            pointer-events: none;
+            animation: spark 520ms ease-out forwards;
+            z-index: 4;
+        }
+
+        @keyframes spark {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(0.4);
+            }
+            to {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.2);
+            }
+        }
+
+        #resetBtn {
+            cursor: pointer;
+            border: none;
+            font: inherit;
+            color: var(--ink);
+            background: rgba(255, 86, 115, 0.08);
+            transition: background 180ms ease, transform 180ms ease;
+            min-width: 48px;
+            display: grid;
+            place-items: center;
+            line-height: 1;
+        }
+        #resetBtn:hover,
+        #resetBtn:active {
+            background: rgba(255, 86, 115, 0.2);
+            transform: scale(1.04);
+        }
+
+        @media (max-width: 960px) {
+            .board {
+                gap: clamp(40px, 8vw, 96px);
+            }
+            .status-pill {
+                min-width: 64px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .app {
+                padding: 10px;
+            }
+            .topbar {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .status-strip {
+                justify-content: flex-start;
+            }
+            .board {
+                gap: 16px;
+                padding: 8px;
+            }
+            .column-header {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .word-card {
+                padding: 8px 12px;
+            }
+            .word-card[data-side="left"] {
+                padding-right: 42px;
+            }
+            .word-card[data-side="right"] {
+                padding-left: 42px;
+            }
+            .word-text {
+                font-size: clamp(16px, 5vw, 22px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="topbar">
+            <div class="title-block">
+                <h1>Math <span>Match</span></h1>
+                <div class="subtitle" id="levelDescription">Single Digit Addition</div>
+            </div>
+            <div class="status-strip">
+                <div class="status-pill">
+                    <span>Level</span>
+                    <strong id="levelLabel">1</strong>
+                </div>
+                <div class="status-pill">
+                    <span>Problems</span>
+                    <strong id="wordsLabel">2</strong>
+                </div>
+                <div class="status-pill">
+                    <span>Page</span>
+                    <strong id="pageLabel">1 of 4</strong>
+                </div>
+                <div class="status-pill">
+                    <span>Matched</span>
+                    <strong id="matchLabel">0 of 2</strong>
+                </div>
+                <button class="status-pill" id="resetBtn" type="button" aria-label="Reset progress">↻</button>
+            </div>
+        </div>
+
+        <div class="board" id="board">
+            <canvas id="connectionCanvas"></canvas>
+
+            <section class="column">
+                <div class="column-header">Equation</div>
+                <div class="word-list" id="leftList"></div>
+            </section>
+
+            <section class="column">
+                <div class="column-header">Answer</div>
+                <div class="word-list" id="rightList"></div>
+            </section>
+
+            <div class="toast" id="toast"></div>
+        </div>
+    </div>
+
+    <script>
+        function randInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function pick(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function ensureUnique(arr, generator, maxAttempts) {
+            for (let i = 0; i < maxAttempts; i++) {
+                const item = generator();
+                if (!arr.some(existing => existing.display === item.display)) {
+                    return item;
+                }
+            }
+            return generator();
+        }
+
+        function genRightExpression(value, avoidText) {
+            for (let attempt = 0; attempt < 40; attempt++) {
+                const op = pick(['+', '-', '×', '÷']);
+                let display;
+                switch (op) {
+                    case '+': {
+                        if (value <= 1) continue;
+                        const a = randInt(1, value - 1);
+                        display = `${a} + ${value - a}`;
+                        break;
+                    }
+                    case '-': {
+                        const b = randInt(1, 20);
+                        display = `${value + b} - ${b}`;
+                        break;
+                    }
+                    case '×': {
+                        if (value < 4) continue;
+                        const factors = [];
+                        for (let f = 2; f <= Math.sqrt(value); f++) {
+                            if (value % f === 0 && value / f >= 2 && value / f <= 12) {
+                                factors.push([f, value / f]);
+                            }
+                        }
+                        if (factors.length === 0) continue;
+                        const [a, b] = pick(factors);
+                        display = `${a} × ${b}`;
+                        break;
+                    }
+                    case '÷': {
+                        if (value < 1) continue;
+                        const divisor = randInt(2, 9);
+                        display = `${value * divisor} ÷ ${divisor}`;
+                        break;
+                    }
+                }
+                if (display !== avoidText) {
+                    return { display, value };
+                }
+            }
+            return { display: `${value}`, value };
+        }
+
+        const LEVELS = [
+            null,
+            { name: 'Single Digit Addition', genLeft: () => {
+                const a = randInt(1, 4); const b = randInt(1, 5 - a);
+                return { display: `${a} + ${b}`, value: a + b };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Addition to 10', genLeft: () => {
+                const a = randInt(1, 8); const b = randInt(1, 10 - a);
+                return { display: `${a} + ${b}`, value: a + b };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Addition to 18', genLeft: () => {
+                const a = randInt(1, 9); const b = randInt(1, Math.min(9, 18 - a));
+                return { display: `${a} + ${b}`, value: a + b };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Simple Subtraction', genLeft: () => {
+                const a = randInt(3, 18); const b = randInt(1, a - 1);
+                return { display: `${a} - ${b}`, value: a - b };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Addition & Subtraction', genLeft: () => {
+                return pick([
+                    () => { const a = randInt(1, 9); const b = randInt(1, 9); return { display: `${a} + ${b}`, value: a + b }; },
+                    () => { const a = randInt(3, 18); const b = randInt(1, a - 1); return { display: `${a} - ${b}`, value: a - b }; }
+                ])();
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Simple Multiplication', genLeft: () => {
+                const pairs = shuffle([[2,2],[2,3],[2,4],[3,2],[3,3],[4,2]]);
+                const [a, b] = pairs[0];
+                return { display: `${a} × ${b}`, value: a * b };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Multiplication to 30', genLeft: () => {
+                const pairs = [];
+                for (let a = 2; a <= 9; a++)
+                    for (let b = 2; b <= 9; b++)
+                        if (a * b <= 30) pairs.push([a, b]);
+                const [a, b] = pick(pairs);
+                return { display: `${a} × ${b}`, value: a * b };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Multiplication to 81', genLeft: () => {
+                const a = randInt(2, 9); const b = randInt(2, 9);
+                return { display: `${a} × ${b}`, value: a * b };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Mix × + −', genLeft: () => {
+                return pick([
+                    () => { const a = randInt(1, 9); const b = randInt(1, 9); return { display: `${a} + ${b}`, value: a + b }; },
+                    () => { const a = randInt(3, 18); const b = randInt(1, a - 1); return { display: `${a} - ${b}`, value: a - b }; },
+                    () => { const a = randInt(2, 9); const b = randInt(2, 9); return { display: `${a} × ${b}`, value: a * b }; }
+                ])();
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Simple Division', genLeft: () => {
+                const a = randInt(2, 5); const b = randInt(2, 5);
+                return { display: `${a * b} ÷ ${a}`, value: b };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Mix × ÷', genLeft: () => {
+                return pick([
+                    () => { const a = randInt(2, 9); const b = randInt(2, 9); return { display: `${a} × ${b}`, value: a * b }; },
+                    () => { const a = randInt(2, 5); const b = randInt(2, 5); return { display: `${a * b} ÷ ${a}`, value: b }; }
+                ])();
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: '2‑Digit + 1‑Digit (no carry)', genLeft: () => {
+                const tens = randInt(1, 8); const ones = randInt(0, 8);
+                const add = randInt(1, 9 - ones);
+                return { display: `${tens * 10 + ones} + ${add}`, value: tens * 10 + ones + add };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: '2‑Digit + 2‑Digit (no carry)', genLeft: () => {
+                const a_t = randInt(1, 4); const a_o = randInt(0, 8);
+                const b_t = randInt(1, 9 - a_t - 1); const b_o = randInt(0, 9 - a_o);
+                return { display: `${a_t * 10 + a_o} + ${b_t * 10 + b_o}`, value: a_t * 10 + a_o + b_t * 10 + b_o };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: '2‑Digit + 1‑Digit (with carry)', genLeft: () => {
+                const tens = randInt(1, 8); const ones = randInt(5, 9);
+                const add = randInt(10 - ones, 9);
+                return { display: `${tens * 10 + ones} + ${add}`, value: tens * 10 + ones + add };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: '2‑Digit + 2‑Digit (with carry)', genLeft: () => {
+                let a_t, a_o, b_t, b_o;
+                do {
+                    a_t = randInt(1, 7); a_o = randInt(5, 9);
+                    b_t = randInt(1, 9 - a_t - 1); b_o = randInt(10 - a_o, 9);
+                } while (a_t + b_t + (a_o + b_o >= 10 ? 1 : 0) >= 10);
+                return { display: `${a_t * 10 + a_o} + ${b_t * 10 + b_o}`, value: a_t * 10 + a_o + b_t * 10 + b_o };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Mixed 2‑Digit Addition', genLeft: () => {
+                return pick([
+                    () => { const t = randInt(1, 8); const o = randInt(0, 8); const a = randInt(1, 9 - o); return { display: `${t * 10 + o} + ${a}`, value: t * 10 + o + a }; },
+                    () => { const t = randInt(1, 8); const o = randInt(5, 9); const a = randInt(10 - o, 9); return { display: `${t * 10 + o} + ${a}`, value: t * 10 + o + a }; },
+                    () => { const a_t = randInt(1, 4); const a_o = randInt(0, 8); const b_t = randInt(1, 9 - a_t - 1); const b_o = randInt(0, 9 - a_o); return { display: `${a_t * 10 + a_o} + ${b_t * 10 + b_o}`, value: a_t * 10 + a_o + b_t * 10 + b_o }; },
+                    () => { let a_t, a_o, b_t, b_o; do { a_t = randInt(1, 6); a_o = randInt(5, 9); b_t = randInt(1, 8 - a_t); b_o = randInt(10 - a_o, 9); } while (a_t + b_t + 1 >= 10); return { display: `${a_t * 10 + a_o} + ${b_t * 10 + b_o}`, value: a_t * 10 + a_o + b_t * 10 + b_o }; },
+                ])();
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: '2‑Digit − 1‑Digit (no borrow)', genLeft: () => {
+                const tens = randInt(1, 9); const ones = randInt(1, 9);
+                const sub = randInt(1, ones);
+                return { display: `${tens * 10 + ones} − ${sub}`, value: tens * 10 + ones - sub };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: '2‑Digit − 2‑Digit (no borrow)', genLeft: () => {
+                const b_t = randInt(1, 4); const b_o = randInt(0, 8);
+                const a_t = randInt(b_t + 1, 9); const a_o = randInt(b_o, 9);
+                return { display: `${a_t * 10 + a_o} − ${b_t * 10 + b_o}`, value: a_t * 10 + a_o - (b_t * 10 + b_o) };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: '2‑Digit − 1‑Digit (with borrow)', genLeft: () => {
+                let tens, ones, sub, result;
+                do {
+                    tens = randInt(1, 9); ones = randInt(0, 8);
+                    sub = randInt(ones + 1, 9);
+                    result = tens * 10 + ones - sub;
+                } while (result <= 0);
+                return { display: `${tens * 10 + ones} − ${sub}`, value: result };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: '2‑Digit − 2‑Digit (with borrow)', genLeft: () => {
+                let a_t, a_o, b_t, b_o;
+                do {
+                    b_t = randInt(1, 5); b_o = randInt(5, 9);
+                    a_t = randInt(b_t + 1, 9); a_o = randInt(0, b_o - 1);
+                } while (a_t * 10 + a_o - (b_t * 10 + b_o) <= 0);
+                return { display: `${a_t * 10 + a_o} − ${b_t * 10 + b_o}`, value: a_t * 10 + a_o - (b_t * 10 + b_o) };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Everything So Far', genLeft: () => {
+                return pick([
+                    () => { const a = randInt(1, 9); const b = randInt(1, 9); return { display: `${a} + ${b}`, value: a + b }; },
+                    () => { const a = randInt(3, 18); const b = randInt(1, a - 1); return { display: `${a} - ${b}`, value: a - b }; },
+                    () => { const a = randInt(2, 9); const b = randInt(2, 9); return { display: `${a} × ${b}`, value: a * b }; },
+                    () => { const a = randInt(2, 9); const b = randInt(2, 9); return { display: `${a * b} ÷ ${a}`, value: b }; },
+                    () => { const t = randInt(1, 8); const o = randInt(0, 8); const a = randInt(1, 9 - o); return { display: `${t * 10 + o} + ${a}`, value: t * 10 + o + a }; },
+                    () => { const t = randInt(1, 9); const o = randInt(1, 9); const s = randInt(1, Math.min(9, o)); return { display: `${t * 10 + o} − ${s}`, value: t * 10 + o - s }; },
+                ])();
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Advanced Multiplication', genLeft: () => {
+                const a = randInt(6, 12); const b = randInt(6, 12);
+                return { display: `${a} × ${b}`, value: a * b };
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+            { name: 'Mixed Advanced', genLeft: () => {
+                return pick([
+                    () => { const a = randInt(10, 50); const b = randInt(10, 50); return { display: `${a} + ${b}`, value: a + b }; },
+                    () => { const a = randInt(20, 99); const b = randInt(1, a - 1); return { display: `${a} − ${b}`, value: a - b }; },
+                    () => { const a = randInt(6, 12); const b = randInt(6, 12); return { display: `${a} × ${b}`, value: a * b }; },
+                ])();
+            }, genRight: v => ({ display: `${v}`, value: v }) },
+        ];
+
+        const EXPRESSION_LEVELS = [];
+        for (let l = 24; l <= 80; l++) {
+            EXPRESSION_LEVELS[l] = {
+                name: `Expression Matching (Level ${l})`,
+                genLeft: () => {
+                    const src = pick(LEVELS.slice(5)).genLeft();
+                    return src;
+                },
+                genRight: (v, leftText) => genRightExpression(v, leftText)
+            };
+        }
+
+        const THEME_RANGES = [
+            { min: 1, max: 4, theme: 'mint' },
+            { min: 5, max: 7, theme: 'sky' },
+            { min: 8, max: 10, theme: 'lilac' },
+            { min: 11, max: 14, theme: 'coral' },
+            { min: 15, max: 18, theme: 'ember' },
+            { min: 19, max: Infinity, theme: 'cosmic' },
+        ];
+
+        class MathMatchGame {
+            constructor() {
+                this.board = document.getElementById('board');
+                this.canvas = document.getElementById('connectionCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.leftList = document.getElementById('leftList');
+                this.rightList = document.getElementById('rightList');
+                this.levelLabel = document.getElementById('levelLabel');
+                this.pageLabel = document.getElementById('pageLabel');
+                this.matchLabel = document.getElementById('matchLabel');
+                this.wordsLabel = document.getElementById('wordsLabel');
+                this.levelDescription = document.getElementById('levelDescription');
+                this.toast = document.getElementById('toast');
+
+                this.level = 1;
+                this.pagesClearedInLevel = 0;
+                this.loadProgress();
+                this.matchesMade = 0;
+                this.connectionSerial = 0;
+                this.activeDrag = null;
+                this.connections = [];
+                this.currentLeftItems = [];
+                this.currentRightItems = [];
+                this.hoverConnector = null;
+                this.resizeFrame = 0;
+                this.pageAdvanceTimeout = 0;
+                this.toastTimeout = 0;
+
+                this.handleResize = this.handleResize.bind(this);
+                this.handlePointerMove = this.handlePointerMove.bind(this);
+                this.handlePointerUp = this.handlePointerUp.bind(this);
+
+                const resetBtn = document.getElementById('resetBtn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => this.resetProgress());
+                }
+
+                this.init();
+            }
+
+            async init() {
+                this.syncViewportHeight();
+                window.addEventListener('resize', this.handleResize, { passive: true });
+                window.addEventListener('orientationchange', this.handleResize, { passive: true });
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener('resize', this.handleResize, { passive: true });
+                }
+
+                const start = () => this.startPage();
+                if (document.fonts && document.fonts.ready) {
+                    Promise.race([
+                        document.fonts.ready,
+                        new Promise(resolve => setTimeout(resolve, 700))
+                    ]).then(start);
+                } else {
+                    start();
+                }
+            }
+
+            syncViewportHeight() {
+                const visualViewport = window.visualViewport;
+                const viewportHeight = Math.round((visualViewport ? visualViewport.height : 0) || window.innerHeight || 0);
+                if (viewportHeight > 0) {
+                    document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
+                }
+            }
+
+            handleResize() {
+                this.syncViewportHeight();
+                cancelAnimationFrame(this.resizeFrame);
+                this.resizeFrame = requestAnimationFrame(() => {
+                    this.resizeCanvas();
+                    this.redrawConnections();
+                });
+            }
+
+            loadProgress() {
+                try {
+                    const saved = localStorage.getItem('math-match-progress');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        if (typeof data.level === 'number') this.level = data.level;
+                        if (typeof data.pagesClearedInLevel === 'number') this.pagesClearedInLevel = data.pagesClearedInLevel;
+                    }
+                } catch (_) {}
+            }
+
+            saveProgress() {
+                try {
+                    localStorage.setItem('math-match-progress', JSON.stringify({
+                        level: this.level,
+                        pagesClearedInLevel: this.pagesClearedInLevel
+                    }));
+                } catch (_) {}
+            }
+
+            resetProgress() {
+                if (!confirm('Reset all progress? Your level will be set back to 1.')) return;
+                localStorage.removeItem('math-match-progress');
+                this.level = 1;
+                this.pagesClearedInLevel = 0;
+                this.connections = [];
+                this.startPage();
+            }
+
+            wordsPerPage() {
+                return Math.min(2 + (this.level - 1), 7);
+            }
+
+            totalPagesPerLevel() {
+                return 4;
+            }
+
+            getLevelConfig(level) {
+                if (level < LEVELS.length) return LEVELS[level];
+                return EXPRESSION_LEVELS[level] || EXPRESSION_LEVELS[24];
+            }
+
+            getLevelName(level) {
+                const config = this.getLevelConfig(level);
+                return config ? config.name : 'Master Level';
+            }
+
+            getTheme(level) {
+                for (const range of THEME_RANGES) {
+                    if (level >= range.min && level <= range.max) return range.theme;
+                }
+                return 'cosmic';
+            }
+
+            applyTheme(level) {
+                const theme = this.getTheme(level);
+                document.documentElement.dataset.theme = theme;
+                const name = this.getLevelName(level);
+                this.levelDescription.textContent = `${name}`;
+            }
+
+            getLevelUpMessage(level) {
+                const name = this.getLevelName(level);
+                if (level === 5) return `Level ${level} — ${name}!`;
+                if (level === 10) return `Level ${level} — ${name}!`;
+                if (level === 15) return `Level ${level} — ${name}!`;
+                if (level === 20) return `Level ${level} — ${name}!`;
+                if (level % 5 === 0) return `🎉 Level ${level}!`;
+                if (level % 3 === 0) return `Level ${level} — Keep Going!`;
+                return `Level ${level}!`;
+            }
+
+            getPageClearMessage() {
+                const msgs = ['Great Job!', 'Awesome!', 'Nice!', 'Well Done!', 'Perfect!'];
+                return pick(msgs);
+            }
+
+            generatePage(count) {
+                const config = this.getLevelConfig(this.level);
+                const isExpressionMode = this.level >= 24;
+                const leftItems = [];
+                const rightItems = [];
+
+                for (let i = 0; i < count; i++) {
+                    const left = ensureUnique(leftItems, () => config.genLeft(), 30);
+                    leftItems.push(left);
+
+                    let right;
+                    if (isExpressionMode) {
+                        right = ensureUnique(rightItems, () => config.genRight(left.value, left.display), 30);
+                    } else {
+                        right = { display: `${left.value}`, value: left.value };
+                    }
+                    rightItems.push(right);
+                }
+
+                return { leftItems, rightItems };
+            }
+
+            startPage() {
+                clearTimeout(this.pageAdvanceTimeout);
+                this.clearToast();
+                this.matchesMade = 0;
+                this.connections = [];
+                this.activeDrag = null;
+                this.connectionSerial = 0;
+                this.clearHoverConnector();
+
+                const count = this.wordsPerPage();
+                const { leftItems, rightItems } = this.generatePage(count);
+                this.currentLeftItems = leftItems;
+                this.currentRightItems = rightItems;
+
+                this.applyTheme(this.level);
+                this.renderPage();
+                this.resizeCanvas();
+                this.redrawConnections();
+                this.updateStatus();
+            }
+
+            renderPage() {
+                const wordCount = this.currentLeftItems.length;
+                this.board.style.setProperty('--rows', String(wordCount));
+                this.leftList.innerHTML = '';
+                this.rightList.innerHTML = '';
+
+                const shuffledRight = shuffle(this.currentRightItems);
+
+                for (const item of this.currentLeftItems) {
+                    this.leftList.appendChild(this.createEquationCard(item, 'left'));
+                }
+
+                for (const item of shuffledRight) {
+                    this.rightList.appendChild(this.createEquationCard(item, 'right'));
+                }
+            }
+
+            createEquationCard(item, side) {
+                const card = document.createElement('article');
+                card.className = 'word-card';
+                card.dataset.value = item.value;
+                card.dataset.side = side;
+
+                const word = document.createElement('div');
+                word.className = 'word-text';
+                word.textContent = item.display;
+
+                const badge = document.createElement('span');
+                badge.className = 'badge';
+                badge.textContent = side === 'left' ? '= ?' : '';
+                card.appendChild(badge);
+
+                const connector = document.createElement('button');
+                connector.type = 'button';
+                connector.className = `connector ${side === 'left' ? 'right' : 'left'}`;
+                connector.dataset.value = item.value;
+                connector.dataset.side = side;
+                connector.setAttribute('aria-label', side === 'left' ? `Match ${item.display}` : `Answer ${item.display}`);
+                connector.addEventListener('pointerdown', event => this.beginDrag(event, connector));
+                card.addEventListener('pointerdown', event => {
+                    if (event.target.closest('.connector')) return;
+                    this.beginDrag(event, connector);
+                });
+
+                card.append(word, connector);
+                return card;
+            }
+
+            updateStatus() {
+                const pageNumber = this.pagesClearedInLevel + 1;
+                const totalPages = this.totalPagesPerLevel();
+                const words = this.currentLeftItems.length;
+
+                this.levelLabel.textContent = String(this.level);
+                this.pageLabel.textContent = `${pageNumber} of ${totalPages}`;
+                this.matchLabel.textContent = `${this.matchesMade} of ${words}`;
+                this.wordsLabel.textContent = String(words);
+            }
+
+            resizeCanvas() {
+                const rect = this.board.getBoundingClientRect();
+                const ratio = window.devicePixelRatio || 1;
+                this.canvas.width = Math.round(rect.width * ratio);
+                this.canvas.height = Math.round(rect.height * ratio);
+                this.canvas.style.width = `${rect.width}px`;
+                this.canvas.style.height = `${rect.height}px`;
+                this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+            }
+
+            getConnectorPoint(connector) {
+                const connectorRect = connector.getBoundingClientRect();
+                const boardRect = this.board.getBoundingClientRect();
+                return {
+                    x: connectorRect.left - boardRect.left + (connectorRect.width / 2),
+                    y: connectorRect.top - boardRect.top + (connectorRect.height / 2)
+                };
+            }
+
+            beginDrag(event, connector) {
+                if (connector.classList.contains('matched')) return;
+                if (this.activeDrag) return;
+
+                event.preventDefault();
+
+                const value = parseInt(connector.dataset.value);
+                const side = connector.dataset.side;
+                const color = this.nextColor();
+                const startCard = connector.closest('.word-card');
+
+                this.activeDrag = {
+                    value,
+                    side,
+                    startConnector: connector,
+                    startCard,
+                    color,
+                    pointer: this.clientToBoardPoint(event.clientX, event.clientY)
+                };
+
+                connector.classList.add('is-active');
+                startCard.classList.add('is-origin');
+                startCard.style.setProperty('--match-color', color);
+                connector.style.setProperty('--match-color', color);
+
+                window.addEventListener('pointermove', this.handlePointerMove);
+                window.addEventListener('pointerup', this.handlePointerUp);
+                window.addEventListener('pointercancel', this.handlePointerUp);
+
+                this.redrawConnections();
+            }
+
+            clientToBoardPoint(clientX, clientY) {
+                const rect = this.board.getBoundingClientRect();
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+
+            handlePointerMove(event) {
+                if (!this.activeDrag) return;
+                this.activeDrag.pointer = this.clientToBoardPoint(event.clientX, event.clientY);
+                const hovered = this.findConnectorAt(event.clientX, event.clientY);
+                this.setHoverConnector(hovered);
+                this.redrawConnections();
+            }
+
+            handlePointerUp(event) {
+                if (!this.activeDrag) return;
+
+                const drag = this.activeDrag;
+                const target = this.findConnectorAt(event.clientX, event.clientY);
+                const validTarget = target
+                    && target !== drag.startConnector
+                    && target.dataset.side !== drag.side
+                    && !target.classList.contains('matched');
+
+                if (validTarget && parseInt(target.dataset.value) === drag.value) {
+                    this.completeMatch(drag, target);
+                } else {
+                    if (validTarget) {
+                        this.flashWrong(target.closest('.word-card'));
+                    }
+                    this.resetDragState();
+                }
+
+                window.removeEventListener('pointermove', this.handlePointerMove);
+                window.removeEventListener('pointerup', this.handlePointerUp);
+                window.removeEventListener('pointercancel', this.handlePointerUp);
+            }
+
+            findConnectorAt(clientX, clientY) {
+                const element = document.elementFromPoint(clientX, clientY);
+                let connector = element ? element.closest('.connector') : null;
+                if (!connector) {
+                    const card = element ? element.closest('.word-card') : null;
+                    connector = card ? card.querySelector('.connector') : null;
+                }
+                if (!connector) return null;
+                if (!this.activeDrag) return connector;
+                return connector.dataset.side !== this.activeDrag.side ? connector : null;
+            }
+
+            setHoverConnector(connector) {
+                if (this.hoverConnector === connector) return;
+
+                if (this.hoverConnector) {
+                    this.hoverConnector.classList.remove('is-hover');
+                    const previousCard = this.hoverConnector.closest('.word-card');
+                    if (previousCard) previousCard.classList.remove('is-hover');
+                }
+
+                this.hoverConnector = connector;
+
+                if (connector && this.activeDrag) {
+                    const card = connector.closest('.word-card');
+                    connector.classList.add('is-hover');
+                    connector.style.setProperty('--match-color', this.activeDrag.color);
+                    if (card) {
+                        card.classList.add('is-hover');
+                        card.style.setProperty('--match-color', this.activeDrag.color);
+                    }
+                }
+            }
+
+            clearHoverConnector() {
+                if (!this.hoverConnector) return;
+                this.hoverConnector.classList.remove('is-hover');
+                const card = this.hoverConnector.closest('.word-card');
+                if (card) card.classList.remove('is-hover');
+                this.hoverConnector = null;
+            }
+
+            flashWrong(card) {
+                if (!card) return;
+                card.classList.remove('wrong');
+                void card.offsetWidth;
+                card.classList.add('wrong');
+                setTimeout(() => card.classList.remove('wrong'), 280);
+            }
+
+            completeMatch(drag, targetConnector) {
+                const leftConnector = drag.side === 'left' ? drag.startConnector : targetConnector;
+                const rightConnector = drag.side === 'right' ? drag.startConnector : targetConnector;
+                const color = drag.color;
+
+                this.connections.push({
+                    value: drag.value,
+                    leftConnector,
+                    rightConnector,
+                    color
+                });
+
+                this.markMatched(leftConnector, color);
+                this.markMatched(rightConnector, color);
+                this.spawnSpark(leftConnector, color);
+                this.spawnSpark(rightConnector, color);
+
+                this.matchesMade += 1;
+                this.resetDragState();
+                this.redrawConnections();
+                this.updateStatus();
+
+                if (this.matchesMade === this.currentLeftItems.length) {
+                    this.finishPage();
+                }
+            }
+
+            markMatched(connector, color) {
+                const card = connector.closest('.word-card');
+                connector.classList.add('matched');
+                connector.style.setProperty('--match-color', color);
+                card.classList.add('matched');
+                card.style.setProperty('--match-color', color);
+            }
+
+            spawnSpark(connector, color) {
+                const point = this.getConnectorPoint(connector);
+
+                for (let index = 0; index < 6; index += 1) {
+                    const spark = document.createElement('div');
+                    const angle = (Math.PI * 2 * index) / 6;
+                    const distance = 22 + (index % 2) * 8;
+                    spark.className = 'spark';
+                    spark.style.left = `${point.x}px`;
+                    spark.style.top = `${point.y}px`;
+                    spark.style.setProperty('--spark-color', color);
+                    spark.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
+                    spark.style.setProperty('--dy', `${Math.sin(angle) * distance}px`);
+                    this.board.appendChild(spark);
+                    setTimeout(() => spark.remove(), 520);
+                }
+            }
+
+            finishPage() {
+                this.pagesClearedInLevel += 1;
+                const leveledUp = this.pagesClearedInLevel >= this.totalPagesPerLevel();
+
+                if (leveledUp) {
+                    this.level += 1;
+                    this.pagesClearedInLevel = 0;
+                    this.applyTheme(this.level);
+                    this.showToast(this.getLevelUpMessage(this.level));
+                } else {
+                    this.showToast(this.getPageClearMessage());
+                }
+                this.saveProgress();
+
+                this.pageAdvanceTimeout = window.setTimeout(() => {
+                    this.startPage();
+                }, leveledUp ? 1500 : 900);
+            }
+
+            showToast(text) {
+                clearTimeout(this.toastTimeout);
+                const lastConnection = this.connections[this.connections.length - 1];
+                this.toast.textContent = text;
+                this.toast.style.setProperty('--toast-color', lastConnection ? lastConnection.color : 'var(--theme-accent)');
+                this.toast.classList.add('show');
+                this.toastTimeout = window.setTimeout(() => this.clearToast(), 900);
+            }
+
+            clearToast() {
+                this.toast.classList.remove('show');
+            }
+
+            resetDragState() {
+                if (!this.activeDrag) return;
+
+                this.activeDrag.startConnector.classList.remove('is-active');
+                this.activeDrag.startCard.classList.remove('is-origin');
+                this.activeDrag.startCard.classList.remove('is-hover');
+                if (!this.activeDrag.startCard.classList.contains('matched')) {
+                    this.activeDrag.startCard.style.removeProperty('--match-color');
+                    this.activeDrag.startConnector.style.removeProperty('--match-color');
+                }
+
+                this.activeDrag = null;
+                this.clearHoverConnector();
+                this.redrawConnections();
+            }
+
+            nextColor() {
+                const hue = (this.connectionSerial * 47) % 360;
+                this.connectionSerial += 1;
+                return `hsl(${hue} 88% 58%)`;
+            }
+
+            redrawConnections() {
+                const ctx = this.ctx;
+                if (!ctx) return;
+
+                const rect = this.board.getBoundingClientRect();
+                ctx.clearRect(0, 0, rect.width, rect.height);
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                for (const connection of this.connections) {
+                    const start = this.getConnectorPoint(connection.leftConnector);
+                    const end = this.getConnectorPoint(connection.rightConnector);
+                    this.drawCurve(start, end, connection.color, 1);
+                }
+
+                if (this.activeDrag) {
+                    const start = this.getConnectorPoint(this.activeDrag.startConnector);
+                    const end = this.hoverConnector
+                        ? this.getConnectorPoint(this.hoverConnector)
+                        : this.activeDrag.pointer;
+                    this.drawCurve(start, end, this.activeDrag.color, 0.85);
+                }
+            }
+
+            drawCurve(start, end, color, alpha) {
+                const ctx = this.ctx;
+                const midX = (start.x + end.x) / 2;
+                const bend = Math.max(48, Math.abs(end.x - start.x) * 0.2);
+
+                ctx.save();
+                ctx.strokeStyle = color;
+                ctx.globalAlpha = alpha;
+                ctx.lineWidth = 5;
+                ctx.setLineDash([12, 10]);
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                ctx.bezierCurveTo(midX - bend, start.y, midX + bend, end.y, end.x, end.y);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        new MathMatchGame();
+    </script>
+</body>
+</html>
