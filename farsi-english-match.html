@@ -431,6 +431,43 @@
             transform: scale(1.04);
         }
 
+        html[data-level-theme="ocean"] body {
+            background:
+                radial-gradient(circle at 12% 18%, rgba(112, 210, 255, 0.5), transparent 20%),
+                radial-gradient(circle at 84% 12%, rgba(48, 180, 220, 0.4), transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(100, 200, 255, 0.3), transparent 24%),
+                linear-gradient(140deg, #0a2f44 0%, #156b8a 42%, #3aa8c9 100%);
+        }
+        html[data-level-theme="ocean"] .app {
+            background:
+                linear-gradient(165deg, rgba(230, 248, 255, 0.88), rgba(210, 240, 255, 0.8)),
+                rgba(240, 250, 255, 0.84);
+        }
+        html[data-level-theme="sunset"] body {
+            background:
+                radial-gradient(circle at 12% 18%, rgba(255, 190, 100, 0.5), transparent 20%),
+                radial-gradient(circle at 84% 12%, rgba(220, 100, 180, 0.35), transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(255, 130, 100, 0.3), transparent 24%),
+                linear-gradient(140deg, #2a0a30 0%, #7a1a5e 42%, #d45a5a 100%);
+        }
+        html[data-level-theme="sunset"] .app {
+            background:
+                linear-gradient(165deg, rgba(255, 240, 248, 0.88), rgba(255, 230, 240, 0.8)),
+                rgba(255, 240, 248, 0.84);
+        }
+        html[data-level-theme="royal"] body {
+            background:
+                radial-gradient(circle at 12% 18%, rgba(255, 215, 0, 0.5), transparent 20%),
+                radial-gradient(circle at 84% 12%, rgba(255, 180, 50, 0.35), transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(255, 200, 100, 0.3), transparent 24%),
+                linear-gradient(140deg, #2a1a00 0%, #6b4c0a 42%, #c9940a 100%);
+        }
+        html[data-level-theme="royal"] .app {
+            background:
+                linear-gradient(165deg, rgba(255, 250, 235, 0.88), rgba(255, 245, 220, 0.8)),
+                rgba(255, 250, 240, 0.84);
+        }
+
         @media (max-width: 960px) {
             .board {
                 gap: clamp(40px, 8vw, 96px);
@@ -704,6 +741,32 @@
                 }
             }
 
+            getLevelTheme(level) {
+                if (level <= 2) return 'warm';
+                if (level <= 5) return 'ocean';
+                if (level <= 8) return 'sunset';
+                return 'royal';
+            }
+
+            applyLevelTheme(level) {
+                document.documentElement.dataset.levelTheme = this.getLevelTheme(level);
+            }
+
+            getLevelUpMessage(level) {
+                if (level === 2) return 'آفرین! مرحله ۲';
+                if (level === 3) return 'عالی! مرحله ۳';
+                if (level === 5) return '🎉 مرحله ۵';
+                if (level === 10) return '🔥 مرحله ۱۰';
+                if (level % 5 === 0) return `🏆 مرحله ${this.toFaNumber(level)}`;
+                if (level % 3 === 0) return `داغ داغ! مرحله ${this.toFaNumber(level)}`;
+                return `مرحله ${this.toFaNumber(level)}`;
+            }
+
+            getPageClearMessage() {
+                const msgs = ['آفرین', 'عالی', 'خوشگل', 'داغ داغ', 'به به'];
+                return msgs[Math.floor(Math.random() * msgs.length)];
+            }
+
             startPage() {
                 clearTimeout(this.pageAdvanceTimeout);
                 this.clearToast();
@@ -714,6 +777,7 @@
                 this.activeDrag = null;
                 this.connectionSerial = 0;
                 this.clearHoverConnector();
+                this.applyLevelTheme(this.level);
                 this.renderPage();
                 this.resizeCanvas();
                 this.redrawConnections();
@@ -988,9 +1052,10 @@
                 if (leveledUp) {
                     this.level += 1;
                     this.pagesClearedInLevel = 0;
-                    this.showToast(`مرحله ${this.toFaNumber(this.level)}`);
+                    this.applyLevelTheme(this.level);
+                    this.showToast(this.getLevelUpMessage(this.level));
                 } else {
-                    this.showToast('آفرین');
+                    this.showToast(this.getPageClearMessage());
                 }
                 this.saveProgress();
 

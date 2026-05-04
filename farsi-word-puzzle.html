@@ -373,6 +373,49 @@
             transform: scale(1.04);
         }
 
+        html[data-level-theme="ocean"] {
+            --paper: #d4e8f0;
+            --line: #8ab3c9;
+            --ink: #1a4a5e;
+        }
+        html[data-level-theme="ocean"] .game {
+            border-color: rgba(140, 210, 240, 0.85);
+        }
+        html[data-level-theme="ocean"] body {
+            background:
+                radial-gradient(circle at 15% 15%, rgba(200, 240, 255, 0.7), transparent 20%),
+                radial-gradient(circle at 80% 20%, rgba(170, 220, 240, 0.45), transparent 20%),
+                linear-gradient(135deg, #c5dfe8, var(--paper));
+        }
+        html[data-level-theme="sunset"] {
+            --paper: #f0d4e0;
+            --line: #c98a9e;
+            --ink: #5e1a3a;
+        }
+        html[data-level-theme="sunset"] .game {
+            border-color: rgba(230, 130, 170, 0.85);
+        }
+        html[data-level-theme="sunset"] body {
+            background:
+                radial-gradient(circle at 15% 15%, rgba(255, 220, 230, 0.7), transparent 20%),
+                radial-gradient(circle at 80% 20%, rgba(240, 200, 210, 0.45), transparent 20%),
+                linear-gradient(135deg, #e8c5d0, var(--paper));
+        }
+        html[data-level-theme="royal"] {
+            --paper: #efe4c0;
+            --line: #c9b06a;
+            --ink: #4a3a1a;
+        }
+        html[data-level-theme="royal"] .game {
+            border-color: rgba(220, 190, 60, 0.85);
+        }
+        html[data-level-theme="royal"] body {
+            background:
+                radial-gradient(circle at 15% 15%, rgba(255, 240, 200, 0.7), transparent 20%),
+                radial-gradient(circle at 80% 20%, rgba(240, 220, 180, 0.45), transparent 20%),
+                linear-gradient(135deg, #e8d8b0, var(--paper));
+        }
+
         @media (max-height: 900px) and (orientation: landscape) {
             .game {
                 padding: 14px;
@@ -666,6 +709,27 @@
                 return String(value).replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)]);
             }
 
+            getLevelTheme(level) {
+                if (level <= 2) return 'warm';
+                if (level <= 5) return 'ocean';
+                if (level <= 8) return 'sunset';
+                return 'royal';
+            }
+
+            applyLevelTheme(level) {
+                document.documentElement.dataset.levelTheme = this.getLevelTheme(level);
+            }
+
+            getLevelMessage(level) {
+                if (level === 1) return 'آفرین!';
+                if (level === 2) return 'عالی!';
+                if (level === 5) return '🎉 عالی!';
+                if (level === 10) return '🔥 قهرمان!';
+                if (level % 5 === 0) return `🏆 مرحله ${this.toPersianDigits(level)}`;
+                if (level % 3 === 0) return 'داغ داغ!';
+                return 'آفرین!';
+            }
+
             setGuidedRtlMode(enabled) {
                 this.guidedRtlMode = enabled;
                 this.guideToggle.classList.toggle('active', enabled);
@@ -841,6 +905,7 @@
                 const units = this.shapedWordUnits(this.currentWord);
                 const tileUnits = [...units].reverse();
                 const totalUnits = units.length;
+                this.applyLevelTheme(this.levelIndex + 1);
                 this.status.textContent = `مرحله ${this.toPersianDigits(this.levelIndex + 1)}`;
                 this.wordStatus.textContent = this.formatEnglishLabel(this.currentEntry.en);
 
@@ -1094,6 +1159,10 @@
             }
 
             finishLevel() {
+                const badge = this.winMessage.querySelector('.win-badge');
+                if (badge) {
+                    badge.textContent = this.getLevelMessage(this.levelIndex + 1);
+                }
                 this.winMessage.classList.add('show');
                 setTimeout(() => {
                     this.levelIndex += 1;
