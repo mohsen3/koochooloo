@@ -354,6 +354,25 @@
         }
         .win.show { opacity: 1; }
 
+        #resetBtn {
+            cursor: pointer;
+            border: none;
+            font: inherit;
+            color: var(--ink);
+            background: rgba(220, 90, 100, 0.12);
+            transition: background 180ms ease, transform 180ms ease;
+            display: grid;
+            place-items: center;
+            min-width: 48px;
+            padding: 6px 12px;
+            line-height: 1;
+        }
+        #resetBtn:hover,
+        #resetBtn:active {
+            background: rgba(220, 90, 100, 0.28);
+            transform: scale(1.04);
+        }
+
         @media (max-height: 900px) and (orientation: landscape) {
             .game {
                 padding: 14px;
@@ -458,6 +477,7 @@
                 </button>
                 <div class="status word-status" id="wordStatus">Water</div>
                 <div class="status" id="status">مرحله ۱</div>
+                <button type="button" class="status" id="resetBtn" aria-label="Reset progress">↻</button>
             </div>
         </div>
         <div class="play-area" id="playArea">
@@ -556,7 +576,13 @@
                 this.resizeFrame = 0;
                 this.started = false;
                 this.guidedRtlMode = false;
+                this.loadProgress();
                 this.handleResize = this.handleResize.bind(this);
+
+                const resetBtn = document.getElementById('resetBtn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => this.resetProgress());
+                }
 
                 this.init();
             }
@@ -645,6 +671,7 @@
                 this.guideToggle.classList.toggle('active', enabled);
                 this.guideToggle.setAttribute('aria-checked', String(enabled));
                 this.syncGuidedState();
+                this.saveProgress();
             }
 
             handleResize() {
@@ -655,6 +682,34 @@
                 this.resizeFrame = requestAnimationFrame(() => {
                     this.relayoutLevel();
                 });
+            }
+
+            loadProgress() {
+                try {
+                    const saved = localStorage.getItem('farsi-word-puzzle-progress');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        if (typeof data.levelIndex === 'number') this.levelIndex = data.levelIndex;
+                        if (typeof data.guidedRtlMode === 'boolean') this.guidedRtlMode = data.guidedRtlMode;
+                    }
+                } catch (_) { /* ignore */ }
+            }
+
+            saveProgress() {
+                try {
+                    localStorage.setItem('farsi-word-puzzle-progress', JSON.stringify({
+                        levelIndex: this.levelIndex,
+                        guidedRtlMode: this.guidedRtlMode
+                    }));
+                } catch (_) { /* ignore */ }
+            }
+
+            resetProgress() {
+                if (!confirm('آیا مطمئن هستید؟ تمام مراحل پاک می‌شوند.')) return;
+                localStorage.removeItem('farsi-word-puzzle-progress');
+                this.levelIndex = 0;
+                this.setGuidedRtlMode(false);
+                this.startLevel();
             }
 
             charsOf(word) {
@@ -1042,6 +1097,7 @@
                 this.winMessage.classList.add('show');
                 setTimeout(() => {
                     this.levelIndex += 1;
+                    this.saveProgress();
                     this.startLevel();
                 }, 1400);
             }
