@@ -170,6 +170,32 @@
             color: #0d5c1d;
         }
 
+        .reset-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(234, 245, 255, 0.95));
+            color: var(--navy);
+            font: inherit;
+            font-size: 1.4rem;
+            line-height: 1;
+            box-shadow: 0 8px 18px rgba(39, 56, 95, 0.08);
+            cursor: pointer;
+            transition: transform 0.16s ease, box-shadow 0.16s ease;
+            padding: 0;
+        }
+
+        .reset-btn:hover,
+        .reset-btn:focus-visible {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 22px rgba(39, 56, 95, 0.14);
+            outline: none;
+        }
+
         .play-area {
             position: relative;
             isolation: isolate;
@@ -673,6 +699,7 @@
                     <div class="badge score" id="scoreBadge">Solved 0</div>
                 </div>
                 <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true" data-enabled="true">Sound On</button>
+                <button class="reset-btn" id="resetBtn" type="button" aria-label="Reset progress">↻</button>
             </div>
         </div>
 
@@ -720,6 +747,7 @@
                 this.correctStreak = 0;
                 this.solvedCount = 0;
                 this.questionId = 0;
+                this.loadProgress();
                 this.draggedTile = null;
                 this.dragPointerId = null;
                 this.dragOffsetX = 0;
@@ -805,6 +833,10 @@
                     this.setSoundEnabled(!this.soundEnabled);
                 });
 
+                document.getElementById("resetBtn").addEventListener("click", () => {
+                    this.resetProgress();
+                });
+
                 if (this.speechSynthesis) {
                     this.speechSynthesis.addEventListener("voiceschanged", () => this.loadVoices());
                 }
@@ -847,6 +879,46 @@
                 } catch (error) {
                     // Ignore storage failures.
                 }
+            }
+
+            loadProgress() {
+                try {
+                    const data = window.localStorage.getItem("addition-touch-progress");
+                    if (data) {
+                        const parsed = JSON.parse(data);
+                        this.level = parsed.level || 1;
+                        this.correctStreak = parsed.correctStreak || 0;
+                        this.solvedCount = parsed.solvedCount || 0;
+                    }
+                } catch (error) {
+                    // Ignore storage failures.
+                }
+            }
+
+            saveProgress() {
+                try {
+                    window.localStorage.setItem("addition-touch-progress", JSON.stringify({
+                        level: this.level,
+                        correctStreak: this.correctStreak,
+                        solvedCount: this.solvedCount
+                    }));
+                } catch (error) {
+                    // Ignore storage failures.
+                }
+            }
+
+            resetProgress() {
+                try {
+                    window.localStorage.removeItem("addition-touch-progress");
+                } catch (error) {
+                    // Ignore storage failures.
+                }
+                this.level = 1;
+                this.correctStreak = 0;
+                this.solvedCount = 0;
+                this.stopSpeech();
+                this.lastNarrationParts = [];
+                this.createQuestion();
             }
 
             setSoundEnabled(enabled) {
@@ -1575,6 +1647,10 @@
             }
 
             placeDigit(tile, slot) {
+                if (tile.digit !== slot.digit) {
+                    this.rejectTile(tile, slot);
+                    return;
+                }
                 tile.assignedSlotId = slot.id;
                 slot.tileId = tile.id;
                 slot.value = tile.digit;
@@ -1584,6 +1660,14 @@
 
                 this.syncNarrationProgress();
                 this.checkIfReady();
+            }
+
+            rejectTile(tile, slot) {
+                slot.element.classList.add("error");
+                setTimeout(() => {
+                    slot.element.classList.remove("error");
+                }, 400);
+                this.returnTileToHome(tile, true);
             }
 
             returnTileToHome(tile, withBoost = false) {
@@ -1658,13 +1742,6 @@
                 if (isCorrect) {
                     this.answerLocked = true;
                     this.handleCorrect();
-                    return;
-                }
-
-                const hasWrongDigit = fillableSlots.some((slot) => !slot.isPlaceholder && slot.value !== slot.digit);
-                if (hasWrongDigit) {
-                    this.answerLocked = true;
-                    this.handleWrong();
                 }
             }
 
@@ -1675,6 +1752,7 @@
                     this.level += 1;
                     this.correctStreak = 0;
                 }
+                this.saveProgress();
 
                 this.slots.forEach((slot) => {
                     if (slot.element) {
@@ -1690,25 +1768,6 @@
                 setTimeout(() => {
                     this.createQuestion();
                 }, 1800);
-            }
-
-            handleWrong() {
-                this.correctStreak = 0;
-                if (this.level > 1) {
-                    this.level -= 1;
-                }
-                this.updateHud();
-
-                this.slots.forEach((slot) => {
-                    if (slot.element) {
-                        this.updateSlotFeedback(slot);
-                    }
-                });
-                this.showCheer("Try an easier sum!");
-
-                setTimeout(() => {
-                    this.createQuestion();
-                }, 1200);
             }
 
             showCheer(message) {

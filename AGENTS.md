@@ -47,3 +47,11 @@ Persian letters are context-shaped. In logical word order, `previous only` means
 `both`: `ب`, `پ`, `ت`, `ث`, `ج`, `چ`, `ح`, `خ`, `س`, `ش`, `ص`, `ض`, `ط`, `ظ`, `ع`, `غ`, `ف`, `ق`, `ک`, `گ`, `ل`, `م`, `ن`, `ه`, `ی`
 
 Standalone hamza (`ء`) is non-joining and is not part of the base 32-letter Persian alphabet.
+
+## Save & Resume
+
+Games should save the current level/progress in localStorage and resume from there on reload. Include a small reset button labelled `↻` that clears saved progress and restarts from level 1.
+
+## Randomness & Difficulty Curve
+
+Shuffle the order of questions/levels each time a game starts so playthroughs feel different. Overall difficulty should still be consistent across runs and should increase gradually as the player advances.
