@@ -43,39 +43,42 @@
             justify-content: center;
         }
 
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 1.4em;
+        }
+
+        .level-info {
+            font-size: 1em;
+            background: #4fa3d1;
+            color: white;
+            font-weight: bold;
+            padding: 6px 18px;
+            border-radius: 16px;
+        }
+
         .reset-btn {
-            position: absolute;
-            top: 16px;
-            right: 20px;
-            font-size: 1.5em;
+            font-size: 1.3em;
             background: none;
             border: none;
             cursor: pointer;
-            color: #999;
-            padding: 4px 10px;
+            color: #bbb;
+            padding: 2px 8px;
             border-radius: 8px;
             transition: background 0.2s;
         }
 
         .reset-btn:hover {
+            color: #666;
             background: #f0f0f0;
-        }
-
-        h1 {
-            color: #333;
-            font-size: 1.8em;
-            margin-bottom: 12px;
-        }
-
-        .level-info {
-            font-size: 1.2em;
-            background: #4fa3d1;
-            color: white;
-            margin: 0 auto 16px auto;
-            font-weight: bold;
-            padding: 8px 24px;
-            border-radius: 20px;
-            display: inline-block;
         }
 
         .question {
@@ -190,9 +193,11 @@
 </head>
 <body>
     <div class="container" id="gameContainer">
-        <button class="reset-btn" id="resetBtn" title="Restart">↻</button>
-        <h1>Number Comparison</h1>
-        <div class="level-info" id="levelInfo">Level 1</div>
+        <div class="header">
+            <h1>Number Comparison</h1>
+            <div class="level-info" id="levelInfo">Level 1</div>
+            <button class="reset-btn" id="resetBtn" title="Restart">↻</button>
+        </div>
         <div class="question" id="question">Which number is <span class="highlight-more">larger</span>?</div>
 
         <div class="numbers-container" id="numbersContainer"></div>
