@@ -13,7 +13,6 @@
 
         body {
             font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
-            background: #e8f4f8;
             min-height: 100vh;
             min-height: 100dvh;
             display: flex;
@@ -26,74 +25,173 @@
             -webkit-touch-callout: none;
             outline: none;
             padding: 20px;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            animation: bgShift 12s ease infinite;
+        }
+
+        @keyframes bgShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .bg-shapes {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.12;
+        }
+
+        .bg-shape:nth-child(1) {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, #f093fb, transparent);
+            top: -100px; left: -100px;
+            animation: floatA 18s ease-in-out infinite;
+        }
+
+        .bg-shape:nth-child(2) {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, #4facfe, transparent);
+            bottom: -50px; right: -50px;
+            animation: floatB 22s ease-in-out infinite;
+        }
+
+        .bg-shape:nth-child(3) {
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, #43e97b, transparent);
+            top: 50%; left: 60%;
+            animation: floatA 16s ease-in-out infinite reverse;
+        }
+
+        .bg-shape:nth-child(4) {
+            width: 150px; height: 150px;
+            background: radial-gradient(circle, #fa709a, transparent);
+            top: 20%; right: 10%;
+            animation: floatB 20s ease-in-out infinite;
+        }
+
+        @keyframes floatA {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(40px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        @keyframes floatB {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-30px, 40px) scale(1.08); }
+            66% { transform: translate(25px, -15px) scale(0.92); }
         }
 
         .container {
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 30px 40px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 36px 44px;
+            box-shadow:
+                0 8px 32px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.15);
             text-align: center;
             max-width: 800px;
             width: 90%;
             position: relative;
+            z-index: 1;
             max-height: 95vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: box-shadow 0.4s;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 34px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent, rgba(255,255,255,0.08));
+            z-index: -1;
+            pointer-events: none;
         }
 
         .header {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: 14px;
+            margin-bottom: 20px;
         }
 
         h1 {
-            color: #333;
+            color: rgba(255,255,255,0.9);
             font-size: 1.4em;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .level-info {
-            font-size: 1em;
-            background: #4fa3d1;
+            font-size: 0.95em;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
             color: white;
-            font-weight: bold;
-            padding: 6px 18px;
-            border-radius: 16px;
+            font-weight: 700;
+            padding: 6px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(79,172,254,0.35);
         }
 
         .reset-btn {
-            font-size: 1.3em;
-            background: none;
-            border: none;
+            font-size: 1.4em;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
             cursor: pointer;
-            color: #bbb;
-            padding: 2px 8px;
-            border-radius: 8px;
-            transition: background 0.2s;
+            color: rgba(255,255,255,0.5);
+            padding: 4px 10px;
+            border-radius: 10px;
+            transition: all 0.25s;
         }
 
         .reset-btn:hover {
-            color: #666;
-            background: #f0f0f0;
+            color: #fff;
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.25);
+            transform: rotate(90deg);
         }
 
         .question {
             font-size: 1.5em;
-            color: #333;
-            margin-bottom: 20px;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 24px;
             font-weight: 600;
         }
 
         .question .highlight-more {
-            color: #6bcf7f;
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulseGlow 2s ease-in-out infinite;
         }
 
         .question .highlight-less {
-            color: #ff6b9d;
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
         }
 
         .numbers-container {
@@ -103,95 +201,259 @@
             gap: 16px;
             margin-bottom: 20px;
             flex-wrap: wrap;
+            perspective: 600px;
         }
 
         .number-box {
-            background: #6bcf7f;
-            border-radius: 16px;
-            padding: 12px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.15s;
             border: none;
-            box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow: hidden;
+            animation: numberAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
         }
 
-        .number-box:hover {
-            transform: scale(1.04);
-            box-shadow: 0 6px 18px rgba(107, 207, 127, 0.4);
+        .number-box:nth-child(1) { animation-delay: 0.02s; }
+        .number-box:nth-child(2) { animation-delay: 0.06s; }
+        .number-box:nth-child(3) { animation-delay: 0.10s; }
+        .number-box:nth-child(4) { animation-delay: 0.14s; }
+        .number-box:nth-child(5) { animation-delay: 0.18s; }
+        .number-box:nth-child(6) { animation-delay: 0.22s; }
+        .number-box:nth-child(7) { animation-delay: 0.26s; }
+        .number-box:nth-child(8) { animation-delay: 0.30s; }
+
+        @keyframes numberAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotateY(60deg) translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg) translateY(0);
+            }
         }
 
-        .number-box:active {
-            transform: scale(0.96);
+        .number-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent, rgba(255,255,255,0.15));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .number-box::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+
+        .number-box:hover::after {
+            opacity: 1;
+        }
+
+        .number-box.wrong-pick {
+            animation: shakeBox 0.5s ease !important;
+        }
+
+        .number-box.correct-pick {
+            animation: correctPop 0.5s ease both !important;
+        }
+
+        @keyframes shakeBox {
+            0%, 100% { transform: translateX(0); }
+            15% { transform: translateX(-12px) rotate(-3deg); }
+            30% { transform: translateX(10px) rotate(3deg); }
+            45% { transform: translateX(-8px) rotate(-2deg); }
+            60% { transform: translateX(6px) rotate(1deg); }
+            80% { transform: translateX(-3px); }
+        }
+
+        @keyframes correctPop {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.15); }
+            60% { transform: scale(0.95); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .number-box-glow {
+            position: absolute;
+            inset: -4px;
+            border-radius: 24px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+            filter: blur(12px);
+        }
+
+        .number-box:hover .number-box-glow {
+            opacity: 0.7;
         }
 
         .number {
             font-weight: 900;
             color: #ffffff;
             line-height: 1;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.2);
         }
 
         .feedback {
             font-size: 1.5em;
             font-weight: bold;
-            margin: 12px 0;
-            min-height: 48px;
+            margin: 10px 0;
+            min-height: 54px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            position: relative;
         }
 
-        .correct {
-            color: #6bcf7f;
-        }
-
-        .wrong {
-            color: #ff9ff3;
+        .correct-msg {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             font-size: 1.2em;
         }
 
-        .progress {
-            font-size: 1em;
-            color: #888;
-            margin-top: 10px;
+        .wrong-msg {
+            color: #ff6b8a;
+            font-size: 1.1em;
+            animation: wrongShake 0.4s ease;
         }
 
-        .instructions {
-            font-size: 0.95em;
-            color: #666;
-            margin-top: 16px;
-            padding: 12px;
-            background: #f8f8f8;
-            border-radius: 12px;
-        }
-
-        .congrats {
-            font-size: 2em;
-            font-weight: 900;
-            color: #4fa3d1;
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
         }
 
         .relation-text {
-            font-size: 0.8em;
-            color: #888;
+            font-size: 0.65em;
+            color: rgba(255,255,255,0.5);
             margin-top: 4px;
+            -webkit-text-fill-color: rgba(255,255,255,0.5);
         }
 
-        @keyframes correctBounce {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.06); }
-            100% { transform: scale(1); }
+        .congrats {
+            font-size: 1.6em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f093fb, #f5576c, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: congratsPulse 1s ease-in-out infinite;
         }
 
-        .feedback.correct-active {
-            animation: correctBounce 0.35s;
+        @keyframes congratsPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .progress-wrap {
+            width: 100%;
+            max-width: 280px;
+            margin: 6px auto 0;
+            height: 8px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #43e97b, #38f9d7, #4facfe);
+            background-size: 200% 100%;
+            animation: progressShimmer 2s linear infinite;
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes progressShimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .progress-label {
+            font-size: 0.85em;
+            color: rgba(255,255,255,0.4);
+            margin-top: 8px;
+        }
+
+        .instructions {
+            font-size: 0.85em;
+            color: rgba(255,255,255,0.3);
+            margin-top: 18px;
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Confetti */
+        .confetti-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .container { padding: 24px 18px; }
+            h1 { font-size: 1.1em; }
+            .question { font-size: 1.2em; }
         }
     </style>
 </head>
 <body>
+    <div class="bg-shapes">
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+    </div>
+
     <div class="container" id="gameContainer">
         <div class="header">
             <h1>Number Comparison</h1>
@@ -203,7 +465,10 @@
         <div class="numbers-container" id="numbersContainer"></div>
 
         <div class="feedback" id="feedback"></div>
-        <div class="progress" id="progress">0 / 5</div>
+        <div class="progress-wrap">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-label" id="progressLabel">0 / 5</div>
 
         <div class="instructions" id="instructions">Click a number or press it on your keyboard</div>
     </div>
@@ -262,6 +527,41 @@
             return arr;
         }
 
+        function getGradientForIndex(i, total) {
+            const presets = [
+                ['#f093fb', '#f5576c'],
+                ['#4facfe', '#00f2fe'],
+                ['#43e97b', '#38f9d7'],
+                ['#fa709a', '#fee140'],
+                ['#a18cd1', '#fbc2eb'],
+                ['#fccb90', '#d57eeb'],
+                ['#e0c3fc', '#8ec5fc'],
+                ['#f5576c', '#ff9a9e'],
+            ];
+            const p = presets[i % presets.length];
+            return `linear-gradient(135deg, ${p[0]}, ${p[1]})`;
+        }
+
+        function spawnConfetti() {
+            const container = document.createElement('div');
+            container.className = 'confetti-container';
+            document.body.appendChild(container);
+            const colors = ['#f093fb','#f5576c','#4facfe','#43e97b','#fee140','#fa709a','#a18cd1','#38f9d7'];
+            for (let i = 0; i < 50; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti';
+                el.style.left = Math.random() * 100 + '%';
+                el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                el.style.width = (Math.random() * 8 + 4) + 'px';
+                el.style.height = (Math.random() * 8 + 4) + 'px';
+                el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                el.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                el.style.animationDelay = (Math.random() * 0.8) + 's';
+                container.appendChild(el);
+            }
+            setTimeout(() => container.remove(), 3500);
+        }
+
         function generateNumbers() {
             waitingForNext = false;
             document.getElementById('feedback').innerHTML = '';
@@ -303,7 +603,7 @@
             const count = numbers.length;
             container.innerHTML = '';
 
-            numbers.forEach((num) => {
+            numbers.forEach((num, idx) => {
                 const scale = getSizeScale(num, numbers);
                 const baseSize = Math.min(80, 200 / Math.sqrt(count));
                 const fontSize = Math.round(baseSize * scale);
@@ -313,7 +613,9 @@
                 box.className = 'number-box';
                 box.style.width = boxSize + 'px';
                 box.style.height = boxSize + 'px';
-                box.onclick = () => selectNumber(num);
+                box.style.background = getGradientForIndex(idx, count);
+                box.style.boxShadow = `0 6px 24px rgba(0,0,0,0.25), 0 0 30px -5px rgba(255,255,255,0.08)`;
+                box.onclick = () => selectNumber(num, box);
 
                 const numberDiv = document.createElement('div');
                 numberDiv.className = 'number';
@@ -332,10 +634,16 @@
             }
 
             document.getElementById('levelInfo').textContent = 'Level ' + level;
-            document.getElementById('progress').textContent = correctCount + ' / 5';
+            updateProgress();
         }
 
-        function selectNumber(selectedNum) {
+        function updateProgress() {
+            const pct = (correctCount / 5) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressLabel').textContent = correctCount + ' / 5';
+        }
+
+        function selectNumber(selectedNum, boxEl) {
             if (waitingForNext) return;
 
             let correct = false;
@@ -345,31 +653,37 @@
                 correct = (selectedNum === Math.min(...numbers));
             }
 
-            handleAnswer(correct, selectedNum);
+            handleAnswer(correct, boxEl);
         }
 
-        function handleAnswer(correct) {
+        function handleAnswer(correct, boxEl) {
             if (waitingForNext) return;
 
             var feedback = document.getElementById('feedback');
 
             if (correct) {
+                if (boxEl) {
+                    boxEl.classList.add('correct-pick');
+                }
                 waitingForNext = true;
                 correctCount++;
                 var msg = messages[Math.floor(Math.random() * messages.length)];
                 saveProgress();
+                updateProgress();
 
                 var correctAnswer = questionType === 'more' ? Math.max(...numbers) : Math.min(...numbers);
                 var relation = correctAnswer + ' is ' + (questionType === 'more' ? 'larger' : 'smaller');
 
-                feedback.className = 'feedback correct-active';
-                feedback.innerHTML = '<div class="correct">' + msg + '</div><div class="relation-text">' + relation + '</div>';
+                feedback.innerHTML = '<div class="correct-msg">' + msg + '</div><div class="relation-text">' + relation + '</div>';
+
+                spawnConfetti();
 
                 if (correctCount >= 5) {
                     if (level < 10) {
                         level++;
                         correctCount = 0;
                         saveProgress();
+                        updateProgress();
                         setTimeout(function () {
                             feedback.innerHTML = '<div class="congrats">Level ' + level + ' Unlocked!</div>';
                             setTimeout(generateNumbers, 1500);
@@ -377,20 +691,26 @@
                     } else {
                         setTimeout(function () {
                             feedback.innerHTML = '<div class="congrats">You completed all levels!</div>';
+                            spawnConfetti();
                             setTimeout(function () {
                                 correctCount = 0;
                                 saveProgress();
+                                updateProgress();
                                 generateNumbers();
-                            }, 2500);
+                            }, 3000);
                         }, 1500);
                     }
                 } else {
                     setTimeout(generateNumbers, 1500);
                 }
             } else {
+                if (boxEl) {
+                    boxEl.classList.add('wrong-pick');
+                }
                 correctCount = 0;
                 saveProgress();
-                feedback.innerHTML = '<div class="wrong">Try again</div>';
+                updateProgress();
+                feedback.innerHTML = '<div class="wrong-msg">Try again</div>';
                 setTimeout(function () {
                     feedback.innerHTML = '';
                 }, 800);
@@ -403,8 +723,10 @@
             if (e.key >= '0' && e.key <= '9') {
                 e.preventDefault();
                 var pressedNum = parseInt(e.key);
-                if (numbers.indexOf(pressedNum) !== -1) {
-                    selectNumber(pressedNum);
+                var idx = numbers.indexOf(pressedNum);
+                if (idx !== -1) {
+                    var boxes = document.querySelectorAll('.number-box');
+                    selectNumber(pressedNum, boxes[idx]);
                 }
             }
         }, true);
