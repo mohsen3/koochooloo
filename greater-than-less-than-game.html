@@ -13,7 +13,7 @@
 
         body {
             font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
-            background: linear-gradient(135deg, #a8e6cf 0%, #ffd3b6 50%, #ffaaa5 100%);
+            background: #e8f4f8;
             min-height: 100vh;
             min-height: 100dvh;
             display: flex;
@@ -25,59 +25,17 @@
             user-select: none;
             -webkit-touch-callout: none;
             outline: none;
-            position: relative;
             padding: 20px;
         }
 
-        body::before {
-            content: '⭐';
-            position: absolute;
-            font-size: 2em;
-            animation: float 3s ease-in-out infinite;
-            top: 10%;
-            left: 10%;
-            opacity: 0.4;
-        }
-
-        body::after {
-            content: '⚡';
-            position: absolute;
-            font-size: 2.5em;
-            animation: float 4s ease-in-out infinite;
-            bottom: 10%;
-            right: 10%;
-            opacity: 0.4;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(8deg); }
-        }
-
-        .star-decoration {
-            position: absolute;
-            font-size: 1.5em;
-            animation: twinkle 2s ease-in-out infinite;
-            pointer-events: none;
-            opacity: 0.4;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.15); }
-        }
-
         .container {
-            background: linear-gradient(135deg, #ffffff 0%, #fff5f7 100%);
-            border-radius: 30px;
-            padding: 25px 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 6px rgba(255, 107, 157, 0.3);
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 30px 40px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
             text-align: center;
-            max-width: 850px;
+            max-width: 800px;
             width: 90%;
-            outline: none;
-            border: 6px solid transparent;
-            background-clip: padding-box;
             position: relative;
             max-height: 95vh;
             display: flex;
@@ -85,216 +43,98 @@
             justify-content: center;
         }
 
-        .container::before {
-            content: '';
+        .reset-btn {
             position: absolute;
-            top: -6px;
-            left: -6px;
-            right: -6px;
-            bottom: -6px;
-            background: linear-gradient(45deg, #ff6b9d, #c44569, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff6b9d);
-            border-radius: 36px;
-            z-index: -1;
-            animation: rainbow 3s linear infinite;
-            background-size: 300% 300%;
+            top: 16px;
+            right: 20px;
+            font-size: 1.5em;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #999;
+            padding: 4px 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
         }
 
-        @keyframes rainbow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .shake {
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        .reset-btn:hover {
+            background: #f0f0f0;
         }
 
         h1 {
-            color: #ff6b9d;
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 0px #ffa45b, 4px 4px 0px #ffd93d;
-            animation: titleBounce 2s ease-in-out infinite;
-            letter-spacing: 2px;
-        }
-
-        @keyframes titleBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 12px;
         }
 
         .level-info {
-            font-size: 1.5em;
-            background: linear-gradient(135deg, #ff6b9d, #ffa45b);
+            font-size: 1.2em;
+            background: #4fa3d1;
             color: white;
-            margin: 0 auto 20px auto;
+            margin: 0 auto 16px auto;
             font-weight: bold;
-            padding: 10px 30px;
-            border-radius: 50px;
+            padding: 8px 24px;
+            border-radius: 20px;
             display: inline-block;
-            box-shadow: 0 6px 15px rgba(255, 107, 157, 0.4);
-            animation: pulse 2s ease-in-out infinite;
         }
 
         .question {
-            font-size: 2em;
-            color: white;
-            margin-bottom: 25px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
-            padding: 15px 30px;
-            border-radius: 25px;
-            display: inline-block;
-            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.4);
-            animation: wiggle 3s ease-in-out infinite;
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
         }
 
-        .more-text {
+        .question .highlight-more {
             color: #6bcf7f;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
         }
 
-        .less-text {
+        .question .highlight-less {
             color: #ff6b9d;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
-        }
-
-        @keyframes wiggle {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-2deg); }
-            75% { transform: rotate(2deg); }
         }
 
         .numbers-container {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            margin-bottom: 25px;
-            gap: 15px;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            max-width: 100%;
         }
 
         .number-box {
-            background: linear-gradient(135deg, #6bcf7f 0%, #4fa3d1 100%);
-            border-radius: 25px;
-            padding: 15px;
+            background: #6bcf7f;
+            border-radius: 16px;
+            padding: 12px;
             cursor: pointer;
-            transition: all 0.3s;
-            border: 5px solid #6bcf7f;
-            box-shadow: 0 12px 30px rgba(107, 207, 127, 0.4);
-            position: relative;
-            min-width: 120px;
-            max-width: 180px;
-        }
-
-        /* Responsive sizing based on number of boxes */
-        .numbers-container[data-count="2"] .number-box {
-            flex: 1;
-            max-width: 300px;
-        }
-
-        .numbers-container[data-count="3"] .number-box {
-            flex: 0 1 calc(33% - 15px);
-            max-width: 200px;
-        }
-
-        .numbers-container[data-count="4"] .number-box {
-            flex: 0 1 calc(25% - 15px);
-            max-width: 160px;
-        }
-
-        .numbers-container[data-count="6"] .number-box {
-            flex: 0 1 calc(33% - 15px);
-            max-width: 140px;
-            padding: 10px;
-        }
-
-        .numbers-container[data-count="8"] .number-box {
-            flex: 0 1 calc(25% - 15px);
-            max-width: 120px;
-            padding: 8px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            border: none;
+            box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .number-box:hover {
-            transform: scale(1.08) rotate(2deg);
-            box-shadow: 0 15px 35px rgba(107, 207, 127, 0.5);
+            transform: scale(1.04);
+            box-shadow: 0 6px 18px rgba(107, 207, 127, 0.4);
         }
 
-        .number-box::before {
-            content: '⚡';
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            font-size: 1.5em;
-            animation: sparkle 1.5s ease-in-out infinite;
-        }
-
-        @keyframes sparkle {
-            0%, 100% { opacity: 0.3; transform: rotate(0deg); }
-            50% { opacity: 1; transform: rotate(180deg); }
-        }
-
-        .dots {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 6px;
-            margin-bottom: 15px;
-            min-height: 50px;
-            align-items: center;
-        }
-
-        .dot {
-            width: 25px;
-            height: 25px;
-            background: linear-gradient(135deg, #4fa3d1, #ff9ff3);
-            border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(79, 163, 209, 0.4);
-            animation: dotPop 0.5s ease-out;
-        }
-
-        /* Hide dots for many numbers to save space */
-        .numbers-container[data-count="6"] .dots,
-        .numbers-container[data-count="8"] .dots {
-            display: none;
-        }
-
-        .numbers-container[data-count="6"] .number,
-        .numbers-container[data-count="8"] .number {
-            font-size: 4em;
-        }
-
-        @keyframes dotPop {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+        .number-box:active {
+            transform: scale(0.96);
         }
 
         .number {
-            font-size: 6em;
             font-weight: 900;
             color: #ffffff;
-            text-shadow: 3px 3px 0px rgba(255,107,157,0.3);
-            animation: numberPulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes numberPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            line-height: 1;
         }
 
         .feedback {
-            font-size: 2.2em;
+            font-size: 1.5em;
             font-weight: bold;
-            margin: 20px 0;
-            min-height: 60px;
+            margin: 12px 0;
+            min-height: 48px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -303,143 +143,99 @@
 
         .correct {
             color: #6bcf7f;
-            animation: bounce 0.6s;
         }
 
-        .relation {
-            font-size: 2em;
-            color: #ff6b9d;
-            margin-top: 8px;
-            animation: scaleIn 0.5s;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        @keyframes scaleIn {
-            0% { transform: scale(0); opacity: 0; }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .celebration {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 5em;
-            font-weight: 900;
-            z-index: 1000;
-            animation: celebrate 1.5s;
-            pointer-events: none;
-            background: linear-gradient(135deg, #ff6b9d 0%, #ffa45b 25%, #ffd93d 50%, #6bcf7f 75%, #4fa3d1 100%);
-            padding: 40px 60px;
-            border-radius: 35px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.3), 0 0 80px rgba(255, 107, 157, 0.6);
-            border: 8px solid #ffffff;
-            background-size: 300% 300%;
-            animation: celebrate 1.5s, rainbow 2s linear infinite;
-        }
-
-        @keyframes celebrate {
-            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
-            50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); opacity: 1; }
-            70% { transform: translate(-50%, -50%) scale(1.05) rotate(-5deg); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        .wrong {
+            color: #ff9ff3;
+            font-size: 1.2em;
         }
 
         .progress {
-            font-size: 1.4em;
-            background: linear-gradient(135deg, #ff9ff3, #c44569);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 50px;
-            display: inline-block;
-            margin-top: 15px;
-            box-shadow: 0 6px 15px rgba(255, 159, 243, 0.4);
-            font-weight: bold;
+            font-size: 1em;
+            color: #888;
+            margin-top: 10px;
         }
 
         .instructions {
-            font-size: 1.1em;
-            color: white;
-            margin-top: 20px;
-            padding: 18px;
-            background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.4);
-            font-weight: bold;
-        }
-
-        #levelHint {
-            display: block;
-            margin-top: 8px;
-            color: #ffd93d;
-            font-size: 1em;
-            animation: blink 2s ease-in-out infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            font-size: 0.95em;
+            color: #666;
+            margin-top: 16px;
+            padding: 12px;
+            background: #f8f8f8;
+            border-radius: 12px;
         }
 
         .congrats {
-            font-size: 3em;
-            background: linear-gradient(135deg, #ff6b9d, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: rainbowText 2s linear infinite, pulse 1s infinite;
+            font-size: 2em;
             font-weight: 900;
+            color: #4fa3d1;
         }
 
-        @keyframes rainbowText {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
+        .relation-text {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 4px;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        @keyframes correctBounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+            100% { transform: scale(1); }
+        }
+
+        .feedback.correct-active {
+            animation: correctBounce 0.35s;
         }
     </style>
 </head>
 <body>
-    <!-- Floating decorations -->
-    <div class="star-decoration" style="top: 5%; left: 15%;">🚀</div>
-    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">⚡</div>
-    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">⚽</div>
-    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">🏀</div>
-    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🎮</div>
-    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🦖</div>
-    
     <div class="container" id="gameContainer">
-        <h1>🎮 Number Game! 🚀</h1>
+        <button class="reset-btn" id="resetBtn" title="Restart">↻</button>
+        <h1>Number Comparison</h1>
         <div class="level-info" id="levelInfo">Level 1</div>
-        <div class="question" id="question">Which one is LARGER?</div>
-        
+        <div class="question" id="question">Which number is <span class="highlight-more">larger</span>?</div>
+
         <div class="numbers-container" id="numbersContainer"></div>
 
         <div class="feedback" id="feedback"></div>
-        <div class="progress" id="progress">Correct answers: 0 / 5</div>
-        
-        <div class="instructions">
-            Press the number on your keyboard or click!<br>
-            <span id="levelHint">Level 1: Press the LARGER number!</span>
-        </div>
+        <div class="progress" id="progress">0 / 5</div>
+
+        <div class="instructions" id="instructions">Click a number or press it on your keyboard</div>
     </div>
 
     <script>
+        const STORAGE_KEY = 'comparisonGame';
+
         let level = 1;
         let correctCount = 0;
         let numbers = [];
-        let questionType = 'more'; // 'more' or 'less'
+        let questionType = 'more';
         let waitingForNext = false;
 
-        // Level configuration: number of boxes to show
+        function loadProgress() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    level = data.level || 1;
+                    correctCount = data.correctCount || 0;
+                }
+            } catch (e) {}
+        }
+
+        function saveProgress() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({ level, correctCount }));
+            } catch (e) {}
+        }
+
+        function resetProgress() {
+            localStorage.removeItem(STORAGE_KEY);
+            level = 1;
+            correctCount = 0;
+            generateNumbers();
+        }
+
         function getNumberCount(level) {
             if (level <= 2) return 2;
             if (level <= 4) return 3;
@@ -449,64 +245,26 @@
         }
 
         const messages = [
-            "Awesome! 🎉", "Great job! ⭐", "Perfect! 🌟", 
-            "Amazing! 🎊", "Wonderful! 🎈", "Fantastic! 🌈",
-            "Super! 🚀", "Brilliant! ✨"
+            "Correct!", "Great job!", "Well done!",
+            "Nice!", "Excellent!", "Keep going!"
         ];
 
-        // Audio context for celebration sounds
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playCelebrationSound() {
-            const now = audioContext.currentTime;
-            
-            // Create a fun ascending tone sequence
-            const frequencies = [523.25, 659.25, 783.99]; // C, E, G notes
-            
-            frequencies.forEach((freq, index) => {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.value = freq;
-                oscillator.type = 'sine';
-                
-                const startTime = now + index * 0.1;
-                gainNode.gain.setValueAtTime(0, startTime);
-                gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
-                
-                oscillator.start(startTime);
-                oscillator.stop(startTime + 0.3);
-            });
-        }
-
-        function showCelebration(message, relation) {
-            playCelebrationSound();
-            
-            const celebration = document.createElement('div');
-            celebration.className = 'celebration';
-            celebration.innerHTML = `
-                <div style="color: white; font-size: 0.6em; margin-bottom: 25px; text-shadow: 4px 4px 8px rgba(0,0,0,0.5);">${message}</div>
-                <div style="color: white; font-size: 1.3em; font-weight: 900; text-shadow: 5px 5px 10px rgba(0,0,0,0.5); letter-spacing: 5px;">${relation}</div>
-            `;
-            document.body.appendChild(celebration);
-            
-            setTimeout(() => {
-                celebration.remove();
-            }, 2000);
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
         }
 
         function generateNumbers() {
             waitingForNext = false;
             document.getElementById('feedback').innerHTML = '';
+            document.getElementById('feedback').className = 'feedback';
 
             const count = getNumberCount(level);
             numbers = [];
 
-            // Generate unique random numbers
             const used = new Set();
             while (numbers.length < count) {
                 const num = Math.floor(Math.random() * 15) + 1;
@@ -516,7 +274,8 @@
                 }
             }
 
-            // Randomly choose more or less after level 1
+            shuffle(numbers);
+
             if (level >= 2) {
                 questionType = Math.random() < 0.5 ? 'more' : 'less';
             } else {
@@ -526,154 +285,137 @@
             updateDisplay();
         }
 
+        function getSizeScale(num, nums) {
+            const min = Math.min(...nums);
+            const max = Math.max(...nums);
+            if (min === max) return 1;
+            const ratio = (num - min) / (max - min);
+            return 0.65 + ratio * 1.0;
+        }
+
         function updateDisplay() {
             const container = document.getElementById('numbersContainer');
             const count = numbers.length;
-
-            // Set data-count for CSS styling
-            container.setAttribute('data-count', count);
             container.innerHTML = '';
 
-            // Create number boxes
-            numbers.forEach((num, index) => {
+            numbers.forEach((num) => {
+                const scale = getSizeScale(num, numbers);
+                const baseSize = Math.min(80, 200 / Math.sqrt(count));
+                const fontSize = Math.round(baseSize * scale);
+                const boxSize = Math.round((baseSize + 40) * scale);
+
                 const box = document.createElement('div');
                 box.className = 'number-box';
+                box.style.width = boxSize + 'px';
+                box.style.height = boxSize + 'px';
                 box.onclick = () => selectNumber(num);
-
-                const dotsDiv = document.createElement('div');
-                dotsDiv.className = 'dots';
-                for (let i = 0; i < num; i++) {
-                    const dot = document.createElement('div');
-                    dot.className = 'dot';
-                    dotsDiv.appendChild(dot);
-                }
 
                 const numberDiv = document.createElement('div');
                 numberDiv.className = 'number';
+                numberDiv.style.fontSize = fontSize + 'px';
                 numberDiv.textContent = num;
 
-                box.appendChild(dotsDiv);
                 box.appendChild(numberDiv);
                 container.appendChild(box);
             });
 
-            // Update question with colored text
             const questionEl = document.getElementById('question');
             if (questionType === 'more') {
-                questionEl.innerHTML = 'Which has <span class="more-text">MORE</span>?';
+                questionEl.innerHTML = 'Which number is <span class="highlight-more">larger</span>?';
             } else {
-                questionEl.innerHTML = 'Which has <span class="less-text">LESS</span>?';
+                questionEl.innerHTML = 'Which number is <span class="highlight-less">smaller</span>?';
             }
 
-            document.getElementById('levelInfo').textContent = `Level ${level}`;
-            document.getElementById('progress').textContent = `Correct answers: ${correctCount} / 5`;
-
-            // Update hint
-            const hint = document.getElementById('levelHint');
-            if (questionType === 'more') {
-                hint.textContent = `Level ${level}: Click or type the number with MORE!`;
-            } else {
-                hint.textContent = `Level ${level}: Click or type the number with LESS!`;
-            }
+            document.getElementById('levelInfo').textContent = 'Level ' + level;
+            document.getElementById('progress').textContent = correctCount + ' / 5';
         }
 
         function selectNumber(selectedNum) {
             if (waitingForNext) return;
 
             let correct = false;
-
             if (questionType === 'more') {
-                const max = Math.max(...numbers);
-                correct = (selectedNum === max);
-            } else { // less
-                const min = Math.min(...numbers);
-                correct = (selectedNum === min);
+                correct = (selectedNum === Math.max(...numbers));
+            } else {
+                correct = (selectedNum === Math.min(...numbers));
             }
 
             handleAnswer(correct, selectedNum);
         }
 
-        function handleAnswer(correct, selectedNum) {
+        function handleAnswer(correct) {
             if (waitingForNext) return;
 
-            const feedback = document.getElementById('feedback');
+            var feedback = document.getElementById('feedback');
 
             if (correct) {
                 waitingForNext = true;
                 correctCount++;
-                const msg = messages[Math.floor(Math.random() * messages.length)];
+                var msg = messages[Math.floor(Math.random() * messages.length)];
+                saveProgress();
 
-                // Show the correct answer
-                const correctAnswer = questionType === 'more' ? Math.max(...numbers) : Math.min(...numbers);
-                const relation = `${correctAnswer} is ${questionType}!`;
+                var correctAnswer = questionType === 'more' ? Math.max(...numbers) : Math.min(...numbers);
+                var relation = correctAnswer + ' is ' + (questionType === 'more' ? 'larger' : 'smaller');
 
-                showCelebration(msg, relation);
-                feedback.innerHTML = `<div class="correct">${msg}</div><div class="relation">${relation}</div>`;
+                feedback.className = 'feedback correct-active';
+                feedback.innerHTML = '<div class="correct">' + msg + '</div><div class="relation-text">' + relation + '</div>';
 
                 if (correctCount >= 5) {
                     if (level < 10) {
                         level++;
                         correctCount = 0;
-                        setTimeout(() => {
-                            feedback.innerHTML = `<div class="congrats">Level ${level} Unlocked! 🎊</div>`;
-                            setTimeout(generateNumbers, 2000);
+                        saveProgress();
+                        setTimeout(function () {
+                            feedback.innerHTML = '<div class="congrats">Level ' + level + ' Unlocked!</div>';
+                            setTimeout(generateNumbers, 1500);
                         }, 1500);
                     } else {
-                        setTimeout(() => {
-                            feedback.innerHTML = `<div class="congrats">You're a Math Champion! 🏆</div>`;
-                            setTimeout(() => {
+                        setTimeout(function () {
+                            feedback.innerHTML = '<div class="congrats">You completed all levels!</div>';
+                            setTimeout(function () {
                                 correctCount = 0;
+                                saveProgress();
                                 generateNumbers();
-                            }, 3000);
+                            }, 2500);
                         }, 1500);
                     }
                 } else {
-                    setTimeout(generateNumbers, 2000);
+                    setTimeout(generateNumbers, 1500);
                 }
-
-                updateDisplay();
             } else {
-                // Wrong answer - stay on the same question
                 correctCount = 0;
-                feedback.innerHTML = '<div style="color: #ff9ff3; font-size: 2.2em;">Try again! 💪</div>';
-                document.getElementById('gameContainer').classList.add('shake');
-                setTimeout(() => {
-                    document.getElementById('gameContainer').classList.remove('shake');
-                    feedback.innerHTML = ''; // Clear the error message
-                }, 1000);
+                saveProgress();
+                feedback.innerHTML = '<div class="wrong">Try again</div>';
+                setTimeout(function () {
+                    feedback.innerHTML = '';
+                }, 800);
                 updateDisplay();
-                // Don't generate new numbers - keep the same ones
             }
         }
 
-        // Keyboard controls - capture phase to ensure it works everywhere
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', function (e) {
             if (waitingForNext) return;
-
-            // Handle number keys (0-9)
             if (e.key >= '0' && e.key <= '9') {
                 e.preventDefault();
-                const pressedNum = parseInt(e.key);
-
-                // Check if this number exists in the current numbers array
-                if (numbers.includes(pressedNum)) {
+                var pressedNum = parseInt(e.key);
+                if (numbers.indexOf(pressedNum) !== -1) {
                     selectNumber(pressedNum);
                 }
             }
-        }, true); // Use capture phase
+        }, true);
 
-        // Ensure the page is always ready to receive keypresses
-        window.addEventListener('load', () => {
+        window.addEventListener('load', function () {
             document.body.setAttribute('tabindex', '0');
             document.body.focus();
         });
 
-        // Refocus body if focus is lost
-        document.addEventListener('click', () => {
+        document.addEventListener('click', function () {
             document.body.focus();
         });
 
-        // Start the game
+        document.getElementById('resetBtn').addEventListener('click', resetProgress);
+
+        loadProgress();
         generateNumbers();
     </script>
 </body>
