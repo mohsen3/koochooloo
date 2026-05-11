@@ -25,6 +25,7 @@
             --body-bg-paper: #f7e7cf;
             --game-border-color: rgba(255, 255, 255, 0.9);
             --play-area-border: rgba(150, 100, 60, 0.2);
+            --play-area-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 245, 230, 0.8));
         }
 
         html {
@@ -117,7 +118,8 @@
             min-height: 0;
             border-radius: 20px;
             border: 2px dashed var(--play-area-border);
-            transition: background 300ms ease;
+            background: var(--play-area-bg);
+            transition: background 400ms ease;
             overflow: hidden;
         }
 
@@ -539,18 +541,17 @@
         ];
 
         const LEVEL_PALETTES = [
-            { bgLight: '#f5dfc2', paper: '#f7e7cf', line: '#d9b68a', ink: '#4f3a22', gameBorder: 'rgba(255,255,255,0.9)', playAreaBorder: 'rgba(150,100,60,0.2)' },
-            { bgLight: '#c5dfe8', paper: '#d4e8f0', line: '#8ab3c9', ink: '#1a4a5e', gameBorder: 'rgba(140,210,240,0.85)', playAreaBorder: 'rgba(60,100,150,0.2)' },
-            { bgLight: '#e8c5d0', paper: '#f0d4e0', line: '#c98a9e', ink: '#5e1a3a', gameBorder: 'rgba(230,130,170,0.85)', playAreaBorder: 'rgba(150,60,100,0.2)' },
-            { bgLight: '#e8d8b0', paper: '#efe4c0', line: '#c9b06a', ink: '#4a3a1a', gameBorder: 'rgba(220,190,60,0.85)', playAreaBorder: 'rgba(150,130,60,0.25)' },
+            { bgLight: '#f5dfc2', paper: '#f7e7cf', line: '#d9b68a', ink: '#4f3a22', gameBorder: 'rgba(255,255,255,0.9)', playAreaBorder: 'rgba(150,100,60,0.2)', playAreaBg: 'linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,245,230,0.8))' },
+            { bgLight: '#c5dfe8', paper: '#d4e8f0', line: '#8ab3c9', ink: '#1a4a5e', gameBorder: 'rgba(140,210,240,0.85)', playAreaBorder: 'rgba(60,100,150,0.2)', playAreaBg: 'linear-gradient(180deg, rgba(255,255,255,0.7), rgba(225,242,250,0.85))' },
+            { bgLight: '#e8c5d0', paper: '#f0d4e0', line: '#c98a9e', ink: '#5e1a3a', gameBorder: 'rgba(230,130,170,0.85)', playAreaBorder: 'rgba(150,60,100,0.2)', playAreaBg: 'linear-gradient(180deg, rgba(255,255,255,0.7), rgba(250,230,235,0.85))' },
+            { bgLight: '#e8d8b0', paper: '#efe4c0', line: '#c9b06a', ink: '#4a3a1a', gameBorder: 'rgba(220,190,60,0.85)', playAreaBorder: 'rgba(150,130,60,0.25)', playAreaBg: 'linear-gradient(180deg, rgba(255,255,255,0.7), rgba(248,240,220,0.85))' },
         ];
 
-        const ANSWER_AREA_COLORS = [
-            'linear-gradient(180deg, #fff8ec, #ffefd5)',
-            'linear-gradient(180deg, #e8f4f8, #cce5f0)',
-            'linear-gradient(180deg, #fce4ec, #f5cbd8)',
-            'linear-gradient(180deg, #e8f5e9, #c8e6c9)',
-            'linear-gradient(180deg, #ede7f6, #d1c4e9)',
+        const WIN_BG_COLORS = [
+            'linear-gradient(180deg, #fff3d6, #ffe4a8)',
+            'linear-gradient(180deg, #d6ecff, #a8d4ff)',
+            'linear-gradient(180deg, #ffd6e0, #ffa8bc)',
+            'linear-gradient(180deg, #d6ffd6, #a8ffa8)',
         ];
 
         class FarsiWordPuzzleGame {
@@ -572,7 +573,6 @@
                 this.resizeFrame = 0;
                 this.started = false;
                 this.guidedRtlMode = true;
-                this.answerColorIndex = 0;
                 this.loadProgress();
                 this.handleResize = this.handleResize.bind(this);
 
@@ -670,6 +670,7 @@
                 root.style.setProperty('--paper', palette.paper);
                 root.style.setProperty('--line', palette.line);
                 root.style.setProperty('--ink', palette.ink);
+                root.style.setProperty('--play-area-bg', palette.playAreaBg);
             }
 
             getLevelMessage(level) {
@@ -846,8 +847,7 @@
                 const tileUnits = [...units].reverse();
                 const totalUnits = units.length;
                 this.applyLevelTheme(this.levelIndex + 1);
-                this.answerColorIndex = 0;
-                this.playArea.style.background = ANSWER_AREA_COLORS[0];
+                this.playArea.style.background = '';
                 this.status.textContent = `مرحله ${this.toPersianDigits(this.levelIndex + 1)}`;
                 this.wordStatus.textContent = this.formatEnglishLabel(this.currentEntry.en);
 
@@ -982,8 +982,6 @@
                 slot.classList.add('good');
                 this.burst(slotCx - areaRect.left, slotCy - areaRect.top);
                 this.lockedCount += 1;
-                this.answerColorIndex = (this.answerColorIndex + 1) % ANSWER_AREA_COLORS.length;
-                this.playArea.style.background = ANSWER_AREA_COLORS[this.answerColorIndex];
                 this.syncGuidedState();
 
                 if (this.lockedCount === slots.length) {
@@ -1134,6 +1132,7 @@
                 if (badge) {
                     badge.textContent = this.getLevelMessage(this.levelIndex + 1);
                 }
+                this.playArea.style.background = WIN_BG_COLORS[this.levelIndex % WIN_BG_COLORS.length];
                 this.createConfetti(60);
                 setTimeout(() => this.burst(areaRect.width * 0.3, areaRect.height * 0.3), 100);
                 setTimeout(() => this.burst(areaRect.width * 0.7, areaRect.height * 0.3), 200);

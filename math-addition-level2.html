@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Math Addition Level 2 - Drag & Drop!</title>
+    <title>Math Addition - Level 2</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
-            background: linear-gradient(135deg, #b3d9ff 0%, #cce7ff 50%, #e6f5ff 100%);
+            background: linear-gradient(135deg, #e8f0fe 0%, #f0f5ff 100%);
             min-height: 100vh;
             min-height: 100dvh;
             display: flex;
@@ -24,844 +24,487 @@
             -webkit-user-select: none;
             user-select: none;
             -webkit-touch-callout: none;
-            outline: none;
-            position: relative;
-            padding: 20px;
-            transition: background 1s ease;
-        }
-
-        body::before {
-            content: '⭐';
-            position: absolute;
-            font-size: 2em;
-            animation: float 3s ease-in-out infinite;
-            top: 10%;
-            left: 10%;
-            opacity: 0.4;
-        }
-
-        body::after {
-            content: '⚡';
-            position: absolute;
-            font-size: 2.5em;
-            animation: float 4s ease-in-out infinite;
-            bottom: 10%;
-            right: 10%;
-            opacity: 0.4;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(8deg); }
-        }
-
-        .star-decoration {
-            position: absolute;
-            font-size: 1.5em;
-            animation: twinkle 2s ease-in-out infinite;
-            pointer-events: none;
-            opacity: 0.4;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.15); }
+            padding: 16px;
         }
 
         .container {
-            background: linear-gradient(135deg, #ffffff 0%, #fff5f7 100%);
-            border-radius: 30px;
-            padding: 40px 50px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 6px rgba(255, 107, 157, 0.3);
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 32px 36px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
             text-align: center;
-            max-width: 1000px;
-            width: 90%;
-            outline: none;
-            border: 6px solid transparent;
-            background-clip: padding-box;
-            position: relative;
+            max-width: 800px;
+            width: 100%;
             max-height: 95vh;
+            max-height: 95dvh;
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-content: center;
+            gap: 20px;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            right: -6px;
-            bottom: -6px;
-            background: linear-gradient(45deg, #ff6b9d, #c44569, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff6b9d);
-            border-radius: 36px;
-            z-index: -1;
-            animation: rainbow 3s linear infinite;
-            background-size: 300% 300%;
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
         }
 
-        @keyframes rainbow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .level-badge {
+            font-size: 1em;
+            font-weight: 700;
+            color: #5b7fa5;
+            background: #eef3f9;
+            padding: 8px 18px;
+            border-radius: 999px;
         }
 
-        .shake {
-            animation: shake 0.5s;
+        .reset-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: #eef3f9;
+            color: #5b7fa5;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+            line-height: 1;
+        }
+
+        .reset-btn:active {
+            background: #dce4ef;
+        }
+
+        .equation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 4px 0;
+        }
+
+        .num {
+            font-size: 5em;
+            font-weight: 900;
+            color: #3b5f8a;
+            min-width: 80px;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .op {
+            font-size: 4em;
+            font-weight: 900;
+            color: #7cab7e;
+            min-width: 48px;
+            text-align: center;
+        }
+
+        .blank {
+            width: 90px;
+            height: 100px;
+            font-size: 5em;
+            font-weight: 900;
+            text-align: center;
+            border: 4px dashed #b0c8e4;
+            border-radius: 16px;
+            background: #fafcff;
+            color: #3b5f8a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+
+        .blank.drag-over {
+            border-color: #5b7fa5;
+            border-style: solid;
+            background: #eef3f9;
+            transform: scale(1.06);
+        }
+
+        .blank.correct {
+            border-color: #7cab7e;
+            border-style: solid;
+            background: #e8f5e9;
+            color: #3a7a3c;
+            animation: pop 0.35s ease;
+        }
+
+        .blank.wrong {
+            border-color: #d4a0a0;
+            border-style: solid;
+            background: #fdf0f0;
+            animation: shake 0.35s;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.85); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-            20%, 40%, 60%, 80% { transform: translateX(10px); }
+            25% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(-4px); }
         }
 
-        h1 {
-            color: #ff6b9d;
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 0px #ffa45b, 4px 4px 0px #ffd93d;
-            animation: titleBounce 2s ease-in-out infinite;
-            letter-spacing: 2px;
-        }
-
-        @keyframes titleBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .score-info {
-            font-size: 1.8em;
-            background: linear-gradient(135deg, #ff6b9d, #ffa45b);
-            color: white;
-            margin: 0 auto 30px auto;
-            font-weight: bold;
-            padding: 12px 35px;
-            border-radius: 50px;
-            display: inline-block;
-            box-shadow: 0 6px 15px rgba(255, 107, 157, 0.4);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .equation-container {
+        .options {
             display: flex;
-            flex-direction: row;
             justify-content: center;
-            align-items: center;
-            margin: 30px 0;
-            gap: 25px;
+            gap: 14px;
             flex-wrap: wrap;
+            margin-top: 4px;
         }
 
-        .number {
-            font-size: 7em;
+        .option {
+            width: 80px;
+            height: 90px;
+            font-size: 3.4em;
             font-weight: 900;
-            color: #ff6b9d;
-            text-shadow: 3px 3px 0px rgba(255,170,91,0.3);
-            min-width: 140px;
-            text-align: center;
-        }
-
-        .operator {
-            font-size: 7em;
-            font-weight: 900;
-            color: #6bcf7f;
-            text-shadow: 3px 3px 0px rgba(79,163,209,0.3);
-            min-width: 80px;
-            text-align: center;
-        }
-
-        .blank-container {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .digit-blank {
-            width: 120px;
-            height: 140px;
-            font-size: 7em;
-            text-align: center;
-            border: 5px dashed #4fa3d1;
-            border-radius: 20px;
-            outline: none;
-            font-weight: 900;
-            background: linear-gradient(135deg, #fff5f7, #ffffff);
-            color: #ff6b9d;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .digit-blank.drag-over {
-            border-color: #ff6b9d;
-            border-style: solid;
-            box-shadow: 0 0 25px rgba(255, 107, 157, 0.6);
-            transform: scale(1.08);
-            background: linear-gradient(135deg, #ffe6f0, #fff9fb);
-        }
-
-        .digit-blank.correct {
-            background: linear-gradient(135deg, #6bcf7f, #4fa3d1);
-            border-color: #6bcf7f;
-            border-style: solid;
-            color: white;
-            box-shadow: 0 8px 25px rgba(107, 207, 127, 0.5);
-            animation: correctPop 0.5s ease-out;
-        }
-
-        .digit-blank.wrong {
-            background: linear-gradient(135deg, #ff9ff3, #feca57);
-            border-color: #ff9ff3;
-            border-style: solid;
-            color: white;
-            box-shadow: 0 8px 25px rgba(255, 159, 243, 0.5);
-            animation: shake 0.5s;
-        }
-
-        @keyframes correctPop {
-            0% { transform: scale(0.8); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .options-container {
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 3px solid rgba(255, 107, 157, 0.2);
-        }
-
-        .options-title {
-            font-size: 1.5em;
-            color: #4fa3d1;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .options-grid {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .digit-option {
-            width: 100px;
-            height: 110px;
-            font-size: 5em;
-            font-weight: 900;
-            color: white;
-            background: linear-gradient(135deg, #ffa45b, #ffd93d);
-            border: 4px solid #ff6b9d;
-            border-radius: 20px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #7cab7e, #5b9f5d);
+            border: none;
+            border-radius: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: grab;
-            box-shadow: 0 8px 20px rgba(255, 164, 91, 0.4);
-            transition: transform 0.2s ease, opacity 0.2s ease;
-            user-select: none;
+            box-shadow: 0 4px 12px rgba(90, 140, 90, 0.25);
+            transition: transform 0.15s, opacity 0.15s;
             touch-action: none;
-            will-change: transform;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
         }
 
-        .digit-option:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 12px 30px rgba(255, 164, 91, 0.6);
-        }
-
-        .digit-option:active {
+        .option:active {
+            transform: scale(0.92);
             cursor: grabbing;
         }
 
-        .digit-option.dragging {
-            opacity: 0.5;
-            cursor: grabbing;
-        }
-
-        .digit-option.used {
-            opacity: 0.3;
+        .option.used {
+            opacity: 0.25;
             pointer-events: none;
+        }
+
+        .option.dragging {
+            opacity: 0.4;
         }
 
         .touch-clone {
             position: fixed;
             pointer-events: none;
-            z-index: 10000;
-            opacity: 0.9;
-            will-change: transform;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-            transition: none !important;
-        }
-
-        .instructions {
-            font-size: 1.3em;
-            color: white;
-            margin-top: 25px;
-            padding: 15px;
-            background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.4);
-            font-weight: bold;
-        }
-
-        .celebration-overlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3em;
-            font-weight: 900;
             z-index: 1000;
-            animation: celebrate 1.5s, rainbow 2s linear infinite;
-            pointer-events: none;
-            background: linear-gradient(135deg, #ff6b9d 0%, #ffa45b 25%, #ffd93d 75%, #6bcf7f 100%);
-            padding: 30px 50px;
-            border-radius: 35px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.3), 0 0 80px rgba(255, 107, 157, 0.6);
-            border: 8px solid #ffffff;
-            background-size: 300% 300%;
-            color: white;
-            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
-        }
-
-        @keyframes celebrate {
-            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
-            50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); opacity: 1; }
-            70% { transform: translate(-50%, -50%) scale(1.05) rotate(-5deg); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+            opacity: 0.92;
         }
 
         .celebration {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 999;
+            font-size: 2.8em;
+            font-weight: 900;
+            color: #5b9f5d;
+            animation: pop 0.5s ease;
+            padding: 8px 0;
+            min-height: 1.4em;
         }
 
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            animation: confetti-fall 3s linear forwards;
-        }
-
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 20px;
+                gap: 16px;
             }
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .bounce {
-            animation: bounce 0.5s ease-in-out 3;
-        }
-
-        @media (max-width: 768px) {
-            .number, .operator {
-                font-size: 4em;
-                min-width: 80px;
-            }
-
-            .digit-blank {
-                width: 80px;
-                height: 100px;
-                font-size: 4em;
-            }
-
-            .digit-option {
-                width: 70px;
-                height: 80px;
-                font-size: 3em;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .score-info {
-                font-size: 1.3em;
-            }
+            .num { font-size: 3.6em; min-width: 60px; }
+            .op { font-size: 3em; min-width: 36px; }
+            .blank { width: 68px; height: 80px; font-size: 3.6em; }
+            .option { width: 64px; height: 74px; font-size: 2.6em; }
+            .celebration { font-size: 2em; }
         }
     </style>
 </head>
 <body>
-    <!-- Floating decorations -->
-    <div class="star-decoration" style="top: 5%; left: 15%;">🚀</div>
-    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">⚡</div>
-    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">⚽</div>
-    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">🏀</div>
-    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🎮</div>
-    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🦖</div>
-
-    <div class="container" id="game-container">
-        <h1>🎮 Addition Level 2! 🚀</h1>
-        <div class="score-info" id="score-info">Question: 1</div>
-
-        <div class="equation-container" id="equation-container">
-            <!-- Equation will be generated here -->
+    <div class="container" id="game">
+        <div class="header">
+            <span class="level-badge" id="levelBadge">Level 1</span>
+            <button class="reset-btn" id="resetBtn" aria-label="Reset progress">↻</button>
         </div>
 
-        <div class="options-container">
-            <div class="options-title">Drag a digit to fill the blanks! 👆</div>
-            <div class="options-grid" id="options-grid">
-                <!-- Options will be generated here -->
-            </div>
-        </div>
+        <div class="equation" id="equation"></div>
 
-        <div class="instructions">Drag numbers to complete the equation! 🎯</div>
+        <div class="options" id="options"></div>
+
+        <div class="celebration" id="celebration"></div>
     </div>
 
-    <div class="celebration" id="celebration"></div>
-
     <script>
-        class MathAdditionLevel2 {
+        class Game {
             constructor() {
-                this.questionNumber = 1;
-                this.currentProblem = {};
-                this.correctAnswer = 0;
-                this.blankPositions = []; // 'a', 'b', or 'c'
+                this.level = 1;
+                this.questionIndex = 0;
+                this.questionsPerLevel = 5;
+                this.problem = {};
+                this.blankPositions = [];
                 this.userAnswers = {};
-                this.draggedElement = null;
-                this.touchElement = null;
+                this.draggedEl = null;
+                this.touchEl = null;
                 this.touchClone = null;
 
-                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-                const messages = [
-                    "Awesome! 🎉", "Great job! ⭐", "Perfect! 🌟",
-                    "Amazing! 🎊", "Wonderful! 🎈", "Fantastic! 🌈",
-                    "Super! 🚀", "Brilliant! ✨"
-                ];
-                this.messages = messages;
-
-                this.init();
+                this.load();
+                this.render();
             }
 
-            init() {
-                this.generateProblem();
-                this.updateScore();
+            // ---- persistence ----
+
+            load() {
+                try {
+                    const d = JSON.parse(localStorage.getItem('math-addition-level2') || '{}');
+                    this.level = d.level || 1;
+                    this.questionIndex = d.questionIndex || 0;
+                } catch (_) {}
             }
 
-            playCelebrationSound() {
-                const now = this.audioContext.currentTime;
-                const frequencies = [523.25, 659.25, 783.99]; // C, E, G notes
-
-                frequencies.forEach((freq, index) => {
-                    const oscillator = this.audioContext.createOscillator();
-                    const gainNode = this.audioContext.createGain();
-
-                    oscillator.connect(gainNode);
-                    gainNode.connect(this.audioContext.destination);
-
-                    oscillator.frequency.value = freq;
-                    oscillator.type = 'sine';
-
-                    const startTime = now + index * 0.1;
-                    gainNode.gain.setValueAtTime(0, startTime);
-                    gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
-
-                    oscillator.start(startTime);
-                    oscillator.stop(startTime + 0.3);
-                });
+            save() {
+                try {
+                    localStorage.setItem('math-addition-level2', JSON.stringify({
+                        level: this.level,
+                        questionIndex: this.questionIndex
+                    }));
+                } catch (_) {}
             }
 
-            playErrorSound() {
-                const now = this.audioContext.currentTime;
-                const oscillator = this.audioContext.createOscillator();
-                const gainNode = this.audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(this.audioContext.destination);
-
-                oscillator.frequency.value = 200;
-                oscillator.type = 'sawtooth';
-
-                gainNode.gain.setValueAtTime(0, now);
-                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-
-                oscillator.start(now);
-                oscillator.stop(now + 0.2);
+            reset() {
+                this.level = 1;
+                this.questionIndex = 0;
+                this.save();
+                this.render();
             }
 
-            generateProblem() {
-                // Generate a, b such that a + b = c <= 25
-                const maxSum = 25;
+            // ---- problem generation ----
 
-                // Random sum between 2 and 25
-                const sum = Math.floor(Math.random() * (maxSum - 1)) + 2;
+            maxSum() {
+                const table = [0, 9, 10, 12, 14, 16, 18, 20, 23, 26, 29, 32, 35, 38];
+                if (this.level < table.length) return table[this.level];
+                return 40;
+            }
 
-                // Random a between 0 and sum
+            genProblem() {
+                const max = this.maxSum();
+                const sum = Math.floor(Math.random() * (max - 1)) + 2;
                 const a = Math.floor(Math.random() * (sum + 1));
                 const b = sum - a;
                 const c = sum;
-
-                this.currentProblem = { a, b, c };
-                this.correctAnswer = c;
-
-                // Randomly decide which ONE position should be blank
-                // Only one of a, b, or c will be blank
+                this.problem = { a, b, c };
                 const positions = ['a', 'b', 'c'];
-                const randomIndex = Math.floor(Math.random() * positions.length);
-
-                // Select only one position to be blank
-                this.blankPositions = [positions[randomIndex]];
-
+                this.blankPositions = [positions[Math.floor(Math.random() * 3)]];
                 this.userAnswers = {};
-
-                this.displayProblem();
             }
 
-            shuffleArray(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-                return array;
-            }
-
-            generateOptions() {
-                // Collect all digits needed from the blanks (with repetition)
-                const correctDigits = [];
-
-                this.blankPositions.forEach(pos => {
-                    const value = this.currentProblem[pos];
-                    const digits = value.toString().split('');
-                    correctDigits.push(...digits);
+            genOptions() {
+                const correct = [];
+                this.blankPositions.forEach(p => {
+                    String(this.problem[p]).split('').forEach(d => correct.push(d));
                 });
-
-                // Start with all required digits
-                const options = [...correctDigits];
-
-                // Add random incorrect digits to make at least 4 total
-                // Make sure we don't add duplicates
-                const allDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-
-                while (options.length < 4) {
-                    const randomDigit = allDigits[Math.floor(Math.random() * allDigits.length)];
-                    // Only add if it's not already in the options array
-                    if (!options.includes(randomDigit)) {
-                        options.push(randomDigit);
-                    }
+                const opts = [...correct];
+                const all = '0123456789'.split('');
+                while (opts.length < 4) {
+                    const r = all[Math.floor(Math.random() * 10)];
+                    if (!opts.includes(r)) opts.push(r);
                 }
-
-                return this.shuffleArray(options);
+                for (let i = opts.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [opts[i], opts[j]] = [opts[j], opts[i]];
+                }
+                return opts;
             }
 
-            displayProblem() {
-                const container = document.getElementById('equation-container');
-                container.innerHTML = '';
+            // ---- rendering ----
 
-                // Display a + b = c with blanks
+            render() {
+                this.genProblem();
+
+                const eq = document.getElementById('equation');
+                eq.innerHTML = '';
+
                 const parts = [
-                    { value: this.currentProblem.a, position: 'a' },
-                    { value: '+', position: 'op1' },
-                    { value: this.currentProblem.b, position: 'b' },
-                    { value: '=', position: 'op2' },
-                    { value: this.currentProblem.c, position: 'c' }
+                    { v: this.problem.a, k: 'a' },
+                    { v: '+', k: 'op1' },
+                    { v: this.problem.b, k: 'b' },
+                    { v: '=', k: 'op2' },
+                    { v: this.problem.c, k: 'c' }
                 ];
 
-                parts.forEach(part => {
-                    if (part.position === 'op1' || part.position === 'op2') {
-                        const opSpan = document.createElement('div');
-                        opSpan.className = 'operator';
-                        opSpan.textContent = part.value;
-                        container.appendChild(opSpan);
-                    } else if (this.blankPositions.includes(part.position)) {
-                        // Create blank(s) for this number
-                        const blankContainer = document.createElement('div');
-                        blankContainer.className = 'blank-container';
-
-                        const numDigits = part.value.toString().length;
-                        for (let i = 0; i < numDigits; i++) {
-                            const blank = document.createElement('div');
-                            blank.className = 'digit-blank';
-                            blank.dataset.position = part.position;
-                            blank.dataset.digitIndex = i;
-                            blank.dataset.expected = part.value.toString()[i];
-
-                            this.setupDropZone(blank);
-                            blankContainer.appendChild(blank);
+                parts.forEach(p => {
+                    if (p.k === 'op1' || p.k === 'op2') {
+                        const el = document.createElement('div');
+                        el.className = 'op';
+                        el.textContent = p.v;
+                        eq.appendChild(el);
+                    } else if (this.blankPositions.includes(p.k)) {
+                        const digits = String(p.v);
+                        for (let i = 0; i < digits.length; i++) {
+                            const b = document.createElement('div');
+                            b.className = 'blank';
+                            b.dataset.position = p.k;
+                            b.dataset.index = i;
+                            b.dataset.expected = digits[i];
+                            this.setupDrop(b);
+                            eq.appendChild(b);
                         }
-
-                        container.appendChild(blankContainer);
                     } else {
-                        // Display the number normally
-                        const numSpan = document.createElement('div');
-                        numSpan.className = 'number';
-                        numSpan.textContent = part.value;
-                        container.appendChild(numSpan);
+                        const el = document.createElement('div');
+                        el.className = 'num';
+                        el.textContent = p.v;
+                        eq.appendChild(el);
                     }
                 });
 
-                // Generate and display options
-                this.displayOptions();
+                this.renderOptions();
+                this.updateBadge();
+                document.getElementById('celebration').textContent = '';
             }
 
-            displayOptions() {
-                const optionsGrid = document.getElementById('options-grid');
-                optionsGrid.innerHTML = '';
+            updateBadge() {
+                document.getElementById('levelBadge').textContent = `Level ${this.level}`;
+            }
 
-                const options = this.generateOptions();
+            renderOptions() {
+                const grid = document.getElementById('options');
+                grid.innerHTML = '';
 
-                options.forEach(digit => {
-                    const option = document.createElement('div');
-                    option.className = 'digit-option';
-                    option.textContent = digit;
-                    option.dataset.digit = digit;
-                    option.draggable = true;
+                this.genOptions().forEach(d => {
+                    const el = document.createElement('div');
+                    el.className = 'option';
+                    el.textContent = d;
+                    el.dataset.digit = d;
+                    el.draggable = true;
 
-                    // Mouse drag events
-                    option.addEventListener('dragstart', (e) => this.handleDragStart(e));
-                    option.addEventListener('dragend', (e) => this.handleDragEnd(e));
+                    el.addEventListener('dragstart', e => {
+                        this.draggedEl = el;
+                        el.classList.add('dragging');
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', d);
+                    });
+                    el.addEventListener('dragend', () => {
+                        el.classList.remove('dragging');
+                        this.draggedEl = null;
+                    });
 
-                    // Touch events
-                    option.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
-                    option.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
-                    option.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
+                    el.addEventListener('touchstart', e => this.onTouchStart(e), { passive: false });
+                    el.addEventListener('touchmove', e => this.onTouchMove(e), { passive: false });
+                    el.addEventListener('touchend', e => this.onTouchEnd(e), { passive: false });
 
-                    optionsGrid.appendChild(option);
+                    grid.appendChild(el);
                 });
             }
 
-            setupDropZone(blank) {
-                // Mouse drop events
-                blank.addEventListener('dragover', (e) => this.handleDragOver(e));
-                blank.addEventListener('dragleave', (e) => this.handleDragLeave(e));
-                blank.addEventListener('drop', (e) => this.handleDrop(e));
+            setupDrop(blank) {
+                blank.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    blank.classList.add('drag-over');
+                });
+                blank.addEventListener('dragleave', () => blank.classList.remove('drag-over'));
+                blank.addEventListener('drop', e => {
+                    e.preventDefault();
+                    blank.classList.remove('drag-over');
+                    this.check(blank, e.dataTransfer.getData('text/plain'), blank.dataset.expected);
+                });
             }
 
-            handleDragStart(e) {
-                this.draggedElement = e.target;
-                e.target.classList.add('dragging');
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/plain', e.target.dataset.digit);
-            }
+            // ---- touch drag ----
 
-            handleDragEnd(e) {
-                e.target.classList.remove('dragging');
-                this.draggedElement = null;
-            }
-
-            handleDragOver(e) {
+            onTouchStart(e) {
                 e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-                e.target.classList.add('drag-over');
-            }
-
-            handleDragLeave(e) {
-                e.target.classList.remove('drag-over');
-            }
-
-            handleDrop(e) {
-                e.preventDefault();
-                e.target.classList.remove('drag-over');
-
-                const digit = e.dataTransfer.getData('text/plain');
-                const expected = e.target.dataset.expected;
-
-                this.checkAnswer(e.target, digit, expected);
-            }
-
-            // Touch event handlers
-            handleTouchStart(e) {
-                e.preventDefault();
-                this.touchElement = e.target;
-
-                // Create a clone for visual feedback
-                this.touchClone = e.target.cloneNode(true);
-                this.touchClone.className = 'digit-option touch-clone';
-                const rect = e.target.getBoundingClientRect();
-                this.touchClone.style.width = rect.width + 'px';
-                this.touchClone.style.height = rect.height + 'px';
-                this.touchClone.style.fontSize = window.getComputedStyle(e.target).fontSize;
+                this.touchEl = e.currentTarget;
+                const r = this.touchEl.getBoundingClientRect();
+                this.touchClone = this.touchEl.cloneNode(true);
+                this.touchClone.className = 'option touch-clone';
+                this.touchClone.style.width = r.width + 'px';
+                this.touchClone.style.height = r.height + 'px';
                 this.touchClone.style.left = '0';
                 this.touchClone.style.top = '0';
                 document.body.appendChild(this.touchClone);
-
-                e.target.classList.add('dragging');
-
-                const touch = e.touches[0];
-                // Store offset from touch point to element center
-                this.touchOffsetX = rect.width / 2;
-                this.touchOffsetY = rect.height / 2;
-
-                this.updateTouchClonePosition(touch);
+                this.touchEl.classList.add('dragging');
+                this.touchOffX = r.width / 2;
+                this.touchOffY = r.height / 2;
+                this.moveClone(e.touches[0]);
             }
 
-            handleTouchMove(e) {
+            onTouchMove(e) {
                 e.preventDefault();
-                if (!this.touchClone) return;
-
-                this.updateTouchClonePosition(e.touches[0]);
+                if (this.touchClone) this.moveClone(e.touches[0]);
             }
 
-            updateTouchClonePosition(touch) {
-                if (!this.touchClone) return;
-
-                // Position clone centered under finger
-                const x = touch.clientX - this.touchOffsetX;
-                const y = touch.clientY - this.touchOffsetY;
-
-                // Use transform for better performance
-                this.touchClone.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+            moveClone(t) {
+                this.touchClone.style.transform = `translate3d(${t.clientX - this.touchOffX}px, ${t.clientY - this.touchOffY}px, 0)`;
             }
 
-            handleTouchEnd(e) {
+            onTouchEnd(e) {
                 e.preventDefault();
-
-                if (!this.touchElement || !this.touchClone) return;
-
-                const touch = e.changedTouches[0];
-                const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
-
-                // Clean up
-                this.touchElement.classList.remove('dragging');
-                if (this.touchClone && this.touchClone.parentNode) {
-                    this.touchClone.parentNode.removeChild(this.touchClone);
-                }
+                if (!this.touchEl || !this.touchClone) return;
+                const t = e.changedTouches[0];
+                const target = document.elementFromPoint(t.clientX, t.clientY);
+                this.touchEl.classList.remove('dragging');
+                if (this.touchClone.parentNode) this.touchClone.parentNode.removeChild(this.touchClone);
                 this.touchClone = null;
-
-                // Check if dropped on a blank
-                if (dropTarget && dropTarget.classList.contains('digit-blank')) {
-                    const digit = this.touchElement.dataset.digit;
-                    const expected = dropTarget.dataset.expected;
-                    this.checkAnswer(dropTarget, digit, expected);
+                if (target && target.classList.contains('blank')) {
+                    this.check(target, this.touchEl.dataset.digit, target.dataset.expected);
                 }
-
-                this.touchElement = null;
+                this.touchEl = null;
             }
 
-            checkAnswer(blank, digit, expected) {
+            // ---- answer checking ----
+
+            check(blank, digit, expected) {
                 if (digit === expected) {
-                    // Correct!
                     blank.classList.remove('wrong');
                     blank.classList.add('correct');
                     blank.textContent = digit;
 
-                    const position = blank.dataset.position;
-                    const digitIndex = parseInt(blank.dataset.digitIndex);
+                    const pos = blank.dataset.position;
+                    const idx = parseInt(blank.dataset.index);
+                    if (!this.userAnswers[pos]) this.userAnswers[pos] = [];
+                    this.userAnswers[pos][idx] = digit;
 
-                    if (!this.userAnswers[position]) {
-                        this.userAnswers[position] = [];
-                    }
-                    this.userAnswers[position][digitIndex] = digit;
+                    if (this.draggedEl) this.draggedEl.classList.add('used');
+                    else if (this.touchEl) this.touchEl.classList.add('used');
 
-                    // Mark the option as used
-                    if (this.draggedElement) {
-                        this.draggedElement.classList.add('used');
-                    } else if (this.touchElement) {
-                        this.touchElement.classList.add('used');
-                    }
-
-                    // Check if all blanks are filled
-                    this.checkAllBlanks();
+                    if (this.allCorrect()) this.next();
                 } else {
-                    // Wrong!
                     blank.classList.remove('correct');
                     blank.classList.add('wrong');
-                    this.playErrorSound();
-
-                    setTimeout(() => {
-                        blank.classList.remove('wrong');
-                    }, 500);
+                    setTimeout(() => blank.classList.remove('wrong'), 350);
                 }
             }
 
-            checkAllBlanks() {
-                const allBlanks = document.querySelectorAll('.digit-blank');
-                const allCorrect = Array.from(allBlanks).every(blank =>
-                    blank.classList.contains('correct')
-                );
+            allCorrect() {
+                return Array.from(document.querySelectorAll('.blank')).every(b => b.classList.contains('correct'));
+            }
 
-                if (allCorrect) {
-                    // All correct! Celebrate and move to next question
-                    setTimeout(() => {
-                        this.celebrate();
-                        setTimeout(() => {
-                            this.questionNumber++;
-                            this.updateScore();
-                            this.generateProblem();
-                        }, 2000);
-                    }, 500);
+            next() {
+                this.questionIndex++;
+                if (this.questionIndex >= this.questionsPerLevel) {
+                    this.level++;
+                    this.questionIndex = 0;
                 }
-            }
+                this.save();
 
-            celebrate() {
-                this.playCelebrationSound();
+                const msg = ['Great!', 'Awesome!', 'Nice!', 'Perfect!', 'Well done!', 'Super!', 'Correct!', 'Amazing!']
+                    [Math.floor(Math.random() * 8)];
+                document.getElementById('celebration').textContent = msg;
 
-                const gameContainer = document.getElementById('game-container');
-                gameContainer.classList.add('bounce');
-
-                const msg = this.messages[Math.floor(Math.random() * this.messages.length)];
-                const celebration = document.createElement('div');
-                celebration.className = 'celebration-overlay';
-                celebration.textContent = msg;
-                document.body.appendChild(celebration);
-
-                setTimeout(() => {
-                    celebration.remove();
-                }, 1500);
-
-                this.createConfetti();
-
-                setTimeout(() => {
-                    gameContainer.classList.remove('bounce');
-                }, 1500);
-            }
-
-            createConfetti() {
-                const celebration = document.getElementById('celebration');
-                const colors = ['#ff6b9d', '#ffa45b', '#ffd93d', '#6bcf7f', '#4fa3d1', '#ff9ff3'];
-
-                for (let i = 0; i < 50; i++) {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + '%';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
-                    celebration.appendChild(confetti);
-
-                    setTimeout(() => {
-                        confetti.remove();
-                    }, 3000);
-                }
-            }
-
-            updateScore() {
-                const scoreInfo = document.getElementById('score-info');
-                scoreInfo.textContent = `Question: ${this.questionNumber}`;
+                setTimeout(() => this.render(), 1200);
             }
         }
 
-        window.addEventListener('load', () => {
-            new MathAdditionLevel2();
+        document.addEventListener('DOMContentLoaded', () => {
+            const g = new Game();
+            document.getElementById('resetBtn').addEventListener('click', () => g.reset());
         });
     </script>
 </body>

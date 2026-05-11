@@ -609,6 +609,19 @@
                 const fontSize = Math.round(baseSize * scale);
                 const boxSize = Math.round((baseSize + 40) * scale);
 
+                if (count === 2 && idx === 1) {
+                    const op = numbers[0] > numbers[1] ? '>' : '<';
+                    const opEl = document.createElement('div');
+                    opEl.textContent = op;
+                    Object.assign(opEl.style, {
+                        fontSize: '112px', fontWeight: '900',
+                        color: 'rgba(255,255,255,0.35)',
+                        textShadow: '0 2px 12px rgba(0,0,0,0.2)',
+                        lineHeight: '1'
+                    });
+                    container.appendChild(opEl);
+                }
+
                 const box = document.createElement('div');
                 box.className = 'number-box';
                 box.style.width = boxSize + 'px';

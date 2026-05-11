@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Two-Digit Addition Game</title>
+    <title>Two-Digit Addition</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
-            background: linear-gradient(135deg, #b3d9ff 0%, #cce7ff 50%, #e6f5ff 100%);
+            background: linear-gradient(135deg, #e8f0fe 0%, #f0f5ff 100%);
             min-height: 100vh;
             min-height: 100dvh;
             display: flex;
@@ -24,857 +24,626 @@
             -webkit-user-select: none;
             user-select: none;
             -webkit-touch-callout: none;
-            outline: none;
-            position: relative;
-            padding: 20px;
-            transition: background 1s ease;
-        }
-
-        body::before {
-            content: '⭐';
-            position: absolute;
-            font-size: 2em;
-            animation: float 3s ease-in-out infinite;
-            top: 10%;
-            left: 10%;
-            opacity: 0.4;
-        }
-
-        body::after {
-            content: '⚡';
-            position: absolute;
-            font-size: 2.5em;
-            animation: float 4s ease-in-out infinite;
-            bottom: 10%;
-            right: 10%;
-            opacity: 0.4;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(8deg); }
-        }
-
-        .star-decoration {
-            position: absolute;
-            font-size: 1.5em;
-            animation: twinkle 2s ease-in-out infinite;
-            pointer-events: none;
-            opacity: 0.4;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.15); }
+            padding: 16px;
         }
 
         .container {
-            background: linear-gradient(135deg, #ffffff 0%, #fff5f7 100%);
-            border-radius: 30px;
-            padding: 40px 50px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 6px rgba(255, 107, 157, 0.3);
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 32px 36px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
             text-align: center;
-            max-width: 900px;
-            width: 90%;
-            outline: none;
-            border: 6px solid transparent;
-            background-clip: padding-box;
-            position: relative;
+            max-width: 600px;
+            width: 100%;
             max-height: 95vh;
+            max-height: 95dvh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            right: -6px;
-            bottom: -6px;
-            background: linear-gradient(45deg, #ff6b9d, #c44569, #ffa45b, #ffd93d, #6bcf7f, #4fa3d1, #ff6b9d);
-            border-radius: 36px;
-            z-index: -1;
-            animation: rainbow 3s linear infinite;
-            background-size: 300% 300%;
-        }
-
-        @keyframes rainbow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .shake {
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-            20%, 40%, 60%, 80% { transform: translateX(10px); }
-        }
-
-        h1 {
-            color: #ff6b9d;
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 0px #ffa45b, 4px 4px 0px #ffd93d;
-            animation: titleBounce 2s ease-in-out infinite;
-            letter-spacing: 2px;
-        }
-
-        @keyframes titleBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
             align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
         }
 
-        .score-info {
-            font-size: 1.8em;
-            background: linear-gradient(135deg, #ff6b9d, #ffa45b);
-            color: white;
-            font-weight: bold;
-            padding: 12px 35px;
-            border-radius: 50px;
-            box-shadow: 0 6px 15px rgba(255, 107, 157, 0.4);
-            animation: pulse 2s ease-in-out infinite;
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        .q-badge {
+            font-size: 1em;
+            font-weight: 700;
+            color: #5b7fa5;
+            background: #eef3f9;
+            padding: 8px 18px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .reset-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: #eef3f9;
+            color: #5b7fa5;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+            line-height: 1;
+        }
+
+        .reset-btn:active {
+            background: #dce4ef;
         }
 
         .mode-select {
-            font-size: 1.3em;
-            padding: 10px 20px;
-            border: 3px solid #4fa3d1;
-            border-radius: 20px;
-            background: white;
-            color: #4fa3d1;
-            font-weight: bold;
+            font-size: 0.85em;
+            padding: 6px 14px;
+            border: 2px solid #d0dcec;
+            border-radius: 999px;
+            background: #f8faff;
+            color: #5b7fa5;
+            font-weight: 600;
             font-family: inherit;
             cursor: pointer;
             outline: none;
-            box-shadow: 0 4px 12px rgba(79, 163, 209, 0.3);
-            transition: all 0.3s ease;
+            appearance: auto;
+            -webkit-appearance: auto;
         }
 
-        .mode-select:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(79, 163, 209, 0.5);
-        }
-
-        .addition-problem {
+        .problem {
             display: inline-block;
-            margin: 30px auto;
-            position: relative;
+            margin: 2px auto;
         }
 
         .carry-row {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 10px;
+            gap: 10px;
+            min-height: 34px;
         }
 
-        .carry-digit {
-            width: 80px;
-            height: 60px;
-            font-size: 2.5em;
-            font-weight: 900;
-            color: #ff6b9d;
-            text-align: center;
+        .carry-cell {
+            width: 60px;
+            height: 32px;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #c44569;
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s;
         }
 
-        .carry-digit.visible {
+        .carry-cell.visible {
             opacity: 1;
         }
 
-        .number-row {
+        .num-row {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #f0f9ff, #ffffff);
-            border-radius: 15px;
+            gap: 10px;
+            padding: 2px 16px;
         }
 
-        .operator {
-            font-size: 4.5em;
+        .op-sign {
+            font-size: 3em;
             font-weight: 900;
-            color: #6bcf7f;
-            text-shadow: 3px 3px 0px rgba(79,163,209,0.3);
+            color: #7cab7e;
+            width: 48px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .digit-cell {
             width: 60px;
-            text-align: center;
-        }
-
-        .digit {
-            width: 80px;
-            height: 80px;
-            font-size: 4.5em;
+            height: 62px;
+            font-size: 3.5em;
             font-weight: 900;
-            color: #ff6b9d;
-            text-shadow: 3px 3px 0px rgba(255,170,91,0.3);
-            text-align: center;
+            color: #3b5f8a;
             display: flex;
             justify-content: center;
             align-items: center;
+            line-height: 1;
         }
 
-        .answer-row {
+        .ans-row {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            padding: 10px 20px;
-            border-top: 5px solid #4fa3d1;
-            margin-top: 5px;
+            gap: 10px;
+            padding: 4px 16px 0;
+            border-top: 3px solid #d0dcec;
+            min-height: 76px;
+            margin-top: 2px;
         }
 
-        .answer-digit {
-            width: 80px;
-            height: 80px;
-            font-size: 4.5em;
-            text-align: center;
-            border: 4px dashed #4fa3d1;
-            border-radius: 15px;
-            outline: none;
+        .blank {
+            width: 66px;
+            height: 76px;
+            font-size: 3.2em;
             font-weight: 900;
-            background: linear-gradient(135deg, #fff5f7, #ffffff);
-            color: #ff6b9d;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            caret-color: transparent;
-            cursor: default;
+            border: 4px dashed #b0c8e4;
+            border-radius: 14px;
+            background: #fafcff;
+            color: #3b5f8a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            line-height: 1;
         }
 
-        .answer-digit:focus {
-            border-color: #ff6b9d;
+        .blank.drag-over {
+            border-color: #5b7fa5;
             border-style: solid;
-            box-shadow: 0 0 25px rgba(255, 107, 157, 0.6);
-            transform: scale(1.08);
-            background: linear-gradient(135deg, #ffe6f0, #fff9fb);
+            background: #eef3f9;
+            transform: scale(1.06);
         }
 
-        .answer-digit.correct {
-            background: linear-gradient(135deg, #6bcf7f, #4fa3d1);
-            border-color: #6bcf7f;
+        .blank.correct {
+            border-color: #7cab7e;
             border-style: solid;
-            color: white;
-            box-shadow: 0 8px 25px rgba(107, 207, 127, 0.5);
-            animation: correctPop 0.5s ease-out;
-            pointer-events: none;
+            background: #e8f5e9;
+            color: #3a7a3c;
+            animation: pop 0.3s ease;
         }
 
-        .answer-digit.wrong {
-            background: linear-gradient(135deg, #ff9ff3, #feca57);
-            border-color: #ff9ff3;
+        .blank.wrong {
+            border-color: #d4a0a0;
             border-style: solid;
-            color: white;
-            box-shadow: 0 8px 25px rgba(255, 159, 243, 0.5);
-            animation: shake 0.5s;
+            background: #fdf0f0;
+            animation: shake 0.3s;
         }
 
-        @keyframes correctPop {
-            0% { transform: scale(0.8); }
-            50% { transform: scale(1.2); }
+        @keyframes pop {
+            0% { transform: scale(0.85); }
+            50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
 
-        .instructions {
-            font-size: 1.3em;
-            color: white;
-            margin-top: 25px;
-            padding: 15px;
-            background: linear-gradient(135deg, #4fa3d1, #6bcf7f);
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(79, 163, 209, 0.4);
-            font-weight: bold;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(-4px); }
         }
 
-        .celebration-overlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3em;
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 2px;
+        }
+
+        .option {
+            width: 64px;
+            height: 72px;
+            font-size: 2.6em;
             font-weight: 900;
-            z-index: 1000;
-            animation: celebrate 1.5s, rainbow 2s linear infinite;
-            pointer-events: none;
-            background: linear-gradient(135deg, #ff6b9d 0%, #ffa45b 25%, #ffd93d 75%, #6bcf7f 100%);
-            padding: 30px 50px;
-            border-radius: 35px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.3), 0 0 80px rgba(255, 107, 157, 0.6);
-            border: 8px solid #ffffff;
-            background-size: 300% 300%;
-            color: white;
-            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+            color: #ffffff;
+            background: linear-gradient(135deg, #7cab7e, #5b9f5d);
+            border: none;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+            box-shadow: 0 4px 12px rgba(90, 140, 90, 0.25);
+            transition: transform 0.15s, opacity 0.15s;
+            touch-action: none;
         }
 
-        @keyframes celebrate {
-            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
-            50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); opacity: 1; }
-            70% { transform: translate(-50%, -50%) scale(1.05) rotate(-5deg); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        .option:active {
+            transform: scale(0.92);
+            cursor: grabbing;
+        }
+
+        .option.used {
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        .option.dragging {
+            opacity: 0.4;
+        }
+
+        .touch-clone {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.92;
         }
 
         .celebration {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 999;
+            font-size: 2em;
+            font-weight: 700;
+            color: #5b9f5d;
+            animation: pop 0.5s ease;
+            padding: 2px 0;
+            min-height: 1.4em;
         }
 
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            animation: confetti-fall 3s linear forwards;
-        }
-
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 14px;
+                gap: 12px;
             }
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
+            .digit-cell {
+                width: 48px;
+                height: 48px;
+                font-size: 2.6em;
             }
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .score-info {
-                font-size: 1.3em;
-            }
-
-            .mode-select {
-                font-size: 1em;
-                padding: 8px 15px;
-            }
-
-            .operator, .digit {
-                font-size: 3em;
-                width: 60px;
+            .blank {
+                width: 52px;
                 height: 60px;
+                font-size: 2.4em;
             }
-
-            .answer-digit {
-                width: 60px;
-                height: 60px;
-                font-size: 3em;
-            }
-
-            .carry-digit {
-                width: 60px;
-                height: 45px;
+            .option {
+                width: 50px;
+                height: 58px;
                 font-size: 2em;
+            }
+            .op-sign {
+                font-size: 2.2em;
+                width: 36px;
+            }
+            .carry-cell {
+                width: 48px;
+                height: 24px;
+                font-size: 1.2em;
+            }
+            .celebration {
+                font-size: 1.5em;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Floating decorations -->
-    <div class="star-decoration" style="top: 5%; left: 15%;">🚀</div>
-    <div class="star-decoration" style="top: 15%; right: 20%; animation-delay: 0.5s;">⚡</div>
-    <div class="star-decoration" style="bottom: 20%; left: 10%; animation-delay: 1s;">⚽</div>
-    <div class="star-decoration" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">🏀</div>
-    <div class="star-decoration" style="top: 50%; left: 5%; animation-delay: 0.8s;">🎮</div>
-    <div class="star-decoration" style="top: 60%; right: 8%; animation-delay: 1.2s;">🦖</div>
-
-    <div class="container" id="game-container">
-        <h1>🎮 Two-Digit Addition! 🚀</h1>
-
-        <div class="controls">
-            <div class="score-info" id="score-info">Question: 1</div>
-            <select class="mode-select" id="mode-select">
+    <div class="container" id="game">
+        <div class="header">
+            <span class="q-badge" id="qBadge">Q1</span>
+            <select class="mode-select" id="modeSelect">
                 <option value="all">All</option>
                 <option value="no-carry">No Carry</option>
-                <option value="+01">+01</option>
-                <option value="+02">+02</option>
-                <option value="+03">+03</option>
+                <option value="+01">+1</option>
+                <option value="+02">+2</option>
+                <option value="+03">+3</option>
                 <option value="+10">+10</option>
                 <option value="+20">+20</option>
                 <option value="+30">+30</option>
             </select>
+            <button class="reset-btn" id="resetBtn" aria-label="Reset progress">↻</button>
         </div>
 
-        <div class="addition-problem" id="addition-problem">
-            <!-- Problem will be generated here -->
-        </div>
+        <div class="problem" id="problem"></div>
 
-        <div class="instructions">Type the answer from right to left! 🎯</div>
+        <div class="options" id="options"></div>
+
+        <div class="celebration" id="celebration"></div>
     </div>
 
-    <div class="celebration" id="celebration"></div>
-
     <script>
-        class TwoDigitAdditionGame {
+        class Game {
             constructor() {
-                this.questionNumber = 1;
+                this.questionIndex = 1;
                 this.num1 = 0;
                 this.num2 = 0;
                 this.answer = 0;
                 this.mode = 'all';
-                this.currentInputIndex = 1; // Start from ones place (right)
-                this.userAnswer = ['', '', ''];
+                this.draggedEl = null;
+                this.touchEl = null;
+                this.touchClone = null;
 
-                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.load();
 
-                const messages = [
-                    "Awesome! 🎉", "Great job! ⭐", "Perfect! 🌟",
-                    "Amazing! 🎊", "Wonderful! 🎈", "Fantastic! 🌈",
-                    "Super! 🚀", "Brilliant! ✨"
-                ];
-                this.messages = messages;
-
-                this.init();
-            }
-
-            init() {
-                document.getElementById('mode-select').addEventListener('change', (e) => {
+                document.getElementById('modeSelect').addEventListener('change', e => {
                     this.mode = e.target.value;
-                    this.generateProblem();
+                    this.render();
+                });
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.questionIndex = 1;
+                    this.save();
+                    this.render();
                 });
 
-                this.generateProblem();
-                this.updateScore();
+                this.render();
             }
 
-            playCelebrationSound() {
-                const now = this.audioContext.currentTime;
-                const frequencies = [523.25, 659.25, 783.99]; // C, E, G notes
-
-                frequencies.forEach((freq, index) => {
-                    const oscillator = this.audioContext.createOscillator();
-                    const gainNode = this.audioContext.createGain();
-
-                    oscillator.connect(gainNode);
-                    gainNode.connect(this.audioContext.destination);
-
-                    oscillator.frequency.value = freq;
-                    oscillator.type = 'sine';
-
-                    const startTime = now + index * 0.1;
-                    gainNode.gain.setValueAtTime(0, startTime);
-                    gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
-
-                    oscillator.start(startTime);
-                    oscillator.stop(startTime + 0.3);
-                });
+            load() {
+                try {
+                    const d = JSON.parse(localStorage.getItem('two-digit-addition') || '{}');
+                    this.questionIndex = d.questionIndex || 1;
+                    this.mode = d.mode || 'all';
+                    document.getElementById('modeSelect').value = this.mode;
+                } catch (_) {}
             }
 
-            playErrorSound() {
-                const now = this.audioContext.currentTime;
-                const oscillator = this.audioContext.createOscillator();
-                const gainNode = this.audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(this.audioContext.destination);
-
-                oscillator.frequency.value = 200;
-                oscillator.type = 'sawtooth';
-
-                gainNode.gain.setValueAtTime(0, now);
-                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-
-                oscillator.start(now);
-                oscillator.stop(now + 0.2);
+            save() {
+                try {
+                    localStorage.setItem('two-digit-addition', JSON.stringify({
+                        questionIndex: this.questionIndex,
+                        mode: this.mode
+                    }));
+                } catch (_) {}
             }
 
-            playSuccessSound() {
-                const now = this.audioContext.currentTime;
-                const oscillator = this.audioContext.createOscillator();
-                const gainNode = this.audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(this.audioContext.destination);
-
-                oscillator.frequency.value = 659.25; // E note
-                oscillator.type = 'sine';
-
-                gainNode.gain.setValueAtTime(0, now);
-                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-
-                oscillator.start(now);
-                oscillator.stop(now + 0.2);
-            }
-
-            generateProblem() {
+            genProblem() {
                 let num1, num2;
-
                 switch (this.mode) {
                     case 'no-carry':
-                        // Generate numbers where no carry is needed
                         do {
-                            num1 = Math.floor(Math.random() * 90) + 10; // 10-99
-                            num2 = Math.floor(Math.random() * 90) + 10; // 10-99
+                            num1 = Math.floor(Math.random() * 90) + 10;
+                            num2 = Math.floor(Math.random() * 90) + 10;
                         } while (this.hasCarry(num1, num2));
                         break;
-
-                    case '+01':
-                        num1 = Math.floor(Math.random() * 90) + 10; // 10-99
-                        num2 = 1;
-                        break;
-
-                    case '+02':
-                        num1 = Math.floor(Math.random() * 90) + 10; // 10-99
-                        num2 = 2;
-                        break;
-
-                    case '+03':
-                        num1 = Math.floor(Math.random() * 90) + 10; // 10-99
-                        num2 = 3;
-                        break;
-
-                    case '+10':
-                        num1 = Math.floor(Math.random() * 90) + 10; // 10-99
-                        num2 = 10;
-                        break;
-
-                    case '+20':
-                        num1 = Math.floor(Math.random() * 90) + 10; // 10-99
-                        num2 = 20;
-                        break;
-
-                    case '+30':
-                        num1 = Math.floor(Math.random() * 90) + 10; // 10-99
-                        num2 = 30;
-                        break;
-
-                    default: // 'all'
-                        num1 = Math.floor(Math.random() * 90) + 10; // 10-99
-                        num2 = Math.floor(Math.random() * 90) + 10; // 10-99
-                        break;
+                    case '+01': num1 = Math.floor(Math.random() * 90) + 10; num2 = 1; break;
+                    case '+02': num1 = Math.floor(Math.random() * 90) + 10; num2 = 2; break;
+                    case '+03': num1 = Math.floor(Math.random() * 90) + 10; num2 = 3; break;
+                    case '+10': num1 = Math.floor(Math.random() * 90) + 10; num2 = 10; break;
+                    case '+20': num1 = Math.floor(Math.random() * 90) + 10; num2 = 20; break;
+                    case '+30': num1 = Math.floor(Math.random() * 90) + 10; num2 = 30; break;
+                    default:
+                        num1 = Math.floor(Math.random() * 90) + 10;
+                        num2 = Math.floor(Math.random() * 90) + 10;
                 }
-
                 this.num1 = num1;
                 this.num2 = num2;
                 this.answer = num1 + num2;
-                this.currentInputIndex = 1; // Start from ones place
-                this.userAnswer = ['', '', ''];
-
-                this.displayProblem();
             }
 
             hasCarry(num1, num2) {
-                const ones1 = num1 % 10;
-                const ones2 = num2 % 10;
-                const tens1 = Math.floor(num1 / 10);
-                const tens2 = Math.floor(num2 / 10);
-
-                // Check if ones place creates carry
-                if (ones1 + ones2 >= 10) return true;
-
-                // Check if tens place creates carry
-                if (tens1 + tens2 >= 10) return true;
-
-                return false;
+                return (num1 % 10 + num2 % 10 >= 10) || (Math.floor(num1 / 10) + Math.floor(num2 / 10) >= 10);
             }
 
-            displayProblem() {
-                const container = document.getElementById('addition-problem');
+            genOptions() {
+                const digits = this.answer.toString().split('');
+                const opts = [...digits];
+                const all = '0123456789'.split('');
+                while (opts.length < 4) {
+                    const r = all[Math.floor(Math.random() * 10)];
+                    if (!opts.includes(r)) opts.push(r);
+                }
+                for (let i = opts.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [opts[i], opts[j]] = [opts[j], opts[i]];
+                }
+                return opts;
+            }
+
+            render() {
+                this.genProblem();
+                this.renderProblem();
+                this.renderOptions();
+                document.getElementById('qBadge').textContent = `Q${this.questionIndex}`;
+                document.getElementById('celebration').textContent = '';
+            }
+
+            renderProblem() {
+                const container = document.getElementById('problem');
                 container.innerHTML = '';
 
-                const num1Str = this.num1.toString().padStart(2, ' ');
-                const num2Str = this.num2.toString().padStart(2, ' ');
-                const answerLength = this.answer.toString().length;
+                const aStr = this.num1.toString().padStart(2, ' ');
+                const bStr = this.num2.toString().padStart(2, ' ');
+                const ansStr = this.answer.toString();
+                const len = ansStr.length;
 
-                // Carry row
                 const carryRow = document.createElement('div');
                 carryRow.className = 'carry-row';
-
-                if (answerLength === 3) {
-                    const carryHundreds = document.createElement('div');
-                    carryHundreds.className = 'carry-digit';
-                    carryHundreds.id = 'carry-hundreds';
-                    carryRow.appendChild(carryHundreds);
+                if (len === 3) {
+                    const ch = document.createElement('div');
+                    ch.className = 'carry-cell';
+                    ch.id = 'carry-h';
+                    carryRow.appendChild(ch);
                 }
-
-                const carryTens = document.createElement('div');
-                carryTens.className = 'carry-digit';
-                carryTens.id = 'carry-tens';
-                carryRow.appendChild(carryTens);
-
-                const carryOnes = document.createElement('div');
-                carryOnes.className = 'carry-digit';
-                carryRow.appendChild(carryOnes);
-
+                const ct = document.createElement('div');
+                ct.className = 'carry-cell';
+                ct.id = 'carry-t';
+                carryRow.appendChild(ct);
+                const co = document.createElement('div');
+                co.className = 'carry-cell';
+                carryRow.appendChild(co);
                 container.appendChild(carryRow);
 
-                // First number row
-                const row1 = document.createElement('div');
-                row1.className = 'number-row';
-
-                const spacer1 = document.createElement('div');
-                spacer1.className = 'operator';
-                spacer1.textContent = '';
-                row1.appendChild(spacer1);
-
-                for (let i = 0; i < 2; i++) {
-                    const digit = document.createElement('div');
-                    digit.className = 'digit';
-                    digit.textContent = num1Str[i].trim() || '';
-                    row1.appendChild(digit);
+                const r1 = document.createElement('div');
+                r1.className = 'num-row';
+                const sp1 = document.createElement('div');
+                sp1.className = 'op-sign';
+                r1.appendChild(sp1);
+                for (const ch of aStr) {
+                    const d = document.createElement('div');
+                    d.className = 'digit-cell';
+                    d.textContent = ch.trim() || '';
+                    r1.appendChild(d);
                 }
+                container.appendChild(r1);
 
-                container.appendChild(row1);
-
-                // Second number row
-                const row2 = document.createElement('div');
-                row2.className = 'number-row';
-
-                const operator = document.createElement('div');
-                operator.className = 'operator';
-                operator.textContent = '+';
-                row2.appendChild(operator);
-
-                for (let i = 0; i < 2; i++) {
-                    const digit = document.createElement('div');
-                    digit.className = 'digit';
-                    digit.textContent = num2Str[i].trim() || '';
-                    row2.appendChild(digit);
+                const r2 = document.createElement('div');
+                r2.className = 'num-row';
+                const op = document.createElement('div');
+                op.className = 'op-sign';
+                op.textContent = '+';
+                r2.appendChild(op);
+                for (const ch of bStr) {
+                    const d = document.createElement('div');
+                    d.className = 'digit-cell';
+                    d.textContent = ch.trim() || '';
+                    r2.appendChild(d);
                 }
+                container.appendChild(r2);
 
-                container.appendChild(row2);
-
-                // Answer row
-                const answerRow = document.createElement('div');
-                answerRow.className = 'answer-row';
-
-                // Add spacer if answer is 2 digits (to align with operator column)
-                if (answerLength === 2) {
-                    const spacer = document.createElement('div');
-                    spacer.className = 'operator';
-                    spacer.textContent = '';
-                    answerRow.appendChild(spacer);
+                const ansRow = document.createElement('div');
+                ansRow.className = 'ans-row';
+                if (len === 2) {
+                    const sp = document.createElement('div');
+                    sp.className = 'op-sign';
+                    ansRow.appendChild(sp);
                 }
-
-                for (let i = 0; i < answerLength; i++) {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'answer-digit';
-                    input.maxLength = 1;
-                    input.inputMode = 'numeric';
-                    input.pattern = '[0-9]';
-                    input.dataset.index = i; // Store actual index (0=leftmost digit, increases right)
-
-                    input.addEventListener('input', (e) => this.handleInput(e));
-                    input.addEventListener('keydown', (e) => this.handleKeydown(e));
-
-                    answerRow.appendChild(input);
+                for (let i = 0; i < len; i++) {
+                    const b = document.createElement('div');
+                    b.className = 'blank';
+                    b.dataset.index = i;
+                    b.dataset.expected = ansStr[i];
+                    this.setupDrop(b);
+                    ansRow.appendChild(b);
                 }
-
-                container.appendChild(answerRow);
-
-                // Focus on the rightmost (ones) input
-                setTimeout(() => {
-                    const inputs = answerRow.querySelectorAll('.answer-digit');
-                    inputs[inputs.length - 1].focus();
-                }, 100);
+                container.appendChild(ansRow);
             }
 
-            handleInput(e) {
-                const input = e.target;
-                const value = input.value;
+            renderOptions() {
+                const grid = document.getElementById('options');
+                grid.innerHTML = '';
+                this.genOptions().forEach(d => {
+                    const el = document.createElement('div');
+                    el.className = 'option';
+                    el.textContent = d;
+                    el.dataset.digit = d;
+                    el.draggable = true;
 
-                // Only allow numeric input
-                if (!/^\d?$/.test(value)) {
-                    input.value = value.replace(/\D/g, '');
-                    return;
+                    el.addEventListener('dragstart', e => {
+                        this.draggedEl = el;
+                        el.classList.add('dragging');
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', d);
+                    });
+                    el.addEventListener('dragend', () => {
+                        el.classList.remove('dragging');
+                        this.draggedEl = null;
+                    });
+
+                    el.addEventListener('touchstart', e => this.onTouchStart(e), { passive: false });
+                    el.addEventListener('touchmove', e => this.onTouchMove(e), { passive: false });
+                    el.addEventListener('touchend', e => this.onTouchEnd(e), { passive: false });
+
+                    grid.appendChild(el);
+                });
+            }
+
+            setupDrop(blank) {
+                blank.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    blank.classList.add('drag-over');
+                });
+                blank.addEventListener('dragleave', () => blank.classList.remove('drag-over'));
+                blank.addEventListener('drop', e => {
+                    e.preventDefault();
+                    blank.classList.remove('drag-over');
+                    if (blank.classList.contains('correct')) return;
+                    this.check(blank, e.dataTransfer.getData('text/plain'), blank.dataset.expected);
+                });
+            }
+
+            onTouchStart(e) {
+                e.preventDefault();
+                this.touchEl = e.currentTarget;
+                const r = this.touchEl.getBoundingClientRect();
+                this.touchClone = this.touchEl.cloneNode(true);
+                this.touchClone.className = 'option touch-clone';
+                this.touchClone.style.width = r.width + 'px';
+                this.touchClone.style.height = r.height + 'px';
+                this.touchClone.style.left = '0';
+                this.touchClone.style.top = '0';
+                document.body.appendChild(this.touchClone);
+                this.touchEl.classList.add('dragging');
+                this.touchOffX = r.width / 2;
+                this.touchOffY = r.height / 2;
+                this.moveClone(e.touches[0]);
+            }
+
+            onTouchMove(e) {
+                e.preventDefault();
+                if (this.touchClone) this.moveClone(e.touches[0]);
+            }
+
+            moveClone(t) {
+                this.touchClone.style.transform = `translate3d(${t.clientX - this.touchOffX}px, ${t.clientY - this.touchOffY}px, 0)`;
+            }
+
+            onTouchEnd(e) {
+                e.preventDefault();
+                if (!this.touchEl || !this.touchClone) return;
+                const t = e.changedTouches[0];
+                const target = document.elementFromPoint(t.clientX, t.clientY);
+                this.touchEl.classList.remove('dragging');
+                if (this.touchClone.parentNode) this.touchClone.parentNode.removeChild(this.touchClone);
+                this.touchClone = null;
+                if (target && target.classList.contains('blank') && !target.classList.contains('correct')) {
+                    this.check(target, this.touchEl.dataset.digit, target.dataset.expected);
+                }
+                this.touchEl = null;
+            }
+
+            check(blank, digit, expected) {
+                if (digit === expected) {
+                    blank.classList.remove('wrong');
+                    blank.classList.add('correct');
+                    blank.textContent = digit;
+
+                    if (this.draggedEl) this.draggedEl.classList.add('used');
+                    else if (this.touchEl) this.touchEl.classList.add('used');
+
+                    this.showCarry();
+
+                    if (this.allCorrect()) this.next();
+                } else {
+                    blank.classList.remove('correct');
+                    blank.classList.add('wrong');
+                    setTimeout(() => blank.classList.remove('wrong'), 350);
+                }
+            }
+
+            showCarry() {
+                const blanks = document.querySelectorAll('.blank');
+                const ansStr = this.answer.toString();
+
+                const last = blanks[blanks.length - 1];
+                if (last && last.classList.contains('correct')) {
+                    const ones1 = this.num1 % 10;
+                    const ones2 = this.num2 % 10;
+                    if (ones1 + ones2 >= 10) {
+                        const ct = document.getElementById('carry-t');
+                        if (ct) { ct.textContent = '1'; ct.classList.add('visible'); }
+                    }
                 }
 
-                if (value === '') return;
-
-                const digitIndex = parseInt(input.dataset.index);
-                const answerStr = this.answer.toString();
-                const correctDigit = answerStr[digitIndex];
-
-                this.userAnswer[digitIndex] = value;
-
-                if (value === correctDigit) {
-                    // Correct!
-                    input.classList.remove('wrong');
-                    input.classList.add('correct');
-                    this.playSuccessSound();
-
-                    // Check if we need to show carry
-                    // For ones place (rightmost digit, last index)
-                    if (digitIndex === answerStr.length - 1) {
-                        const ones1 = this.num1 % 10;
-                        const ones2 = this.num2 % 10;
-                        if (ones1 + ones2 >= 10) {
-                            const carryTens = document.getElementById('carry-tens');
-                            if (carryTens) {
-                                carryTens.textContent = '1';
-                                carryTens.classList.add('visible');
-                            }
-                        }
-                    }
-                    // For tens place in a 3-digit answer (middle digit, index 1)
-                    else if (digitIndex === 1 && answerStr.length === 3) {
+                if (ansStr.length === 3 && blanks.length >= 2) {
+                    const mid = blanks[1];
+                    if (mid && mid.classList.contains('correct')) {
                         const tens1 = Math.floor(this.num1 / 10) % 10;
                         const tens2 = Math.floor(this.num2 / 10) % 10;
-                        const onesCarry = (this.num1 % 10 + this.num2 % 10) >= 10 ? 1 : 0;
+                        const onesCarry = (this.num1 % 10 + this.num2 % 10 >= 10) ? 1 : 0;
                         if (tens1 + tens2 + onesCarry >= 10) {
-                            const carryHundreds = document.getElementById('carry-hundreds');
-                            if (carryHundreds) {
-                                carryHundreds.textContent = '1';
-                                carryHundreds.classList.add('visible');
-                            }
+                            const ch = document.getElementById('carry-h');
+                            if (ch) { ch.textContent = '1'; ch.classList.add('visible'); }
                         }
                     }
-
-                    // Move to next input (left)
-                    setTimeout(() => {
-                        const nextInput = this.findNextInput(input);
-                        if (nextInput) {
-                            nextInput.focus();
-                        } else {
-                            // Check if all complete
-                            this.checkCompletion();
-                        }
-                    }, 300);
-
-                } else {
-                    // Wrong!
-                    input.classList.remove('correct');
-                    input.classList.add('wrong');
-                    this.playErrorSound();
-
-                    setTimeout(() => {
-                        input.value = '';
-                        input.classList.remove('wrong');
-                        this.userAnswer[digitIndex] = '';
-                        input.focus();
-                    }, 800);
                 }
             }
 
-            handleKeydown(e) {
-                const input = e.target;
-
-                if (e.key === 'Backspace' && input.value === '') {
-                    // Move to previous input (right)
-                    const prevInput = this.findPreviousInput(input);
-                    if (prevInput && !prevInput.classList.contains('correct')) {
-                        e.preventDefault();
-                        prevInput.focus();
-                        prevInput.select();
-                    }
-                }
+            allCorrect() {
+                return Array.from(document.querySelectorAll('.blank')).every(b => b.classList.contains('correct'));
             }
 
-            findNextInput(currentInput) {
-                const inputs = Array.from(document.querySelectorAll('.answer-digit'));
-                const currentIndex = inputs.indexOf(currentInput);
-
-                if (currentIndex > 0) {
-                    return inputs[currentIndex - 1];
-                }
-                return null;
-            }
-
-            findPreviousInput(currentInput) {
-                const inputs = Array.from(document.querySelectorAll('.answer-digit'));
-                const currentIndex = inputs.indexOf(currentInput);
-
-                if (currentIndex < inputs.length - 1) {
-                    return inputs[currentIndex + 1];
-                }
-                return null;
-            }
-
-            checkCompletion() {
-                const inputs = document.querySelectorAll('.answer-digit');
-                const allCorrect = Array.from(inputs).every(input =>
-                    input.classList.contains('correct')
-                );
-
-                if (allCorrect) {
-                    setTimeout(() => {
-                        this.celebrate();
-                        setTimeout(() => {
-                            this.questionNumber++;
-                            this.updateScore();
-                            this.generateProblem();
-                        }, 2000);
-                    }, 500);
-                }
-            }
-
-            celebrate() {
-                this.playCelebrationSound();
-
-                const gameContainer = document.getElementById('game-container');
-
-                const msg = this.messages[Math.floor(Math.random() * this.messages.length)];
-                const celebration = document.createElement('div');
-                celebration.className = 'celebration-overlay';
-                celebration.textContent = msg;
-                document.body.appendChild(celebration);
-
-                setTimeout(() => {
-                    celebration.remove();
-                }, 1500);
-
-                this.createConfetti();
-            }
-
-            createConfetti() {
-                const celebration = document.getElementById('celebration');
-                const colors = ['#ff6b9d', '#ffa45b', '#ffd93d', '#6bcf7f', '#4fa3d1', '#ff9ff3'];
-
-                for (let i = 0; i < 50; i++) {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + '%';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
-                    celebration.appendChild(confetti);
-
-                    setTimeout(() => {
-                        confetti.remove();
-                    }, 3000);
-                }
-            }
-
-            updateScore() {
-                const scoreInfo = document.getElementById('score-info');
-                scoreInfo.textContent = `Question: ${this.questionNumber}`;
+            next() {
+                this.questionIndex++;
+                this.save();
+                const msgs = ['Great!', 'Awesome!', 'Nice!', 'Perfect!', 'Well done!', 'Super!', 'Correct!', 'Amazing!'];
+                document.getElementById('celebration').textContent = msgs[Math.floor(Math.random() * msgs.length)];
+                setTimeout(() => this.render(), 1200);
             }
         }
 
-        window.addEventListener('load', () => {
-            new TwoDigitAdditionGame();
+        document.addEventListener('DOMContentLoaded', () => {
+            new Game();
         });
     </script>
 </body>
