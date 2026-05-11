@@ -1472,6 +1472,97 @@
   },
   {
     "fa": "غار",
-    "en": "cave"
+    "en": "cave",
+    "emoji": "🕳️"
+  },
+  {
+    "fa": "خسته",
+    "en": "tired",
+    "emoji": "😴"
+  },
+  {
+    "fa": "مهربان",
+    "en": "kind"
+  },
+  {
+    "fa": "شجاع",
+    "en": "brave"
+  },
+  {
+    "fa": "تنبل",
+    "en": "lazy"
+  },
+  {
+    "fa": "یخ",
+    "en": "ice",
+    "emoji": "🧊"
+  },
+  {
+    "fa": "دره",
+    "en": "valley"
+  },
+  {
+    "fa": "پشه",
+    "en": "mosquito",
+    "emoji": "🦟"
+  },
+  {
+    "fa": "مگس",
+    "en": "fly"
+  },
+  {
+    "fa": "بره",
+    "en": "lamb",
+    "emoji": "🐑"
+  },
+  {
+    "fa": "شتر",
+    "en": "camel",
+    "emoji": "🐪"
+  },
+  {
+    "fa": "کانگورو",
+    "en": "kangaroo",
+    "emoji": "🦘"
+  },
+  {
+    "fa": "پاندا",
+    "en": "panda",
+    "emoji": "🐼"
+  },
+  {
+    "fa": "خفاش",
+    "en": "bat",
+    "emoji": "🦇"
+  },
+  {
+    "fa": "دلفین",
+    "en": "dolphin",
+    "emoji": "🐬"
+  },
+  {
+    "fa": "گورخر",
+    "en": "zebra",
+    "emoji": "🦓"
+  },
+  {
+    "fa": "راکون",
+    "en": "raccoon",
+    "emoji": "🦝"
+  },
+  {
+    "fa": "خارپشت",
+    "en": "hedgehog",
+    "emoji": "🦔"
+  },
+  {
+    "fa": "خرسی",
+    "en": "teddy bear",
+    "emoji": "🧸"
+  },
+  {
+    "fa": "پازل",
+    "en": "puzzle",
+    "emoji": "🧩"
   }
 ]

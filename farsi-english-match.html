@@ -752,7 +752,7 @@
                 let effectiveGroups = groups;
                 if (this.level > WORD_BANK.length * 2 && groups.length >= WORD_BANK.length) {
                     const levelsBeyond = this.level - WORD_BANK.length * 2;
-                    const dropCount = Math.min(Math.floor(levelsBeyond / 4), WORD_BANK.length - 1);
+                    const dropCount = Math.min(Math.floor(levelsBeyond / 4), WORD_BANK.length - 2);
                     effectiveGroups = WORD_BANK.slice(dropCount);
                 }
 
