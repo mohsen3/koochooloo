@@ -1002,6 +1002,7 @@
                     connector = card ? card.querySelector('.connector') : null;
                 }
                 if (!connector) return null;
+                if (connector.classList.contains('matched')) return null;
                 if (!this.activeDrag) return connector;
                 return connector.dataset.side !== this.activeDrag.side ? connector : null;
             }
@@ -1019,8 +1020,9 @@
 
                 this.hoverConnector = connector;
 
-                if (connector && this.activeDrag) {
+                if (connector && this.activeDrag && !connector.classList.contains('matched')) {
                     const card = connector.closest('.word-card');
+                    if (card && card.classList.contains('matched')) return;
                     connector.classList.add('is-hover');
                     connector.style.setProperty('--match-color', this.activeDrag.color);
                     if (card) {
