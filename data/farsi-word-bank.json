@@ -1327,5 +1327,151 @@
   {
     "fa": "ریاضیات",
     "en": "mathematics"
+  },
+  {
+    "fa": "بادکنک",
+    "en": "balloon",
+    "emoji": "🎈"
+  },
+  {
+    "fa": "الاکلنگ",
+    "en": "seesaw"
+  },
+  {
+    "fa": "کامیون",
+    "en": "truck",
+    "emoji": "🚛"
+  },
+  {
+    "fa": "تراکتور",
+    "en": "tractor",
+    "emoji": "🚜"
+  },
+  {
+    "fa": "گرگ",
+    "en": "wolf",
+    "emoji": "🐺"
+  },
+  {
+    "fa": "روباه",
+    "en": "fox",
+    "emoji": "🦊"
+  },
+  {
+    "fa": "آهو",
+    "en": "deer",
+    "emoji": "🦌"
+  },
+  {
+    "fa": "شیرین",
+    "en": "sweet"
+  },
+  {
+    "fa": "ترش",
+    "en": "sour",
+    "emoji": "🍋"
+  },
+  {
+    "fa": "شور",
+    "en": "salty"
+  },
+  {
+    "fa": "سرد",
+    "en": "cold",
+    "emoji": "🥶"
+  },
+  {
+    "fa": "گرم",
+    "en": "hot",
+    "emoji": "🔥"
+  },
+  {
+    "fa": "آشپز",
+    "en": "chef",
+    "emoji": "👨‍🍳"
+  },
+  {
+    "fa": "راننده",
+    "en": "driver",
+    "emoji": "🚗"
+  },
+  {
+    "fa": "خلبان",
+    "en": "pilot",
+    "emoji": "✈️"
+  },
+  {
+    "fa": "پلیس",
+    "en": "police officer",
+    "emoji": "👮"
+  },
+  {
+    "fa": "دلقک",
+    "en": "clown",
+    "emoji": "🤡"
+  },
+  {
+    "fa": "خنده",
+    "en": "laugh",
+    "emoji": "😂"
+  },
+  {
+    "fa": "عصبانی",
+    "en": "angry",
+    "emoji": "😠"
+  },
+  {
+    "fa": "ترسیده",
+    "en": "scared",
+    "emoji": "😨"
+  },
+  {
+    "fa": "ناراحت",
+    "en": "sad",
+    "emoji": "😢"
+  },
+  {
+    "fa": "پیاز",
+    "en": "onion",
+    "emoji": "🧅"
+  },
+  {
+    "fa": "هویج",
+    "en": "carrot",
+    "emoji": "🥕"
+  },
+  {
+    "fa": "خیار",
+    "en": "cucumber",
+    "emoji": "🥒"
+  },
+  {
+    "fa": "ذرت",
+    "en": "corn",
+    "emoji": "🌽"
+  },
+  {
+    "fa": "آب‌نبات",
+    "en": "candy",
+    "emoji": "🍬"
+  },
+  {
+    "fa": "بیسکویت",
+    "en": "cookie",
+    "emoji": "🍪"
+  },
+  {
+    "fa": "فوتبال",
+    "en": "soccer",
+    "emoji": "⚽"
+  },
+  {
+    "fa": "جزیره",
+    "en": "island",
+    "emoji": "🏝️"
+  },
+  {
+    "fa": "غار",
+    "en": "cave"
   }
 ]

@@ -741,14 +741,23 @@
             }
 
             unlockedGroups() {
-                return WORD_BANK.slice(0, Math.min(this.level, WORD_BANK.length));
+                const unlockedCount = Math.min(Math.ceil(this.level / 2), WORD_BANK.length);
+                return WORD_BANK.slice(0, unlockedCount);
             }
 
             pickPairs() {
                 const count = this.wordsPerPage();
                 const groups = this.unlockedGroups();
-                const currentGroup = groups[groups.length - 1];
-                const unlocked = groups.flat();
+
+                let effectiveGroups = groups;
+                if (this.level > WORD_BANK.length * 2 && groups.length >= WORD_BANK.length) {
+                    const levelsBeyond = this.level - WORD_BANK.length * 2;
+                    const dropCount = Math.min(Math.floor(levelsBeyond / 4), WORD_BANK.length - 1);
+                    effectiveGroups = WORD_BANK.slice(dropCount);
+                }
+
+                const currentGroup = effectiveGroups[effectiveGroups.length - 1];
+                const unlocked = effectiveGroups.flat();
                 const recentSet = new Set(this.recentPairIds);
                 const hardCount = Math.max(1, Math.min(count, Math.ceil(count / 2)));
 
