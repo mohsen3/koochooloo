@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Farsi Memory Game</title>
+    <style>
+        @font-face {
+            font-family: 'Koodak';
+            src: url("public/koodak.ttf") format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: block;
+        }
+
+        :root {
+            --app-height: 100dvh;
+            --farsi-font: 'Koodak', 'Tahoma', sans-serif;
+            --ui-font: 'Avenir Next', 'Trebuchet MS', 'Segoe UI', var(--farsi-font);
+            --ink: #2a2a45;
+            --ink-soft: #6b6b88;
+            --panel: rgba(255, 255, 255, 0.72);
+            --panel-strong: rgba(255, 255, 255, 0.92);
+            --glow: 0 20px 50px rgba(60, 40, 80, 0.15);
+            --radius-card: 18px;
+            --back-color: #5b8def;
+            --match-color: #3cd8be;
+            --card-gap: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            overflow: hidden;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            min-height: var(--app-height);
+            height: var(--app-height);
+            display: grid;
+            place-items: center;
+            font-family: var(--ui-font);
+            color: var(--ink);
+            background:
+                radial-gradient(ellipse at 20% 25%, rgba(255, 225, 140, 0.55), transparent 48%),
+                radial-gradient(ellipse at 80% 22%, rgba(255, 180, 200, 0.4), transparent 42%),
+                radial-gradient(ellipse at 55% 85%, rgba(140, 215, 240, 0.4), transparent 44%),
+                linear-gradient(155deg, #fef8ed 0%, #ffe8d8 35%, #ffe0ec 65%, #dff4fa 100%);
+            padding: 10px;
+        }
+
+        body::before, body::after {
+            content: "";
+            position: fixed;
+            width: 36vmax;
+            height: 36vmax;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.22;
+            pointer-events: none;
+        }
+
+        body::before {
+            top: -12vmax;
+            right: -8vmax;
+            background: #ffd93d;
+        }
+
+        body::after {
+            bottom: -14vmax;
+            left: -10vmax;
+            background: #6bcbff;
+        }
+
+        .app {
+            width: min(1240px, calc(100vw - 20px));
+            height: min(860px, calc(var(--app-height) - 20px));
+            border-radius: 36px;
+            padding: clamp(12px, 1.6vw, 18px);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background:
+                linear-gradient(155deg, rgba(255, 255, 255, 0.88), rgba(255, 248, 242, 0.78));
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            box-shadow: var(--glow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            overflow: hidden;
+            position: relative;
+            isolation: isolate;
+        }
+
+        .app::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 36px;
+            padding: 1px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.05));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            -webkit-mask-composite: xor;
+            pointer-events: none;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 4px 4px 0;
+            flex-shrink: 0;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: clamp(16px, 2vw, 26px);
+            line-height: 1.25;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--ink), #4a3f6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            direction: rtl;
+        }
+
+        .stat-pill {
+            padding: 6px 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 12px rgba(16, 16, 40, 0.06);
+            font-size: clamp(13px, 1.2vw, 17px);
+            font-weight: 600;
+            color: var(--ink-soft);
+            white-space: nowrap;
+        }
+
+        .stat-pill strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        #resetBtn {
+            cursor: pointer;
+            font: inherit;
+            background: rgba(255, 112, 85, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 6px 12px;
+            color: var(--ink-soft);
+            font-size: clamp(16px, 1.4vw, 22px);
+            line-height: 1;
+            box-shadow: 0 4px 12px rgba(16, 16, 40, 0.06);
+            transition: background 220ms ease, transform 220ms cubic-bezier(.34,1.56,.64,1), color 220ms ease;
+        }
+
+        #resetBtn:hover,
+        #resetBtn:active {
+            background: rgba(255, 112, 85, 0.2);
+            color: var(--ink);
+            transform: scale(1.08);
+            box-shadow: 0 8px 24px rgba(255, 112, 85, 0.2);
+        }
+
+        .board {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            padding: clamp(8px, 1vw, 14px);
+            border-radius: 26px;
+            background:
+                linear-gradient(170deg, rgba(255, 255, 255, 0.6), rgba(255, 248, 240, 0.5));
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .board-grid {
+            display: grid;
+            gap: var(--card-gap);
+            flex: 1;
+            place-items: center;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            perspective: 800px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            transition: transform 200ms ease;
+        }
+
+        .card:not(.flipped):not(.matched):active {
+            transform: scale(0.96);
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 450ms cubic-bezier(.34,1.56,.64,1);
+            transform-style: preserve-3d;
+            border-radius: var(--radius-card);
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-card);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border: 3px solid transparent;
+            transition: border-color 300ms ease, box-shadow 300ms ease;
+        }
+
+        .card-front {
+            transform: rotateY(180deg);
+            background:
+                linear-gradient(165deg, rgba(255, 255, 255, 0.98), rgba(250, 248, 255, 0.95));
+            box-shadow: 0 4px 16px rgba(16, 16, 40, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .card-back {
+            background: linear-gradient(145deg, #6ba3f0, #4a7fe0);
+            box-shadow: 0 4px 16px rgba(16, 16, 40, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .card-back::after {
+            content: "?";
+            font-size: clamp(28px, 4vw, 52px);
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.5);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-word {
+            font-weight: 700;
+            font-size: clamp(16px, 2.4vw, 34px);
+            line-height: 1.2;
+            text-align: center;
+            word-break: break-word;
+            color: var(--ink);
+            direction: ltr;
+        }
+
+        .card-word[lang="fa"] {
+            direction: rtl;
+            font-family: var(--farsi-font);
+            font-size: clamp(18px, 2.6vw, 38px);
+        }
+
+        .card-word[lang="en"] {
+            font-family: 'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif;
+        }
+
+        .card.matched .card-front {
+            border-color: var(--match-color);
+            box-shadow:
+                0 4px 20px rgba(60, 216, 190, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            background:
+                linear-gradient(165deg, rgba(240, 255, 250, 0.98), rgba(245, 255, 248, 0.95));
+        }
+
+        .card.matched {
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .card.matched .card-inner {
+            animation: matchPulse 400ms cubic-bezier(.34,1.56,.64,1);
+        }
+
+        @keyframes matchPulse {
+            0% { transform: rotateY(180deg) scale(1); }
+            50% { transform: rotateY(180deg) scale(1.08); }
+            100% { transform: rotateY(180deg) scale(1); }
+        }
+
+        @keyframes mismatchShake {
+            0%, 100% { transform: rotateY(180deg) translateX(0); }
+            20% { transform: rotateY(180deg) translateX(-6px); }
+            40% { transform: rotateY(180deg) translateX(6px); }
+            60% { transform: rotateY(180deg) translateX(-4px); }
+            80% { transform: rotateY(180deg) translateX(4px); }
+        }
+
+        .card.mismatch .card-inner {
+            animation: mismatchShake 350ms ease;
+        }
+
+        .card.mismatch .card-front {
+            border-color: rgba(255, 86, 115, 0.5);
+            box-shadow: 0 4px 16px rgba(255, 86, 115, 0.2);
+        }
+
+        .card.hidden {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 36px;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 350ms ease;
+            z-index: 10;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .overlay-content {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .overlay-content .emoji-big {
+            font-size: clamp(52px, 8vw, 96px);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .overlay-content h2 {
+            font-size: clamp(28px, 4vw, 52px);
+            line-height: 1.15;
+            background: linear-gradient(135deg, var(--ink), #4a3f6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .overlay-content p {
+            font-size: clamp(16px, 1.8vw, 24px);
+            color: var(--ink-soft);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .overlay-content .next-btn {
+            margin-top: 20px;
+            padding: 14px 36px;
+            border-radius: 24px;
+            border: none;
+            background: linear-gradient(135deg, #ff7055, #ff8a65);
+            color: white;
+            font: inherit;
+            font-size: clamp(18px, 2vw, 28px);
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 12px 32px rgba(255, 112, 85, 0.3);
+            transition: transform 220ms cubic-bezier(.34,1.56,.64,1), box-shadow 220ms ease;
+        }
+
+        .overlay-content .next-btn:hover,
+        .overlay-content .next-btn:active {
+            transform: scale(1.06);
+            box-shadow: 0 16px 40px rgba(255, 112, 85, 0.4);
+        }
+
+        .flip-counter {
+            position: absolute;
+            bottom: clamp(8px, 1vw, 14px);
+            right: clamp(12px, 1.6vw, 18px);
+            font-size: clamp(12px, 1.1vw, 16px);
+            color: var(--ink-soft);
+            font-weight: 500;
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        @media (max-width: 600px) {
+            .topbar h1 {
+                font-size: clamp(14px, 3.5vw, 18px);
+            }
+            .stat-pill {
+                padding: 4px 8px;
+                font-size: clamp(11px, 2.8vw, 14px);
+            }
+            #resetBtn {
+                padding: 4px 8px;
+                font-size: clamp(14px, 3vw, 18px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="topbar">
+            <h1>🧠 حافظه فارسی انگلیسی</h1>
+            <div class="stats">
+                <span class="stat-pill">مرحله <strong id="levelLabel">۱</strong></span>
+                <span class="stat-pill" id="flipsLabel">۰ تلاش</span>
+                <button class="stat-pill" id="resetBtn" type="button" aria-label="Reset progress">↻</button>
+            </div>
+        </header>
+
+        <div class="board" id="board">
+            <div class="board-grid" id="grid"></div>
+            <div class="flip-counter" id="pairCounter"></div>
+        </div>
+
+        <div class="overlay" id="overlay">
+            <div class="overlay-content">
+                <span class="emoji-big" id="overlayEmoji">🎉</span>
+                <h2 id="overlayTitle">آفرین!</h2>
+                <p id="overlaySub">مرحله بعدی آماده است</p>
+                <button class="next-btn" id="nextBtn">مرحله بعد</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'farsi-memory-game-progress';
+
+        function shuffle(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        function toFaNumber(value) {
+            return String(value).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+        }
+
+        const LEVEL_PAIRS = [4, 6, 8, 10, 12];
+        const LEVEL_COLS = [4, 4, 4, 5, 6];
+
+        class FarsiMemoryGame {
+            constructor() {
+                this.board = document.getElementById('board');
+                this.grid = document.getElementById('grid');
+                this.levelLabel = document.getElementById('levelLabel');
+                this.flipsLabel = document.getElementById('flipsLabel');
+                this.pairCounter = document.getElementById('pairCounter');
+                this.overlay = document.getElementById('overlay');
+                this.overlayEmoji = document.getElementById('overlayEmoji');
+                this.overlayTitle = document.getElementById('overlayTitle');
+                this.overlaySub = document.getElementById('overlaySub');
+                this.nextBtn = document.getElementById('nextBtn');
+
+                this.wordBank = [];
+                this.level = 1;
+                this.flips = 0;
+                this.matchedPairs = 0;
+                this.totalPairs = 0;
+                this.flippedCards = [];
+                this.isLocked = false;
+                this.cards = [];
+                this.recentWordIndices = [];
+                this.pairIdCounter = 0;
+
+                this.loadProgress();
+
+                const resetBtn = document.getElementById('resetBtn');
+                resetBtn.addEventListener('click', () => this.resetProgress());
+                this.nextBtn.addEventListener('click', () => this.advanceLevel());
+
+                this.init();
+            }
+
+            async init() {
+                await this.loadWordBank();
+                this.syncViewportHeight();
+                window.addEventListener('resize', () => this.syncViewportHeight(), { passive: true });
+                window.addEventListener('orientationchange', () => this.syncViewportHeight(), { passive: true });
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener('resize', () => this.syncViewportHeight(), { passive: true });
+                }
+
+                const start = () => this.startLevel();
+                if (document.fonts && document.fonts.ready) {
+                    Promise.race([
+                        document.fonts.ready,
+                        new Promise(resolve => setTimeout(resolve, 700))
+                    ]).then(start);
+                } else {
+                    start();
+                }
+            }
+
+            async loadWordBank() {
+                const response = await fetch('data/farsi-word-bank.json');
+                if (!response.ok) {
+                    throw new Error(`Failed to load word bank: ${response.status}`);
+                }
+                this.wordBank = await response.json();
+            }
+
+            syncViewportHeight() {
+                const vv = window.visualViewport;
+                const h = Math.round((vv ? vv.height : 0) || window.innerHeight || 0);
+                if (h > 0) {
+                    document.documentElement.style.setProperty('--app-height', `${h}px`);
+                }
+            }
+
+            loadProgress() {
+                try {
+                    const saved = localStorage.getItem(STORAGE_KEY);
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        if (typeof data.level === 'number') this.level = data.level;
+                    }
+                } catch (_) {}
+            }
+
+            saveProgress() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        level: this.level
+                    }));
+                } catch (_) {}
+            }
+
+            resetProgress() {
+                if (!confirm('آیا مطمئن هستید؟ تمام مراحل پاک می‌شوند.')) return;
+                localStorage.removeItem(STORAGE_KEY);
+                this.level = 1;
+                this.overlay.classList.remove('show');
+                this.startLevel();
+            }
+
+            pairsForLevel() {
+                const index = Math.min(this.level - 1, LEVEL_PAIRS.length - 1);
+                return LEVEL_PAIRS[index];
+            }
+
+            colsForLevel() {
+                const index = Math.min(this.level - 1, LEVEL_COLS.length - 1);
+                return LEVEL_COLS[index];
+            }
+
+            pickWordsForLevel() {
+                const count = this.pairsForLevel();
+                const bank = this.wordBank;
+                if (!bank.length) return [];
+
+                const totalWords = bank.length;
+                const segmentSize = Math.max(10, Math.ceil(totalWords / 8));
+                const maxSegment = Math.min(Math.ceil(this.level / 1.5), 8);
+                const poolEnd = Math.min(maxSegment * segmentSize, totalWords);
+                const pool = bank.slice(0, poolEnd);
+
+                const recentSet = new Set(this.recentWordIndices);
+                const candidates = pool.filter((_, i) => {
+                    const globalIndex = i;
+                    return !recentSet.has(globalIndex);
+                });
+
+                const effectivePool = candidates.length >= count ? candidates : pool;
+                const shuffled = shuffle(effectivePool);
+                const selected = shuffled.slice(0, count);
+
+                const indices = selected.map(w => bank.indexOf(w));
+                this.recentWordIndices.push(...indices);
+                if (this.recentWordIndices.length > 30) {
+                    this.recentWordIndices = this.recentWordIndices.slice(-30);
+                }
+
+                return selected;
+            }
+
+            startLevel() {
+                this.flips = 0;
+                this.matchedPairs = 0;
+                this.flippedCards = [];
+                this.isLocked = false;
+                this.overlay.classList.remove('show');
+
+                const words = this.pickWordsForLevel();
+                if (!words.length) {
+                    this.level = 1;
+                    this.startLevel();
+                    return;
+                }
+
+                this.totalPairs = words.length;
+                this.levelLabel.textContent = toFaNumber(this.level);
+                this.updateStats();
+
+                this.buildBoard(words);
+            }
+
+            buildBoard(words) {
+                const pairs = [];
+                for (const word of words) {
+                    const pairId = `p${this.pairIdCounter++}`;
+                    pairs.push({ pairId, text: word.fa, lang: 'fa' });
+                    pairs.push({ pairId, text: word.en, lang: 'en' });
+                }
+
+                this.cards = shuffle(pairs);
+
+                const cols = this.colsForLevel();
+                const rows = Math.ceil(this.cards.length / cols);
+
+                this.grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+                this.grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+                this.grid.innerHTML = '';
+
+                for (let i = 0; i < this.cards.length; i++) {
+                    const cardData = this.cards[i];
+                    const el = this.createCardElement(cardData, i);
+                    this.grid.appendChild(el);
+                }
+
+                this.pairCounter.textContent = `۰ از ${toFaNumber(this.totalPairs)} جفت`;
+            }
+
+            createCardElement(cardData, index) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.index = index;
+                card.dataset.pairId = cardData.pairId;
+                card.dataset.lang = cardData.lang;
+
+                const inner = document.createElement('div');
+                inner.className = 'card-inner';
+
+                const front = document.createElement('div');
+                front.className = 'card-face card-front';
+
+                const word = document.createElement('span');
+                word.className = 'card-word';
+                word.lang = cardData.lang;
+                if (cardData.lang === 'fa') word.dir = 'rtl';
+                word.textContent = cardData.text;
+                front.appendChild(word);
+
+                const back = document.createElement('div');
+                back.className = 'card-face card-back';
+
+                inner.append(front, back);
+                card.appendChild(inner);
+
+                card.addEventListener('click', () => this.onCardClick(card));
+
+                return card;
+            }
+
+            onCardClick(card) {
+                if (this.isLocked) return;
+                if (card.classList.contains('flipped')) return;
+                if (card.classList.contains('matched')) return;
+
+                this.flips++;
+                this.flipsLabel.textContent = `${toFaNumber(this.flips)} تلاش`;
+
+                card.classList.add('flipped');
+                this.flippedCards.push(card);
+
+                if (this.flippedCards.length === 2) {
+                    this.isLocked = true;
+                    this.checkMatch();
+                }
+            }
+
+            checkMatch() {
+                const [cardA, cardB] = this.flippedCards;
+                const match = cardA.dataset.pairId === cardB.dataset.pairId;
+
+                if (match) {
+                    setTimeout(() => this.handleMatch(cardA, cardB), 300);
+                } else {
+                    setTimeout(() => this.handleMismatch(cardA, cardB), 700);
+                }
+            }
+
+            handleMatch(cardA, cardB) {
+                cardA.classList.add('matched');
+                cardB.classList.add('matched');
+                this.matchedPairs++;
+                this.pairCounter.textContent = `${toFaNumber(this.matchedPairs)} از ${toFaNumber(this.totalPairs)} جفت`;
+
+                this.flippedCards = [];
+                this.isLocked = false;
+
+                if (this.matchedPairs === this.totalPairs) {
+                    setTimeout(() => this.completeLevel(), 500);
+                }
+            }
+
+            handleMismatch(cardA, cardB) {
+                cardA.classList.add('mismatch');
+                cardB.classList.add('mismatch');
+
+                setTimeout(() => {
+                    cardA.classList.remove('flipped', 'mismatch');
+                    cardB.classList.remove('flipped', 'mismatch');
+                    this.flippedCards = [];
+                    this.isLocked = false;
+                }, 400);
+            }
+
+            completeLevel() {
+                this.level++;
+
+                const messages = [
+                    { emoji: '🎉', title: 'آفرین!', sub: 'مرحله بعدی آماده است' },
+                    { emoji: '🌟', title: 'عالی!', sub: 'به مرحله بعد برو' },
+                    { emoji: '🏆', title: 'داغ داغ!', sub: 'مرحله بعد منتظرته' },
+                    { emoji: '✨', title: 'خوشگل!', sub: 'بریم مرحله بعد' },
+                    { emoji: '🔥', title: 'باحال!', sub: 'ادامه بده' },
+                ];
+                const msg = messages[(this.level - 2) % messages.length];
+
+                this.overlayEmoji.textContent = msg.emoji;
+                this.overlayTitle.textContent = msg.title;
+                this.overlaySub.textContent = msg.sub;
+                this.overlay.classList.add('show');
+
+                this.saveProgress();
+            }
+
+            advanceLevel() {
+                this.overlay.classList.remove('show');
+                this.startLevel();
+            }
+
+            updateStats() {
+                this.flipsLabel.textContent = `${toFaNumber(this.flips)} تلاش`;
+                this.pairCounter.textContent = `۰ از ${toFaNumber(this.totalPairs)} جفت`;
+            }
+        }
+
+        new FarsiMemoryGame();
+    </script>
+</body>
+</html>
