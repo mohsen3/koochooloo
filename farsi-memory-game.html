@@ -427,6 +427,194 @@
             z-index: 1;
         }
 
+        .settings-btn {
+            cursor: pointer;
+            font: inherit;
+            background: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 6px 8px;
+            color: var(--ink-soft);
+            font-size: clamp(16px, 1.4vw, 22px);
+            line-height: 1;
+            box-shadow: 0 4px 12px rgba(16, 16, 40, 0.06);
+            transition: background 220ms ease, transform 220ms cubic-bezier(.34,1.56,.64,1), color 220ms ease;
+        }
+
+        .settings-btn:hover,
+        .settings-btn:active {
+            background: rgba(200, 220, 255, 0.3);
+            color: var(--ink);
+            transform: scale(1.08);
+        }
+
+        .animal-badge {
+            padding: 6px 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 12px rgba(16, 16, 40, 0.06);
+            font-size: clamp(12px, 1vw, 15px);
+            font-weight: 600;
+            color: var(--ink-soft);
+            white-space: nowrap;
+            direction: rtl;
+        }
+
+        .animal-badge .animal-emoji {
+            font-size: clamp(14px, 1.2vw, 18px);
+        }
+
+        .settings-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 36px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 350ms ease;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .settings-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: var(--glow);
+            padding: clamp(16px, 2vw, 28px);
+            width: min(520px, calc(100vw - 40px));
+            max-height: calc(var(--app-height) - 60px);
+            overflow-y: auto;
+            direction: rtl;
+        }
+
+        .settings-panel h2 {
+            font-size: clamp(18px, 1.8vw, 26px);
+            margin: 0 0 4px;
+            background: linear-gradient(135deg, var(--ink), #4a3f6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .settings-panel .settings-sub {
+            font-size: clamp(12px, 1.1vw, 16px);
+            color: var(--ink-soft);
+            margin: 0 0 16px;
+            font-weight: 500;
+        }
+
+        .settings-close {
+            cursor: pointer;
+            font: inherit;
+            background: rgba(255, 112, 85, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 6px 14px;
+            color: var(--ink-soft);
+            font-size: clamp(14px, 1.2vw, 18px);
+            line-height: 1;
+            float: left;
+            transition: background 220ms ease, color 220ms ease;
+        }
+
+        .settings-close:hover {
+            background: rgba(255, 112, 85, 0.2);
+            color: var(--ink);
+        }
+
+        .animal-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .animal-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border-color 220ms ease, background 220ms ease, box-shadow 220ms ease;
+            direction: rtl;
+        }
+
+        .animal-option:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(91, 141, 239, 0.3);
+        }
+
+        .animal-option.selected {
+            border-color: #5b8def;
+            background: rgba(91, 141, 239, 0.08);
+            box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.12);
+        }
+
+        .animal-option input {
+            display: none;
+        }
+
+        .animal-option .ao-emoji {
+            font-size: clamp(28px, 2.8vw, 38px);
+            line-height: 1;
+            flex-shrink: 0;
+            width: 40px;
+            text-align: center;
+        }
+
+        .animal-option .ao-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .animal-option .ao-name {
+            font-weight: 700;
+            font-size: clamp(14px, 1.3vw, 18px);
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .animal-option .ao-name .ao-name-fa {
+            font-family: var(--farsi-font);
+        }
+
+        .animal-option .ao-name .ao-name-en {
+            font-weight: 500;
+            color: var(--ink-soft);
+            font-size: 0.85em;
+        }
+
+        .animal-option .ao-desc {
+            font-size: clamp(11px, 1vw, 14px);
+            color: var(--ink-soft);
+            margin-top: 2px;
+        }
+
+        .animal-option .ao-cards {
+            font-size: clamp(12px, 1.1vw, 16px);
+            font-weight: 700;
+            color: var(--ink);
+            flex-shrink: 0;
+            direction: ltr;
+        }
+
         @media (max-width: 600px) {
             .topbar h1 {
                 font-size: clamp(14px, 3.5vw, 18px);
@@ -439,6 +627,17 @@
                 padding: 4px 8px;
                 font-size: clamp(14px, 3vw, 18px);
             }
+            .animal-badge {
+                padding: 4px 8px;
+                font-size: clamp(10px, 2.5vw, 13px);
+            }
+            .animal-option {
+                padding: 8px 10px;
+            }
+            .animal-option .ao-emoji {
+                font-size: 24px;
+                width: 32px;
+            }
         }
     </style>
 </head>
@@ -447,8 +646,10 @@
         <header class="topbar">
             <h1>🧠 حافظه فارسی انگلیسی</h1>
             <div class="stats">
+                <span class="animal-badge" id="animalBadge"><span class="animal-emoji" id="animalEmoji">🧽</span> <span id="animalName">اسفنج دریایی</span></span>
                 <span class="stat-pill">مرحله <strong id="levelLabel">۱</strong></span>
                 <span class="stat-pill" id="flipsLabel">۰ تلاش</span>
+                <button class="settings-btn" id="settingsBtn" type="button" aria-label="Settings">⚙️</button>
                 <button class="stat-pill" id="resetBtn" type="button" aria-label="Reset progress">↻</button>
             </div>
         </header>
@@ -456,6 +657,15 @@
         <div class="board" id="board">
             <div class="board-grid" id="grid"></div>
             <div class="flip-counter" id="pairCounter"></div>
+
+            <div class="settings-overlay" id="settingsOverlay">
+                <div class="settings-panel">
+                    <button class="settings-close" id="settingsClose" type="button">✕</button>
+                    <h2>تنظیمات بازی</h2>
+                    <p class="settings-sub">تعداد کارت‌های حافظه را انتخاب کن</p>
+                    <div class="animal-options" id="animalOptions"></div>
+                </div>
+            </div>
         </div>
 
         <div class="overlay" id="overlay">
@@ -486,8 +696,17 @@
             return String(value).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
         }
 
-        const LEVEL_PAIRS = [2, 3, 4, 5, 6, 8, 10, 12];
-        const LEVEL_COLS = [2, 3, 4, 5, 4, 4, 5, 6];
+        const ANIMAL_LEVELS = [
+            { pairs: 2,  cards: 4,  emoji: '🧽', nameFa: 'اسفنج دریایی', nameEn: 'Sea Sponge',  desc: 'بدون حافظه!' },
+            { pairs: 3,  cards: 6,  emoji: '🐟', nameFa: 'ماهی',         nameEn: 'Fish',        desc: 'حافظه کوتاه' },
+            { pairs: 4,  cards: 8,  emoji: '🐈', nameFa: 'گربه',         nameEn: 'Cat',         desc: 'حافظه معمولی' },
+            { pairs: 5,  cards: 10, emoji: '🐕', nameFa: 'سگ',           nameEn: 'Dog',         desc: 'حافظه خوب' },
+            { pairs: 6,  cards: 12, emoji: '🐬', nameFa: 'دلفین',        nameEn: 'Dolphin',     desc: 'حافظه عالی' },
+            { pairs: 8,  cards: 16, emoji: '🐘', nameFa: 'فیل',          nameEn: 'Elephant',    desc: 'حافظه فوق‌العاده' },
+            { pairs: 10, cards: 20, emoji: '🦍', nameFa: 'شامپانزه',     nameEn: 'Chimpanzee',  desc: 'نزدیک به انسان' },
+        ];
+
+        const LEVEL_COLS_MAP = { 4: 2, 6: 3, 8: 4, 10: 5, 12: 4, 16: 4, 20: 5 };
 
         const MATCH_COLORS = [
             '#ff9f43',  // orange
@@ -516,6 +735,12 @@
                 this.overlayTitle = document.getElementById('overlayTitle');
                 this.overlaySub = document.getElementById('overlaySub');
                 this.nextBtn = document.getElementById('nextBtn');
+                this.animalOptions = document.getElementById('animalOptions');
+                this.settingsOverlay = document.getElementById('settingsOverlay');
+                this.settingsBtn = document.getElementById('settingsBtn');
+                this.settingsClose = document.getElementById('settingsClose');
+                this.animalEmoji = document.getElementById('animalEmoji');
+                this.animalName = document.getElementById('animalName');
 
                 this.wordBank = [];
                 this.level = 1;
@@ -528,18 +753,26 @@
                 this.recentWordIndices = [];
                 this.pairIdCounter = 0;
                 this.matchColorIndex = 0;
+                this.cardCount = 4;
 
                 this.loadProgress();
 
                 const resetBtn = document.getElementById('resetBtn');
                 resetBtn.addEventListener('click', () => this.resetProgress());
                 this.nextBtn.addEventListener('click', () => this.advanceLevel());
+                this.settingsBtn.addEventListener('click', () => this.showSettings());
+                this.settingsClose.addEventListener('click', () => this.hideSettings());
+                this.settingsOverlay.addEventListener('click', (e) => {
+                    if (e.target === this.settingsOverlay) this.hideSettings();
+                });
 
                 this.init();
             }
 
             async init() {
                 await this.loadWordBank();
+                this.buildSettingsPanel();
+                this.updateAnimalBadge();
                 this.syncViewportHeight();
                 window.addEventListener('resize', () => this.syncViewportHeight(), { passive: true });
                 window.addEventListener('orientationchange', () => this.syncViewportHeight(), { passive: true });
@@ -574,12 +807,99 @@
                 }
             }
 
+            get currentAnimal() {
+                return ANIMAL_LEVELS.find(a => a.cards === this.cardCount) || ANIMAL_LEVELS[0];
+            }
+
+            updateAnimalBadge() {
+                const animal = this.currentAnimal;
+                this.animalEmoji.textContent = animal.emoji;
+                this.animalName.textContent = animal.nameFa;
+            }
+
+            buildSettingsPanel() {
+                this.animalOptions.innerHTML = '';
+                for (const level of ANIMAL_LEVELS) {
+                    const option = document.createElement('label');
+                    option.className = 'animal-option' + (level.cards === this.cardCount ? ' selected' : '');
+
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = 'animalLevel';
+                    input.value = level.cards;
+                    if (level.cards === this.cardCount) input.checked = true;
+
+                    input.addEventListener('change', () => {
+                        this.cardCount = level.cards;
+                        this.saveProgress();
+                        this.updateAnimalBadge();
+                        this.hideSettings();
+                        this.level = 1;
+                        this.overlay.classList.remove('show');
+                        this.startLevel();
+                    });
+
+                    option.appendChild(input);
+
+                    const emoji = document.createElement('span');
+                    emoji.className = 'ao-emoji';
+                    emoji.textContent = level.emoji;
+                    option.appendChild(emoji);
+
+                    const info = document.createElement('div');
+                    info.className = 'ao-info';
+
+                    const name = document.createElement('div');
+                    name.className = 'ao-name';
+                    const nameFa = document.createElement('span');
+                    nameFa.className = 'ao-name-fa';
+                    nameFa.textContent = level.nameFa;
+                    const nameEn = document.createElement('span');
+                    nameEn.className = 'ao-name-en';
+                    nameEn.textContent = level.nameEn;
+                    name.append(nameFa, nameEn);
+                    info.appendChild(name);
+
+                    const desc = document.createElement('div');
+                    desc.className = 'ao-desc';
+                    desc.textContent = level.desc;
+                    info.appendChild(desc);
+
+                    option.appendChild(info);
+
+                    const cards = document.createElement('div');
+                    cards.className = 'ao-cards';
+                    cards.textContent = `${level.cards} کارت`;
+                    option.appendChild(cards);
+
+                    option.addEventListener('click', () => {
+                        input.checked = true;
+                        input.dispatchEvent(new Event('change'));
+                    });
+
+                    this.animalOptions.appendChild(option);
+                }
+            }
+
+            showSettings() {
+                const options = this.animalOptions.querySelectorAll('.animal-option');
+                options.forEach((opt, i) => {
+                    opt.classList.toggle('selected', ANIMAL_LEVELS[i].cards === this.cardCount);
+                });
+                this.settingsOverlay.classList.add('show');
+            }
+
+            hideSettings() {
+                this.settingsOverlay.classList.remove('show');
+            }
+
             loadProgress() {
                 try {
                     const saved = localStorage.getItem(STORAGE_KEY);
                     if (saved) {
                         const data = JSON.parse(saved);
                         if (typeof data.level === 'number') this.level = data.level;
+                        if (typeof data.cardCount === 'number') this.cardCount = data.cardCount;
                     }
                 } catch (_) {}
             }
@@ -587,7 +907,8 @@
             saveProgress() {
                 try {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                        level: this.level
+                        level: this.level,
+                        cardCount: this.cardCount
                     }));
                 } catch (_) {}
             }
@@ -596,18 +917,20 @@
                 if (!confirm('آیا مطمئن هستید؟ تمام مراحل پاک می‌شوند.')) return;
                 localStorage.removeItem(STORAGE_KEY);
                 this.level = 1;
+                this.cardCount = 4;
+                this.updateAnimalBadge();
+                this.buildSettingsPanel();
                 this.overlay.classList.remove('show');
                 this.startLevel();
             }
 
             pairsForLevel() {
-                const index = Math.min(this.level - 1, LEVEL_PAIRS.length - 1);
-                return LEVEL_PAIRS[index];
+                const animal = this.currentAnimal;
+                return animal.pairs;
             }
 
             colsForLevel() {
-                const index = Math.min(this.level - 1, LEVEL_COLS.length - 1);
-                return LEVEL_COLS[index];
+                return LEVEL_COLS_MAP[this.cardCount] || 4;
             }
 
             pickWordsForLevel() {
