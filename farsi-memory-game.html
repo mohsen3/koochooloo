@@ -288,12 +288,12 @@
         }
 
         .card.matched .card-front {
-            border-color: var(--match-color);
+            border-color: var(--pair-color, var(--match-color));
             box-shadow:
-                0 4px 20px rgba(60, 216, 190, 0.3),
+                0 4px 20px color-mix(in srgb, var(--pair-color, var(--match-color)) 40%, transparent),
                 inset 0 1px 0 rgba(255, 255, 255, 0.8);
             background:
-                linear-gradient(165deg, rgba(240, 255, 250, 0.98), rgba(245, 255, 248, 0.95));
+                color-mix(in srgb, var(--pair-color, var(--match-color)) 10%, #f8fff8);
         }
 
         .card.matched {
@@ -473,6 +473,12 @@
         const LEVEL_PAIRS = [2, 3, 4, 5, 6, 8, 10, 12];
         const LEVEL_COLS = [2, 3, 4, 5, 4, 4, 5, 6];
 
+        const MATCH_COLORS = [
+            '#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24',
+            '#a29bfe', '#fd79a8', '#00cec9', '#e17055',
+            '#6c5ce7', '#00b894', '#fdcb6e', '#0984e3',
+        ];
+
         class FarsiMemoryGame {
             constructor() {
                 this.board = document.getElementById('board');
@@ -496,6 +502,7 @@
                 this.cards = [];
                 this.recentWordIndices = [];
                 this.pairIdCounter = 0;
+                this.matchColorIndex = 0;
 
                 this.loadProgress();
 
@@ -611,6 +618,7 @@
             startLevel() {
                 this.flips = 0;
                 this.matchedPairs = 0;
+                this.matchColorIndex = 0;
                 this.flippedCards = [];
                 this.isLocked = false;
                 this.overlay.classList.remove('show');
@@ -715,6 +723,10 @@
             }
 
             handleMatch(cardA, cardB) {
+                const color = MATCH_COLORS[this.matchColorIndex % MATCH_COLORS.length];
+                this.matchColorIndex++;
+                cardA.style.setProperty('--pair-color', color);
+                cardB.style.setProperty('--pair-color', color);
                 cardA.classList.add('matched');
                 cardB.classList.add('matched');
                 this.matchedPairs++;
