@@ -470,8 +470,8 @@
             return String(value).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
         }
 
-        const LEVEL_PAIRS = [4, 6, 8, 10, 12];
-        const LEVEL_COLS = [4, 4, 4, 5, 6];
+        const LEVEL_PAIRS = [2, 3, 4, 5, 6, 8, 10, 12];
+        const LEVEL_COLS = [2, 3, 4, 5, 4, 4, 5, 6];
 
         class FarsiMemoryGame {
             constructor() {
@@ -585,7 +585,7 @@
 
                 const totalWords = bank.length;
                 const segmentSize = Math.max(10, Math.ceil(totalWords / 8));
-                const maxSegment = Math.min(Math.ceil(this.level / 1.5), 8);
+                const maxSegment = Math.min(Math.ceil(this.level / 2), 8);
                 const poolEnd = Math.min(maxSegment * segmentSize, totalWords);
                 const pool = bank.slice(0, poolEnd);
 
