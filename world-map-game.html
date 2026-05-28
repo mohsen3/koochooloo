@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>پیدا کردن کشور</title>
+    <style>
+        @font-face {
+            font-family: 'Koodak';
+            src: url("public/koodak.ttf") format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: block;
+        }
+
+        :root {
+            --app-height: 100dvh;
+            --farsi-font: 'Koodak', 'Tahoma', sans-serif;
+            --ink: #2c3e50;
+            --ocean: #b3d4e6;
+            --ocean-deep: #8bb8d4;
+            --land: #f0e4c8;
+            --land-stroke: #c4a97d;
+            --found: #8ddeaf;
+            --found-stroke: #5cae7e;
+            --celebrate: #36b66d;
+        }
+
+        html {
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--farsi-font);
+            overflow: hidden;
+            touch-action: manipulation;
+            overscroll-behavior: none;
+            background: var(--ocean);
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            height: var(--app-height);
+        }
+
+        .game {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            height: var(--app-height);
+            overflow: hidden;
+            background: var(--ocean);
+        }
+
+        #mapCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+            z-index: 0;
+        }
+
+        .ui-overlay {
+            position: absolute;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .ui-overlay > * {
+            pointer-events: auto;
+        }
+
+        .top-left {
+            top: clamp(10px, 2vh, 20px);
+            left: clamp(10px, 2vw, 24px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .top-right {
+            top: clamp(10px, 2vh, 20px);
+            right: clamp(10px, 2vw, 24px);
+        }
+
+        .lang-toggle {
+            background: rgba(255,255,255,0.85);
+            border: none;
+            border-radius: 999px;
+            padding: 6px 16px;
+            font-size: clamp(13px, 1.6vw, 20px);
+            font-family: var(--farsi-font);
+            cursor: pointer;
+            color: var(--ink);
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .lang-toggle:active {
+            background: rgba(255,255,255,0.7);
+        }
+
+        .reset {
+            background: rgba(255,255,255,0.85);
+            border: none;
+            border-radius: 50%;
+            width: clamp(36px, 4.5vw, 52px);
+            height: clamp(36px, 4.5vw, 52px);
+            font-size: clamp(18px, 2.5vw, 30px);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            color: var(--ink);
+            line-height: 1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .reset:active {
+            background: rgba(255,255,255,0.7);
+        }
+
+        .progress {
+            font-size: clamp(14px, 1.6vw, 22px);
+            color: #3a5a6a;
+            background: rgba(255,255,255,0.85);
+            border-radius: 999px;
+            padding: 6px 16px;
+            white-space: nowrap;
+            direction: ltr;
+            font-family: 'Trebuchet MS', 'Arial', sans-serif;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .prompt {
+            bottom: clamp(16px, 3vh, 36px);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: clamp(6px, 1vh, 14px) clamp(16px, 3vw, 32px);
+            border-radius: 999px;
+            background: rgba(255,255,255,0.85);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            white-space: nowrap;
+            font-size: clamp(18px, 2.6vw, 38px);
+            color: var(--ink);
+        }
+
+        .prompt.rtl-layout {
+            flex-direction: row-reverse;
+        }
+
+        .find-text {
+            opacity: 0.65;
+        }
+
+        .target-name {
+            color: var(--celebrate);
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .target-name.pop {
+            animation: popText 0.3s ease-out;
+        }
+
+        @keyframes popText {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .celebration {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 24px;
+            padding: clamp(20px, 4vh, 40px) clamp(28px, 5vw, 56px);
+            box-shadow: 0 20px 60px rgba(54, 182, 109, 0.3);
+            pointer-events: none;
+            z-index: 10;
+            text-align: center;
+            border: 3px solid var(--celebrate);
+            opacity: 0;
+            transition: none;
+        }
+
+        .celebration.show {
+            animation: celebrateIn 0.5s ease-out forwards;
+        }
+
+        .celebration.hide {
+            animation: celebrateOut 0.4s ease-in forwards;
+        }
+
+        @keyframes celebrateIn {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            60% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        @keyframes celebrateOut {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+        }
+
+        .celebration .emoji {
+            font-size: clamp(40px, 6vw, 72px);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .celebration .msg {
+            font-size: clamp(24px, 3.5vw, 48px);
+            color: var(--celebrate);
+            font-weight: bold;
+        }
+
+        .celebration .sub {
+            font-size: clamp(16px, 2vw, 28px);
+            color: var(--ink);
+            opacity: 0.6;
+            margin-top: 4px;
+        }
+
+        .wrong-flash {
+            animation: wrongFlash 0.35s ease-out;
+        }
+
+        @keyframes wrongFlash {
+            0%, 100% { color: var(--ink); }
+            50% { color: #d45a5a; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game" id="game">
+        <canvas id="mapCanvas"></canvas>
+
+        <div class="ui-overlay top-left">
+            <button class="reset" id="resetBtn" title="شروع دوباره">↻</button>
+            <button class="lang-toggle" id="langToggle">EN</button>
+        </div>
+
+        <div class="ui-overlay top-right">
+            <span class="progress" id="progress">0 / 0</span>
+        </div>
+
+        <div class="ui-overlay prompt" id="prompt">
+            <span class="find-text" id="findText">کجاست؟</span>
+            <span class="target-name" id="targetName">...</span>
+        </div>
+
+        <div class="celebration" id="celebration">
+            <span class="emoji">🎉</span>
+            <span class="msg" id="celebMsg">آفرین!</span>
+            <span class="sub" id="celebSub"></span>
+        </div>
+    </div>
+
+    <script src="data/world-countries.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            var countries = window.WORLD_COUNTRIES;
+            if (!countries || !countries.length) return;
+
+            var STORAGE_KEY = 'world-map-game-progress';
+            var LANG_KEY = 'world-map-game-lang';
+            var canvas = document.getElementById('mapCanvas');
+            var ctx = canvas.getContext('2d');
+            var game = document.getElementById('game');
+            var progressEl = document.getElementById('progress');
+            var targetNameEl = document.getElementById('targetName');
+            var findTextEl = document.getElementById('findText');
+            var celebrationEl = document.getElementById('celebration');
+            var celebMsg = document.getElementById('celebMsg');
+            var celebSub = document.getElementById('celebSub');
+            var langBtn = document.getElementById('langToggle');
+            var promptEl = document.getElementById('prompt');
+            var htmlEl = document.documentElement;
+
+            var dpr = window.devicePixelRatio || 1;
+
+            // State
+            var currentLevel = 0;
+            var totalLevels = countries.length;
+            var foundMap = {};
+            var isCelebrating = false;
+            var labelBounds = [];
+            var resizeTimer = null;
+            var fontAreaMin, fontAreaRange;
+            var lang = 'fa';
+
+            var visibleLabelCount = 30;
+
+            // Colors
+            var LAND = '#efe3c9';
+            var LAND_STROKE = '#c4a97d';
+            var FOUND = '#b8e6cb';
+            var FOUND_STROKE = '#7cba94';
+            var OCEAN = '#b3d4e6';
+            var OCEAN_DEEP = '#a0c4d8';
+            var TEXT_COLOR = '#2c3e50';
+            var TEXT_FOUND = '#7cba94';
+
+            // Locale
+            var SIMPLE_EN = {
+                'United States of America': 'USA',
+                'United Kingdom': 'UK',
+                'United Arab Emirates': 'UAE',
+                'Dem. Rep. Congo': 'DR Congo',
+                'S. Sudan': 'South Sudan',
+                'W. Sahara': 'Western Sahara',
+                'Central African Rep.': 'CAR',
+                'Eq. Guinea': 'Equatorial Guinea',
+                "Côte d'Ivoire": 'Ivory Coast',
+                'Bosnia and Herz.': 'Bosnia',
+                'Dominican Rep.': 'Dominican Republic',
+                'Solomon Is.': 'Solomon Islands',
+                'Falkland Is.': 'Falkland Islands',
+                'Fr. S. Antarctic Lands': 'French So. Lands',
+                'eSwatini': 'Eswatini',
+                'Trinidad and Tobago': 'Trinidad & Tobago',
+                'Papua New Guinea': 'Papua New Guinea'
+            };
+
+            var SIMPLE_FA = {
+                'ایالات متحده آمریکا': 'آمریکا',
+                'جمهوری خلق چین': 'چین',
+                'امارات متحده عربی': 'امارات',
+                'جمهوری دموکراتیک کنگو': 'کنگوی دموکراتیک',
+                'جمهوری آفریقای مرکزی': 'آفریقای مرکزی',
+                'بوسنی و هرزگوین': 'بوسنی',
+                'جمهوری دومینیکن': 'دومینیکن',
+                'جزایر سلیمان': 'سلیمان',
+                'سرزمینهای جنوبی و جنوبگانی فرانسه': 'جنوبگان فرانسه',
+                'ترینیداد و توباگو': 'ترینیداد'
+            };
+
+            var LOCALE = {
+                fa: {
+                    findText: 'کجاست؟',
+                    greetings: ['آفرین!', 'عالی بود!', 'دقیقاً!', 'به به!', 'مرحبا!', 'آفرین به تو!', 'چقدر خوب!', 'داشتم می‌گفتم!'],
+                    confirmReset: 'آیا مطمئن هستید؟ تمام مراحل پاک می‌شوند.',
+                    countryName: function(c) { return SIMPLE_FA[c.n] || c.n; }
+                },
+                en: {
+                    findText: 'Where is',
+                    greetings: ['Great!', 'Awesome!', 'Exactly!', 'Well done!', 'Perfect!', 'Nice!', 'Good job!', 'You got it!'],
+                    confirmReset: 'Are you sure? All progress will be lost.',
+                    countryName: function(c) { return SIMPLE_EN[c.e] || c.e; }
+                }
+            };
+
+            function getLocale() { return LOCALE[lang] || LOCALE.fa; }
+
+            function randomGreeting() {
+                var loc = getLocale();
+                return loc.greetings[Math.floor(Math.random() * loc.greetings.length)];
+            }
+
+            function project(lon, lat, w, h) {
+                return [(lon + 180) / 360 * w, (90 - lat) / 180 * h];
+            }
+
+            function pointInPolygon(px, py, ring) {
+                var inside = false;
+                var n = ring.length;
+                for (var i = 0, j = n - 1; i < n; j = i++) {
+                    var xi = ring[i][0], yi = ring[i][1];
+                    var xj = ring[j][0], yj = ring[j][1];
+                    if ((yi > py) !== (yj > py) &&
+                        px < (xj - xi) * (py - yi) / (yj - yi) + xi) {
+                        inside = !inside;
+                    }
+                }
+                return inside;
+            }
+
+            function pointInCountry(px, py, c) {
+                if (c.t === 0) {
+                    if (!pointInPolygon(px, py, c.c[0])) return false;
+                    for (var r = 1; r < c.c.length; r++) {
+                        if (pointInPolygon(px, py, c.c[r])) return false;
+                    }
+                    return true;
+                } else {
+                    for (var p = 0; p < c.c.length; p++) {
+                        var polyRings = c.c[p];
+                        if (!pointInPolygon(px, py, polyRings[0])) continue;
+                        var inHole = false;
+                        for (var r = 1; r < polyRings.length; r++) {
+                            if (pointInPolygon(px, py, polyRings[r])) {
+                                inHole = true;
+                                break;
+                            }
+                        }
+                        if (!inHole) return true;
+                    }
+                    return false;
+                }
+            }
+
+            function loadProgress() {
+                try {
+                    var saved = localStorage.getItem(STORAGE_KEY);
+                    if (saved) {
+                        var data = JSON.parse(saved);
+                        if (typeof data.level === 'number') currentLevel = data.level;
+                        if (data.found) foundMap = data.found;
+                        if (typeof data.visible === 'number') visibleLabelCount = data.visible;
+                    }
+                } catch (_) { }
+                try {
+                    var savedLang = localStorage.getItem(LANG_KEY);
+                    if (savedLang === 'fa' || savedLang === 'en') lang = savedLang;
+                } catch (_) { }
+            }
+
+            function ensureUnfoundTarget() {
+                if (!foundMap[currentLevel]) return;
+                for (var i = 0; i < totalLevels; i++) {
+                    if (!foundMap[i]) {
+                        currentLevel = i;
+                        return;
+                    }
+                }
+                forceReset();
+            }
+
+            function saveProgress() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        level: currentLevel,
+                        found: foundMap,
+                        visible: visibleLabelCount
+                    }));
+                    localStorage.setItem(LANG_KEY, lang);
+                } catch (_) { }
+            }
+
+            function resetProgress() {
+                var loc = getLocale();
+                if (!confirm(loc.confirmReset)) return;
+                forceReset();
+            }
+
+            function forceReset() {
+                localStorage.removeItem(STORAGE_KEY);
+                currentLevel = 0;
+                foundMap = {};
+                visibleLabelCount = 30;
+                saveProgress();
+                render();
+            }
+
+            function showCelebration(country) {
+                if (isCelebrating) return;
+                isCelebrating = true;
+
+                var loc = getLocale();
+                celebMsg.textContent = randomGreeting();
+                celebSub.textContent = loc.countryName(country);
+
+                celebrationEl.className = 'celebration show';
+
+                clearTimeout(celebrationEl._timer);
+                celebrationEl._timer = setTimeout(function () {
+                    celebrationEl.className = 'celebration hide';
+                    setTimeout(function () {
+                        celebrationEl.className = 'celebration';
+                        isCelebrating = false;
+                        advanceLevel();
+                    }, 400);
+                }, 900);
+            }
+
+            function advanceLevel() {
+                var next = -1;
+                for (var i = currentLevel + 1; i < totalLevels; i++) {
+                    if (!foundMap[i]) {
+                        next = i;
+                        break;
+                    }
+                }
+                if (next === -1) {
+                    for (var i = 0; i < currentLevel; i++) {
+                        if (!foundMap[i]) {
+                            next = i;
+                            break;
+                        }
+                    }
+                }
+                if (next === -1) {
+                    forceReset();
+                    return;
+                }
+                currentLevel = next;
+                saveProgress();
+                render();
+            }
+
+            function getTarget() {
+                if (currentLevel < 0 || currentLevel >= totalLevels) return null;
+                return countries[currentLevel];
+            }
+
+            function setLanguage(newLang) {
+                if (newLang === lang) return;
+                lang = newLang;
+                applyLanguage();
+                saveProgress();
+                render();
+            }
+
+            function applyLanguage() {
+                var loc = getLocale();
+                var isFa = lang === 'fa';
+
+                htmlEl.lang = isFa ? 'fa' : 'en';
+                htmlEl.dir = isFa ? 'rtl' : 'ltr';
+                promptEl.className = 'ui-overlay prompt' + (isFa ? ' rtl-layout' : '');
+
+                findTextEl.textContent = loc.findText;
+                document.getElementById('resetBtn').title = loc.confirmReset;
+                langBtn.textContent = isFa ? 'EN' : 'FA';
+                document.title = isFa ? 'پیدا کردن کشور' : 'Find the Country';
+            }
+
+            function toggleLang() {
+                setLanguage(lang === 'fa' ? 'en' : 'fa');
+            }
+
+            function handleClick(e) {
+                if (isCelebrating) return;
+
+                var rect = canvas.getBoundingClientRect();
+                var mx = e.clientX - rect.left;
+                var my = e.clientY - rect.top;
+
+                var scaleX = canvas.width / rect.width / dpr;
+                var scaleY = canvas.height / rect.height / dpr;
+                var cx = mx * scaleX;
+                var cy = my * scaleY;
+
+                var target = getTarget();
+                if (!target) return;
+
+                var cw = canvas.width / dpr;
+                var ch = canvas.height / dpr;
+                var lon = (cx / cw) * 360 - 180;
+                var lat = 90 - (cy / ch) * 180;
+
+                // Check label clicks first
+                for (var i = 0; i < labelBounds.length; i++) {
+                    var lb = labelBounds[i];
+                    if (foundMap[lb.idx]) continue;
+                    if (cx >= lb.x && cx <= lb.x + lb.w &&
+                        cy >= lb.y && cy <= lb.y + lb.h) {
+                        if (lb.idx === currentLevel) {
+                            foundMap[currentLevel] = true;
+                            if (visibleLabelCount < totalLevels) visibleLabelCount++;
+                            saveProgress();
+                            showCelebration(target);
+                            return;
+                        } else {
+                            flashWrong();
+                            return;
+                        }
+                    }
+                }
+
+                if (pointInCountry(lon, lat, target)) {
+                    foundMap[currentLevel] = true;
+                    if (visibleLabelCount < totalLevels) visibleLabelCount++;
+                    saveProgress();
+                    showCelebration(target);
+                    return;
+                }
+
+                for (var i = 0; i < totalLevels; i++) {
+                    if (i === currentLevel || foundMap[i]) continue;
+                    if (pointInCountry(lon, lat, countries[i])) {
+                        flashWrong();
+                        return;
+                    }
+                }
+            }
+
+            function flashWrong() {
+                targetNameEl.classList.remove('wrong-flash');
+                void targetNameEl.offsetWidth;
+                targetNameEl.classList.add('wrong-flash');
+            }
+
+            function render() {
+                var rect = game.getBoundingClientRect();
+                var w = Math.round(rect.width * dpr);
+                var h = Math.round(rect.height * dpr);
+
+                if (canvas.width !== w || canvas.height !== h) {
+                    canvas.width = w;
+                    canvas.height = h;
+                }
+
+                var cw = w / dpr;
+                var ch = h / dpr;
+
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.scale(dpr, dpr);
+                ctx.clearRect(0, 0, cw, ch);
+
+                var target = getTarget();
+                if (!target) return;
+
+                var loc = getLocale();
+
+                var grad = ctx.createLinearGradient(0, 0, 0, ch);
+                grad.addColorStop(0, OCEAN);
+                grad.addColorStop(1, OCEAN_DEEP);
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, cw, ch);
+
+                for (var i = 0; i < totalLevels; i++) {
+                    var c = countries[i];
+                    var isFound = foundMap[i];
+
+                    var fillColor, strokeColor, lineW;
+                    if (isFound) {
+                        fillColor = FOUND;
+                        strokeColor = FOUND_STROKE;
+                        lineW = 0.5;
+                    } else {
+                        fillColor = LAND;
+                        strokeColor = LAND_STROKE;
+                        lineW = 0.5;
+                    }
+
+                    ctx.beginPath();
+                    drawPolygon(ctx, c.c, c.t, cw, ch);
+
+                    ctx.fillStyle = fillColor;
+                    ctx.fill();
+                    ctx.strokeStyle = strokeColor;
+                    ctx.lineWidth = lineW;
+                    ctx.stroke();
+                }
+
+                labelBounds = [];
+
+                for (var i = 0; i < totalLevels; i++) {
+                    var c = countries[i];
+                    var isFound = foundMap[i];
+
+                    if (!isFound && i >= visibleLabelCount) continue;
+
+                    var t = fontAreaRange > 0 ? (c.a - fontAreaMin) / fontAreaRange : 0.5;
+                    var fontSize = 11 + t * 21;
+
+                    var viewScale = Math.min(cw / 1200, ch / 600);
+                    fontSize = Math.max(10, Math.round(fontSize * Math.max(0.6, viewScale)));
+
+                    var font = 'bold ' + Math.round(fontSize) + 'px Koodak, Tahoma, sans-serif';
+                    ctx.font = font;
+
+                    var labelX = (c.x + 180) / 360 * cw;
+                    var labelY = (90 - c.y) / 180 * ch;
+
+                    var text = loc.countryName(c);
+                    var metrics = ctx.measureText(text);
+                    var textW = metrics.width;
+                    var textH = fontSize * 1.2;
+
+                    var bx = labelX - textW / 2;
+                    var by = labelY - textH / 2;
+
+                    labelBounds.push({
+                        idx: i,
+                        x: bx,
+                        y: by,
+                        w: textW,
+                        h: textH
+                    });
+
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = isFound ? TEXT_FOUND : TEXT_COLOR;
+                    ctx.fillText(text, labelX, labelY);
+                }
+
+                var foundCount = 0;
+                for (var k in foundMap) {
+                    if (foundMap[k]) foundCount++;
+                }
+                progressEl.textContent = foundCount + ' / ' + totalLevels;
+
+                if (target) {
+                    targetNameEl.textContent = loc.countryName(target);
+                    targetNameEl.className = 'target-name';
+                    void targetNameEl.offsetWidth;
+                    targetNameEl.classList.add('pop');
+                }
+            }
+
+            function drawPolygon(ctx, coords, type, cw, ch) {
+                if (type === 0) {
+                    for (var r = 0; r < coords.length; r++) {
+                        drawRing(ctx, coords[r], cw, ch);
+                    }
+                } else {
+                    for (var p = 0; p < coords.length; p++) {
+                        for (var r = 0; r < coords[p].length; r++) {
+                            drawRing(ctx, coords[p][r], cw, ch);
+                        }
+                    }
+                }
+            }
+
+            function drawRing(ctx, ring, cw, ch) {
+                var first = true;
+                for (var i = 0; i < ring.length; i++) {
+                    var pt = project(ring[i][0], ring[i][1], cw, ch);
+                    if (first) {
+                        ctx.moveTo(pt[0], pt[1]);
+                        first = false;
+                    } else {
+                        ctx.lineTo(pt[0], pt[1]);
+                    }
+                }
+                ctx.closePath();
+            }
+
+            function handleResize() {
+                cancelAnimationFrame(resizeTimer);
+                resizeTimer = requestAnimationFrame(function () {
+                    render();
+                });
+            }
+
+            function init() {
+                fontAreaMin = countries[totalLevels - 1].a;
+                fontAreaRange = countries[0].a - fontAreaMin;
+
+                loadProgress();
+                ensureUnfoundTarget();
+                applyLanguage();
+
+                canvas.addEventListener('pointerdown', handleClick);
+                document.getElementById('resetBtn').addEventListener('click', resetProgress);
+                langBtn.addEventListener('click', toggleLang);
+                window.addEventListener('resize', handleResize);
+
+                render();
+                document.fonts.ready.then(render);
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
