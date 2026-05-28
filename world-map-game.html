@@ -388,8 +388,10 @@
                 return loc.greetings[Math.floor(Math.random() * loc.greetings.length)];
             }
 
-            function project(lon, lat, w, h) {
-                return [(lon + 180) / 360 * w, (90 - lat) / 180 * h];
+            var ox = 0, oy = 0, mw = 0, mh = 0;
+
+            function project(lon, lat) {
+                return [ox + (lon + 180) / 360 * mw, oy + (90 - lat) / 180 * mh];
             }
 
             function pointInPolygon(px, py, ring) {
@@ -575,10 +577,9 @@
                 var target = getTarget();
                 if (!target) return;
 
-                var cw = canvas.width / dpr;
-                var ch = canvas.height / dpr;
-                var lon = (cx / cw) * 360 - 180;
-                var lat = 90 - (cy / ch) * 180;
+                // Convert click to lon/lat using the same projection as render
+                var lon = ((cx - ox) / mw) * 360 - 180;
+                var lat = 90 - ((cy - oy) / mh) * 180;
 
                 // Check label clicks first
                 for (var i = 0; i < labelBounds.length; i++) {
@@ -635,6 +636,21 @@
                 var cw = w / dpr;
                 var ch = h / dpr;
 
+                // Compute centered map area with correct 2:1 aspect ratio
+                var MAP_RATIO = 2;
+                var canvasRatio = cw / ch;
+                if (canvasRatio > MAP_RATIO) {
+                    mh = ch;
+                    mw = ch * MAP_RATIO;
+                    ox = (cw - mw) / 2;
+                    oy = 0;
+                } else {
+                    mw = cw;
+                    mh = cw / MAP_RATIO;
+                    ox = 0;
+                    oy = (ch - mh) / 2;
+                }
+
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.scale(dpr, dpr);
                 ctx.clearRect(0, 0, cw, ch);
@@ -644,11 +660,14 @@
 
                 var loc = getLocale();
 
-                var grad = ctx.createLinearGradient(0, 0, 0, ch);
+                ctx.fillStyle = OCEAN;
+                ctx.fillRect(0, 0, cw, ch);
+
+                var grad = ctx.createLinearGradient(ox, oy, ox, oy + mh);
                 grad.addColorStop(0, OCEAN);
                 grad.addColorStop(1, OCEAN_DEEP);
                 ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, cw, ch);
+                ctx.fillRect(ox, oy, mw, mh);
 
                 for (var i = 0; i < totalLevels; i++) {
                     var c = countries[i];
@@ -666,7 +685,7 @@
                     }
 
                     ctx.beginPath();
-                    drawPolygon(ctx, c.c, c.t, cw, ch);
+                    drawPolygon(ctx, c.c, c.t);
 
                     ctx.fillStyle = fillColor;
                     ctx.fill();
@@ -686,14 +705,14 @@
                     var t = fontAreaRange > 0 ? (c.a - fontAreaMin) / fontAreaRange : 0.5;
                     var fontSize = 11 + t * 21;
 
-                    var viewScale = Math.min(cw / 1200, ch / 600);
+                    var viewScale = Math.min(mw / 1200, mh / 600);
                     fontSize = Math.max(10, Math.round(fontSize * Math.max(0.6, viewScale)));
 
                     var font = 'bold ' + Math.round(fontSize) + 'px Koodak, Tahoma, sans-serif';
                     ctx.font = font;
 
-                    var labelX = (c.x + 180) / 360 * cw;
-                    var labelY = (90 - c.y) / 180 * ch;
+                    var labelX = ox + (c.x + 180) / 360 * mw;
+                    var labelY = oy + (90 - c.y) / 180 * mh;
 
                     var text = loc.countryName(c);
                     var metrics = ctx.measureText(text);
@@ -731,24 +750,24 @@
                 }
             }
 
-            function drawPolygon(ctx, coords, type, cw, ch) {
+            function drawPolygon(ctx, coords, type) {
                 if (type === 0) {
                     for (var r = 0; r < coords.length; r++) {
-                        drawRing(ctx, coords[r], cw, ch);
+                        drawRing(ctx, coords[r]);
                     }
                 } else {
                     for (var p = 0; p < coords.length; p++) {
                         for (var r = 0; r < coords[p].length; r++) {
-                            drawRing(ctx, coords[p][r], cw, ch);
+                            drawRing(ctx, coords[p][r]);
                         }
                     }
                 }
             }
 
-            function drawRing(ctx, ring, cw, ch) {
+            function drawRing(ctx, ring) {
                 var first = true;
                 for (var i = 0; i < ring.length; i++) {
-                    var pt = project(ring[i][0], ring[i][1], cw, ch);
+                    var pt = project(ring[i][0], ring[i][1]);
                     if (first) {
                         ctx.moveTo(pt[0], pt[1]);
                         first = false;
