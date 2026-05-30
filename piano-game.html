@@ -29,6 +29,8 @@
             height: 100dvh;
             display: flex;
             flex-direction: column;
+            touch-action: none;
+            -webkit-touch-action: none;
         }
 
         .header {
@@ -214,7 +216,8 @@
             border: 1px solid #dee2e6;
             border-top: none;
             cursor: pointer;
-            touch-action: manipulation;
+            touch-action: none;
+            -webkit-touch-action: none;
             box-shadow: 0 2px 4px rgba(0,0,0,0.15);
             position: relative;
             transition: background 0.06s;
@@ -274,7 +277,8 @@
             border-radius: 0 0 4px 4px;
             cursor: pointer;
             pointer-events: auto;
-            touch-action: manipulation;
+            touch-action: none;
+            -webkit-touch-action: none;
             transition: background 0.06s, height 0.06s;
             box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 -1px 2px rgba(255,255,255,0.05);
             z-index: 2;
@@ -775,6 +779,14 @@
                 }
             }
         });
+
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('gesturechange', (e) => e.preventDefault());
+        document.addEventListener('gestureend', (e) => e.preventDefault());
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 1) e.preventDefault();
+        }, { passive: false });
 
         let lastTouchEnd = 0;
         document.addEventListener('touchend', (e) => {
