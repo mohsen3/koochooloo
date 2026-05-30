@@ -220,16 +220,28 @@
             transition: background 0.06s;
         }
 
-        .white-key .key-label {
-            position: absolute;
-            top: 3px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.72em;
-            font-weight: 800;
-            color: #495057;
+        .key-label-strip {
+            flex-shrink: 0;
+            display: flex;
+            width: 100%;
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 0 8px 0;
+            gap: 2px;
+        }
+
+        .key-label-strip .label {
+            flex: 1;
+            text-align: center;
+            font-size: 0.65em;
+            font-weight: 700;
+            color: rgba(255,255,255,0.7);
             pointer-events: none;
-            z-index: 1;
+            padding: 2px 0;
+        }
+
+        .white-key .key-label {
+            display: none;
         }
 
         .white-key.highlight {
@@ -382,6 +394,8 @@
             <div class="guide-notes" id="guideNotes"></div>
         </div>
 
+        <div class="key-label-strip" id="keyLabelStrip"></div>
+
         <div class="piano-container">
             <div class="piano" id="piano"></div>
         </div>
@@ -500,16 +514,16 @@
             wheels: {
                 title: '🚌 Wheels on the Bus',
                 notes: [
-                    'C4','C4','C4','C4','F4','F4','F4','F4','A4','A4','A4','A4','G4','G4','G4','G4',
-                    'F4','F4','F4','F4','E4','E4','E4','E4','D4','D4','D4','D4','C4','C4','C4','C4',
-                    'C4','C4','C4','C4','F4','F4','F4','F4','A4','A4','A4','A4','G4','G4','G4','G4',
-                    'F4','F4','F4','F4','E4','E4','E4','E4','D4','D4','D4','D4','C4','C4','C4','C4'
+                    'C4','C4','C4','C4','G4','G4','A4','A4','G4','F4','F4','E4','E4','D4','D4','C4',
+                    'C4','C4','C4','C4','G4','G4','A4','A4','G4','F4','F4','E4','D4','C4','C4','C4',
+                    'C4','C4','C4','C4','G4','G4','A4','A4','G4','F4','F4','E4','E4','D4','D4','C4',
+                    'C4','C4','C4','C4','G4','G4','A4','A4','G4','F4','F4','E4','D4','C4','C4','C4'
                 ],
                 lyrics: [
                     'The','wheels','on','the','bus','go','round','and','round,','round','and','round,','round','and','round!','',
-                    'Round,','and','round,','round','and','round,','round','and','round,—','all','through','the','town!','The','wheels','on',
-                    'the','bus','go','round','and','round,','round','and','round,','round','and','round!','Round,','and','round,','',
-                    'round','and','round,','all','through','the','town!','(the','wi-','pers','on','the','bus...)','','',''
+                    'The','wheels','on','the','bus','go','round','and','round,','all','through','the','town!','','','',
+                    'The','wheels','on','the','bus','go','round','and','round,','round','and','round,','round','and','round!','',
+                    'The','wheels','on','the','bus','go','round','and','round,','all','through','the','town!','','',''
                 ]
             }
         };
@@ -546,10 +560,6 @@
                 const key = document.createElement('div');
                 key.className = 'white-key';
                 key.dataset.note = note;
-                const label = document.createElement('span');
-                label.className = 'key-label';
-                label.textContent = getNoteName(note);
-                key.appendChild(label);
                 key.addEventListener('pointerdown', (e) => onKeyDown(note, e));
                 key.addEventListener('pointerenter', (e) => { if (e.buttons) onKeyDown(note, e); });
                 whiteDiv.appendChild(key);
@@ -775,8 +785,20 @@
 
         document.addEventListener('contextmenu', (e) => e.preventDefault());
 
+        function buildLabelStrip() {
+            const strip = document.getElementById('keyLabelStrip');
+            strip.innerHTML = '';
+            WHITE_NOTES.forEach((note) => {
+                const label = document.createElement('div');
+                label.className = 'label';
+                label.textContent = getNoteName(note);
+                strip.appendChild(label);
+            });
+        }
+
         // ─── Init ───────────────────────────────────────────────────────
         buildPiano();
+        buildLabelStrip();
     </script>
 </body>
 </html>
