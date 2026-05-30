@@ -213,11 +213,6 @@
             border-radius: 0 0 6px 6px;
             border: 1px solid #dee2e6;
             border-top: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding-top: 4px;
             cursor: pointer;
             touch-action: manipulation;
             box-shadow: 0 2px 4px rgba(0,0,0,0.15);
@@ -226,11 +221,15 @@
         }
 
         .white-key .key-label {
-            font-size: 0.7em;
-            font-weight: 700;
-            color: #6c757d;
+            position: absolute;
+            top: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.72em;
+            font-weight: 800;
+            color: #495057;
             pointer-events: none;
-            margin-bottom: 2px;
+            z-index: 1;
         }
 
         .white-key.highlight {
