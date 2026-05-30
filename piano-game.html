@@ -187,8 +187,9 @@
         .piano-container {
             flex: 1;
             display: flex;
-            align-items: flex-end;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
             padding: 0 8px 12px;
             min-height: 0;
         }
@@ -198,8 +199,9 @@
             position: relative;
             width: 100%;
             max-width: 920px;
-            height: 100%;
+            flex: 1;
             max-height: 250px;
+            min-height: 0;
         }
 
         .white-keys {
@@ -228,8 +230,6 @@
             display: flex;
             width: 100%;
             max-width: 920px;
-            margin: 0 auto;
-            padding: 0 8px 0;
             gap: 2px;
         }
 
@@ -386,6 +386,14 @@
                 <button class="song-btn" data-song="twinkle">⭐ Twinkle Twinkle</button>
                 <button class="song-btn" data-song="abc">🔤 ABC Song</button>
                 <button class="song-btn" data-song="wheels">🚌 Wheels on the Bus</button>
+                <button class="song-btn" data-song="mary">🐑 Mary Had a Lamb</button>
+                <button class="song-btn" data-song="row">🚣 Row Your Boat</button>
+                <button class="song-btn" data-song="london">🌉 London Bridge</button>
+                <button class="song-btn" data-song="macdonald">🐄 Old MacDonald</button>
+                <button class="song-btn" data-song="birthday">🎂 Happy Birthday</button>
+                <button class="song-btn" data-song="spider">🕷️ Itsy Bitsy Spider</button>
+                <button class="song-btn" data-song="happy">😊 If You're Happy</button>
+                <button class="song-btn" data-song="jingle">🔔 Jingle Bells</button>
             </div>
         </div>
 
@@ -398,9 +406,8 @@
             <div class="guide-notes" id="guideNotes"></div>
         </div>
 
-        <div class="key-label-strip" id="keyLabelStrip"></div>
-
         <div class="piano-container">
+            <div class="key-label-strip" id="keyLabelStrip"></div>
             <div class="piano" id="piano"></div>
         </div>
     </div>
@@ -528,6 +535,162 @@
                     'The','wheels','on','the','bus','go','round','and','round,','all','through','the','town!','','','',
                     'The','wheels','on','the','bus','go','round','and','round,','round','and','round,','round','and','round!','',
                     'The','wheels','on','the','bus','go','round','and','round,','all','through','the','town!','','',''
+                ]
+            },
+            mary: {
+                title: '🐑 Mary Had a Little Lamb',
+                notes: [
+                    'E4','D4','C4','D4','E4','E4','E4',
+                    'D4','D4','D4','E4','G4','G4',
+                    'E4','D4','C4','D4','E4','E4','E4',
+                    'E4','D4','D4','E4','D4','C4'
+                ],
+                lyrics: [
+                    'Ma','ry','had','a','lit','tle','lamb,',
+                    'lit','tle','lamb,','lit','tle','lamb,',
+                    'Ma','ry','had','a','lit','tle','lamb,',
+                    'its','fleece','was','white','as','snow'
+                ]
+            },
+            row: {
+                title: '🚣 Row, Row, Row Your Boat',
+                notes: [
+                    'C4','C4','C4','D4','E4',
+                    'E4','D4','E4','F4','G4',
+                    'C5','C5','C5','G4','G4','G4',
+                    'E4','E4','E4','C4','C4','C4',
+                    'G4','F4','E4','D4','C4'
+                ],
+                lyrics: [
+                    'Row,','row,','row','your','boat,',
+                    'gen','tly','down','the','stream.',
+                    'Mer','ri','ly,','mer','ri','ly,',
+                    'mer','ri','ly,','mer','ri','ly,',
+                    'life','is','but','a','dream!'
+                ]
+            },
+            london: {
+                title: '🌉 London Bridge',
+                notes: [
+                    'G4','A4','G4','F4','E4','F4','G4',
+                    'D4','E4','F4','E4','F4','G4',
+                    'G4','A4','G4','F4','E4','F4','G4',
+                    'D4','G4','E4','C4'
+                ],
+                lyrics: [
+                    'Lon','don','Bridge','is','fal','ling','down,',
+                    'fal','ling','down,','fal','ling','down,',
+                    'Lon','don','Bridge','is','fal','ling','down,',
+                    'my','fair','la','dy!'
+                ]
+            },
+            macdonald: {
+                title: '🐄 Old MacDonald Had a Farm',
+                notes: [
+                    'G4','G4','G4','D4','E4','E4','D4',
+                    'B4','B4','A4','A4','G4',
+                    'D4','G4','G4','G4','D4','E4','E4','D4',
+                    'B4','B4','A4','A4','G4',
+                    'D4','D4','G4','G4','G4',
+                    'D4','D4','G4','G4','G4',
+                    'G4','G4','G4',
+                    'G4','G4','G4',
+                    'G4','G4','G4','G4','G4','G4',
+                    'G4','G4','G4','D4','E4','E4','D4',
+                    'B4','B4','A4','A4','G4'
+                ],
+                lyrics: [
+                    'Old','Mac','Don','ald','had','a','farm,',
+                    'E','I','E','I','O!',
+                    'And','on','that','farm','he','had','a','cow,',
+                    'E','I','E','I','O!',
+                    'With','a','moo','moo','here,',
+                    'And','a','moo','moo','there,',
+                    'Here','a','moo,',
+                    'There','a','moo,',
+                    'Ev','ery','where','a','moo','moo,',
+                    'Old','Mac','Don','ald','had','a','farm,',
+                    'E','I','E','I','O!'
+                ]
+            },
+            birthday: {
+                title: '🎂 Happy Birthday',
+                notes: [
+                    'D4','D4','E4','D4','G4','F#4',
+                    'D4','D4','E4','D4','A4','G4',
+                    'D4','D4','D5','B4','G4','F#4','E4',
+                    'C5','C5','B4','G4','A4','G4'
+                ],
+                lyrics: [
+                    'Hap','py','birth','day','to','you,',
+                    'Hap','py','birth','day','to','you,',
+                    'Hap','py','birth','day','dear','per','son,',
+                    'Hap','py','birth','day','to','you!'
+                ]
+            },
+            spider: {
+                title: '🕷️ Itsy Bitsy Spider',
+                notes: [
+                    'G4','C5','C5','C5','D5','E5','E5',
+                    'E5','D5','C5','D5','E5','C5',
+                    'E5','E5','F5','G5',
+                    'G5','F5','E5','F5','G5','E5',
+                    'C5','C5','D5','E5',
+                    'E5','D5','C5','D5','E5','C5',
+                    'G4','G4','C5','C5','C5','D5','E5','E5',
+                    'E5','D5','C5','D5','E5','C5'
+                ],
+                lyrics: [
+                    'The','its','y','bit','sy','spi','der',
+                    'climbed','up','the','wa','ter','spout;',
+                    'down','came','the','rain',
+                    'and','washed','the','spi','der','out;',
+                    'out','came','the','sun',
+                    'and','dried','up','all','the','rain;',
+                    'and','the','its','y','bit','sy','spi','der',
+                    'climbed','up','the','spout','a','gain!'
+                ]
+            },
+            happy: {
+                title: '😊 If You\u2019re Happy and You Know It',
+                notes: [
+                    'C4','C4','F4','F4','F4','F4','F4','F4',
+                    'E4','F4','G4',
+                    'C4','C4','G4','G4','G4','G4','G4','G4',
+                    'F4','G4','A4',
+                    'F4','F4','A#4','A#4','A#4','A#4','D4','D4',
+                    'A#4','A#4','A4','A4','A4','G4','F4','F4',
+                    'A4','A4','G4','G4','G4','F4','E4','E4',
+                    'D4','E4','F4'
+                ],
+                lyrics: [
+                    'If','you\'re','hap','py','and','you','know','it,',
+                    'clap','your','hands!',
+                    'If','you\'re','hap','py','and','you','know','it,',
+                    'clap','your','hands!',
+                    'If','you\'re','hap','py','and','you','know','it,',
+                    'then','your','face','will','sure','ly','show','it,',
+                    'If','you\'re','hap','py','and','you','know','it,',
+                    'clap','your','hands!'
+                ]
+            },
+            jingle: {
+                title: '🔔 Jingle Bells',
+                notes: [
+                    'B4','B4','B4','B4','B4','B4','B4','D5','G4','A4','B4',
+                    'C5','C5','C5','C5','C5','B4','B4',
+                    'B4','B4','B4','A4','A4','B4','A4','D5',
+                    'B4','B4','B4','B4','B4','B4','B4','D5','G4','A4','B4',
+                    'C5','C5','C5','C5','C5','B4','B4',
+                    'B4','B4','D5','D5','C5','A4','G4'
+                ],
+                lyrics: [
+                    'Jin','gle','bells,','jin','gle','bells,','jin','gle','all','the','way!',
+                    'Oh,','what','fun','it','is','to','ride',
+                    'in','a','one','horse','o','pen','sleigh,','hey!',
+                    'Jin','gle','bells,','jin','gle','bells,','jin','gle','all','the','way!',
+                    'Oh,','what','fun','it','is','to','ride',
+                    'in','a','one','horse','o','pen','sleigh!'
                 ]
             }
         };
