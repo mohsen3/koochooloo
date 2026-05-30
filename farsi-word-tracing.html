@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ردیابی کلمات فارسی - Farsi Word Tracing</title>
+    <style>
+        @font-face {
+            font-family: 'Koodak';
+            src: url('public/koodak.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: block;
+        }
+
+        :root {
+            --farsi-font: 'Koodak', 'Tahoma', sans-serif;
+            --blue: #4fa3d1;
+            --green: #6bcf7f;
+            --pink: #ff6b9d;
+            --orange: #ffa45b;
+            --shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--farsi-font);
+            background: linear-gradient(135deg, #e6f5ff 0%, #f0f8ff 50%, #fafcff 100%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            position: relative;
+            padding: 20px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .container {
+            background: linear-gradient(135deg, #ffffff 0%, #fafcff 100%);
+            border-radius: 30px;
+            padding: 25px 25px 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 700px;
+            width: 92%;
+            position: relative;
+            z-index: 1;
+            border: 4px solid rgba(79, 163, 209, 0.2);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 5px;
+        }
+
+        h1 {
+            color: var(--blue);
+            font-size: 1.6em;
+            text-shadow: 2px 2px 0px rgba(255,164,91,0.2);
+        }
+
+        .progress {
+            color: white;
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-size: 0.95em;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
+        }
+
+        .word-display {
+            font-size: 1.2em;
+            color: var(--blue);
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            border: 3px solid rgba(79, 163, 209, 0.2);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        #draw-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .controls button {
+            font-family: var(--farsi-font);
+            font-size: 1.3em;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.15s, box-shadow 0.15s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .controls button:active {
+            transform: scale(0.93);
+        }
+
+        #check-btn {
+            background: linear-gradient(135deg, var(--green), #4fa3d1);
+            color: white;
+            box-shadow: 0 5px 15px rgba(107, 207, 127, 0.4);
+        }
+
+        #check-btn:disabled {
+            opacity: 0.5;
+            transform: none;
+        }
+
+        #clear-btn {
+            background: linear-gradient(135deg, #eee, #ddd);
+            color: #888;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 10px 20px;
+        }
+
+        .feedback {
+            margin-top: 12px;
+            font-size: 1.3em;
+            font-weight: 700;
+            min-height: 2em;
+            transition: color 0.3s;
+        }
+
+        .feedback.accept {
+            color: var(--green);
+        }
+
+        .feedback.reject {
+            color: var(--pink);
+        }
+
+        .celebration-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: 900;
+            z-index: 1000;
+            animation: celebrate 0.8s ease-out forwards;
+            pointer-events: none;
+            background: linear-gradient(135deg, var(--green) 0%, var(--blue) 100%);
+            padding: 30px 50px;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 6px solid #ffffff;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-10deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.12) rotate(3deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: confetti-fall 2s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .dots-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(79, 163, 209, 0.15);
+            border-radius: 50%;
+        }
+
+        .reset-link {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            color: #ccc;
+            text-decoration: none;
+            font-size: 1.5em;
+            transition: color 0.2s;
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        .reset-link:hover {
+            color: var(--pink);
+        }
+
+        @media (max-width: 500px) {
+            .container { padding: 15px 15px 12px; }
+            h1 { font-size: 1.3em; }
+            .word-display { font-size: 1em; }
+            .controls button { font-size: 1.1em; padding: 8px 22px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dots-background" id="dots-background"></div>
+
+    <div class="container">
+        <a class="reset-link" id="reset-link" title="شروع از اول">↻</a>
+
+        <div class="header">
+            <h1>ردیابی کلمات</h1>
+            <div class="progress" id="progress">۱ / ۱</div>
+        </div>
+
+        <div class="word-display" id="word-display">کلمه را دنبال کن</div>
+
+        <div class="canvas-container" id="canvas-container">
+            <canvas id="main-canvas" width="600" height="400"></canvas>
+            <canvas id="draw-canvas" width="600" height="400"></canvas>
+        </div>
+
+        <div class="controls">
+            <button id="clear-btn">پاک کردن</button>
+            <button id="check-btn" disabled>بررسی</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        (function () {
+            const STORAGE_KEY = 'farsi-tracing-v2-progress';
+            const COVERAGE_THRESHOLD = 0.70;
+            const ACCURACY_THRESHOLD = 0.55;
+            const TOLERANCE = 8;
+            const LINE_WIDTH = 14;
+            const MIN_DRAWING_PIXELS = 150;
+
+            const WORDS = [
+                'بابا', 'ماما', 'آب', 'نان', 'سیب', 'گل', 'پا', 'دست',
+                'خانه', 'ماشین', 'توپ', 'عروسک', 'کتاب', 'مداد', 'پاکن', 'کیف',
+                'کفش', 'جوراب', 'پیراهن', 'شلوار', 'کلاه', 'بینی', 'چشم', 'گوش',
+                'مو', 'لب', 'دهن', 'دندان', 'زبان', 'دستکش', 'خورشید', 'ماه',
+                'ستاره', 'ابر', 'باران', 'برف', 'باد', 'دریا', 'رود', 'ماهی',
+                'پرنده', 'گنجشک', 'گربه', 'سگ', 'خرس', 'خرگوش', 'اردک', 'مرغ',
+                'جوجه', 'اسب', 'گاو', 'بز', 'درخت', 'برگ', 'باغ', 'گلبرگ',
+                'رنگ', 'آبی', 'قرمز', 'زرد', 'سبز', 'صورتی', 'نارنجی', 'بنفش',
+                'شیر', 'پنیر', 'کیک', 'موز', 'انار', 'هلو', 'توت', 'خرما',
+                'اتوبوس', 'دوچرخه', 'قطار', 'پنجره', 'میز', 'صندلی', 'بالش', 'پتو',
+                'مامان', 'بابایی', 'دوست', 'بازی', 'تاب', 'سرسره',
+                'آسمان', 'زمین', 'کوه', 'جنگل', 'بیابان', 'جزیره', 'طوطی',
+                'فیل', 'زرافه', 'موش', 'لاک‌پشت', 'حلزون', 'پروانه', 'زنبور',
+                'بستنی', 'شکلات', 'هندوانه', 'خیار', 'گوجه', 'سیب‌زمینی', 'پیاز',
+                'چاقو', 'قاشق', 'چنگال', 'لیوان', 'بشقاب', 'قابلمه', 'یخچال',
+                'آینه', 'تلویزیون', 'رادیو', 'گل‌آبی', 'لاله', 'رز', 'یاسمن',
+                'بهار', 'تابستان', 'پاییز', 'زمستان', 'امروز', 'دیروز', 'فردا',
+                'صبح', 'ظهر', 'عصر', 'شب', 'چراغ', 'فرش', 'پرده', 'کمد',
+                'حمام', 'آشپزخانه', 'اتاق', 'راهرو', 'پله', 'بام', 'دیوار',
+                'چشمه', 'آبشار', 'دره', 'صحرا', 'کویر', 'دریاچه', 'موج',
+                'کشتی', 'قایق', 'هواپیما', 'بالگرد', 'موتور', 'کامیون', 'تراکتور',
+                'دارو', 'بیمارستان', 'دکتر', 'پرستار', 'داروخانه', 'عینک', 'ساعت',
+                'انگشتر', 'گردنبند', 'دستبند', 'گوشواره', 'کیف‌پول', 'چتر', 'عصا'
+            ];
+
+            function shuffle(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+
+            function toPersianNumber(num) {
+                return num.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[parseInt(d)]);
+            }
+
+            class FarsiTracingGameV2 {
+                constructor() {
+                    this.mainCanvas = document.getElementById('main-canvas');
+                    this.mainCtx = this.mainCanvas.getContext('2d');
+                    this.drawCanvas = document.getElementById('draw-canvas');
+                    this.drawCtx = this.drawCanvas.getContext('2d');
+                    this.drawCtx.strokeStyle = '#4fa3d1';
+                    this.drawCtx.fillStyle = '#4fa3d1';
+                    this.drawCtx.lineWidth = LINE_WIDTH;
+                    this.drawCtx.lineCap = 'round';
+                    this.drawCtx.lineJoin = 'round';
+
+                    this.offWordCanvas = document.createElement('canvas');
+                    this.offWordCanvas.width = this.mainCanvas.width;
+                    this.offWordCanvas.height = this.mainCanvas.height;
+                    this.offWordCtx = this.offWordCanvas.getContext('2d');
+
+                    this.offDrawCanvas = document.createElement('canvas');
+                    this.offDrawCanvas.width = this.mainCanvas.width;
+                    this.offDrawCanvas.height = this.mainCanvas.height;
+                    this.offDrawCtx = this.offDrawCanvas.getContext('2d');
+                    this.offDrawCtx.strokeStyle = '#000000';
+                    this.offDrawCtx.fillStyle = '#000000';
+                    this.offDrawCtx.lineWidth = LINE_WIDTH;
+                    this.offDrawCtx.lineCap = 'round';
+                    this.offDrawCtx.lineJoin = 'round';
+
+                    this.fontStack = "'Koodak', 'Tahoma', sans-serif";
+                    this.fontReady = false;
+                    this.drawing = false;
+                    this.hasDrawing = false;
+                    this.activePointerId = null;
+                    this.lastPoint = null;
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.checkPending = false;
+
+                    this.wordOrder = shuffle([...WORDS]);
+                    this.currentIndex = 0;
+                    this.currentMask = null;
+
+                    this.setup();
+                }
+
+                async setup() {
+                    this.createBackgroundDots();
+                    this.setupEventListeners();
+                    this.loadProgress();
+                    await this.ensureFontReady();
+                    this.showWord();
+                    this.updateProgress();
+                }
+
+                createBackgroundDots() {
+                    const container = document.getElementById('dots-background');
+                    const spacing = 30;
+                    for (let x = spacing; x < window.innerWidth; x += spacing) {
+                        for (let y = spacing; y < window.innerHeight; y += spacing) {
+                            const dot = document.createElement('div');
+                            dot.className = 'dot';
+                            dot.style.left = x + 'px';
+                            dot.style.top = y + 'px';
+                            container.appendChild(dot);
+                        }
+                    }
+                }
+
+                setupEventListeners() {
+                    if (window.PointerEvent) {
+                        this.drawCanvas.addEventListener('pointerdown', e => this.onPointerDown(e));
+                        this.drawCanvas.addEventListener('pointermove', e => this.onPointerMove(e));
+                        this.drawCanvas.addEventListener('pointerup', e => this.onPointerUp(e));
+                        this.drawCanvas.addEventListener('pointercancel', e => this.onPointerUp(e));
+                        this.drawCanvas.addEventListener('pointerleave', e => this.onPointerUp(e));
+                    } else {
+                        this.drawCanvas.addEventListener('touchstart', e => this.onTouchStart(e), { passive: false });
+                        this.drawCanvas.addEventListener('touchmove', e => this.onTouchMove(e), { passive: false });
+                        this.drawCanvas.addEventListener('touchend', e => this.onTouchEnd(e), { passive: false });
+                        this.drawCanvas.addEventListener('mousedown', e => this.onMouseDown(e));
+                        this.drawCanvas.addEventListener('mousemove', e => this.onMouseMove(e));
+                        this.drawCanvas.addEventListener('mouseup', e => this.onMouseUp(e));
+                        this.drawCanvas.addEventListener('mouseleave', e => this.onMouseUp(e));
+                    }
+
+                    document.getElementById('clear-btn').addEventListener('click', () => this.clearDrawing());
+                    document.getElementById('check-btn').addEventListener('click', () => this.validate());
+                    document.getElementById('reset-link').addEventListener('click', () => this.resetProgress());
+                }
+
+                getPos(e) {
+                    const rect = this.drawCanvas.getBoundingClientRect();
+                    const sx = this.drawCanvas.width / rect.width;
+                    const sy = this.drawCanvas.height / rect.height;
+                    if (e.touches) {
+                        return {
+                            x: (e.touches[0].clientX - rect.left) * sx,
+                            y: (e.touches[0].clientY - rect.top) * sy
+                        };
+                    }
+                    return {
+                        x: (e.clientX - rect.left) * sx,
+                        y: (e.clientY - rect.top) * sy
+                    };
+                }
+
+                onPointerDown(e) {
+                    e.preventDefault();
+                    this.drawing = true;
+                    this.activePointerId = e.pointerId;
+                    this.lastPoint = this.getPos(e);
+                    this.drawCanvas.setPointerCapture(e.pointerId);
+                    this.hasDrawing = true;
+                }
+
+                onPointerMove(e) {
+                    if (!this.drawing || e.pointerId !== this.activePointerId) return;
+                    e.preventDefault();
+                    const pt = this.getPos(e);
+                    this.drawLine(this.lastPoint, pt);
+                    this.lastPoint = pt;
+                }
+
+                onPointerUp(e) {
+                    if (!this.drawing) return;
+                    this.drawing = false;
+                    this.activePointerId = null;
+                    this.lastPoint = null;
+                    if (this.hasDrawing) {
+                        document.getElementById('check-btn').disabled = false;
+                    }
+                }
+
+                onTouchStart(e) { e.preventDefault(); const pt = this.getPos(e); this.drawing = true; this.lastPoint = pt; this.hasDrawing = true; }
+                onTouchMove(e) { if (!this.drawing) return; e.preventDefault(); const pt = this.getPos(e); this.drawLine(this.lastPoint, pt); this.lastPoint = pt; }
+                onTouchEnd(e) { if (!this.drawing) return; this.drawing = false; this.lastPoint = null; if (this.hasDrawing) document.getElementById('check-btn').disabled = false; }
+                onMouseDown(e) { const pt = this.getPos(e); this.drawing = true; this.lastPoint = pt; this.hasDrawing = true; }
+                onMouseMove(e) { if (!this.drawing) return; const pt = this.getPos(e); this.drawLine(this.lastPoint, pt); this.lastPoint = pt; }
+                onMouseUp(e) { if (!this.drawing) return; this.drawing = false; this.lastPoint = null; if (this.hasDrawing) document.getElementById('check-btn').disabled = false; }
+
+                drawLine(from, to) {
+                    if (!from) {
+                        this.drawCtx.beginPath();
+                        this.drawCtx.arc(to.x, to.y, LINE_WIDTH / 2, 0, Math.PI * 2);
+                        this.drawCtx.fill();
+
+                        this.offDrawCtx.beginPath();
+                        this.offDrawCtx.arc(to.x, to.y, LINE_WIDTH / 2, 0, Math.PI * 2);
+                        this.offDrawCtx.fill();
+                        return;
+                    }
+
+                    this.drawCtx.beginPath();
+                    this.drawCtx.moveTo(from.x, from.y);
+                    this.drawCtx.lineTo(to.x, to.y);
+                    this.drawCtx.stroke();
+
+                    this.offDrawCtx.beginPath();
+                    this.offDrawCtx.moveTo(from.x, from.y);
+                    this.offDrawCtx.lineTo(to.x, to.y);
+                    this.offDrawCtx.stroke();
+                }
+
+                async ensureFontReady() {
+                    if (document.fonts && document.fonts.load) {
+                        try {
+                            await Promise.race([
+                                document.fonts.load('400 200px "Koodak"'),
+                                new Promise(r => setTimeout(r, 1500))
+                            ]);
+                        } catch (_) {}
+                    }
+                    this.fontReady = true;
+                }
+
+                currentWord() {
+                    return this.wordOrder[this.currentIndex] || 'آب';
+                }
+
+                renderWordMask(word) {
+                    const ctx = this.offWordCtx;
+                    const w = this.offWordCanvas.width;
+                    const h = this.offWordCanvas.height;
+
+                    ctx.clearRect(0, 0, w, h);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, w, h);
+
+                    let fontSize = word.length > 4 ? 180 : word.length > 2 ? 220 : 260;
+                    ctx.textBaseline = 'middle';
+                    ctx.textAlign = 'center';
+                    ctx.direction = 'rtl';
+
+                    while (fontSize > 80) {
+                        ctx.font = `400 ${fontSize}px ${this.fontStack}`;
+                        if (ctx.measureText(word).width <= w - 60) break;
+                        fontSize -= 10;
+                    }
+
+                    ctx.fillStyle = '#000000';
+                    ctx.fillText(word, w / 2, h / 2);
+
+                    const imageData = ctx.getImageData(0, 0, w, h);
+                    const pixels = imageData.data;
+                    const mask = new Uint8Array(w * h);
+
+                    for (let i = 0; i < w * h; i++) {
+                        const offset = i * 4;
+                        mask[i] = pixels[offset] < 200 ? 1 : 0;
+                    }
+
+                    return { mask, width: w, height: h };
+                }
+
+                showWord() {
+                    const word = this.currentWord();
+                    document.getElementById('word-display').textContent = `"${word}" را دنبال کن`;
+
+                    this.clearDrawing();
+                    this.drawGuide(word);
+                    this.currentMask = this.renderWordMask(word);
+                }
+
+                drawGuide(word) {
+                    const ctx = this.mainCtx;
+                    const w = this.mainCanvas.width;
+                    const h = this.mainCanvas.height;
+
+                    ctx.clearRect(0, 0, w, h);
+
+                    let fontSize = word.length > 4 ? 180 : word.length > 2 ? 220 : 260;
+                    ctx.textBaseline = 'middle';
+                    ctx.textAlign = 'center';
+                    ctx.direction = 'rtl';
+                    ctx.font = `400 ${fontSize}px ${this.fontStack}`;
+
+                    while (fontSize > 80) {
+                        ctx.font = `400 ${fontSize}px ${this.fontStack}`;
+                        if (ctx.measureText(word).width <= w - 60) break;
+                        fontSize -= 10;
+                    }
+
+                    ctx.save();
+                    ctx.globalAlpha = 0.15;
+                    ctx.fillStyle = '#4fa3d1';
+                    ctx.fillText(word, w / 2, h / 2);
+                    ctx.restore();
+                }
+
+                clearDrawing() {
+                    this.drawCtx.clearRect(0, 0, this.drawCanvas.width, this.drawCanvas.height);
+                    this.offDrawCtx.clearRect(0, 0, this.offDrawCanvas.width, this.offDrawCanvas.height);
+                    this.hasDrawing = false;
+                    this.lastPoint = null;
+                    document.getElementById('check-btn').disabled = true;
+                    document.getElementById('feedback').textContent = '';
+                }
+
+                dilateMask(src, width, height, radius) {
+                    const dst = new Uint8Array(width * height);
+                    for (let y = 0; y < height; y++) {
+                        for (let x = 0; x < width; x++) {
+                            if (!src[y * width + x]) continue;
+                            const y0 = Math.max(0, y - radius);
+                            const y1 = Math.min(height - 1, y + radius);
+                            const x0 = Math.max(0, x - radius);
+                            const x1 = Math.min(width - 1, x + radius);
+                            for (let ny = y0; ny <= y1; ny++) {
+                                const row = ny * width;
+                                for (let nx = x0; nx <= x1; nx++) {
+                                    dst[row + nx] = 1;
+                                }
+                            }
+                        }
+                    }
+                    return dst;
+                }
+
+                getDrawingMask() {
+                    const w = this.offDrawCanvas.width;
+                    const h = this.offDrawCanvas.height;
+                    const imageData = this.offDrawCtx.getImageData(0, 0, w, h);
+                    const pixels = imageData.data;
+                    const mask = new Uint8Array(w * h);
+
+                    for (let i = 0; i < w * h; i++) {
+                        mask[i] = pixels[i * 4 + 3] > 30 ? 1 : 0;
+                    }
+
+                    return mask;
+                }
+
+                validate() {
+                    if (this.checkPending) return;
+                    this.checkPending = true;
+
+                    if (!this.currentMask) {
+                        this.currentMask = this.renderWordMask(this.currentWord());
+                    }
+
+                    const { mask: wordMask, width, height } = this.currentMask;
+                    const drawMask = this.getDrawingMask();
+
+                    let totalWordPixels = 0;
+                    let totalDrawPixels = 0;
+
+                    for (let i = 0; i < width * height; i++) {
+                        if (wordMask[i]) totalWordPixels++;
+                        if (drawMask[i]) totalDrawPixels++;
+                    }
+
+                    if (totalDrawPixels < MIN_DRAWING_PIXELS) {
+                        this.showFeedback('بیشتر بکش!', 'reject');
+                        this.checkPending = false;
+                        return;
+                    }
+
+                    const dilatedDraw = this.dilateMask(drawMask, width, height, TOLERANCE);
+                    const dilatedWord = this.dilateMask(wordMask, width, height, TOLERANCE);
+
+                    let covered = 0;
+                    let accurate = 0;
+
+                    for (let i = 0; i < width * height; i++) {
+                        if (wordMask[i] && dilatedDraw[i]) covered++;
+                        if (drawMask[i] && dilatedWord[i]) accurate++;
+                    }
+
+                    const coverage = covered / totalWordPixels;
+                    const accuracy = accurate / totalDrawPixels;
+
+                    if (coverage >= COVERAGE_THRESHOLD && accuracy >= ACCURACY_THRESHOLD) {
+                        this.onSuccess(coverage, accuracy);
+                    } else {
+                        this.onFailure(coverage, accuracy);
+                    }
+
+                    this.checkPending = false;
+                }
+
+                onSuccess(coverage, accuracy) {
+                    this.showFeedback('آفرین! عالی بود', 'accept');
+                    this.playSuccessSound();
+                    this.celebrate();
+
+                    this.currentIndex++;
+                    this.saveProgress();
+
+                    setTimeout(() => {
+                        if (this.currentIndex >= this.wordOrder.length) {
+                            this.wordOrder = shuffle([...WORDS]);
+                            this.currentIndex = 0;
+                        }
+                        this.showWord();
+                        this.updateProgress();
+                    }, 1200);
+                }
+
+                onFailure(coverage, accuracy) {
+                    const pct = n => Math.round(n * 100);
+                    this.showFeedback(`دوباره تلاش کن (${pct(coverage)}% / ${pct(accuracy)}%)`, 'reject');
+                    this.playErrorSound();
+                }
+
+                showFeedback(msg, type) {
+                    const el = document.getElementById('feedback');
+                    el.textContent = msg;
+                    el.className = 'feedback ' + (type || '');
+                }
+
+                updateProgress() {
+                    document.getElementById('progress').textContent =
+                        toPersianNumber(this.currentIndex + 1) + ' / ' + toPersianNumber(this.wordOrder.length);
+                }
+
+                saveProgress() {
+                    try {
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                            index: this.currentIndex,
+                            order: this.wordOrder
+                        }));
+                    } catch (_) {}
+                }
+
+                loadProgress() {
+                    try {
+                        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                        if (saved && Array.isArray(saved.order) && saved.order.length > 0) {
+                            this.wordOrder = saved.order;
+                            this.currentIndex = Math.min(saved.index || 0, this.wordOrder.length - 1);
+                        }
+                    } catch (_) {}
+                }
+
+                resetProgress() {
+                    localStorage.removeItem(STORAGE_KEY);
+                    this.wordOrder = shuffle([...WORDS]);
+                    this.currentIndex = 0;
+                    this.clearDrawing();
+                    this.currentMask = null;
+                    this.showWord();
+                    this.updateProgress();
+                    document.getElementById('feedback').textContent = '';
+                }
+
+                playSuccessSound() {
+                    try {
+                        const now = this.audioContext.currentTime;
+                        [523.25, 659.25, 783.99].forEach((freq, i) => {
+                            const osc = this.audioContext.createOscillator();
+                            const gain = this.audioContext.createGain();
+                            osc.connect(gain);
+                            gain.connect(this.audioContext.destination);
+                            osc.frequency.value = freq;
+                            osc.type = 'sine';
+                            const t = now + i * 0.1;
+                            gain.gain.setValueAtTime(0, t);
+                            gain.gain.linearRampToValueAtTime(0.3, t + 0.05);
+                            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+                            osc.start(t);
+                            osc.stop(t + 0.3);
+                        });
+                    } catch (_) {}
+                }
+
+                playErrorSound() {
+                    try {
+                        const now = this.audioContext.currentTime;
+                        const osc = this.audioContext.createOscillator();
+                        const gain = this.audioContext.createGain();
+                        osc.connect(gain);
+                        gain.connect(this.audioContext.destination);
+                        osc.frequency.value = 200;
+                        osc.type = 'sawtooth';
+                        gain.gain.setValueAtTime(0, now);
+                        gain.gain.linearRampToValueAtTime(0.1, now + 0.05);
+                        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                        osc.start(now);
+                        osc.stop(now + 0.2);
+                    } catch (_) {}
+                }
+
+                celebrate() {
+                    const messages = ['آفرین! ✨', 'عالی! ⭐', 'فوق‌العاده! 🎉', 'بی‌نظیر! 🌟', 'دست‌مریزاد! 🎊'];
+                    const msg = messages[Math.floor(Math.random() * messages.length)];
+
+                    const el = document.createElement('div');
+                    el.className = 'celebration-overlay';
+                    el.textContent = msg;
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 1000);
+
+                    this.createConfetti();
+                }
+
+                createConfetti() {
+                    const container = document.getElementById('celebration');
+                    const colors = ['#4fa3d1', '#6bcf7f', '#ffa45b', '#ff6b9d', '#ffd93d'];
+
+                    for (let i = 0; i < 35; i++) {
+                        const c = document.createElement('div');
+                        c.className = 'confetti';
+                        c.style.left = Math.random() * 100 + '%';
+                        c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        c.style.animationDelay = Math.random() * 0.3 + 's';
+                        container.appendChild(c);
+                        setTimeout(() => c.remove(), 2000);
+                    }
+                }
+            }
+
+            window.addEventListener('load', () => new FarsiTracingGameV2());
+        })();
+    </script>
+</body>
+</html>

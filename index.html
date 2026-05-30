@@ -17,6 +17,11 @@
             --warm-deep: #c85b1f;
             --green: #2f8f62;
             --blue: #2d6f93;
+            --cat-math: #2d6f93;
+            --cat-reading: #2f8f62;
+            --cat-tracing: #c85b1f;
+            --cat-music: #7b5ea7;
+            --cat-farsi: #d4526e;
             --shadow: 0 24px 70px rgba(24, 34, 47, 0.14);
             --radius-xl: 32px;
             --radius-lg: 24px;
@@ -388,6 +393,73 @@
                 margin-top: 20px;
             }
         }
+
+        .search-wrap {
+            position: relative;
+            margin: 0 0 26px;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 16px 20px 16px 48px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.78);
+            font: inherit;
+            font-size: 1rem;
+            color: var(--ink);
+            outline: none;
+            transition: border-color 180ms ease, box-shadow 180ms ease;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--warm);
+            box-shadow: 0 0 0 3px rgba(234, 122, 61, 0.18);
+        }
+
+        .search-wrap::before {
+            content: "🔍";
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .game-card {
+            position: relative;
+            border-left: 4px solid transparent;
+        }
+
+        .game-card[data-category="math"] {
+            border-left-color: var(--cat-math);
+        }
+
+        .game-card[data-category="reading"] {
+            border-left-color: var(--cat-reading);
+        }
+
+        .game-card[data-category="tracing"] {
+            border-left-color: var(--cat-tracing);
+        }
+
+        .game-card[data-category="music"] {
+            border-left-color: var(--cat-music);
+        }
+
+        .game-card[data-category="farsi"] {
+            border-left-color: var(--cat-farsi);
+        }
+
+        .no-results {
+            display: none;
+            grid-column: 1 / -1;
+            padding: 36px;
+            text-align: center;
+            color: var(--muted);
+        }
     </style>
 </head>
 <body>
@@ -410,7 +482,7 @@
             </div>
             <div class="hero-meta">
                 <div class="meta-card">
-                    <strong id="total-games-count">21</strong>
+                    <strong id="total-games-count">30</strong>
                     <span>playable games</span>
                 </div>
                 <div class="meta-card">
@@ -421,6 +493,9 @@
                     <strong>Static</strong>
                     <span>simple browser-friendly pages</span>
                 </div>
+            </div>
+            <div class="search-wrap">
+                <input type="text" id="game-search" placeholder="Search games by name or keyword…" autocomplete="off">
             </div>
             <nav class="jump-links" id="categories" aria-label="Game categories">
                 <a href="#math">Math & Numbers</a>
@@ -437,7 +512,7 @@
                     <h2>Math & Numbers</h2>
                     <p>Counting, comparisons, arithmetic fluency, tables, and pattern work.</p>
                 </div>
-                <div class="count-badge" data-count-target="math">13 games</div>
+                <div class="count-badge" data-count-target="math">14 games</div>
             </div>
             <div class="game-grid">
                 <a class="game-card" data-category="math" href="counting-fruits.html">
@@ -466,7 +541,7 @@
                     <div class="card-footer"><span>Open game</span><span>Drag & drop</span></div>
                 </a>
                 <a class="game-card" data-category="math" href="addition-touch.html">
-                    <div class="card-top"><div class="icon">🧩</div><h3>Addition Touch</h3></div>
+                    <div class="card-top"><div class="icon">👆</div><h3>Addition Touch</h3></div>
                     <p>Use touch-first number tiles to build the right addition answer.</p>
                     <div class="card-footer"><span>Open game</span><span>Touch math</span></div>
                 </a>
@@ -523,7 +598,7 @@
             </div>
             <div class="game-grid">
                 <a class="game-card" data-category="reading" href="opposite-words-match.html">
-                    <div class="card-top"><div class="icon">🔗</div><h3>Opposite Words Match</h3></div>
+                    <div class="card-top"><div class="icon">↔️</div><h3>Opposite Words Match</h3></div>
                     <p>Connect words to their opposites with a fun drag-to-match mechanic across progressive levels.</p>
                     <div class="card-footer"><span>Open game</span><span>Matching</span></div>
                 </a>
@@ -609,10 +684,9 @@
                     <p>Type toddler-friendly Persian words with progressive levels.</p>
                     <div class="card-footer"><span>Open game</span><span>Typing</span></div>
                 </a>
-                <a class="game-card" data-category="farsi" data-beta="true" href="farsi-tracing-game.html" hidden>
-                    <div class="card-top"><div class="icon">✍️</div><h3>Farsi Tracing</h3></div>
-                    <div class="card-label">Beta</div>
-                    <p>Trace Persian letters and words with an RTL-friendly practice flow.</p>
+                <a class="game-card" data-category="farsi" href="farsi-word-tracing.html">
+                    <div class="card-top"><div class="icon">✍️</div><h3>Farsi Word Tracing</h3></div>
+                    <p>Trace Persian words on canvas with stroke guides and over 130 vocabulary words.</p>
                     <div class="card-footer"><span>Open game</span><span>Tracing</span></div>
                 </a>
                 <a class="game-card" data-category="farsi" href="farsi-word-puzzle.html">
@@ -626,7 +700,7 @@
                     <div class="card-footer"><span>Open game</span><span>Drag & drop</span></div>
                 </a>
                 <a class="game-card" data-category="farsi" href="farsi-english-match.html">
-                    <div class="card-top"><div class="icon">🔗</div><h3>Farsi English Match</h3></div>
+                    <div class="card-top"><div class="icon">🌐</div><h3>Farsi English Match</h3></div>
                     <p>Connect English words to their Persian translations with colorful dashed traces and progressive levels.</p>
                     <div class="card-footer"><span>Open game</span><span>Matching</span></div>
                 </a>
@@ -653,12 +727,29 @@
         const totalGamesCount = document.getElementById("total-games-count");
         const gameCards = Array.from(document.querySelectorAll(".game-card"));
         const countBadges = Array.from(document.querySelectorAll("[data-count-target]"));
+        const searchInput = document.getElementById("game-search");
         const betaPreferenceKey = "koochooloo-show-beta-games";
 
+        function getSearchQuery() {
+            return (searchInput ? searchInput.value : "").trim().toLowerCase();
+        }
+
+        function matchesSearch(card, query) {
+            if (!query) return true;
+            const name = (card.querySelector("h3") || {}).textContent || "";
+            const desc = (card.querySelector("p") || {}).textContent || "";
+            const tag = (card.querySelector(".card-footer span:last-child") || {}).textContent || "";
+            return name.toLowerCase().includes(query) || desc.toLowerCase().includes(query) || tag.toLowerCase().includes(query);
+        }
+
         function updateVisibleGames(showBeta) {
+            const query = getSearchQuery();
+
             gameCards.forEach((card) => {
                 const isBeta = card.dataset.beta === "true";
-                card.hidden = isBeta && !showBeta;
+                const hiddenByBeta = isBeta && !showBeta;
+                const hiddenBySearch = query && !matchesSearch(card, query);
+                card.hidden = hiddenByBeta || hiddenBySearch;
             });
 
             totalGamesCount.textContent = String(gameCards.filter((card) => !card.hidden).length);
@@ -680,6 +771,8 @@
             window.localStorage.setItem(betaPreferenceKey, String(enabled));
             updateVisibleGames(enabled);
         });
+
+        searchInput.addEventListener("input", () => updateVisibleGames(betaToggle.checked));
     </script>
 </body>
 </html>
