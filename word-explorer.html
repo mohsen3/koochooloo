@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Word Explorer</title>
+    <style>
+        @font-face {
+            font-family: 'Koodak';
+            src: url("public/koodak.ttf") format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: block;
+        }
+
+        :root {
+            --app-height: 100dvh;
+            --space-dark: #0b0e2a;
+            --space-mid: #141852;
+            --space-light: #2a1f6e;
+            --nebula-pink: #e04090;
+            --nebula-blue: #40a0ff;
+            --nebula-purple: #9050e0;
+            --star-glow: #fffbe6;
+            --text-light: #f0eaff;
+            --text-dim: rgba(200, 190, 255, 0.5);
+            --slot-bg: rgba(20, 24, 82, 0.6);
+            --slot-border: rgba(100, 140, 255, 0.25);
+            --slot-active-border: #40a0ff;
+            --tile-bg: linear-gradient(135deg, #1e2260, #2a1f6e);
+            --tile-border: rgba(100, 140, 255, 0.4);
+            --letter-color: #7ae0ff;
+            --correct-glow: rgba(64, 255, 128, 0.4);
+            --wrong-color: #ff4466;
+        }
+
+        html {
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+        }
+        * { box-sizing: border-box; }
+        html, body, .game, .game * {
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+        body {
+            margin: 0;
+            font-family: 'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            min-height: 100dvh;
+            min-height: var(--app-height);
+            height: var(--app-height);
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--space-dark), var(--space-mid) 40%, var(--space-light));
+            overflow: hidden;
+            padding: 8px;
+            touch-action: manipulation;
+            overscroll-behavior: none;
+        }
+
+        .stars {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: #fff;
+            animation: twinkle var(--duration) ease-in-out infinite;
+            animation-delay: var(--delay);
+            width: var(--size);
+            height: var(--size);
+            opacity: var(--opacity);
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--opacity); transform: scale(1); }
+            50% { opacity: calc(var(--opacity) * 0.3); transform: scale(0.6); }
+        }
+        .shooting-star {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 6px 2px var(--star-glow);
+            animation: shoot 4s linear infinite;
+            animation-delay: var(--delay);
+            top: var(--top);
+            left: var(--left);
+        }
+        .shooting-star::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 3px;
+            width: 60px;
+            height: 1.5px;
+            background: linear-gradient(to left, rgba(255,255,255,0.6), transparent);
+            transform-origin: right center;
+        }
+        @keyframes shoot {
+            0% { transform: translate(0, 0) rotate(-30deg); opacity: 1; }
+            20% { opacity: 0; }
+            100% { transform: translate(400px, 230px) rotate(-30deg); opacity: 0; }
+        }
+
+        .game {
+            position: relative;
+            z-index: 1;
+            width: min(900px, 95vw);
+            height: min(800px, calc(var(--app-height) - 16px));
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            border-radius: 28px;
+            border: 3px solid rgba(100, 140, 255, 0.15);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 0 80px rgba(64, 120, 255, 0.05), 0 0 40px rgba(64, 160, 255, 0.08);
+            background: linear-gradient(180deg, rgba(15, 18, 60, 0.92), rgba(25, 20, 70, 0.95));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 20px clamp(16px, 2vw, 24px) clamp(16px, 2vw, 24px);
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            min-height: 48px;
+        }
+        .topbar-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(20px, 2.8vw, 34px);
+            letter-spacing: 1px;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--nebula-pink), var(--nebula-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .status {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(100, 140, 255, 0.2);
+            border-radius: 999px;
+            padding: 5px 16px;
+            font-size: clamp(14px, 1.4vw, 20px);
+            white-space: nowrap;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        #resetBtn {
+            cursor: pointer;
+            border: none;
+            font: inherit;
+            color: var(--text-light);
+            background: rgba(255, 68, 102, 0.12);
+            border: 1px solid rgba(255, 68, 102, 0.2);
+            transition: background 180ms ease, transform 180ms ease;
+            display: grid;
+            place-items: center;
+            min-width: 42px;
+            padding: 4px 10px;
+            line-height: 1;
+            font-size: 22px;
+        }
+        #resetBtn:hover, #resetBtn:active {
+            background: rgba(255, 68, 102, 0.25);
+            transform: scale(1.04);
+        }
+
+        .play-area {
+            position: relative;
+            flex: 1 1 auto;
+            min-height: 0;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(100, 140, 255, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 16px;
+        }
+
+        .section {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+        }
+        .section + .section {
+            border-top: 1px solid rgba(100, 140, 255, 0.08);
+        }
+
+        .section-label {
+            text-align: center;
+            font-size: clamp(12px, 1vw, 15px);
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 0 2px;
+        }
+
+        .slots-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: clamp(3px, 0.3vw, 6px);
+            padding: 6px 8px;
+            pointer-events: none;
+            z-index: 2;
+            position: relative;
+            flex-wrap: wrap;
+            min-height: 0;
+        }
+
+        .slot {
+            position: relative;
+            width: clamp(48px, 7vmin, 72px);
+            height: clamp(56px, 8vmin, 80px);
+            border: 3px dashed var(--slot-border);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(32px, 4.5vmin, 52px);
+            font-weight: 700;
+            color: var(--text-dim);
+            background: var(--slot-bg);
+            transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+            overflow: hidden;
+        }
+        .slot.revealed {
+            border-style: solid;
+            border-color: rgba(100, 140, 255, 0.15);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--letter-color);
+            text-shadow: 0 0 15px rgba(64, 160, 255, 0.2);
+        }
+        .slot.waiting {
+            border-style: solid;
+            border-color: var(--slot-border);
+            background: rgba(255, 255, 255, 0.04);
+            animation: slotIdle 2000ms ease-in-out infinite;
+        }
+        @keyframes slotIdle {
+            0%, 100% { border-color: var(--slot-border); }
+            50% { border-color: rgba(100, 140, 255, 0.35); }
+        }
+        .slot.good {
+            border-style: solid;
+            border-color: rgba(64, 255, 128, 0.4);
+            background: rgba(64, 255, 128, 0.08);
+            transform: scale(1.06);
+            animation: popReveal 260ms ease-out;
+        }
+
+        @keyframes slotPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(64, 160, 255, 0.12); }
+            50% { box-shadow: 0 0 22px rgba(64, 160, 255, 0.28); }
+        }
+        @keyframes popReveal {
+            0% { transform: scale(0.85); }
+            100% { transform: scale(1.06); }
+        }
+
+        .tile {
+            position: absolute;
+            width: clamp(48px, 7vmin, 72px);
+            height: clamp(56px, 8vmin, 80px);
+            border-radius: 16px;
+            border: 2px solid var(--tile-border);
+            background: var(--tile-bg);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(32px, 4.5vmin, 52px);
+            font-weight: 700;
+            color: var(--letter-color);
+            text-shadow: 0 0 12px rgba(64, 160, 255, 0.3);
+            user-select: none;
+            touch-action: none;
+            cursor: grab;
+            z-index: 3;
+            transform: translate(-50%, -50%) rotate(var(--rot));
+            transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+            overflow: hidden;
+        }
+        .tile.dragging {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.1) rotate(0deg);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.5);
+            z-index: 9;
+        }
+        .tile.locked {
+            cursor: default;
+            pointer-events: none;
+            animation: ding 320ms ease-out;
+        }
+
+
+
+        @keyframes ding {
+            0% { filter: saturate(1); }
+            30% { filter: saturate(1.6) brightness(1.12); }
+            100% { filter: saturate(1); }
+        }
+
+        .section-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            background: rgba(10, 13, 50, 0.55);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 300ms ease;
+            border-radius: 8px;
+        }
+        .section-overlay.show {
+            opacity: 1;
+        }
+        .section-overlay .check {
+            font-size: clamp(36px, 5vw, 64px);
+            animation: checkPop 400ms ease-out;
+        }
+        @keyframes checkPop {
+            0% { transform: scale(0.3); opacity: 0; }
+            60% { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .spark {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff 0%, var(--nebula-blue) 55%, transparent 70%);
+            pointer-events: none;
+            animation: spark 500ms ease-out forwards;
+            z-index: 10;
+        }
+        @keyframes spark {
+            from { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+            to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.5); opacity: 0; }
+        }
+
+        .win {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            background: rgba(5, 8, 40, 0.82);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 300ms ease;
+            z-index: 100;
+            border-radius: 20px;
+        }
+        .win-badge {
+            padding: 24px 40px 22px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(15, 18, 60, 0.95), rgba(40, 25, 80, 0.95));
+            border: 2px solid rgba(100, 140, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 60px rgba(64, 160, 255, 0.15), inset 0 0 30px rgba(64, 120, 255, 0.05);
+            font-size: clamp(36px, 5vw, 60px);
+            color: var(--letter-color);
+            font-weight: 700;
+            text-align: center;
+            z-index: 1;
+            opacity: 0;
+            transform: scale(0.2);
+        }
+        .win-badge .sub {
+            font-size: clamp(14px, 1.6vw, 20px);
+            color: var(--text-dim);
+            font-weight: 400;
+            display: block;
+            margin-top: 8px;
+        }
+        .win.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .win.show .win-badge {
+            animation: badgeBounce 520ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes badgeBounce {
+            0% { transform: scale(0.2); opacity: 0; }
+            50% { transform: scale(1.12); opacity: 1; }
+            70% { transform: scale(0.92); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .confetti-container {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 60;
+            overflow: hidden;
+        }
+        .confetti-piece {
+            position: absolute;
+            animation: confettiFall var(--fall-duration) linear forwards;
+            animation-delay: var(--delay);
+            width: var(--size);
+            height: var(--size);
+            background: var(--color);
+            border-radius: var(--radius);
+            opacity: 0;
+            top: -10px;
+            left: var(--left);
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(calc(var(--app-height) * 0.8)) rotate(720deg); opacity: 0; }
+        }
+
+        .nebula-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            opacity: 0.12;
+        }
+        .glow-1 { width: 300px; height: 300px; background: var(--nebula-blue); top: -100px; right: -50px; }
+        .glow-2 { width: 250px; height: 250px; background: var(--nebula-pink); bottom: -80px; left: -60px; }
+
+        .difficulty-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 2px 0 4px;
+        }
+        .difficulty-label {
+            font-size: clamp(11px, 1vw, 14px);
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            min-width: 44px;
+            text-align: right;
+        }
+        .difficulty-track {
+            display: flex;
+            gap: 4px;
+        }
+        .difficulty-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(100, 140, 255, 0.12);
+            transition: all 300ms ease;
+        }
+        .difficulty-dot.filled {
+            background: var(--nebula-blue);
+            border-color: var(--nebula-blue);
+            box-shadow: 0 0 6px rgba(64, 160, 255, 0.35);
+        }
+        .difficulty-dot.filled.hard {
+            background: var(--nebula-pink);
+            border-color: var(--nebula-pink);
+            box-shadow: 0 0 6px rgba(224, 64, 144, 0.35);
+        }
+
+        @media (max-height: 700px) {
+            .game { padding: 12px; }
+            .topbar { margin-bottom: 6px; min-height: 36px; }
+            h1 { font-size: clamp(16px, 2.2vw, 22px); }
+            .status { padding: 3px 12px; font-size: clamp(12px, 1.2vw, 16px); }
+            .slot { width: clamp(38px, 6vmin, 52px); height: clamp(44px, 7vmin, 60px); font-size: clamp(24px, 3.5vmin, 38px); border-width: 2px; border-radius: 10px; }
+            .tile { width: clamp(38px, 6vmin, 52px); height: clamp(44px, 7vmin, 60px); font-size: clamp(24px, 3.5vmin, 38px); border-width: 2px; border-radius: 10px; }
+            .play-area { padding: 10px 8px; }
+            .section-label { font-size: clamp(10px, 0.9vw, 12px); padding: 3px 0 1px; }
+        }
+
+        @media (max-width: 760px) {
+            .game { height: min(800px, calc(var(--app-height) - 12px)); padding: 12px; }
+        }
+
+        @media (max-width: 1024px) and (orientation: portrait) {
+            .game { width: min(100vw - 10px, 900px); height: min(900px, calc(var(--app-height) - 10px)); border-radius: 22px; padding: 12px; }
+            .topbar { margin-bottom: 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <div class="game">
+        <div class="topbar">
+            <h1>✦ Word Explorer</h1>
+            <div class="topbar-meta">
+                <div class="status" id="status">Level 1</div>
+                <button type="button" class="status" id="resetBtn" aria-label="Reset progress">↻</button>
+            </div>
+        </div>
+        <div class="play-area" id="playArea">
+            <div class="nebula-glow glow-1"></div>
+            <div class="nebula-glow glow-2"></div>
+
+            <div class="section" id="wordSection">
+                <div class="section-label">Complete the word</div>
+                <div class="slots-row" id="slots"></div>
+                <div class="section-overlay" id="sectionOverlay"><span class="check">✓</span></div>
+            </div>
+
+            <div class="section" id="tilesSection">
+                <div class="section-label">Drag letters into place</div>
+                <div class="difficulty-bar">
+                    <span class="difficulty-label" id="diffLabel">Easy</span>
+                    <div class="difficulty-track" id="diffTrack"></div>
+                </div>
+            </div>
+
+            <div class="confetti-container" id="confettiContainer"></div>
+            <div class="win" id="winMessage">
+                <div class="win-badge">
+                    <span id="winText">🌟 Great!</span>
+                    <span class="sub" id="winSub">Prepare for the next challenge...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WORDS = [
+            'ant', 'bat', 'cow', 'dog', 'elf', 'fox', 'gem', 'hen', 'ice', 'jam',
+            'key', 'leg', 'map', 'net', 'oak', 'pig', 'ram', 'sun', 'tea', 'urn',
+            'van', 'web', 'yak', 'zoo', 'ball', 'bear', 'cake', 'deer', 'drum',
+            'fish', 'frog', 'goat', 'hand', 'kite', 'lamp', 'lion', 'moon', 'nest',
+            'owl', 'pear', 'queen', 'rain', 'ring', 'ship', 'star', 'tent', 'tree',
+            'vest', 'wind', 'apple', 'beach', 'bread', 'brush', 'chair', 'chest',
+            'cloud', 'crane', 'crown', 'dance', 'dolphin', 'dream', 'dress',
+            'drink', 'eagle', 'elephant', 'fence', 'flame', 'giant', 'globe',
+            'grape', 'grass', 'happy', 'honey', 'horse', 'island', 'jukebox',
+            'jungle', 'kitten', 'ladder', 'lemon', 'leopard', 'magic', 'mirror',
+            'monkey', 'mountain', 'museum', 'notebook', 'orange', 'palace',
+            'pencil', 'planet', 'puzzle', 'rabbit', 'rainbow', 'river', 'rocket',
+            'salmon', 'silver', 'snake', 'spider', 'sponge', 'square', 'squid',
+            'stone', 'sugar', 'sunset', 'swamp', 'table', 'tiger', 'towel',
+            'trail', 'train', 'truck', 'trunk', 'tulip', 'turkey', 'turtle',
+            'umbrella', 'unicorn', 'valley', 'window', 'winter', 'wonder',
+            'zebra', 'adventure', 'butterfly', 'champion', 'chimney',
+            'chocolate', 'cinnamon', 'compass', 'crystal', 'cupcake',
+            'daylight', 'drawbridge', 'emerald', 'festival', 'firefly',
+            'flamingo', 'gingerbread', 'happiness', 'harmony', 'horizon',
+            'jellyfish', 'keyboard', 'ladybug', 'lighthouse', 'diamond',
+            'octopus', 'ostrich', 'pancake', 'parachute', 'pineapple',
+            'raincoat', 'sandwich', 'squirrel', 'strawberry', 'sunflower',
+            'telephone', 'treasure', 'volcano', 'waterfall'
+        ];
+
+        const PRAISE = [
+            '🌟 Great!', '🚀 Awesome!', '⭐ Brilliant!', '💫 Super!',
+            '✨ Amazing!', '🌠 Fantastic!', '🏆 Excellent!', '🎯 Perfect!',
+            '🌈 Wonderful!', '👏 Well done!'
+        ];
+
+        const DIFFICULTY_LABELS = ['Easy', 'Medium', 'Hard', 'Expert', 'Master'];
+
+        const TILE_COLORS = [
+            'linear-gradient(135deg, #1e2260, #2a1f6e)',
+            'linear-gradient(135deg, #1d2058, #3d1a6a)',
+            'linear-gradient(135deg, #1a1e5a, #2a2050)',
+            'linear-gradient(135deg, #20205a, #1a2a60)'
+        ];
+
+        document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
+        {
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', e => {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) e.preventDefault();
+                lastTouchEnd = now;
+            }, { passive: false });
+        }
+
+        class WordExplorerGame {
+            constructor() {
+                this.playArea = document.getElementById('playArea');
+                this.status = document.getElementById('status');
+                this.slotsEl = document.getElementById('slots');
+                this.winMessage = document.getElementById('winMessage');
+                this.winText = document.getElementById('winText');
+                this.winSub = document.getElementById('winSub');
+                this.diffTrack = document.getElementById('diffTrack');
+                this.diffLabel = document.getElementById('diffLabel');
+                this.confettiContainer = document.getElementById('confettiContainer');
+                this.sectionOverlay = document.getElementById('sectionOverlay');
+
+                this.levelIndex = 0;
+                this.word = '';
+                this.slots = [];
+                this.tiles = [];
+                this.hiddenIndices = new Set();
+                this.lockedCount = 0;
+                this.resizeFrame = 0;
+                this.activeTile = null;
+                this.pointerOffset = { x: 0, y: 0 };
+                this.tilesMetrics = null;
+                this.started = false;
+
+                this.loadProgress();
+                this.createStars();
+
+                const resetBtn = document.getElementById('resetBtn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => this.resetProgress());
+                }
+
+                this.syncViewportHeight();
+                window.addEventListener('resize', () => this.handleResize(), { passive: true });
+                window.addEventListener('orientationchange', () => this.handleResize(), { passive: true });
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener('resize', () => this.handleResize(), { passive: true });
+                }
+
+                const begin = () => {
+                    if (this.started) return;
+                    this.started = true;
+                    this.startLevel();
+                };
+
+                if (document.fonts && document.fonts.ready) {
+                    Promise.race([
+                        document.fonts.ready,
+                        new Promise(resolve => setTimeout(resolve, 700))
+                    ]).then(begin);
+                } else {
+                    setTimeout(begin, 60);
+                }
+            }
+
+            syncViewportHeight() {
+                const vh = Math.round(window.visualViewport?.height || window.innerHeight || 0);
+                if (vh > 0) {
+                    document.documentElement.style.setProperty('--app-height', `${vh}px`);
+                }
+            }
+
+            createStars() {
+                const container = document.getElementById('stars');
+                for (let i = 0; i < 120; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    const size = 1 + Math.random() * 2.5;
+                    star.style.setProperty('--size', `${size}px`);
+                    star.style.setProperty('--opacity', `${0.3 + Math.random() * 0.7}`);
+                    star.style.setProperty('--duration', `${2 + Math.random() * 4}s`);
+                    star.style.setProperty('--delay', `${Math.random() * 4}s`);
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    container.appendChild(star);
+                }
+                for (let i = 0; i < 3; i++) {
+                    const ss = document.createElement('div');
+                    ss.className = 'shooting-star';
+                    ss.style.setProperty('--delay', `${5 + i * 8 + Math.random() * 4}s`);
+                    ss.style.setProperty('--top', `${5 + Math.random() * 30}%`);
+                    ss.style.setProperty('--left', `${5 + Math.random() * 80}%`);
+                    container.appendChild(ss);
+                }
+            }
+
+            get hiddenCount() {
+                const wordLen = this.word.length;
+                return Math.min(
+                    1 + Math.floor(this.levelIndex / 3),
+                    Math.max(1, wordLen - 1),
+                    Math.floor(wordLen * 0.65)
+                );
+            }
+
+            get difficultyTier() {
+                const ratio = this.hiddenCount / Math.max(1, this.word.length);
+                if (ratio <= 0.2) return 0;
+                if (ratio <= 0.35) return 1;
+                if (ratio <= 0.5) return 2;
+                if (ratio <= 0.6) return 3;
+                return 4;
+            }
+
+            isUniquePattern(word, hiddenSet) {
+                const pattern = [...word].map((c, i) => hiddenSet.has(i) ? '_' : c).join('').toLowerCase();
+                return WORDS.filter(w => {
+                    if (w.length !== word.length) return false;
+                    return [...w].every((c, i) => pattern[i] === '_' || pattern[i] === c.toLowerCase());
+                }).length === 1;
+            }
+
+            selectHiddenPositions(word) {
+                const len = word.length;
+                const targetCount = this.hiddenCount;
+
+                const firstAllowed = this.levelIndex < 8 ? 1 : 0;
+                const candidates = [];
+                for (let i = firstAllowed; i < len; i++) {
+                    candidates.push(i);
+                }
+                if (candidates.length < targetCount) {
+                    for (let i = 0; i < firstAllowed; i++) {
+                        candidates.push(i);
+                    }
+                }
+
+                for (let attempt = 0; attempt < 80; attempt++) {
+                    const shuffled = [...candidates].sort(() => Math.random() - 0.5);
+                    const selected = new Set(shuffled.slice(0, targetCount));
+                    if (this.isUniquePattern(word, selected)) {
+                        return selected;
+                    }
+                }
+
+                for (let count = targetCount - 1; count >= 1; count--) {
+                    for (let attempt = 0; attempt < 40; attempt++) {
+                        const shuffled = [...candidates].sort(() => Math.random() - 0.5);
+                        const selected = new Set(shuffled.slice(0, count));
+                        if (this.isUniquePattern(word, selected)) {
+                            return selected;
+                        }
+                    }
+                }
+
+                const fallback = new Set([len - 1]);
+                return fallback;
+            }
+
+            startLevel() {
+                this.slotsEl.innerHTML = '';
+                this.playArea.querySelectorAll('.tile,.spark').forEach(el => el.remove());
+                this.winMessage.classList.remove('show');
+                this.sectionOverlay.classList.remove('show');
+                this.confettiContainer.innerHTML = '';
+
+                this.slots = [];
+                this.tiles = [];
+                this.lockedCount = 0;
+                this.activeTile = null;
+
+                const wordIndex = this.levelIndex % WORDS.length;
+                this.word = WORDS[wordIndex];
+                this.hiddenIndices = this.selectHiddenPositions(this.word);
+
+                const levelNum = this.levelIndex + 1;
+                this.status.textContent = `Level ${levelNum}`;
+
+                this.setupPuzzle();
+                this.relayoutLevel({ randomizeUnlocked: true });
+                this.updateDifficultyDisplay();
+            }
+
+            setupPuzzle() {
+                const chars = [...this.word];
+                const hiddenArr = [...this.hiddenIndices];
+
+                chars.forEach((ch, i) => {
+                    const slot = document.createElement('div');
+                    slot.className = 'slot';
+                    slot.dataset.index = String(i);
+                    slot.dataset.base = ch;
+
+                    if (this.hiddenIndices.has(i)) {
+                        slot.classList.add('waiting');
+                    } else {
+                        slot.classList.add('revealed');
+                        slot.textContent = ch.toUpperCase();
+                    }
+
+                    this.slotsEl.appendChild(slot);
+                    this.slots.push(slot);
+                });
+
+                const tileIndices = [...hiddenArr].sort(() => Math.random() - 0.5);
+                tileIndices.forEach((idx, n) => {
+                    const ch = chars[idx];
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.dataset.index = String(idx);
+                    tile.dataset.base = ch;
+                    tile.style.background = TILE_COLORS[n % TILE_COLORS.length];
+                    tile.style.setProperty('--rot', `${(Math.random() * 20 - 10).toFixed(1)}deg`);
+                    tile.style.zIndex = '3';
+                    tile.textContent = ch.toUpperCase();
+                    this.playArea.appendChild(tile);
+                    this.wireTile(tile);
+                    this.tiles.push(tile);
+                });
+            }
+
+            wireTile(tile) {
+                tile.addEventListener('pointerdown', (e) => {
+                    if (tile.classList.contains('locked')) return;
+                    this.activeTile = tile;
+                    tile.classList.add('dragging');
+                    tile.setPointerCapture(e.pointerId);
+                    const tRect = tile.getBoundingClientRect();
+                    this.pointerOffset.x = e.clientX - (tRect.left + tRect.width / 2);
+                    this.pointerOffset.y = e.clientY - (tRect.top + tRect.height / 2);
+                });
+
+                tile.addEventListener('pointermove', (e) => {
+                    if (this.activeTile !== tile) return;
+                    const areaRect = this.playArea.getBoundingClientRect();
+                    tile.style.left = `${e.clientX - areaRect.left - this.pointerOffset.x}px`;
+                    tile.style.top = `${e.clientY - areaRect.top - this.pointerOffset.y}px`;
+                });
+
+                const release = () => {
+                    if (this.activeTile !== tile) return;
+                    tile.classList.remove('dragging');
+                    this.activeTile = null;
+                    this.tryLockTile(tile);
+                };
+
+                tile.addEventListener('pointerup', release);
+                tile.addEventListener('pointercancel', release);
+            }
+
+            findMatchingSlot(tile) {
+                const tileIdx = Number(tile.dataset.index);
+                const tileRect = tile.getBoundingClientRect();
+                const tileCx = tileRect.left + tileRect.width / 2;
+                const tileCy = tileRect.top + tileRect.height / 2;
+
+                let bestSlot = null;
+                let bestDistance = Infinity;
+
+                this.slots.forEach(slot => {
+                    if (slot.classList.contains('good') || slot.classList.contains('revealed')) return;
+                    if (Number(slot.dataset.index) !== tileIdx) return;
+
+                    const slotRect = slot.getBoundingClientRect();
+                    const slotCx = slotRect.left + slotRect.width / 2;
+                    const slotCy = slotRect.top + slotRect.height / 2;
+                    const dist = Math.hypot(slotCx - tileCx, slotCy - tileCy);
+                    const threshold = Math.max(50, slotRect.width * 0.45);
+
+                    if (dist <= threshold && dist < bestDistance) {
+                        bestDistance = dist;
+                        bestSlot = slot;
+                    }
+                });
+
+                return bestSlot;
+            }
+
+            tryLockTile(tile) {
+                const slot = this.findMatchingSlot(tile);
+                if (!slot) {
+                    this.returnToHome(tile);
+                    return;
+                }
+
+                const slotRect = slot.getBoundingClientRect();
+                const areaRect = this.playArea.getBoundingClientRect();
+                const slotCx = slotRect.left + slotRect.width / 2;
+                const slotCy = slotRect.top + slotRect.height / 2;
+
+                tile.style.left = `${slotCx - areaRect.left}px`;
+                tile.style.top = `${slotCy - areaRect.top}px`;
+                tile.style.setProperty('--rot', '0deg');
+                tile.style.zIndex = '20';
+                tile.classList.add('locked');
+
+                slot.classList.remove('waiting');
+                slot.classList.add('good');
+                this.burst(slotCx - areaRect.left, slotCy - areaRect.top);
+
+                this.lockedCount++;
+                if (this.lockedCount === this.hiddenIndices.size) {
+                    this.handleVictory();
+                }
+            }
+
+            returnToHome(tile) {
+                tile.style.left = `${tile.dataset.homeX}px`;
+                tile.style.top = `${tile.dataset.homeY}px`;
+                this.storeRelativeTilePosition(tile);
+            }
+
+            getTilesBounds() {
+                const tilesSection = document.getElementById('tilesSection');
+                const areaRect = this.playArea.getBoundingClientRect();
+                const secRect = tilesSection.getBoundingClientRect();
+                const margin = 12;
+
+                return {
+                    minX: margin,
+                    maxX: areaRect.width - margin,
+                    minY: secRect.top - areaRect.top + 30,
+                    maxY: secRect.bottom - areaRect.top - margin
+                };
+            }
+
+            storeRelativeTilePosition(tile) {
+                const bounds = this.tilesMetrics;
+                if (!bounds) return;
+                const left = this.readNumber(tile.style.left, 0);
+                const top = this.readNumber(tile.style.top, 0);
+                const w = bounds.maxX - bounds.minX;
+                const h = bounds.maxY - bounds.minY;
+                const relX = w > 0 ? (left - bounds.minX) / w : 0.5;
+                const relY = h > 0 ? (top - bounds.minY) / h : 0.5;
+                tile.dataset.relX = String(this.clamp(relX, 0, 1));
+                tile.dataset.relY = String(this.clamp(relY, 0, 1));
+            }
+
+            relayoutLevel({ randomizeUnlocked = false } = {}) {
+                if (!this.playArea || this.tiles.length === 0) return;
+                const areaRect = this.playArea.getBoundingClientRect();
+                if (!areaRect.width || !areaRect.height) return;
+
+                this.tilesMetrics = this.getTilesBounds();
+                const bounds = this.tilesMetrics;
+
+                this.tiles.forEach(tile => {
+                    if (tile.classList.contains('locked')) {
+                        const slot = this.slots.find(s =>
+                            s.dataset.index === tile.dataset.index &&
+                            s.dataset.base === tile.dataset.base
+                        );
+                        if (!slot) return;
+                        const slotRect = slot.getBoundingClientRect();
+                        tile.style.left = `${slotRect.left + slotRect.width / 2 - areaRect.left}px`;
+                        tile.style.top = `${slotRect.top + slotRect.height / 2 - areaRect.top}px`;
+                        tile.style.setProperty('--rot', '0deg');
+                        tile.style.zIndex = '20';
+                        return;
+                    }
+
+                    const spanX = bounds.maxX - bounds.minX;
+                    const spanY = bounds.maxY - bounds.minY;
+                    const relX = randomizeUnlocked || tile.dataset.relX === undefined
+                        ? Math.random()
+                        : this.clamp(this.readNumber(tile.dataset.relX, 0.5), 0, 1);
+                    const relY = randomizeUnlocked || tile.dataset.relY === undefined
+                        ? Math.random()
+                        : this.clamp(this.readNumber(tile.dataset.relY, 0.5), 0, 1);
+                    const x = bounds.minX + spanX * relX;
+                    const y = bounds.minY + spanY * relY;
+
+                    tile.style.left = `${x}px`;
+                    tile.style.top = `${y}px`;
+                    tile.dataset.homeX = String(x);
+                    tile.dataset.homeY = String(y);
+                    this.storeRelativeTilePosition(tile);
+                });
+            }
+
+            handleResize() {
+                this.syncViewportHeight();
+                if (!this.started) return;
+                cancelAnimationFrame(this.resizeFrame);
+                this.resizeFrame = requestAnimationFrame(() => {
+                    this.relayoutLevel();
+                });
+            }
+
+            clamp(value, min, max) {
+                return Math.min(max, Math.max(min, value));
+            }
+
+            readNumber(value, fallback) {
+                const parsed = parseFloat(value);
+                return Number.isFinite(parsed) ? parsed : fallback;
+            }
+
+            burst(x, y) {
+                for (let i = 0; i < 6; i++) {
+                    const spark = document.createElement('div');
+                    spark.className = 'spark';
+                    spark.style.left = `${x}px`;
+                    spark.style.top = `${y}px`;
+                    spark.style.setProperty('--dx', `${(Math.random() * 80 - 40).toFixed(0)}px`);
+                    spark.style.setProperty('--dy', `${(Math.random() * 80 - 40).toFixed(0)}px`);
+                    this.playArea.appendChild(spark);
+                    setTimeout(() => spark.remove(), 540);
+                }
+            }
+
+            handleVictory() {
+                this.sectionOverlay.classList.add('show');
+                this.createConfetti();
+
+                setTimeout(() => {
+                    this.winText.textContent = PRAISE[Math.floor(Math.random() * PRAISE.length)];
+                    const levelNum = this.levelIndex + 1;
+                    this.winSub.textContent = `Level ${levelNum} complete!`;
+                    this.winMessage.classList.add('show');
+
+                    setTimeout(() => {
+                        this.winMessage.classList.remove('show');
+                        this.confettiContainer.innerHTML = '';
+                        this.levelIndex++;
+                        this.saveProgress();
+                        this.startLevel();
+                    }, 1400);
+                }, 400);
+            }
+
+            createConfetti() {
+                const colors = ['#e04090', '#40a0ff', '#ffd93d', '#50ff80', '#ff6bcb', '#a66cff', '#ff9f43'];
+                for (let i = 0; i < 40; i++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'confetti-piece';
+                    const size = 5 + Math.random() * 9;
+                    piece.style.setProperty('--size', `${size}px`);
+                    piece.style.setProperty('--left', `${Math.random() * 100}%`);
+                    piece.style.setProperty('--color', colors[i % colors.length]);
+                    piece.style.setProperty('--radius', Math.random() > 0.5 ? '50%' : '2px');
+                    piece.style.setProperty('--fall-duration', `${2 + Math.random() * 2}s`);
+                    piece.style.setProperty('--delay', `${Math.random() * 0.8}s`);
+                    this.confettiContainer.appendChild(piece);
+                    setTimeout(() => piece.remove(), 4500);
+                }
+            }
+
+            updateDifficultyDisplay() {
+                const tier = this.difficultyTier;
+                const total = 5;
+                this.diffTrack.innerHTML = '';
+                for (let i = 0; i < total; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'difficulty-dot';
+                    if (i <= tier) {
+                        dot.classList.add('filled');
+                        if (i >= 3) dot.classList.add('hard');
+                    }
+                    this.diffTrack.appendChild(dot);
+                }
+                this.diffLabel.textContent = DIFFICULTY_LABELS[Math.min(tier, DIFFICULTY_LABELS.length - 1)];
+            }
+
+            loadProgress() {
+                try {
+                    const saved = localStorage.getItem('word-explorer-progress');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        if (typeof data.levelIndex === 'number') this.levelIndex = data.levelIndex;
+                    }
+                } catch (_) {}
+            }
+
+            saveProgress() {
+                try {
+                    localStorage.setItem('word-explorer-progress', JSON.stringify({
+                        levelIndex: this.levelIndex
+                    }));
+                } catch (_) {}
+            }
+
+            resetProgress() {
+                if (!confirm('Reset all progress and start over?')) return;
+                localStorage.removeItem('word-explorer-progress');
+                this.levelIndex = 0;
+                this.startLevel();
+            }
+        }
+
+        new WordExplorerGame();
+    </script>
+</body>
+</html>
