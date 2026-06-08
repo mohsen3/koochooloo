@@ -164,6 +164,35 @@
             border-bottom: 1px solid rgba(180, 149, 110, 0.18);
         }
 
+        .reset-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid rgba(77, 140, 247, 0.18);
+            background: rgba(77, 140, 247, 0.08);
+            color: var(--blue);
+            font-size: 1.3rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: transform 0.18s ease, background 0.18s ease;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .reset-btn:hover,
+        .reset-btn:focus-visible {
+            background: rgba(77, 140, 247, 0.18);
+            transform: scale(1.1);
+        }
+
+        .reset-btn:active {
+            transform: scale(0.95);
+        }
+
         .story-title {
             font-size: clamp(1rem, 1.8vw, 1.35rem);
             font-weight: 900;
@@ -545,7 +574,10 @@
                     <div class="story-stage">
                         <div class="story-status">
                             <div class="story-title" id="storyTitle"></div>
-                            <div class="level-badge" id="levelBadge"></div>
+                            <div>
+                                <button type="button" class="reset-btn" id="resetBtn" aria-label="Reset progress">↻</button>
+                                <span class="level-badge" id="levelBadge"></span>
+                            </div>
                         </div>
                         <div class="story-hint-row">
                             <div class="story-hint" id="storyHint">Pick a word and place it in the blank.</div>
@@ -883,8 +915,314 @@
                     { answer: "tree", style: "outlined-blue" },
                     "."
                 ]
+            },
+            {
+                level: 1,
+                hiddenCount: 1,
+                title: "Green Frog",
+                parts: [
+                    "A green frog hops by the ",
+                    { answer: "pond", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 1,
+                hiddenCount: 1,
+                title: "Big Truck",
+                parts: [
+                    "Dan drives a big blue ",
+                    { answer: "truck", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 2,
+                hiddenCount: 1,
+                title: "White Sheep",
+                parts: [
+                    "The sheep has soft white ",
+                    { answer: "wool", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 2,
+                hiddenCount: 1,
+                title: "Brown Dog",
+                parts: [
+                    "A brown dog wags its ",
+                    { answer: "tail", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 3,
+                hiddenCount: 2,
+                title: "Snow Day",
+                parts: [
+                    "Kids play in the ",
+                    { answer: "snow", style: "outlined-blue" },
+                    " and build a ",
+                    { answer: "fort", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 3,
+                hiddenCount: 2,
+                title: "Farm Fun",
+                parts: [
+                    "The ",
+                    { answer: "cow", style: "outlined-teal" },
+                    " eats grass at the ",
+                    { answer: "farm", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 4,
+                hiddenCount: 2,
+                title: "New Shoes",
+                parts: [
+                    "Zoe gets new ",
+                    { answer: "shoes", style: "outlined-pink" },
+                    " for her ",
+                    { answer: "feet", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 4,
+                hiddenCount: 2,
+                title: "Bath Time",
+                parts: [
+                    "The boy takes a ",
+                    { answer: "bath", style: "outlined-teal" },
+                    " with his toy ",
+                    { answer: "boat", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 5,
+                hiddenCount: 2,
+                title: "Pizza Party",
+                parts: [
+                    "The kids share a ",
+                    { answer: "pizza", style: "outlined-orange" },
+                    " with ",
+                    { answer: "cheese", style: "outlined-blue" },
+                    " on top."
+                ]
+            },
+            {
+                level: 5,
+                hiddenCount: 2,
+                title: "Star Gazing",
+                parts: [
+                    "They look at the ",
+                    { answer: "stars", style: "outlined-pink" },
+                    " in the dark ",
+                    { answer: "night", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 6,
+                hiddenCount: 2,
+                title: "Orange Juice",
+                parts: [
+                    "Dad pours fresh ",
+                    { answer: "juice", style: "outlined-blue" },
+                    " into a tall ",
+                    { answer: "glass", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 6,
+                hiddenCount: 2,
+                title: "Playground Fun",
+                parts: [
+                    "Kids slide down the ",
+                    { answer: "slide", style: "outlined-orange" },
+                    " at the ",
+                    { answer: "park", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 7,
+                hiddenCount: 3,
+                title: "Beach Day",
+                parts: [
+                    "Liam digs in the ",
+                    { answer: "sand", style: "outlined-blue" },
+                    " with a ",
+                    { answer: "shovel", style: "outlined-orange" },
+                    " near the ",
+                    { answer: "water", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 7,
+                hiddenCount: 3,
+                title: "Teddy Bear",
+                parts: [
+                    "Nina hugs her ",
+                    { answer: "teddy", style: "outlined-pink" },
+                    " bear and reads a ",
+                    { answer: "story", style: "outlined-purple" },
+                    " in ",
+                    { answer: "bed", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 8,
+                hiddenCount: 3,
+                title: "Birthday Cake",
+                parts: [
+                    "Mom bakes a ",
+                    { answer: "cake", style: "outlined-orange" },
+                    " with pink ",
+                    { answer: "frosting", style: "outlined-pink" },
+                    " and five ",
+                    { answer: "candles", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 8,
+                hiddenCount: 3,
+                title: "Bubble Fun",
+                parts: [
+                    "Ana blows ",
+                    { answer: "bubbles", style: "outlined-blue" },
+                    " that float in the ",
+                    { answer: "air", style: "outlined-purple" },
+                    " and then ",
+                    { answer: "pop", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 9,
+                hiddenCount: 3,
+                title: "Library Visit",
+                parts: [
+                    "The class goes to the ",
+                    { answer: "library", style: "outlined-teal" },
+                    " to find a ",
+                    { answer: "book", style: "outlined-blue" },
+                    " about ",
+                    { answer: "animals", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 9,
+                hiddenCount: 3,
+                title: "Picnic Time",
+                parts: [
+                    "The family has a ",
+                    { answer: "picnic", style: "outlined-pink" },
+                    " on a ",
+                    { answer: "blanket", style: "outlined-orange" },
+                    " in the ",
+                    { answer: "grass", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 10,
+                hiddenCount: 3,
+                title: "Camping Trip",
+                parts: [
+                    "They sleep in a ",
+                    { answer: "tent", style: "outlined-purple" },
+                    " under the ",
+                    { answer: "stars", style: "outlined-orange" },
+                    " and hear an ",
+                    { answer: "owl", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 10,
+                hiddenCount: 3,
+                title: "Train Ride",
+                parts: [
+                    "The ",
+                    { answer: "train", style: "outlined-blue" },
+                    " moves fast on the ",
+                    { answer: "track", style: "outlined-pink" },
+                    " with a loud ",
+                    { answer: "whistle", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 11,
+                hiddenCount: 3,
+                title: "Autumn Walk",
+                parts: [
+                    "Leaves turn ",
+                    { answer: "orange", style: "outlined-orange" },
+                    " and ",
+                    { answer: "yellow", style: "outlined-teal" },
+                    " and fall to the ",
+                    { answer: "ground", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 11,
+                hiddenCount: 3,
+                title: "Doctor Visit",
+                parts: [
+                    "The ",
+                    { answer: "doctor", style: "outlined-pink" },
+                    " checks his ",
+                    { answer: "ears", style: "outlined-blue" },
+                    " with a ",
+                    { answer: "light", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 12,
+                hiddenCount: 3,
+                title: "Pizza Chef",
+                parts: [
+                    "The chef rolls the ",
+                    { answer: "dough", style: "outlined-orange" },
+                    " and adds ",
+                    { answer: "sauce", style: "outlined-teal" },
+                    " and ",
+                    { answer: "cheese", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 12,
+                hiddenCount: 3,
+                title: "Space Trip",
+                parts: [
+                    "The ",
+                    { answer: "rocket", style: "outlined-pink" },
+                    " flies past the ",
+                    { answer: "moon", style: "outlined-orange" },
+                    " into ",
+                    { answer: "space", style: "outlined-purple" },
+                    "."
+                ]
             }
         ];
+
+        const STORAGE_KEY = "story-puzzle-progress";
 
         const GENERATED_WORD_STYLES = [
             "outlined-blue",
@@ -932,8 +1270,47 @@
                 this.boundPointerMove = (moveEvent) => this.handlePointerMove(moveEvent);
                 this.boundPointerUp = (upEvent) => this.handlePointerUp(upEvent);
 
+                this.loadProgress();
                 this.nextButton.addEventListener("click", () => this.nextStory());
 
+                const resetBtn = document.getElementById("resetBtn");
+                if (resetBtn) {
+                    resetBtn.addEventListener("click", () => this.resetProgress());
+                }
+
+                this.renderStory();
+            }
+
+            loadProgress() {
+                try {
+                    const saved = localStorage.getItem(STORAGE_KEY);
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        if (Array.isArray(data.order) && data.order.length === this.stories.length) {
+                            this.stories = data.order.map((i) => STORY_SET[i]);
+                        }
+                        if (typeof data.storyIndex === "number") this.storyIndex = data.storyIndex;
+                        if (typeof data.completedStories === "number") this.completedStories = data.completedStories;
+                    }
+                } catch (_) { /* ignore */ }
+            }
+
+            saveProgress() {
+                try {
+                    const order = this.stories.map((s) => STORY_SET.indexOf(s));
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        order,
+                        storyIndex: this.storyIndex,
+                        completedStories: this.completedStories
+                    }));
+                } catch (_) { /* ignore */ }
+            }
+
+            resetProgress() {
+                localStorage.removeItem(STORAGE_KEY);
+                this.stories = this.shuffle(STORY_SET);
+                this.storyIndex = 0;
+                this.completedStories = 0;
                 this.renderStory();
             }
 
@@ -1472,6 +1849,7 @@
                 } else {
                     this.storyIndex += 1;
                 }
+                this.saveProgress();
                 this.renderStory();
             }
         }
