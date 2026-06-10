@@ -6,24 +6,24 @@
     <title>Story Puzzle Game</title>
     <style>
         :root {
-            --paper: #f3f8ff;
-            --paper-shadow: rgba(60, 92, 150, 0.16);
-            --ink: #2b3a66;
-            --ink-soft: rgba(43, 58, 102, 0.7);
-            --blue: #3d8bff;
-            --teal: #1fb6a8;
-            --orange: #ff9a3c;
-            --pink: #ff5b95;
-            --purple: #8660f0;
-            --green: #2bbd6b;
-            --green-soft: #e6fbef;
+            --paper: #fffaf0;
+            --paper-shadow: rgba(73, 99, 134, 0.14);
+            --ink: #26365f;
+            --ink-soft: rgba(38, 54, 95, 0.68);
+            --blue: #3f8cff;
+            --teal: #24b8a5;
+            --orange: #ffad3d;
+            --pink: #ff6fa3;
+            --purple: #8f73ee;
+            --green: #35b96f;
+            --green-soft: #e8faef;
             --slot: #ffffff;
-            --slot-border: #cfddf7;
+            --slot-border: #cbdcf4;
             --panel: #ffffff;
-            --panel-border: rgba(120, 150, 200, 0.16);
-            --shadow: rgba(60, 92, 150, 0.18);
-            --radius-lg: 32px;
-            --radius-md: 22px;
+            --panel-border: rgba(102, 134, 178, 0.15);
+            --shadow: rgba(73, 99, 134, 0.16);
+            --radius-lg: 28px;
+            --radius-md: 20px;
             --radius-sm: 16px;
         }
 
@@ -42,11 +42,11 @@
             font-family: "Nunito", "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
             color: var(--ink);
             background:
-                radial-gradient(circle at 12% 16%, rgba(255, 154, 60, 0.18), transparent 26%),
-                radial-gradient(circle at 86% 18%, rgba(61, 139, 255, 0.18), transparent 28%),
-                radial-gradient(circle at 18% 88%, rgba(255, 91, 149, 0.14), transparent 28%),
-                radial-gradient(circle at 84% 84%, rgba(31, 182, 168, 0.16), transparent 28%),
-                linear-gradient(180deg, #eaf3ff 0%, #fff4e6 100%);
+                radial-gradient(circle at 14% 18%, rgba(255, 209, 98, 0.36), transparent 24%),
+                radial-gradient(circle at 86% 16%, rgba(96, 190, 255, 0.28), transparent 28%),
+                radial-gradient(circle at 18% 88%, rgba(255, 133, 177, 0.18), transparent 26%),
+                radial-gradient(circle at 84% 84%, rgba(84, 205, 158, 0.22), transparent 28%),
+                linear-gradient(180deg, #e8f7ff 0%, #fff8e8 58%, #edf9ef 100%);
             overflow: hidden;
             -webkit-user-select: none;
             user-select: none;
@@ -60,11 +60,11 @@
             inset: 0;
             pointer-events: none;
             background-image:
-                radial-gradient(circle, rgba(61, 139, 255, 0.10) 6px, transparent 7px),
-                radial-gradient(circle, rgba(255, 154, 60, 0.10) 5px, transparent 6px);
-            background-size: 120px 120px, 180px 180px;
-            background-position: 0 0, 60px 90px;
-            opacity: 0.7;
+                radial-gradient(circle, rgba(63, 140, 255, 0.09) 5px, transparent 6px),
+                radial-gradient(circle, rgba(255, 173, 61, 0.12) 4px, transparent 5px);
+            background-size: 132px 132px, 188px 188px;
+            background-position: 0 0, 58px 82px;
+            opacity: 0.62;
         }
 
         .app {
@@ -83,12 +83,12 @@
             flex: 1;
             min-height: calc(100dvh - 50px);
             padding: clamp(18px, 4vw, 38px);
-            background: rgba(255, 255, 255, 0.86);
+            background: rgba(255, 253, 247, 0.92);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
-            border: 1px solid rgba(120, 150, 200, 0.18);
+            border: 1px solid rgba(102, 134, 178, 0.16);
             border-radius: var(--radius-lg);
-            box-shadow: 0 24px 48px var(--paper-shadow);
+            box-shadow: 0 20px 44px var(--paper-shadow);
             overflow: hidden;
             display: grid;
             grid-template-columns: minmax(0, 1fr);
@@ -101,7 +101,7 @@
             position: absolute;
             inset: 0;
             background:
-                linear-gradient(135deg, rgba(255,255,255,0.55), transparent 45%);
+                linear-gradient(135deg, rgba(255,255,255,0.64), transparent 45%);
             pointer-events: none;
         }
 
@@ -121,7 +121,7 @@
             background: var(--panel);
             border-radius: var(--radius-md);
             border: 1px solid var(--panel-border);
-            box-shadow: 0 12px 28px rgba(60, 92, 150, 0.10);
+            box-shadow: 0 10px 24px rgba(73, 99, 134, 0.09);
             padding: clamp(18px, 3vw, 30px);
         }
 
@@ -129,12 +129,15 @@
             min-height: 0;
             display: flex;
             align-items: center;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 252, 244, 0.96));
         }
 
         .story-stage {
             width: 100%;
-            display: grid;
-            gap: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
 
         .story-status {
@@ -143,8 +146,8 @@
             justify-content: space-between;
             gap: 16px;
             flex-wrap: wrap;
-            padding-bottom: 12px;
-            border-bottom: 2px dashed rgba(120, 150, 200, 0.25);
+            padding-bottom: 14px;
+            border-bottom: 2px dashed rgba(102, 134, 178, 0.18);
         }
 
         .reset-btn {
@@ -154,13 +157,13 @@
             width: 46px;
             height: 46px;
             border-radius: 50%;
-            border: 3px solid rgba(61, 139, 255, 0.25);
+            border: 3px solid rgba(63, 140, 255, 0.22);
             background: #ffffff;
             color: var(--blue);
             font-size: 1.4rem;
             line-height: 1;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(61, 139, 255, 0.15);
+            box-shadow: 0 4px 10px rgba(63, 140, 255, 0.14);
             transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
             touch-action: manipulation;
             -webkit-user-select: none;
@@ -169,7 +172,7 @@
 
         .reset-btn:hover,
         .reset-btn:focus-visible {
-            background: rgba(61, 139, 255, 0.10);
+            background: rgba(63, 140, 255, 0.10);
             transform: scale(1.1) rotate(-25deg);
         }
 
@@ -180,8 +183,7 @@
         .story-title {
             font-size: clamp(1rem, 1.8vw, 1.35rem);
             font-weight: 900;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
+            letter-spacing: 0.01em;
             color: var(--ink-soft);
         }
 
@@ -191,44 +193,38 @@
             justify-content: center;
             padding: 10px 18px;
             border-radius: 999px;
-            background: linear-gradient(180deg, #6aa6ff, #3d8bff);
+            background: linear-gradient(180deg, #63a5ff, #3f8cff);
             border: none;
             color: #ffffff;
             font-size: 1rem;
             font-weight: 900;
             white-space: nowrap;
-            box-shadow: 0 6px 14px rgba(61, 139, 255, 0.30);
+            box-shadow: 0 6px 14px rgba(63, 140, 255, 0.28);
             letter-spacing: 0.02em;
         }
 
         .story-hint-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-end;
             gap: 14px;
             flex-wrap: wrap;
+            margin-top: -12px;
         }
 
-        .story-hint,
         .progress-pill {
             display: inline-flex;
             align-items: center;
             border-radius: 999px;
-            padding: 9px 16px;
+            padding: 8px 15px;
             font-size: 0.95rem;
             font-weight: 800;
         }
 
-        .story-hint {
-            background: rgba(255, 154, 60, 0.15);
-            color: #b56a1c;
-            border: 2px solid rgba(255, 154, 60, 0.25);
-        }
-
         .progress-pill {
-            background: rgba(31, 182, 168, 0.15);
-            color: #16857a;
-            border: 2px solid rgba(31, 182, 168, 0.25);
+            background: rgba(36, 184, 165, 0.13);
+            color: #167d73;
+            border: 2px solid rgba(36, 184, 165, 0.22);
         }
 
         .story-text {
@@ -283,32 +279,32 @@
 
         .story-text .blank.outlined-blue,
         .word-tile.outlined-blue {
-            color: #4f95ff;
+            color: var(--blue);
         }
 
         .story-text .blank.outlined-orange,
         .word-tile.outlined-orange {
-            color: #ff9d3e;
+            color: var(--orange);
         }
 
         .story-text .blank.outlined-teal,
         .word-tile.outlined-teal {
-            color: #26b8ba;
+            color: var(--teal);
         }
 
         .story-text .blank.outlined-pink,
         .word-tile.outlined-pink {
-            color: #ff5b95;
+            color: var(--pink);
         }
 
         .story-text .blank.outlined-purple,
         .word-tile.outlined-purple {
-            color: #8660f0;
+            color: var(--purple);
         }
 
         .story-text .blank.active {
             transform: scale(1.06);
-            box-shadow: 0 0 0 8px rgba(61, 139, 255, 0.18);
+            box-shadow: 0 0 0 8px rgba(63, 140, 255, 0.16);
             border-style: solid;
         }
 
@@ -331,7 +327,7 @@
 
         .story-text .blank.wrong {
             background: rgba(255, 94, 120, 0.08);
-            border-color: #ff6b8b;
+            border-color: #ff7894;
             border-style: solid;
             animation: shake 0.36s ease;
         }
@@ -348,7 +344,7 @@
             align-items: end;
             gap: 14px;
             background:
-                linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 249, 242, 0.94));
+                linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 247, 232, 0.96));
         }
 
         .word-bank {
@@ -367,7 +363,7 @@
             border: 4px solid currentColor;
             border-radius: var(--radius-sm);
             background: #ffffff;
-            box-shadow: 0 8px 16px var(--shadow), inset 0 3px 0 rgba(255, 255, 255, 0.9);
+            box-shadow: 0 7px 15px var(--shadow), inset 0 3px 0 rgba(255, 255, 255, 0.9);
             font-size: clamp(2rem, 3vw, 3rem);
             line-height: 1;
             cursor: grab;
@@ -382,7 +378,7 @@
 
         .word-tile:hover,
         .word-tile.selected {
-            box-shadow: 0 14px 26px rgba(60, 92, 150, 0.25), inset 0 3px 0 rgba(255, 255, 255, 0.9);
+            box-shadow: 0 13px 24px rgba(73, 99, 134, 0.22), inset 0 3px 0 rgba(255, 255, 255, 0.9);
             transform: translateY(-4px) scale(1.06) rotate(0deg);
         }
 
@@ -403,13 +399,13 @@
             padding: 12px 24px;
             border: none;
             border-radius: var(--radius-sm);
-            background: linear-gradient(180deg, #2bbd6b, #1ea05a);
+            background: linear-gradient(180deg, #45c77b, #28a961);
             color: #fff;
             font: inherit;
             font-size: clamp(1.15rem, 2vw, 1.45rem);
             font-weight: 900;
             line-height: 1;
-            box-shadow: 0 8px 18px rgba(43, 189, 107, 0.35), inset 0 3px 0 rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 18px rgba(53, 185, 111, 0.32), inset 0 3px 0 rgba(255, 255, 255, 0.25);
             cursor: pointer;
             align-self: end;
             white-space: nowrap;
@@ -420,7 +416,7 @@
         .next-button:hover,
         .next-button:focus-visible {
             transform: translateY(-3px);
-            box-shadow: 0 14px 24px rgba(43, 189, 107, 0.40), inset 0 3px 0 rgba(255, 255, 255, 0.25);
+            box-shadow: 0 14px 24px rgba(53, 185, 111, 0.36), inset 0 3px 0 rgba(255, 255, 255, 0.25);
         }
 
         .next-button:active {
@@ -458,7 +454,7 @@
             background: #ffffff;
             color: var(--ink);
             border: 3px solid rgba(43, 189, 107, 0.30);
-            box-shadow: 0 22px 44px rgba(60, 92, 150, 0.22);
+            box-shadow: 0 22px 44px rgba(73, 99, 134, 0.20);
             text-align: center;
         }
 
@@ -532,7 +528,7 @@
             }
 
             .story-hint-row {
-                align-items: stretch;
+                align-items: flex-end;
             }
 
             .story-text {
@@ -569,8 +565,7 @@
                             </div>
                         </div>
                         <div class="story-hint-row">
-                            <div class="story-hint" id="storyHint">Pick a word and place it in the blank.</div>
-                            <div class="progress-pill" id="progressPill">Story 1 of 96</div>
+                            <div class="progress-pill" id="progressPill">Story 1 of 200</div>
                         </div>
                         <div class="story-text" id="storyText" aria-live="polite"></div>
                     </div>
@@ -2136,6 +2131,1366 @@
                     { answer: "wings", style: "outlined-blue" },
                     "."
                 ]
+            },
+            {
+                level: 13,
+                hiddenCount: 4,
+                title: "Nature Notebook",
+                parts: [
+                    "Mina carries a green ",
+                    { answer: "notebook", style: "outlined-teal" },
+                    " and draws a small ",
+                    { answer: "leaf", style: "outlined-orange" },
+                    " beside the quiet ",
+                    { answer: "pond", style: "outlined-blue" },
+                    " after morning ",
+                    { answer: "walk", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 13,
+                hiddenCount: 4,
+                title: "Kitchen Helper",
+                parts: [
+                    "Noah stirs the warm ",
+                    { answer: "soup", style: "outlined-orange" },
+                    " with a wooden ",
+                    { answer: "spoon", style: "outlined-blue" },
+                    " while Mom slices fresh ",
+                    { answer: "bread", style: "outlined-teal" },
+                    " for ",
+                    { answer: "lunch", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 13,
+                hiddenCount: 4,
+                title: "Playground Map",
+                parts: [
+                    "The children follow a simple ",
+                    { answer: "map", style: "outlined-purple" },
+                    " past the tall ",
+                    { answer: "slide", style: "outlined-orange" },
+                    " to find the shady ",
+                    { answer: "bench", style: "outlined-blue" },
+                    " near the ",
+                    { answer: "swings", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 13,
+                hiddenCount: 4,
+                title: "Rainy Art",
+                parts: [
+                    "Lila paints a gray ",
+                    { answer: "cloud", style: "outlined-blue" },
+                    " above a bright ",
+                    { answer: "rainbow", style: "outlined-orange" },
+                    " and adds tiny ",
+                    { answer: "drops", style: "outlined-teal" },
+                    " with her thin ",
+                    { answer: "brush", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 13,
+                hiddenCount: 4,
+                title: "Library Card",
+                parts: [
+                    "Sara brings her ",
+                    { answer: "card", style: "outlined-pink" },
+                    " to the quiet ",
+                    { answer: "library", style: "outlined-blue" },
+                    " and borrows a funny ",
+                    { answer: "book", style: "outlined-orange" },
+                    " about a helpful ",
+                    { answer: "robot", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 13,
+                hiddenCount: 4,
+                title: "Garden Visit",
+                parts: [
+                    "Omar fills a small ",
+                    { answer: "can", style: "outlined-blue" },
+                    " with clean ",
+                    { answer: "water", style: "outlined-teal" },
+                    " and helps the red ",
+                    { answer: "flowers", style: "outlined-pink" },
+                    " grow beside the ",
+                    { answer: "fence", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 13,
+                hiddenCount: 4,
+                title: "Music Corner",
+                parts: [
+                    "The class taps a small ",
+                    { answer: "drum", style: "outlined-orange" },
+                    ", shakes a silver ",
+                    { answer: "bell", style: "outlined-teal" },
+                    ", and sings a cheerful ",
+                    { answer: "song", style: "outlined-pink" },
+                    " in the music ",
+                    { answer: "room", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 13,
+                hiddenCount: 4,
+                title: "Bike Basket",
+                parts: [
+                    "Emma puts a soft ",
+                    { answer: "blanket", style: "outlined-purple" },
+                    " and a yellow ",
+                    { answer: "snack", style: "outlined-orange" },
+                    " in her bike ",
+                    { answer: "basket", style: "outlined-teal" },
+                    " before the park ",
+                    { answer: "ride", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 13,
+                hiddenCount: 4,
+                title: "Pet Care",
+                parts: [
+                    "Jay gives the fluffy ",
+                    { answer: "kitten", style: "outlined-pink" },
+                    " fresh ",
+                    { answer: "water", style: "outlined-blue" },
+                    ", a clean ",
+                    { answer: "bowl", style: "outlined-orange" },
+                    ", and a soft ",
+                    { answer: "bed", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 13,
+                hiddenCount: 4,
+                title: "Sunny Picnic",
+                parts: [
+                    "The family spreads a blue ",
+                    { answer: "blanket", style: "outlined-blue" },
+                    " under a leafy ",
+                    { answer: "tree", style: "outlined-teal" },
+                    " and shares cold ",
+                    { answer: "juice", style: "outlined-orange" },
+                    " with fresh ",
+                    { answer: "berries", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 14,
+                hiddenCount: 4,
+                title: "Science Table",
+                parts: [
+                    "The students place a clear ",
+                    { answer: "cup", style: "outlined-blue" },
+                    " on the ",
+                    { answer: "table", style: "outlined-orange" },
+                    " and watch blue ",
+                    { answer: "color", style: "outlined-teal" },
+                    " swirl through the ",
+                    { answer: "water", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 14,
+                hiddenCount: 4,
+                title: "Morning Chores",
+                parts: [
+                    "Lena makes her ",
+                    { answer: "bed", style: "outlined-purple" },
+                    ", folds a clean ",
+                    { answer: "shirt", style: "outlined-blue" },
+                    ", feeds the sleepy ",
+                    { answer: "puppy", style: "outlined-pink" },
+                    ", and opens the ",
+                    { answer: "curtain", style: "outlined-orange" },
+                    "."
+                ]
+            },
+            {
+                level: 14,
+                hiddenCount: 4,
+                title: "Class Garden",
+                parts: [
+                    "Ravi plants tiny ",
+                    { answer: "seeds", style: "outlined-teal" },
+                    " in soft ",
+                    { answer: "soil", style: "outlined-orange" },
+                    " and labels each ",
+                    { answer: "pot", style: "outlined-blue" },
+                    " with a paper ",
+                    { answer: "tag", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 14,
+                hiddenCount: 4,
+                title: "Train Station",
+                parts: [
+                    "Milo waits on the ",
+                    { answer: "platform", style: "outlined-purple" },
+                    " and sees a red ",
+                    { answer: "train", style: "outlined-orange" },
+                    " stop beside the yellow ",
+                    { answer: "sign", style: "outlined-blue" },
+                    " near the ",
+                    { answer: "clock", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 14,
+                hiddenCount: 4,
+                title: "Story Circle",
+                parts: [
+                    "The children sit on the ",
+                    { answer: "rug", style: "outlined-orange" },
+                    " while their teacher holds a ",
+                    { answer: "book", style: "outlined-blue" },
+                    " and points to a silly ",
+                    { answer: "picture", style: "outlined-pink" },
+                    " on the last ",
+                    { answer: "page", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 14,
+                hiddenCount: 4,
+                title: "Park Cleanup",
+                parts: [
+                    "The class wears bright ",
+                    { answer: "gloves", style: "outlined-blue" },
+                    " and puts paper ",
+                    { answer: "scraps", style: "outlined-orange" },
+                    " into a green ",
+                    { answer: "bin", style: "outlined-teal" },
+                    " beside the picnic ",
+                    { answer: "table", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 14,
+                hiddenCount: 4,
+                title: "Birthday Banner",
+                parts: [
+                    "Dad hangs a colorful ",
+                    { answer: "banner", style: "outlined-purple" },
+                    " above the ",
+                    { answer: "door", style: "outlined-orange" },
+                    " and sets a round ",
+                    { answer: "cake", style: "outlined-pink" },
+                    " next to the birthday ",
+                    { answer: "card", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 14,
+                hiddenCount: 4,
+                title: "Cozy Fort",
+                parts: [
+                    "The kids build a cozy ",
+                    { answer: "fort", style: "outlined-orange" },
+                    " with soft ",
+                    { answer: "pillows", style: "outlined-blue" },
+                    ", a warm ",
+                    { answer: "blanket", style: "outlined-teal" },
+                    ", and a tiny reading ",
+                    { answer: "light", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 14,
+                hiddenCount: 4,
+                title: "Fruit Stand",
+                parts: [
+                    "Ava chooses red ",
+                    { answer: "apples", style: "outlined-pink" },
+                    ", green ",
+                    { answer: "pears", style: "outlined-teal" },
+                    ", and yellow ",
+                    { answer: "bananas", style: "outlined-orange" },
+                    " from the wooden ",
+                    { answer: "stand", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 14,
+                hiddenCount: 4,
+                title: "Quiet Puzzle",
+                parts: [
+                    "Nina sorts the puzzle ",
+                    { answer: "pieces", style: "outlined-purple" },
+                    " by ",
+                    { answer: "color", style: "outlined-orange" },
+                    " and finds the blue ",
+                    { answer: "corner", style: "outlined-blue" },
+                    " for the sky ",
+                    { answer: "edge", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 15,
+                hiddenCount: 4,
+                title: "Aquarium Trip",
+                parts: [
+                    "The family visits the ",
+                    { answer: "aquarium", style: "outlined-blue" },
+                    " and watches orange ",
+                    { answer: "fish", style: "outlined-orange" },
+                    " swim around a purple ",
+                    { answer: "coral", style: "outlined-purple" },
+                    " near the glass ",
+                    { answer: "wall", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 15,
+                hiddenCount: 4,
+                title: "Farm Morning",
+                parts: [
+                    "The farmer fills the ",
+                    { answer: "bucket", style: "outlined-orange" },
+                    " with fresh ",
+                    { answer: "water", style: "outlined-blue" },
+                    " and feeds the gentle ",
+                    { answer: "goat", style: "outlined-teal" },
+                    " beside the red ",
+                    { answer: "barn", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 15,
+                hiddenCount: 4,
+                title: "Space Poster",
+                parts: [
+                    "Owen draws a silver ",
+                    { answer: "rocket", style: "outlined-purple" },
+                    " flying past the round ",
+                    { answer: "moon", style: "outlined-orange" },
+                    " and adds tiny ",
+                    { answer: "stars", style: "outlined-blue" },
+                    " across black ",
+                    { answer: "space", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 15,
+                hiddenCount: 4,
+                title: "Snow Day Plans",
+                parts: [
+                    "Kim pulls on warm ",
+                    { answer: "mittens", style: "outlined-pink" },
+                    " and a blue ",
+                    { answer: "coat", style: "outlined-blue" },
+                    " before dragging her ",
+                    { answer: "sled", style: "outlined-orange" },
+                    " up the snowy ",
+                    { answer: "hill", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 15,
+                hiddenCount: 4,
+                title: "Market Bag",
+                parts: [
+                    "Grandpa buys crunchy ",
+                    { answer: "carrots", style: "outlined-orange" },
+                    ", sweet ",
+                    { answer: "grapes", style: "outlined-purple" },
+                    ", and fresh ",
+                    { answer: "bread", style: "outlined-blue" },
+                    " for the picnic ",
+                    { answer: "bag", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 15,
+                hiddenCount: 4,
+                title: "Dance Class",
+                parts: [
+                    "The dancers stretch their ",
+                    { answer: "arms", style: "outlined-blue" },
+                    ", tap their ",
+                    { answer: "feet", style: "outlined-orange" },
+                    ", spin in a ",
+                    { answer: "circle", style: "outlined-pink" },
+                    ", and bow to the ",
+                    { answer: "music", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 15,
+                hiddenCount: 4,
+                title: "Robot Helper",
+                parts: [
+                    "A tiny ",
+                    { answer: "robot", style: "outlined-purple" },
+                    " rolls across the ",
+                    { answer: "floor", style: "outlined-blue" },
+                    " and carries a red ",
+                    { answer: "block", style: "outlined-orange" },
+                    " to the toy ",
+                    { answer: "box", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 15,
+                hiddenCount: 4,
+                title: "Lemon Tree",
+                parts: [
+                    "Maya counts yellow ",
+                    { answer: "lemons", style: "outlined-orange" },
+                    " on the tall ",
+                    { answer: "tree", style: "outlined-teal" },
+                    " and places three in a woven ",
+                    { answer: "basket", style: "outlined-blue" },
+                    " for fresh ",
+                    { answer: "juice", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 15,
+                hiddenCount: 4,
+                title: "School Show",
+                parts: [
+                    "The students make paper ",
+                    { answer: "crowns", style: "outlined-orange" },
+                    ", stand on the small ",
+                    { answer: "stage", style: "outlined-purple" },
+                    ", sing a bright ",
+                    { answer: "song", style: "outlined-pink" },
+                    ", and wave to the ",
+                    { answer: "families", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 15,
+                hiddenCount: 4,
+                title: "Beach Castle",
+                parts: [
+                    "Sam packs wet ",
+                    { answer: "sand", style: "outlined-orange" },
+                    " into a yellow ",
+                    { answer: "bucket", style: "outlined-blue" },
+                    " and builds a tall ",
+                    { answer: "castle", style: "outlined-purple" },
+                    " near the quiet ",
+                    { answer: "waves", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 16,
+                hiddenCount: 4,
+                title: "Morning Bus",
+                parts: [
+                    "The yellow ",
+                    { answer: "bus", style: "outlined-orange" },
+                    " stops near the ",
+                    { answer: "school", style: "outlined-blue" },
+                    " and the children carry their ",
+                    { answer: "backpacks", style: "outlined-purple" },
+                    " through the front ",
+                    { answer: "door", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 16,
+                hiddenCount: 4,
+                title: "Bakery Morning",
+                parts: [
+                    "The baker mixes soft ",
+                    { answer: "dough", style: "outlined-orange" },
+                    " in a large ",
+                    { answer: "bowl", style: "outlined-blue" },
+                    " and places warm ",
+                    { answer: "rolls", style: "outlined-teal" },
+                    " on the front ",
+                    { answer: "shelf", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 16,
+                hiddenCount: 4,
+                title: "Friendship Card",
+                parts: [
+                    "Leo folds a blue ",
+                    { answer: "paper", style: "outlined-blue" },
+                    " card, draws a yellow ",
+                    { answer: "star", style: "outlined-orange" },
+                    ", writes a kind ",
+                    { answer: "note", style: "outlined-pink" },
+                    ", and gives it to his ",
+                    { answer: "friend", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 16,
+                hiddenCount: 4,
+                title: "Nature Trail",
+                parts: [
+                    "The hikers follow a curvy ",
+                    { answer: "trail", style: "outlined-orange" },
+                    " past a tall ",
+                    { answer: "tree", style: "outlined-teal" },
+                    ", a smooth ",
+                    { answer: "rock", style: "outlined-blue" },
+                    ", and a tiny forest ",
+                    { answer: "flower", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 16,
+                hiddenCount: 4,
+                title: "Class Calendar",
+                parts: [
+                    "The teacher points to the ",
+                    { answer: "calendar", style: "outlined-purple" },
+                    " and marks the sunny ",
+                    { answer: "day", style: "outlined-orange" },
+                    " for the class ",
+                    { answer: "party", style: "outlined-pink" },
+                    " with a bright ",
+                    { answer: "sticker", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 16,
+                hiddenCount: 4,
+                title: "Building Blocks",
+                parts: [
+                    "Ari stacks square ",
+                    { answer: "blocks", style: "outlined-blue" },
+                    " into a tall ",
+                    { answer: "tower", style: "outlined-orange" },
+                    " and adds a small ",
+                    { answer: "flag", style: "outlined-pink" },
+                    " on the very ",
+                    { answer: "top", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 16,
+                hiddenCount: 4,
+                title: "Bird Watch",
+                parts: [
+                    "Nora sees a red ",
+                    { answer: "bird", style: "outlined-pink" },
+                    " land on the wooden ",
+                    { answer: "fence", style: "outlined-orange" },
+                    " and peck at tiny ",
+                    { answer: "seeds", style: "outlined-teal" },
+                    " beside the garden ",
+                    { answer: "path", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 16,
+                hiddenCount: 4,
+                title: "Soccer Practice",
+                parts: [
+                    "The coach sets out orange ",
+                    { answer: "cones", style: "outlined-orange" },
+                    " and the kids pass the white ",
+                    { answer: "ball", style: "outlined-blue" },
+                    " across the green ",
+                    { answer: "field", style: "outlined-teal" },
+                    " toward the small ",
+                    { answer: "goal", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 16,
+                hiddenCount: 4,
+                title: "Ocean Drawing",
+                parts: [
+                    "Mila draws blue ",
+                    { answer: "waves", style: "outlined-blue" },
+                    ", a tiny ",
+                    { answer: "boat", style: "outlined-orange" },
+                    ", a smiling ",
+                    { answer: "dolphin", style: "outlined-teal" },
+                    ", and a bright yellow ",
+                    { answer: "sun", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 16,
+                hiddenCount: 4,
+                title: "Number Game",
+                parts: [
+                    "The children count four red ",
+                    { answer: "cars", style: "outlined-orange" },
+                    ", three blue ",
+                    { answer: "trucks", style: "outlined-blue" },
+                    ", two yellow ",
+                    { answer: "buses", style: "outlined-teal" },
+                    ", and one green ",
+                    { answer: "train", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 17,
+                hiddenCount: 5,
+                title: "Community Garden",
+                parts: [
+                    "The neighbors plant red ",
+                    { answer: "tomatoes", style: "outlined-pink" },
+                    ", green ",
+                    { answer: "beans", style: "outlined-teal" },
+                    ", and yellow ",
+                    { answer: "flowers", style: "outlined-orange" },
+                    " beside a wooden ",
+                    { answer: "fence", style: "outlined-blue" },
+                    " after the morning ",
+                    { answer: "rain", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 17,
+                hiddenCount: 5,
+                title: "Cooking Pancakes",
+                parts: [
+                    "Dad pours the ",
+                    { answer: "batter", style: "outlined-orange" },
+                    " onto a warm ",
+                    { answer: "pan", style: "outlined-blue" },
+                    ", flips three round ",
+                    { answer: "pancakes", style: "outlined-purple" },
+                    ", adds sweet ",
+                    { answer: "berries", style: "outlined-pink" },
+                    ", and sets out clean ",
+                    { answer: "plates", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 17,
+                hiddenCount: 5,
+                title: "Class Aquarium",
+                parts: [
+                    "The students feed the tiny ",
+                    { answer: "fish", style: "outlined-orange" },
+                    ", clean the glass ",
+                    { answer: "tank", style: "outlined-blue" },
+                    ", count the smooth ",
+                    { answer: "rocks", style: "outlined-purple" },
+                    ", and draw green ",
+                    { answer: "plants", style: "outlined-teal" },
+                    " in their science ",
+                    { answer: "journals", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 17,
+                hiddenCount: 5,
+                title: "Neighborhood Parade",
+                parts: [
+                    "The children carry paper ",
+                    { answer: "flags", style: "outlined-blue" },
+                    ", beat small ",
+                    { answer: "drums", style: "outlined-orange" },
+                    ", wear bright ",
+                    { answer: "hats", style: "outlined-pink" },
+                    ", follow the music ",
+                    { answer: "leader", style: "outlined-purple" },
+                    ", and wave to smiling ",
+                    { answer: "families", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 17,
+                hiddenCount: 5,
+                title: "Library Project",
+                parts: [
+                    "Omar chooses a big ",
+                    { answer: "book", style: "outlined-blue" },
+                    " about desert ",
+                    { answer: "animals", style: "outlined-orange" },
+                    ", copies three ",
+                    { answer: "facts", style: "outlined-teal" },
+                    " onto a yellow ",
+                    { answer: "paper", style: "outlined-pink" },
+                    ", and draws a sandy ",
+                    { answer: "lizard", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 17,
+                hiddenCount: 5,
+                title: "Camping Breakfast",
+                parts: [
+                    "The family wakes inside the ",
+                    { answer: "tent", style: "outlined-purple" },
+                    ", warms a pot of ",
+                    { answer: "oatmeal", style: "outlined-orange" },
+                    ", slices a red ",
+                    { answer: "apple", style: "outlined-pink" },
+                    ", pours fresh ",
+                    { answer: "milk", style: "outlined-blue" },
+                    ", and watches the rising ",
+                    { answer: "sun", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 17,
+                hiddenCount: 5,
+                title: "Art Museum",
+                parts: [
+                    "The class studies a bright ",
+                    { answer: "painting", style: "outlined-orange" },
+                    ", finds a marble ",
+                    { answer: "statue", style: "outlined-blue" },
+                    ", sketches a round ",
+                    { answer: "vase", style: "outlined-purple" },
+                    ", whispers in the quiet ",
+                    { answer: "hall", style: "outlined-teal" },
+                    ", and thanks the museum ",
+                    { answer: "guide", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 17,
+                hiddenCount: 5,
+                title: "Science Fair",
+                parts: [
+                    "Maya builds a paper ",
+                    { answer: "volcano", style: "outlined-orange" },
+                    ", labels each ",
+                    { answer: "part", style: "outlined-blue" },
+                    ", pours in safe ",
+                    { answer: "bubbles", style: "outlined-teal" },
+                    ", records her ",
+                    { answer: "notes", style: "outlined-pink" },
+                    ", and shares the display with her ",
+                    { answer: "class", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 17,
+                hiddenCount: 5,
+                title: "Winter Craft",
+                parts: [
+                    "Sara cuts white ",
+                    { answer: "paper", style: "outlined-blue" },
+                    " into a snowflake ",
+                    { answer: "shape", style: "outlined-purple" },
+                    ", adds silver ",
+                    { answer: "glitter", style: "outlined-orange" },
+                    ", tapes it to the ",
+                    { answer: "window", style: "outlined-teal" },
+                    ", and smiles at the snowy ",
+                    { answer: "view", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 17,
+                hiddenCount: 5,
+                title: "Grocery List",
+                parts: [
+                    "Grandma reads the ",
+                    { answer: "list", style: "outlined-blue" },
+                    " and puts fresh ",
+                    { answer: "eggs", style: "outlined-orange" },
+                    ", crunchy ",
+                    { answer: "lettuce", style: "outlined-teal" },
+                    ", sweet ",
+                    { answer: "peaches", style: "outlined-pink" },
+                    ", and warm ",
+                    { answer: "bread", style: "outlined-purple" },
+                    " in the cart."
+                ]
+            },
+            {
+                level: 18,
+                hiddenCount: 5,
+                title: "Pond Study",
+                parts: [
+                    "The children watch a green ",
+                    { answer: "frog", style: "outlined-teal" },
+                    " leap from a flat ",
+                    { answer: "stone", style: "outlined-blue" },
+                    " while tiny ",
+                    { answer: "ripples", style: "outlined-purple" },
+                    " move across the calm ",
+                    { answer: "pond", style: "outlined-orange" },
+                    " under a shady ",
+                    { answer: "tree", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 18,
+                hiddenCount: 5,
+                title: "Family Dinner",
+                parts: [
+                    "Mina sets the ",
+                    { answer: "table", style: "outlined-orange" },
+                    " with clean ",
+                    { answer: "napkins", style: "outlined-blue" },
+                    ", round ",
+                    { answer: "plates", style: "outlined-teal" },
+                    ", silver ",
+                    { answer: "spoons", style: "outlined-purple" },
+                    ", and a small vase of ",
+                    { answer: "flowers", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 18,
+                hiddenCount: 5,
+                title: "Maker Table",
+                parts: [
+                    "The kids use cardboard ",
+                    { answer: "tubes", style: "outlined-orange" },
+                    ", colored ",
+                    { answer: "paper", style: "outlined-blue" },
+                    ", soft ",
+                    { answer: "yarn", style: "outlined-pink" },
+                    ", safe ",
+                    { answer: "glue", style: "outlined-teal" },
+                    ", and shiny ",
+                    { answer: "stickers", style: "outlined-purple" },
+                    " to build tiny houses."
+                ]
+            },
+            {
+                level: 18,
+                hiddenCount: 5,
+                title: "Zoo Map",
+                parts: [
+                    "The family checks the ",
+                    { answer: "map", style: "outlined-blue" },
+                    " and walks past the tall ",
+                    { answer: "giraffe", style: "outlined-orange" },
+                    ", the sleepy ",
+                    { answer: "lion", style: "outlined-pink" },
+                    ", the playful ",
+                    { answer: "monkeys", style: "outlined-teal" },
+                    ", and the bright bird ",
+                    { answer: "house", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 18,
+                hiddenCount: 5,
+                title: "Bakery Box",
+                parts: [
+                    "The baker packs warm ",
+                    { answer: "muffins", style: "outlined-orange" },
+                    ", soft ",
+                    { answer: "rolls", style: "outlined-blue" },
+                    ", tiny ",
+                    { answer: "cookies", style: "outlined-pink" },
+                    ", sweet ",
+                    { answer: "tarts", style: "outlined-purple" },
+                    ", and a thank-you ",
+                    { answer: "note", style: "outlined-teal" },
+                    " into a white box."
+                ]
+            },
+            {
+                level: 18,
+                hiddenCount: 5,
+                title: "Music Practice",
+                parts: [
+                    "Ava reads the ",
+                    { answer: "notes", style: "outlined-blue" },
+                    ", taps the steady ",
+                    { answer: "beat", style: "outlined-orange" },
+                    ", hums the gentle ",
+                    { answer: "tune", style: "outlined-teal" },
+                    ", plays her small ",
+                    { answer: "flute", style: "outlined-purple" },
+                    ", and bows after the ",
+                    { answer: "song", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 18,
+                hiddenCount: 5,
+                title: "Beach Cleanup",
+                parts: [
+                    "The children collect empty ",
+                    { answer: "cups", style: "outlined-blue" },
+                    ", paper ",
+                    { answer: "wrappers", style: "outlined-orange" },
+                    ", and broken ",
+                    { answer: "straws", style: "outlined-pink" },
+                    " in a blue ",
+                    { answer: "bag", style: "outlined-teal" },
+                    " to keep the beach ",
+                    { answer: "clean", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 18,
+                hiddenCount: 5,
+                title: "Dinosaur Poster",
+                parts: [
+                    "Leo draws a huge ",
+                    { answer: "dinosaur", style: "outlined-teal" },
+                    " with a long ",
+                    { answer: "tail", style: "outlined-orange" },
+                    ", sharp-looking ",
+                    { answer: "teeth", style: "outlined-blue" },
+                    ", tiny ",
+                    { answer: "arms", style: "outlined-pink" },
+                    ", and giant ",
+                    { answer: "feet", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 18,
+                hiddenCount: 5,
+                title: "School Lunch",
+                parts: [
+                    "Owen opens his ",
+                    { answer: "lunchbox", style: "outlined-purple" },
+                    " and finds a cheese ",
+                    { answer: "sandwich", style: "outlined-orange" },
+                    ", crisp ",
+                    { answer: "carrots", style: "outlined-teal" },
+                    ", red ",
+                    { answer: "berries", style: "outlined-pink" },
+                    ", and cold ",
+                    { answer: "milk", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 18,
+                hiddenCount: 5,
+                title: "Garden Path",
+                parts: [
+                    "Nina follows the stone ",
+                    { answer: "path", style: "outlined-blue" },
+                    " past a small ",
+                    { answer: "fountain", style: "outlined-purple" },
+                    ", a red ",
+                    { answer: "bench", style: "outlined-orange" },
+                    ", purple ",
+                    { answer: "flowers", style: "outlined-pink" },
+                    ", and a buzzing ",
+                    { answer: "bee", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 19,
+                hiddenCount: 5,
+                title: "Forest Journal",
+                parts: [
+                    "The hikers write about tall ",
+                    { answer: "trees", style: "outlined-teal" },
+                    ", soft green ",
+                    { answer: "moss", style: "outlined-orange" },
+                    ", smooth gray ",
+                    { answer: "stones", style: "outlined-blue" },
+                    ", tiny brown ",
+                    { answer: "acorns", style: "outlined-pink" },
+                    ", and a winding dirt ",
+                    { answer: "trail", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 19,
+                hiddenCount: 5,
+                title: "Classroom Jobs",
+                parts: [
+                    "The helpers stack the ",
+                    { answer: "chairs", style: "outlined-blue" },
+                    ", water the ",
+                    { answer: "plant", style: "outlined-teal" },
+                    ", pass out ",
+                    { answer: "papers", style: "outlined-orange" },
+                    ", clean the ",
+                    { answer: "board", style: "outlined-purple" },
+                    ", and close the supply ",
+                    { answer: "box", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 19,
+                hiddenCount: 5,
+                title: "Rain Forest Mural",
+                parts: [
+                    "The group paints tall ",
+                    { answer: "trees", style: "outlined-teal" },
+                    ", bright ",
+                    { answer: "birds", style: "outlined-orange" },
+                    ", hanging ",
+                    { answer: "vines", style: "outlined-blue" },
+                    ", blue ",
+                    { answer: "butterflies", style: "outlined-purple" },
+                    ", and a sparkling ",
+                    { answer: "river", style: "outlined-pink" },
+                    " on the mural."
+                ]
+            },
+            {
+                level: 19,
+                hiddenCount: 5,
+                title: "Rocket Lab",
+                parts: [
+                    "The children build a cardboard ",
+                    { answer: "rocket", style: "outlined-purple" },
+                    " with round ",
+                    { answer: "windows", style: "outlined-blue" },
+                    ", silver ",
+                    { answer: "wings", style: "outlined-orange" },
+                    ", paper ",
+                    { answer: "flames", style: "outlined-pink" },
+                    ", and a tiny astronaut ",
+                    { answer: "seat", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 19,
+                hiddenCount: 5,
+                title: "Farm Stand",
+                parts: [
+                    "The stand has red ",
+                    { answer: "tomatoes", style: "outlined-pink" },
+                    ", yellow ",
+                    { answer: "corn", style: "outlined-orange" },
+                    ", green ",
+                    { answer: "peas", style: "outlined-teal" },
+                    ", purple ",
+                    { answer: "plums", style: "outlined-purple" },
+                    ", and brown paper ",
+                    { answer: "bags", style: "outlined-blue" },
+                    "."
+                ]
+            },
+            {
+                level: 19,
+                hiddenCount: 5,
+                title: "Puppet Theater",
+                parts: [
+                    "The kids hang a red ",
+                    { answer: "curtain", style: "outlined-pink" },
+                    ", decorate the small ",
+                    { answer: "stage", style: "outlined-purple" },
+                    ", choose funny ",
+                    { answer: "puppets", style: "outlined-orange" },
+                    ", practice each ",
+                    { answer: "voice", style: "outlined-blue" },
+                    ", and invite the whole ",
+                    { answer: "class", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 19,
+                hiddenCount: 5,
+                title: "Morning Weather",
+                parts: [
+                    "The class checks the ",
+                    { answer: "sky", style: "outlined-blue" },
+                    ", counts three white ",
+                    { answer: "clouds", style: "outlined-purple" },
+                    ", feels a cool ",
+                    { answer: "breeze", style: "outlined-teal" },
+                    ", draws a yellow ",
+                    { answer: "sun", style: "outlined-orange" },
+                    ", and updates the weather ",
+                    { answer: "chart", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 19,
+                hiddenCount: 5,
+                title: "Friendship Picnic",
+                parts: [
+                    "Each friend brings a small ",
+                    { answer: "snack", style: "outlined-orange" },
+                    ", a cold ",
+                    { answer: "drink", style: "outlined-blue" },
+                    ", a favorite ",
+                    { answer: "game", style: "outlined-purple" },
+                    ", a soft ",
+                    { answer: "blanket", style: "outlined-teal" },
+                    ", and a cheerful ",
+                    { answer: "smile", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 19,
+                hiddenCount: 5,
+                title: "Ocean Report",
+                parts: [
+                    "Milo writes about blue ",
+                    { answer: "waves", style: "outlined-blue" },
+                    ", sandy ",
+                    { answer: "beaches", style: "outlined-orange" },
+                    ", shiny ",
+                    { answer: "shells", style: "outlined-pink" },
+                    ", gentle ",
+                    { answer: "turtles", style: "outlined-teal" },
+                    ", and tiny silver ",
+                    { answer: "fish", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 19,
+                hiddenCount: 5,
+                title: "Kindness Chain",
+                parts: [
+                    "The class writes kind ",
+                    { answer: "words", style: "outlined-blue" },
+                    " on paper ",
+                    { answer: "strips", style: "outlined-orange" },
+                    ", links the colorful ",
+                    { answer: "loops", style: "outlined-purple" },
+                    ", hangs the long ",
+                    { answer: "chain", style: "outlined-teal" },
+                    ", and cheers for every ",
+                    { answer: "helper", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 20,
+                hiddenCount: 5,
+                title: "Big School Fair",
+                parts: [
+                    "Families visit the school ",
+                    { answer: "fair", style: "outlined-orange" },
+                    ", play a tossing ",
+                    { answer: "game", style: "outlined-blue" },
+                    ", win a paper ",
+                    { answer: "ticket", style: "outlined-teal" },
+                    ", share sweet ",
+                    { answer: "treats", style: "outlined-pink" },
+                    ", and listen to cheerful ",
+                    { answer: "music", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 20,
+                hiddenCount: 5,
+                title: "Book Club",
+                parts: [
+                    "The readers choose a mystery ",
+                    { answer: "story", style: "outlined-purple" },
+                    ", mark each new ",
+                    { answer: "chapter", style: "outlined-blue" },
+                    ", share favorite ",
+                    { answer: "parts", style: "outlined-orange" },
+                    ", draw the main ",
+                    { answer: "character", style: "outlined-pink" },
+                    ", and clap for the group ",
+                    { answer: "leader", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 20,
+                hiddenCount: 5,
+                title: "Trail Picnic",
+                parts: [
+                    "The hikers pack a soft ",
+                    { answer: "blanket", style: "outlined-blue" },
+                    ", crunchy ",
+                    { answer: "apples", style: "outlined-pink" },
+                    ", cold ",
+                    { answer: "water", style: "outlined-teal" },
+                    ", a paper ",
+                    { answer: "map", style: "outlined-orange" },
+                    ", and a small first-aid ",
+                    { answer: "kit", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 20,
+                hiddenCount: 5,
+                title: "Garden Helpers",
+                parts: [
+                    "The helpers pull tiny ",
+                    { answer: "weeds", style: "outlined-teal" },
+                    ", spread soft ",
+                    { answer: "mulch", style: "outlined-orange" },
+                    ", water the young ",
+                    { answer: "plants", style: "outlined-blue" },
+                    ", clean the green ",
+                    { answer: "tools", style: "outlined-purple" },
+                    ", and sweep the stone ",
+                    { answer: "path", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 20,
+                hiddenCount: 5,
+                title: "Mini Orchestra",
+                parts: [
+                    "The children tune the tiny ",
+                    { answer: "violin", style: "outlined-purple" },
+                    ", tap the hand ",
+                    { answer: "drum", style: "outlined-orange" },
+                    ", shake the bright ",
+                    { answer: "bells", style: "outlined-teal" },
+                    ", follow the music ",
+                    { answer: "teacher", style: "outlined-blue" },
+                    ", and play a happy ",
+                    { answer: "song", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 20,
+                hiddenCount: 5,
+                title: "Town Map",
+                parts: [
+                    "Nina marks the town ",
+                    { answer: "library", style: "outlined-blue" },
+                    ", the sunny ",
+                    { answer: "park", style: "outlined-teal" },
+                    ", the small ",
+                    { answer: "bakery", style: "outlined-orange" },
+                    ", the busy ",
+                    { answer: "station", style: "outlined-purple" },
+                    ", and the quiet art ",
+                    { answer: "museum", style: "outlined-pink" },
+                    "."
+                ]
+            },
+            {
+                level: 20,
+                hiddenCount: 5,
+                title: "Ocean Classroom",
+                parts: [
+                    "The class studies a blue ",
+                    { answer: "whale", style: "outlined-blue" },
+                    ", a tiny ",
+                    { answer: "seahorse", style: "outlined-teal" },
+                    ", a bright ",
+                    { answer: "starfish", style: "outlined-orange" },
+                    ", a soft ",
+                    { answer: "sponge", style: "outlined-pink" },
+                    ", and a hidden ",
+                    { answer: "crab", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 20,
+                hiddenCount: 5,
+                title: "Weather Station",
+                parts: [
+                    "The children measure the ",
+                    { answer: "temperature", style: "outlined-orange" },
+                    ", watch the moving ",
+                    { answer: "clouds", style: "outlined-blue" },
+                    ", record the gentle ",
+                    { answer: "wind", style: "outlined-teal" },
+                    ", draw the bright ",
+                    { answer: "sun", style: "outlined-pink" },
+                    ", and update the class ",
+                    { answer: "chart", style: "outlined-purple" },
+                    "."
+                ]
+            },
+            {
+                level: 20,
+                hiddenCount: 5,
+                title: "Kind Classroom",
+                parts: [
+                    "The students share their ",
+                    { answer: "markers", style: "outlined-purple" },
+                    ", return lost ",
+                    { answer: "pencils", style: "outlined-blue" },
+                    ", help clean the ",
+                    { answer: "tables", style: "outlined-orange" },
+                    ", welcome a new ",
+                    { answer: "student", style: "outlined-pink" },
+                    ", and end the day with a ",
+                    { answer: "song", style: "outlined-teal" },
+                    "."
+                ]
+            },
+            {
+                level: 20,
+                hiddenCount: 5,
+                title: "Family Album",
+                parts: [
+                    "Grandma opens the photo ",
+                    { answer: "album", style: "outlined-blue" },
+                    " and shows a beach ",
+                    { answer: "trip", style: "outlined-orange" },
+                    ", a birthday ",
+                    { answer: "cake", style: "outlined-pink" },
+                    ", a tiny baby ",
+                    { answer: "picture", style: "outlined-purple" },
+                    ", and a smiling family ",
+                    { answer: "portrait", style: "outlined-teal" },
+                    "."
+                ]
             }
         ];
 
@@ -2174,7 +3529,6 @@
                 this.storyText = document.getElementById("storyText");
                 this.storyTitle = document.getElementById("storyTitle");
                 this.levelBadge = document.getElementById("levelBadge");
-                this.storyHint = document.getElementById("storyHint");
                 this.progressPill = document.getElementById("progressPill");
                 this.wordBank = document.getElementById("wordBank");
                 this.celebration = document.getElementById("celebration");
@@ -2465,7 +3819,6 @@
 
                 this.storyTitle.textContent = story.title;
                 this.levelBadge.textContent = `Level ${this.currentLevel}`;
-                this.storyHint.textContent = `Find ${blanks.length === 1 ? "the missing word" : `all ${blanks.length} missing words`}.`;
                 this.progressPill.textContent = `Story ${this.completedStories + 1} of ${this.stories.length}`;
 
                 const sharedBlankWidth = `${Math.max(
