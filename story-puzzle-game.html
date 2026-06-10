@@ -2468,6 +2468,11 @@
                 this.storyHint.textContent = `Find ${blanks.length === 1 ? "the missing word" : `all ${blanks.length} missing words`}.`;
                 this.progressPill.textContent = `Story ${this.completedStories + 1} of ${this.stories.length}`;
 
+                const sharedBlankWidth = `${Math.max(
+                    1.9,
+                    ...blanks.map((blank) => blank.answer.length * 0.82)
+                )}em`;
+
                 this.storyText.innerHTML = "";
                 renderUnits.forEach((part) => {
                     if (part.type === "text") {
@@ -2491,7 +2496,8 @@
                     blank.className = `blank ${part.style} hint-hidden`;
                     blank.dataset.blankId = part.blankId;
                     blank.dataset.answer = part.answer;
-                    blank.style.minWidth = `${Math.max(1.9, part.answer.length * 0.82)}em`;
+                    blank.style.width = sharedBlankWidth;
+                    blank.style.minWidth = sharedBlankWidth;
                     blank.setAttribute("aria-label", "Place the missing word");
                     blank.textContent = part.answer;
                     blank.addEventListener("click", () => this.handleBlankClick(blank.dataset.blankId));
