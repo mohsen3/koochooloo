@@ -632,6 +632,91 @@
             direction: ltr;
         }
 
+        .toggle-option {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid transparent;
+            cursor: pointer;
+            direction: rtl;
+            transition: background 220ms ease, border-color 220ms ease;
+        }
+
+        .toggle-option:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(91, 141, 239, 0.3);
+        }
+
+        .toggle-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .toggle-title {
+            font-weight: 700;
+            font-size: clamp(14px, 1.3vw, 18px);
+            color: var(--ink);
+            font-family: var(--farsi-font);
+        }
+
+        .toggle-desc {
+            font-size: clamp(11px, 1vw, 14px);
+            color: var(--ink-soft);
+            font-family: var(--farsi-font);
+        }
+
+        .toggle-switch {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            position: absolute;
+            opacity: 0;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .toggle-track {
+            display: block;
+            width: 48px;
+            height: 28px;
+            border-radius: 999px;
+            background: rgba(120, 120, 128, 0.3);
+            transition: background 220ms ease;
+            position: relative;
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            transition: transform 220ms ease;
+        }
+
+        .toggle-switch input:checked + .toggle-track {
+            background: #34c759;
+        }
+
+        .toggle-switch input:checked + .toggle-track .toggle-thumb {
+            transform: translateX(20px);
+        }
+
         @media (max-width: 600px) {
             .topbar h1 {
                 font-size: clamp(14px, 3.5vw, 18px);
@@ -681,6 +766,16 @@
                     <h2>تنظیمات بازی</h2>
                     <p class="settings-sub">تعداد کارت‌های حافظه را انتخاب کن</p>
                     <div class="animal-options" id="animalOptions"></div>
+                    <label class="toggle-option" id="slowLevelToggle">
+                        <span class="toggle-info">
+                            <span class="toggle-title">پیشرفت آرام</span>
+                            <span class="toggle-desc">هر ۵ بُرد، یک مرحله جلو</span>
+                        </span>
+                        <span class="toggle-switch">
+                            <input type="checkbox" id="slowLevelInput">
+                            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                        </span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -771,6 +866,10 @@
                 this.pairIdCounter = 0;
                 this.matchColorIndex = 0;
                 this.cardCount = 4;
+                this.slowLevelUp = true;
+                this.solvesSinceLevelUp = 0;
+
+                this.slowLevelInput = document.getElementById('slowLevelInput');
 
                 this.loadProgress();
 
@@ -781,6 +880,12 @@
                 this.settingsClose.addEventListener('click', () => this.hideSettings());
                 this.settingsOverlay.addEventListener('click', (e) => {
                     if (e.target === this.settingsOverlay) this.hideSettings();
+                });
+                this.slowLevelInput.checked = this.slowLevelUp;
+                this.slowLevelInput.addEventListener('change', () => {
+                    this.slowLevelUp = this.slowLevelInput.checked;
+                    this.solvesSinceLevelUp = 0;
+                    this.saveProgress();
                 });
 
                 this.init();
@@ -852,10 +957,11 @@
 
                     input.addEventListener('change', () => {
                         this.cardCount = level.cards;
+                        this.level = 1;
+                        this.solvesSinceLevelUp = 0;
                         this.saveProgress();
                         this.updateAnimalBadge();
                         this.hideSettings();
-                        this.level = 1;
                         this.overlay.classList.remove('show');
                         this.startLevel();
                     });
@@ -921,6 +1027,8 @@
                         const data = JSON.parse(saved);
                         if (typeof data.level === 'number') this.level = data.level;
                         if (typeof data.cardCount === 'number') this.cardCount = data.cardCount;
+                        if (typeof data.slowLevelUp === 'boolean') this.slowLevelUp = data.slowLevelUp;
+                        if (typeof data.solvesSinceLevelUp === 'number') this.solvesSinceLevelUp = data.solvesSinceLevelUp;
                     }
                 } catch (_) {}
             }
@@ -929,7 +1037,9 @@
                 try {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify({
                         level: this.level,
-                        cardCount: this.cardCount
+                        cardCount: this.cardCount,
+                        slowLevelUp: this.slowLevelUp,
+                        solvesSinceLevelUp: this.solvesSinceLevelUp
                     }));
                 } catch (_) {}
             }
@@ -939,6 +1049,9 @@
                 localStorage.removeItem(STORAGE_KEY);
                 this.level = 1;
                 this.cardCount = 4;
+                this.solvesSinceLevelUp = 0;
+                this.slowLevelUp = true;
+                if (this.slowLevelInput) this.slowLevelInput.checked = true;
                 this.updateAnimalBadge();
                 this.buildSettingsPanel();
                 this.overlay.classList.remove('show');
@@ -1140,7 +1253,18 @@
             }
 
             completeLevel() {
-                this.level++;
+                let leveledUp = true;
+                if (this.slowLevelUp) {
+                    this.solvesSinceLevelUp++;
+                    if (this.solvesSinceLevelUp >= 5) {
+                        this.level++;
+                        this.solvesSinceLevelUp = 0;
+                    } else {
+                        leveledUp = false;
+                    }
+                } else {
+                    this.level++;
+                }
 
                 const messages = [
                     { emoji: '🎉', title: 'آفرین!', sub: 'مرحله بعدی آماده است' },
@@ -1149,7 +1273,9 @@
                     { emoji: '✨', title: 'خوشگل!', sub: 'بریم مرحله بعد' },
                     { emoji: '🔥', title: 'باحال!', sub: 'ادامه بده' },
                 ];
-                const msg = messages[(this.level - 2) % messages.length];
+                const msg = leveledUp
+                    ? messages[(this.level - 2) % messages.length]
+                    : { emoji: '👏', title: 'آفرین!', sub: `${toFaNumber(5 - this.solvesSinceLevelUp)} بُرد دیگر تا مرحله بعد` };
 
                 this.overlayEmoji.textContent = msg.emoji;
                 this.overlayTitle.textContent = msg.title;
