@@ -22,10 +22,10 @@
             --panel: rgba(255, 255, 255, 0.72);
             --panel-strong: rgba(255, 255, 255, 0.92);
             --glow: 0 20px 50px rgba(60, 40, 80, 0.15);
-            --radius-card: 18px;
+            --radius-card: 22px;
             --back-color: #5b8def;
             --match-color: #3cd8be;
-            --card-gap: 10px;
+            --card-gap: 12px;
         }
 
         * {
@@ -128,10 +128,11 @@
 
         .topbar h1 {
             margin: 0;
-            font-size: clamp(16px, 2vw, 26px);
+            font-size: clamp(18px, 2.4vw, 30px);
             line-height: 1.25;
             letter-spacing: -0.03em;
-            background: linear-gradient(135deg, var(--ink), #4a3f6b);
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff7055, #6c5ce7 60%, #5b8def);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -213,6 +214,11 @@
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
             transition: transform 200ms ease;
+            container-type: size;
+        }
+
+        .card:not(.flipped):not(.matched):hover {
+            transform: translateY(-2px);
         }
 
         .card:not(.flipped):not(.matched):active {
@@ -241,46 +247,52 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 8px;
+            padding: 6px;
             border: 3px solid transparent;
             transition: border-color 300ms ease, box-shadow 300ms ease;
+            overflow: hidden;
         }
 
         .card-front {
             transform: rotateY(180deg);
             background:
-                linear-gradient(165deg, rgba(255, 255, 255, 0.98), rgba(250, 248, 255, 0.95));
-            box-shadow: 0 4px 16px rgba(16, 16, 40, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+                linear-gradient(165deg, #ffffff, #fdf6ff);
+            box-shadow: 0 6px 18px rgba(16, 16, 40, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
         }
 
         .card-back {
-            background: linear-gradient(145deg, #6ba3f0, #4a7fe0);
-            box-shadow: 0 4px 16px rgba(16, 16, 40, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.15);
+            background:
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), transparent 55%),
+                linear-gradient(145deg, #7eb3ff, #5b8def 55%, #6c5ce7);
+            box-shadow: 0 6px 18px rgba(60, 70, 140, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.25);
         }
 
         .card-back::after {
-            content: "?";
-            font-size: clamp(28px, 4vw, 52px);
+            content: "★";
+            font-size: 38cqmin;
             font-weight: 800;
-            color: rgba(255, 255, 255, 0.5);
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
         }
 
         .card-word {
-            font-weight: 700;
-            font-size: clamp(16px, 2.4vw, 34px);
-            line-height: 1.2;
+            font-weight: 800;
+            font-size: clamp(18px, 30cqmin, 56px);
+            line-height: 1.1;
             text-align: center;
             word-break: break-word;
             color: var(--ink);
             direction: ltr;
+            letter-spacing: -0.01em;
         }
 
         .card-word[lang="fa"] {
             direction: rtl;
             font-family: var(--farsi-font);
-            font-size: clamp(18px, 2.6vw, 38px);
+            font-weight: 400;
+            font-size: clamp(22px, 38cqmin, 68px);
+            letter-spacing: 0;
         }
 
         .card-word[lang="en"] {
@@ -774,10 +786,14 @@
                 this.buildSettingsPanel();
                 this.updateAnimalBadge();
                 this.syncViewportHeight();
-                window.addEventListener('resize', () => this.syncViewportHeight(), { passive: true });
-                window.addEventListener('orientationchange', () => this.syncViewportHeight(), { passive: true });
+                const onResize = () => {
+                    this.syncViewportHeight();
+                    this.fitCardText();
+                };
+                window.addEventListener('resize', onResize, { passive: true });
+                window.addEventListener('orientationchange', onResize, { passive: true });
                 if (window.visualViewport) {
-                    window.visualViewport.addEventListener('resize', () => this.syncViewportHeight(), { passive: true });
+                    window.visualViewport.addEventListener('resize', onResize, { passive: true });
                 }
 
                 const start = () => this.startLevel();
@@ -1009,6 +1025,24 @@
                 }
 
                 this.pairCounter.textContent = `۰ از ${toFaNumber(this.totalPairs)} جفت`;
+
+                requestAnimationFrame(() => this.fitCardText());
+            }
+
+            fitCardText() {
+                const words = this.grid.querySelectorAll('.card-word');
+                for (const w of words) {
+                    w.style.fontSize = '';
+                    const face = w.parentElement;
+                    const maxW = face.clientWidth - 12;
+                    const maxH = face.clientHeight - 12;
+                    let size = parseFloat(getComputedStyle(w).fontSize);
+                    let guard = 24;
+                    while ((w.scrollWidth > maxW || w.scrollHeight > maxH) && size > 10 && guard-- > 0) {
+                        size *= 0.9;
+                        w.style.fontSize = `${size}px`;
+                    }
+                }
             }
 
             createCardElement(cardData, index) {
