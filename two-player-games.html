@@ -319,6 +319,11 @@
             font-weight: 800;
             color: var(--muted);
             opacity: 0.6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-self: stretch;
+            padding: 10px 0;
         }
 
         /* ---------- Tic-tac-toe board ---------- */
@@ -515,7 +520,7 @@
         </div>
         <div class="picker-grid" id="pickerGrid">
             <button class="game-card" data-game="ttt">
-                <div class="game-emoji">⭕❌</div>
+                <div class="game-emoji">◯✕</div>
                 <div class="game-name">Tic-Tac-Toe</div>
                 <div class="game-sub">Three in a row wins</div>
             </button>
@@ -540,12 +545,12 @@
 
         <div class="turn-banner">
             <div class="player-pill p1" id="pill1">
-                <div class="who"><span id="p1Name">—</span> <span style="font-weight:900">❌</span></div>
+                <div class="who"><span id="p1Name">—</span> <span style="font-weight:900">            ✕</span></div>
                 <div class="score" id="p1Score">0</div>
             </div>
             <div class="vs">vs</div>
             <div class="player-pill p2" id="pill2">
-                <div class="who"><span id="p2Name">—</span> <span style="font-weight:900">⭕</span></div>
+                <div class="who"><span id="p2Name">—</span> <span style="font-weight:900">            ◯</span></div>
                 <div class="score" id="p2Score">0</div>
             </div>
         </div>
@@ -771,8 +776,8 @@
             const v = ttt.cells[i];
             cell.classList.remove("p1", "p2", "filled", "winning");
             const mark = cell.querySelector(".mark");
-            if (v === 1) { cell.classList.add("p1", "filled"); mark.textContent = "❌"; }
-            else if (v === 2) { cell.classList.add("p2", "filled"); mark.textContent = "⭕"; }
+            if (v === 1) { cell.classList.add("p1", "filled"); mark.textContent = "✕"; }
+            else if (v === 2) { cell.classList.add("p2", "filled"); mark.textContent = "◯"; }
             else { mark.textContent = ""; }
         });
         if (ttt.winningLine) {
