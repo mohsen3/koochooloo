@@ -3,467 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Koochooloo Game Library</title>
+    <title>Koochooloo Games</title>
     <style>
         :root {
-            --bg: #f4efe6;
-            --bg-accent: #f7d8a8;
-            --panel: rgba(255, 251, 245, 0.86);
-            --panel-strong: #fffaf2;
-            --ink: #18222f;
-            --muted: #566273;
-            --line: rgba(24, 34, 47, 0.1);
-            --warm: #ea7a3d;
-            --warm-deep: #c85b1f;
-            --green: #2f8f62;
-            --blue: #2d6f93;
-            --cat-math: #2d6f93;
-            --cat-reading: #2f8f62;
-            --cat-tracing: #c85b1f;
-            --cat-music: #7b5ea7;
-            --cat-farsi: #d4526e;
-            --cat-art: #d98324;
-            --shadow: 0 24px 70px rgba(24, 34, 47, 0.14);
-            --radius-xl: 32px;
-            --radius-lg: 24px;
-            --radius-md: 18px;
-            --max: 1180px;
+            --ink: #2b2150;
+            --muted: #6b6390;
+            --paper: #fffdf8;
+            --line: rgba(43, 33, 80, 0.1);
+            --math: #3b82f6;
+            --reading: #1aa97a;
+            --tracing: #f59e0b;
+            --music: #8b5cf6;
+            --art: #ef5da8;
+            --farsi: #ef4466;
+            --radius: 26px;
+            --max: 1140px;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
             margin: 0;
-            font-family: Georgia, "Avenir Next", "Trebuchet MS", serif;
+            font-family: "Baloo 2", "Chalkboard SE", "Comic Sans MS", "Trebuchet MS", system-ui, sans-serif;
             color: var(--ink);
+            -webkit-tap-highlight-color: transparent;
             background:
-                radial-gradient(circle at top left, rgba(247, 216, 168, 0.75), transparent 32%),
-                radial-gradient(circle at top right, rgba(45, 111, 147, 0.18), transparent 26%),
-                linear-gradient(180deg, #f8f1e5 0%, #f2ebe1 48%, #ece4d8 100%);
+                radial-gradient(circle at 12% 8%, rgba(255, 209, 102, 0.55), transparent 26%),
+                radial-gradient(circle at 88% 4%, rgba(239, 93, 168, 0.32), transparent 24%),
+                radial-gradient(circle at 50% 120%, rgba(59, 130, 246, 0.28), transparent 42%),
+                linear-gradient(180deg, #fef6ec 0%, #f4f1ff 55%, #eef7ff 100%);
+            background-attachment: fixed;
         }
 
-        a {
-            color: inherit;
+        body, .game-card, .chip, h1, h2, h3 {
+            -webkit-user-select: none;
+            user-select: none;
         }
+
+        a { color: inherit; }
 
         .page-shell {
-            width: min(var(--max), calc(100% - 32px));
+            width: min(var(--max), calc(100% - 28px));
             margin: 0 auto;
-            padding: 28px 0 56px;
+            padding: 26px 0 60px;
         }
 
+        /* ---------- Hero ---------- */
         .hero {
             position: relative;
-            overflow: hidden;
-            padding: 36px;
-            border-radius: var(--radius-xl);
-            background:
-                linear-gradient(135deg, rgba(255, 250, 242, 0.96), rgba(255, 245, 227, 0.93)),
-                var(--panel-strong);
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255, 255, 255, 0.55);
+            text-align: center;
+            padding: 14px 10px 4px;
         }
 
-        .hero-top {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 14px;
+        .logo {
+            font-size: clamp(3rem, 10vw, 5rem);
+            line-height: 1;
+            filter: drop-shadow(0 8px 14px rgba(43, 33, 80, 0.18));
+            animation: bob 3.2s ease-in-out infinite;
         }
 
-        .hero::before,
-        .hero::after {
-            content: "";
-            position: absolute;
-            border-radius: 999px;
-            pointer-events: none;
-        }
-
-        .hero::before {
-            width: 260px;
-            height: 260px;
-            right: -70px;
-            top: -70px;
-            background: radial-gradient(circle, rgba(234, 122, 61, 0.22), transparent 70%);
-        }
-
-        .hero::after {
-            width: 220px;
-            height: 220px;
-            left: -70px;
-            bottom: -90px;
-            background: radial-gradient(circle, rgba(47, 143, 98, 0.18), transparent 70%);
-        }
-
-        .eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            border-radius: 999px;
-            font-size: 0.85rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--blue);
-            background: rgba(45, 111, 147, 0.08);
+        @keyframes bob {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50% { transform: translateY(-8px) rotate(3deg); }
         }
 
         h1 {
-            margin: 18px 0 14px;
-            max-width: 10ch;
-            font-size: clamp(2.8rem, 7vw, 5.2rem);
-            line-height: 0.95;
-            letter-spacing: -0.04em;
+            margin: 6px 0 2px;
+            font-size: clamp(2.4rem, 8vw, 4rem);
+            letter-spacing: -0.02em;
+            background: linear-gradient(110deg, #ff7a59, #ef5da8 38%, #8b5cf6 70%, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
-        .hero-copy {
-            max-width: 720px;
-            font-size: 1.08rem;
-            line-height: 1.7;
-            color: var(--muted);
-        }
-
-        .hero-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 28px;
-        }
-
-        .button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 48px;
-            padding: 0 20px;
-            border-radius: 999px;
-            text-decoration: none;
-            font-weight: 700;
-            transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
-        }
-
-        .button:hover,
-        .button:focus-visible {
-            transform: translateY(-1px);
-        }
-
-        .button-primary {
-            color: #fff8f0;
-            background: linear-gradient(135deg, var(--warm), var(--warm-deep));
-            box-shadow: 0 18px 30px rgba(200, 91, 31, 0.22);
-        }
-
-        .button-secondary {
-            color: var(--ink);
-            background: rgba(24, 34, 47, 0.06);
-        }
-
-        .hero-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 14px;
-            margin-top: 30px;
-        }
-
-        .meta-card {
-            padding: 16px 18px;
-            border-radius: var(--radius-md);
-            background: rgba(255, 255, 255, 0.62);
-            border: 1px solid rgba(24, 34, 47, 0.06);
-        }
-
-        .meta-card strong {
-            display: block;
-            font-size: 1.55rem;
-            margin-bottom: 4px;
-        }
-
-        .meta-card span {
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
-
-        .jump-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 26px 0 0;
-        }
-
-        .jump-links a {
-            padding: 10px 14px;
-            border-radius: 999px;
-            text-decoration: none;
-            background: rgba(255, 255, 255, 0.72);
-            border: 1px solid var(--line);
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
-
-        .beta-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.78);
-            border: 1px solid var(--line);
-            color: var(--muted);
-            font-size: 0.95rem;
-            font-weight: 700;
-        }
-
-        .beta-toggle input {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--warm);
-            margin: 0;
-        }
-
-        .section {
-            margin-top: 34px;
-            padding: 28px;
-            border-radius: var(--radius-lg);
-            background: var(--panel);
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255, 255, 255, 0.52);
-            backdrop-filter: blur(12px);
-        }
-
-        .section-header {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: end;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 22px;
-        }
-
-        .section-header h2 {
-            margin: 0;
-            font-size: clamp(1.6rem, 3.4vw, 2.2rem);
-            letter-spacing: -0.03em;
-        }
-
-        .section-header p {
-            margin: 0;
-            max-width: 620px;
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        .count-badge {
-            padding: 10px 14px;
-            border-radius: 999px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--blue);
-            background: rgba(45, 111, 147, 0.08);
-        }
-
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-        }
-
-        .game-card {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            min-height: 100%;
-            padding: 18px;
-            border-radius: 22px;
-            text-decoration: none;
-            background: rgba(255, 255, 255, 0.82);
-            border: 1px solid rgba(24, 34, 47, 0.08);
-            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-        }
-
-        .game-card:hover,
-        .game-card:focus-visible {
-            transform: translateY(-4px);
-            box-shadow: 0 18px 34px rgba(24, 34, 47, 0.12);
-            border-color: rgba(234, 122, 61, 0.28);
-        }
-
-        .card-top {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .icon {
-            flex: 0 0 auto;
-            width: 48px;
-            height: 48px;
-            display: grid;
-            place-items: center;
-            border-radius: 16px;
-            background: linear-gradient(135deg, rgba(234, 122, 61, 0.14), rgba(47, 143, 98, 0.14));
-            font-size: 1.5rem;
-        }
-
-        .game-card h3 {
-            margin: 0;
-            font-size: 1.08rem;
-            line-height: 1.25;
-        }
-
-        .game-card p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.55;
-            font-size: 0.96rem;
-        }
-
-        .card-label {
-            display: inline-flex;
-            align-items: center;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--warm-deep);
-            background: rgba(234, 122, 61, 0.12);
-        }
-
-        .game-card[hidden] {
-            display: none;
-        }
-
-        .card-footer {
-            margin-top: auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            color: var(--blue);
-            font-weight: 700;
-            font-size: 0.94rem;
-        }
-
-        .card-footer span:last-child {
+        .tagline {
+            margin: 0 0 18px;
+            font-size: clamp(1rem, 3.4vw, 1.3rem);
             color: var(--muted);
             font-weight: 600;
-            font-size: 0.86rem;
         }
 
-        .footer {
+        .hero-tools {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
+            align-items: center;
+            justify-content: center;
             gap: 12px;
-            margin-top: 24px;
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
-
-        .footer a {
-            color: var(--blue);
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        @media (max-width: 720px) {
-            .page-shell {
-                width: min(var(--max), calc(100% - 20px));
-                padding-top: 18px;
-            }
-
-            .hero,
-            .section {
-                padding: 22px;
-                border-radius: 24px;
-            }
-
-            .hero-copy {
-                font-size: 1rem;
-            }
-
-            .jump-links {
-                margin-top: 20px;
-            }
+            max-width: 620px;
+            margin: 0 auto;
         }
 
         .search-wrap {
             position: relative;
-            margin: 0 0 26px;
+            flex: 1 1 280px;
         }
 
         .search-wrap input {
             width: 100%;
-            padding: 16px 20px 16px 48px;
+            padding: 15px 18px 15px 46px;
             border-radius: 999px;
-            border: 1px solid var(--line);
-            background: rgba(255, 255, 255, 0.78);
+            border: 2px solid var(--line);
+            background: var(--paper);
             font: inherit;
-            font-size: 1rem;
+            font-size: 1.05rem;
             color: var(--ink);
             outline: none;
-            transition: border-color 180ms ease, box-shadow 180ms ease;
+            box-shadow: 0 10px 24px rgba(43, 33, 80, 0.08);
+            transition: border-color 160ms ease, box-shadow 160ms ease;
         }
 
+        .search-wrap input::placeholder { color: #a59fc0; }
+
         .search-wrap input:focus {
-            border-color: var(--warm);
-            box-shadow: 0 0 0 3px rgba(234, 122, 61, 0.18);
+            border-color: var(--music);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.18);
         }
 
         .search-wrap::before {
             content: "🔍";
             position: absolute;
-            left: 18px;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
             font-size: 1.1rem;
             pointer-events: none;
-            opacity: 0.6;
+        }
+
+        .beta-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 16px;
+            border-radius: 999px;
+            background: var(--paper);
+            border: 2px solid var(--line);
+            color: var(--muted);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(43, 33, 80, 0.08);
+        }
+
+        .beta-toggle input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--music);
+            margin: 0;
+        }
+
+        /* ---------- Category chips ---------- */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 22px auto 8px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 16px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.98rem;
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(43, 33, 80, 0.16);
+            transition: transform 140ms ease;
+        }
+
+        .chip:hover, .chip:focus-visible { transform: translateY(-2px); }
+        .chip.math { background: var(--math); }
+        .chip.reading { background: var(--reading); }
+        .chip.tracing { background: var(--tracing); }
+        .chip.farsi { background: var(--farsi); }
+        .chip.music { background: var(--music); }
+        .chip.art { background: var(--art); }
+
+        /* ---------- Sections ---------- */
+        .section { margin-top: 30px; }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 4px 16px;
+        }
+
+        .section-emoji {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            border-radius: 18px;
+            font-size: 1.7rem;
+            background: #fff;
+            box-shadow: 0 8px 18px rgba(43, 33, 80, 0.12);
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: clamp(1.5rem, 4.6vw, 2rem);
+            letter-spacing: -0.02em;
+            flex: 1;
+        }
+
+        .count-badge {
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ---------- Game grid ---------- */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
         }
 
         .game-card {
             position: relative;
-            border-left: 4px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+            padding: 22px 14px 18px;
+            border-radius: var(--radius);
+            text-decoration: none;
+            background: var(--paper);
+            border: 2px solid rgba(43, 33, 80, 0.06);
+            box-shadow: 0 12px 26px rgba(43, 33, 80, 0.08);
+            transition: transform 180ms cubic-bezier(.2, .8, .3, 1.4), box-shadow 180ms ease;
         }
 
-        .game-card[data-category="math"] {
-            border-left-color: var(--cat-math);
+        .game-card:hover, .game-card:focus-visible {
+            transform: translateY(-6px) rotate(-1deg);
+            box-shadow: 0 20px 36px rgba(43, 33, 80, 0.16);
         }
 
-        .game-card[data-category="reading"] {
-            border-left-color: var(--cat-reading);
+        .game-card:active { transform: translateY(-2px) scale(0.98); }
+
+        .icon {
+            width: 72px;
+            height: 72px;
+            display: grid;
+            place-items: center;
+            border-radius: 22px;
+            font-size: 2.5rem;
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(43, 33, 80, 0.14);
         }
 
-        .game-card[data-category="tracing"] {
-            border-left-color: var(--cat-tracing);
+        .icon.farsi-text {
+            font-family: "Koodak", var(--ink);
+            font-size: 1.5rem;
+            font-weight: 700;
         }
 
-        .game-card[data-category="music"] {
-            border-left-color: var(--cat-music);
+        .game-card h3 {
+            margin: 0;
+            font-size: 1.08rem;
+            line-height: 1.2;
         }
 
-        .game-card[data-category="farsi"] {
-            border-left-color: var(--cat-farsi);
+        .game-card .sub {
+            margin: 0;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--muted);
+            line-height: 1.3;
         }
 
-        .game-card[data-category="art"] {
-            border-left-color: var(--cat-art);
+        .badge-beta {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 0.66rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #fff;
+            background: var(--tracing);
         }
+
+        .game-card[hidden] { display: none; }
+
+        /* per-category coloring */
+        .game-card[data-category="math"] .icon { background: linear-gradient(150deg, #5b9dff, var(--math)); }
+        .game-card[data-category="reading"] .icon { background: linear-gradient(150deg, #38d39a, var(--reading)); }
+        .game-card[data-category="tracing"] .icon { background: linear-gradient(150deg, #ffc24d, var(--tracing)); }
+        .game-card[data-category="music"] .icon { background: linear-gradient(150deg, #b18bff, var(--music)); }
+        .game-card[data-category="art"] .icon { background: linear-gradient(150deg, #ff8fc4, var(--art)); }
+        .game-card[data-category="farsi"] .icon { background: linear-gradient(150deg, #ff7a93, var(--farsi)); }
 
         .no-results {
             display: none;
-            grid-column: 1 / -1;
-            padding: 36px;
             text-align: center;
             color: var(--muted);
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 30px 0;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--music);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        @font-face {
+            font-family: "Koodak";
+            src: url("public/koodak.ttf");
+            font-display: swap;
+        }
+
+        @media (max-width: 520px) {
+            .game-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+            .icon { width: 62px; height: 62px; font-size: 2.1rem; }
         }
     </style>
   <!-- pwa:head -->
@@ -479,303 +353,273 @@
 </head>
 <body>
     <main class="page-shell">
-        <section class="hero">
-            <div class="hero-top">
-                <div class="eyebrow">Koochooloo Game Library</div>
+        <header class="hero">
+            <div class="logo">🎈</div>
+            <h1>Koochooloo</h1>
+            <p class="tagline">Tap a game and play! 🎮</p>
+            <div class="hero-tools">
+                <div class="search-wrap">
+                    <input type="text" id="game-search" placeholder="Find a game…" autocomplete="off">
+                </div>
                 <label class="beta-toggle" for="show-beta-games">
                     <input type="checkbox" id="show-beta-games">
-                    <span>Show beta games</span>
+                    <span>Beta games</span>
                 </label>
             </div>
-            <h1>Pick a game and start fast.</h1>
-            <p class="hero-copy">
-                This page is the front door for every playable game in the repository. The list is grouped by skill area so it is easier to choose something by topic instead of scanning one long wall of links.
-            </p>
-            <div class="hero-actions">
-                <a class="button button-primary" href="https://mohsen3.github.io/koochooloo/">Play the games</a>
-                <a class="button button-secondary" href="#categories">Browse by category</a>
-            </div>
-            <div class="hero-meta">
-                <div class="meta-card">
-                    <strong id="total-games-count">30</strong>
-                    <span>playable games</span>
-                </div>
-                <div class="meta-card">
-                    <strong>5</strong>
-                    <span>skill categories</span>
-                </div>
-                <div class="meta-card">
-                    <strong>Static</strong>
-                    <span>simple browser-friendly pages</span>
-                </div>
-            </div>
-            <div class="search-wrap">
-                <input type="text" id="game-search" placeholder="Search games by name or keyword…" autocomplete="off">
-            </div>
-            <nav class="jump-links" id="categories" aria-label="Game categories">
-                <a href="#math">Math & Numbers</a>
-                <a href="#reading">Reading & Speaking</a>
-                <a href="#tracing">Tracing & Handwriting</a>
-                <a href="#farsi">Farsi & Bilingual</a>
-                <a href="#music">Music & Play</a>
-                <a href="#art">Art & Creativity</a>
+            <nav class="chips" aria-label="Jump to category">
+                <a class="chip math" href="#math">🔢 Numbers</a>
+                <a class="chip reading" href="#reading">📚 Words</a>
+                <a class="chip tracing" href="#tracing">✏️ Tracing</a>
+                <a class="chip farsi" href="#farsi">🌍 Farsi</a>
+                <a class="chip music" href="#music">🎵 Music</a>
+                <a class="chip art" href="#art">🎨 Art</a>
             </nav>
-        </section>
+        </header>
+
+        <p class="no-results" id="no-results">No games found 🙈 Try another word.</p>
 
         <section class="section" id="math">
             <div class="section-header">
-                <div>
-                    <h2>Math & Numbers</h2>
-                    <p>Counting, comparisons, arithmetic fluency, tables, and pattern work.</p>
-                </div>
-                <div class="count-badge" data-count-target="math">14 games</div>
+                <div class="section-emoji">🔢</div>
+                <h2>Numbers &amp; Math</h2>
+                <div class="count-badge" data-count-target="math"></div>
             </div>
             <div class="game-grid">
                 <a class="game-card" data-category="math" href="counting-fruits.html">
-                    <div class="card-top"><div class="icon">🍎</div><h3>Counting Fruits</h3></div>
-                    <p>Count colorful fruit sets and build early number recognition.</p>
-                    <div class="card-footer"><span>Open game</span><span>Counting</span></div>
+                    <div class="icon">🍎</div>
+                    <h3>Count the Fruit</h3>
+                    <p class="sub">How many do you see?</p>
                 </a>
                 <a class="game-card" data-category="math" href="greater-than-less-than-game.html">
-                    <div class="card-top"><div class="icon">⚖️</div><h3>Greater Than / Less Than</h3></div>
-                    <p>Compare two values and practice bigger, smaller, and equal.</p>
-                    <div class="card-footer"><span>Open game</span><span>Comparison</span></div>
+                    <div class="icon">⚖️</div>
+                    <h3>Bigger or Smaller?</h3>
+                    <p class="sub">Compare the numbers</p>
                 </a>
                 <a class="game-card" data-category="math" href="math-addition-game.html">
-                    <div class="card-top"><div class="icon">➕</div><h3>Math Addition</h3></div>
-                    <p>Practice basic addition with visual dot support and quick feedback.</p>
-                    <div class="card-footer"><span>Open game</span><span>Addition</span></div>
+                    <div class="icon">➕</div>
+                    <h3>Add It Up</h3>
+                    <p class="sub">Simple adding</p>
                 </a>
                 <a class="game-card" data-category="math" href="math-addition-three-numbers.html">
-                    <div class="card-top"><div class="icon">🔺</div><h3>Addition: Three Numbers</h3></div>
-                    <p>Solve three-part addition problems with progressive difficulty.</p>
-                    <div class="card-footer"><span>Open game</span><span>Addition</span></div>
+                    <div class="icon">🔺</div>
+                    <h3>Add Three Numbers</h3>
+                    <p class="sub">A bigger challenge</p>
                 </a>
                 <a class="game-card" data-category="math" href="math-addition-level2.html">
-                    <div class="card-top"><div class="icon">🎯</div><h3>Addition Level 2</h3></div>
-                    <p>Drag digits into missing spots to complete addition equations.</p>
-                    <div class="card-footer"><span>Open game</span><span>Drag & drop</span></div>
+                    <div class="icon">🎯</div>
+                    <h3>Build the Sum</h3>
+                    <p class="sub">Drag the right digits</p>
                 </a>
                 <a class="game-card" data-category="math" href="addition-touch.html">
-                    <div class="card-top"><div class="icon">👆</div><h3>Addition Touch</h3></div>
-                    <p>Use touch-first number tiles to build the right addition answer.</p>
-                    <div class="card-footer"><span>Open game</span><span>Touch math</span></div>
+                    <div class="icon">👆</div>
+                    <h3>Tap to Add</h3>
+                    <p class="sub">Touch-friendly adding</p>
                 </a>
                 <a class="game-card" data-category="math" href="two-digit-addition.html">
-                    <div class="card-top"><div class="icon">🧮</div><h3>Two-Digit Addition</h3></div>
-                    <p>Practice vertical addition with carries in a paper-style layout.</p>
-                    <div class="card-footer"><span>Open game</span><span>Column math</span></div>
+                    <div class="icon">🧮</div>
+                    <h3>Two-Digit Adding</h3>
+                    <p class="sub">Adding with carries</p>
                 </a>
                 <a class="game-card" data-category="math" href="addition-table.html">
-                    <div class="card-top"><div class="icon">📊</div><h3>Addition Table</h3></div>
-                    <p>Fill whole addition tables and build repetition-based fluency.</p>
-                    <div class="card-footer"><span>Open game</span><span>Fluency</span></div>
+                    <div class="icon">📊</div>
+                    <h3>Addition Grid</h3>
+                    <p class="sub">Fill the whole table</p>
                 </a>
                 <a class="game-card" data-category="math" href="subtraction-table.html">
-                    <div class="card-top"><div class="icon">➖</div><h3>Subtraction Table</h3></div>
-                    <p>Work through subtraction sets with instant right-or-wrong feedback.</p>
-                    <div class="card-footer"><span>Open game</span><span>Subtraction</span></div>
+                    <div class="icon">➖</div>
+                    <h3>Take-Away Grid</h3>
+                    <p class="sub">Practice subtraction</p>
                 </a>
                 <a class="game-card" data-category="math" href="multiplication-table.html">
-                    <div class="card-top"><div class="icon">✖️</div><h3>Multiplication Table</h3></div>
-                    <p>Repeat multiplication tables in a simple structured practice format.</p>
-                    <div class="card-footer"><span>Open game</span><span>Multiplication</span></div>
+                    <div class="icon">✖️</div>
+                    <h3>Times Tables</h3>
+                    <p class="sub">Learn to multiply</p>
                 </a>
                 <a class="game-card" data-category="math" href="multiplication-touch.html">
-                    <div class="card-top"><div class="icon">🧲</div><h3>Multiplication Touch</h3></div>
-                    <p>Drag digit tiles into multiplication equations designed for tablets.</p>
-                    <div class="card-footer"><span>Open game</span><span>Touch math</span></div>
+                    <div class="icon">🧲</div>
+                    <h3>Tap to Multiply</h3>
+                    <p class="sub">Drag digit tiles</p>
                 </a>
                 <a class="game-card" data-category="math" href="skip-counting-game.html">
-                    <div class="card-top"><div class="icon">🔢</div><h3>Skip Counting</h3></div>
-                    <p>Count by 2s, 5s, 10s, and more with fill-in-the-blank sequences.</p>
-                    <div class="card-footer"><span>Open game</span><span>Patterns</span></div>
+                    <div class="icon">🐸</div>
+                    <h3>Skip Counting</h3>
+                    <p class="sub">Count by 2s, 5s, 10s</p>
                 </a>
                 <a class="game-card" data-category="math" href="number-sequence-puzzle-game.html">
-                    <div class="card-top"><div class="icon">🚂</div><h3>Number Sequence Puzzle</h3></div>
-                    <p>Complete ordered number patterns through drag-and-drop puzzle rounds.</p>
-                    <div class="card-footer"><span>Open game</span><span>Sequences</span></div>
+                    <div class="icon">🚂</div>
+                    <h3>Number Order</h3>
+                    <p class="sub">Put numbers in line</p>
                 </a>
                 <a class="game-card" data-category="math" href="math-match-game.html">
-                    <div class="card-top"><div class="icon">🔗</div><h3>Math Match</h3></div>
-                    <p>Connect equations to their answers across progressive levels, from simple addition to expression matching.</p>
-                    <div class="card-footer"><span>Open game</span><span>Matching</span></div>
+                    <div class="icon">🔗</div>
+                    <h3>Match the Answer</h3>
+                    <p class="sub">Link sums to answers</p>
                 </a>
             </div>
         </section>
 
         <section class="section" id="reading">
             <div class="section-header">
-                <div>
-                    <h2>Reading & Speaking</h2>
-                    <p>Typing, vocabulary, multi-choice questions, and simple speech practice.</p>
-                </div>
-                <div class="count-badge" data-count-target="reading">6 games</div>
+                <div class="section-emoji">📚</div>
+                <h2>Words &amp; Reading</h2>
+                <div class="count-badge" data-count-target="reading"></div>
             </div>
             <div class="game-grid">
                 <a class="game-card" data-category="reading" href="word-sorting-bubbles.html">
-                    <div class="card-top"><div class="icon">🫧</div><h3>Word Sorting Bubbles</h3></div>
-                    <p>Drag each word into the right category bubble. Correct words grow the bubble; wrong ones float back.</p>
-                    <div class="card-footer"><span>Open game</span><span>Categories</span></div>
+                    <div class="icon">🫧</div>
+                    <h3>Sort the Words</h3>
+                    <p class="sub">Drop into bubbles</p>
                 </a>
                 <a class="game-card" data-category="reading" href="opposite-words-match.html">
-                    <div class="card-top"><div class="icon">↔️</div><h3>Opposite Words Match</h3></div>
-                    <p>Connect words to their opposites with a fun drag-to-match mechanic across progressive levels.</p>
-                    <div class="card-footer"><span>Open game</span><span>Matching</span></div>
+                    <div class="icon">↔️</div>
+                    <h3>Find the Opposite</h3>
+                    <p class="sub">Match opposite words</p>
                 </a>
                 <a class="game-card" data-category="reading" href="word-explorer.html">
-                    <div class="card-top"><div class="icon">🚀</div><h3>Word Explorer</h3></div>
-                    <p>Drag missing letters into place to complete English words. Difficulty grows as more letters get hidden.</p>
-                    <div class="card-footer"><span>Open game</span><span>Drag & drop</span></div>
+                    <div class="icon">🚀</div>
+                    <h3>Missing Letters</h3>
+                    <p class="sub">Complete the word</p>
                 </a>
                 <a class="game-card" data-category="reading" href="english-words.html">
-                    <div class="card-top"><div class="icon">⌨️</div><h3>English Words</h3></div>
-                    <p>Type common English words and reinforce spelling with pronunciation.</p>
-                    <div class="card-footer"><span>Open game</span><span>Typing</span></div>
+                    <div class="icon">⌨️</div>
+                    <h3>Type the Word</h3>
+                    <p class="sub">Spell as you type</p>
                 </a>
                 <a class="game-card" data-category="reading" href="toddler-reading-game.html">
-                    <div class="card-top"><div class="icon">🎤</div><h3>Toddler Reading Game</h3></div>
-                    <p>Practice saying words and short phrases with speech recognition.</p>
-                    <div class="card-footer"><span>Open game</span><span>Speaking</span></div>
+                    <div class="icon">🎤</div>
+                    <h3>Say the Word</h3>
+                    <p class="sub">Speak out loud</p>
                 </a>
                 <a class="game-card" data-category="reading" href="conversation-game.html">
-                    <div class="card-top"><div class="icon">💬</div><h3>Conversation Game</h3></div>
-                    <p>Fill in simple conversation prompts built around everyday language.</p>
-                    <div class="card-footer"><span>Open game</span><span>Language</span></div>
+                    <div class="icon">💬</div>
+                    <h3>Let's Talk</h3>
+                    <p class="sub">Everyday phrases</p>
                 </a>
                 <a class="game-card" data-category="reading" href="story-puzzle-game.html">
-                    <div class="card-top"><div class="icon">📖</div><h3>Story Puzzle</h3></div>
-                    <p>Place missing words into short stories and read them back in context.</p>
-                    <div class="card-footer"><span>Open game</span><span>Reading</span></div>
+                    <div class="icon">📖</div>
+                    <h3>Finish the Story</h3>
+                    <p class="sub">Add the missing words</p>
                 </a>
                 <a class="game-card" data-category="reading" href="multi-choice-game/index.html">
-                    <div class="card-top"><div class="icon">🎲</div><h3>Kiddo Quiz</h3></div>
-                    <p>Answer quick mixed-skill questions with a simple multi-choice format.</p>
-                    <div class="card-footer"><span>Open game</span><span>Mixed skills</span></div>
+                    <div class="icon">🎲</div>
+                    <h3>Quiz Time</h3>
+                    <p class="sub">Pick the right answer</p>
                 </a>
             </div>
         </section>
 
         <section class="section" id="tracing">
             <div class="section-header">
-                <div>
-                    <h2>Tracing & Handwriting</h2>
-                    <p>Shape, letter, and handwriting practice built for touch and stylus input.</p>
-                </div>
-                <div class="count-badge" data-count-target="tracing">1 game</div>
+                <div class="section-emoji">✏️</div>
+                <h2>Tracing &amp; Writing</h2>
+                <div class="count-badge" data-count-target="tracing"></div>
             </div>
             <div class="game-grid">
-                <a class="game-card" data-category="tracing" data-beta="true" href="tracing-game.html" hidden>
-                    <div class="card-top"><div class="icon">✏️</div><h3>Tracing Game</h3></div>
-                    <div class="card-label">Beta</div>
-                    <p>Trace shapes, letters, and simple words with guided visual support.</p>
-                    <div class="card-footer"><span>Open game</span><span>Fine motor</span></div>
-                </a>
                 <a class="game-card" data-category="tracing" href="letter-tracing-game.html">
-                    <div class="card-top"><div class="icon">🔤</div><h3>Letter Tracing</h3></div>
-                    <p>Work through English letters and numbers in a structured tracing grid.</p>
-                    <div class="card-footer"><span>Open game</span><span>Alphabet</span></div>
+                    <div class="icon">🔤</div>
+                    <h3>Trace the ABCs</h3>
+                    <p class="sub">Letters and numbers</p>
                 </a>
-            </div>
-        </section>
-
-        <section class="section" id="music">
-            <div class="section-header">
-                <div>
-                    <h2>Music & Play</h2>
-                    <p>Interactive music games that teach melody, rhythm, and song recognition.</p>
-                </div>
-                <div class="count-badge" data-count-target="music">1 game</div>
-            </div>
-            <div class="game-grid">
-                <a class="game-card" data-category="music" href="piano-game.html">
-                    <div class="card-top"><div class="icon">🎹</div><h3>Piano</h3></div>
-                    <p>Play a realistic piano keyboard with song guides for Twinkle Twinkle, ABC Song, and Wheels on the Bus.</p>
-                    <div class="card-footer"><span>Open game</span><span>Music</span></div>
-                </a>
-                <a class="game-card" data-category="music" href="two-player-games.html">
-                    <div class="card-top"><div class="icon">🆚</div><h3>Two Player Games</h3></div>
-                    <p>Take-turns games for a kid and a grown-up. Tic-tac-toe with undo/redo, turn indicator, and a celebration when you win.</p>
-                    <div class="card-footer"><span>Open game</span><span>Two players</span></div>
-                </a>
-            </div>
-        </section>
-
-        <section class="section" id="art">
-            <div class="section-header">
-                <div>
-                    <h2>Art & Creativity</h2>
-                    <p>Open-ended creative play for drawing and painting on touch and desktop.</p>
-                </div>
-                <div class="count-badge" data-count-target="art">1 game</div>
-            </div>
-            <div class="game-grid">
-                <a class="game-card" data-category="art" href="paint.html">
-                    <div class="card-top"><div class="icon">🎨</div><h3>Paint</h3></div>
-                    <p>A simple full-screen paint canvas with a pretty brush, a few colors, and three sizes. Two fingers pan the canvas.</p>
-                    <div class="card-footer"><span>Open game</span><span>Creative</span></div>
+                <a class="game-card" data-category="tracing" data-beta="true" href="tracing-game.html" hidden>
+                    <div class="badge-beta">Beta</div>
+                    <div class="icon">✏️</div>
+                    <h3>Trace Shapes</h3>
+                    <p class="sub">Shapes and words</p>
                 </a>
             </div>
         </section>
 
         <section class="section" id="farsi">
             <div class="section-header">
-                <div>
-                    <h2>Farsi & Bilingual</h2>
-                    <p>Persian typing and tracing games for bilingual reading and writing practice.</p>
-                </div>
-                <div class="count-badge" data-count-target="farsi">3 games</div>
+                <div class="section-emoji">🌍</div>
+                <h2>Farsi &amp; Two Languages</h2>
+                <div class="count-badge" data-count-target="farsi"></div>
             </div>
             <div class="game-grid">
                 <a class="game-card" data-category="farsi" href="farsi-words.html">
-                    <div class="card-top"><div class="icon">فارسی</div><h3>Farsi Words</h3></div>
-                    <p>Type toddler-friendly Persian words with progressive levels.</p>
-                    <div class="card-footer"><span>Open game</span><span>Typing</span></div>
+                    <div class="icon farsi-text">ف</div>
+                    <h3>Farsi Words</h3>
+                    <p class="sub">Type Persian words</p>
                 </a>
                 <a class="game-card" data-category="farsi" href="farsi-word-tracing.html">
-                    <div class="card-top"><div class="icon">✍️</div><h3>Farsi Word Tracing</h3></div>
-                    <p>Trace Persian words on canvas with stroke guides and over 130 vocabulary words.</p>
-                    <div class="card-footer"><span>Open game</span><span>Tracing</span></div>
+                    <div class="icon">✍️</div>
+                    <h3>Trace Farsi Words</h3>
+                    <p class="sub">Follow the strokes</p>
                 </a>
                 <a class="game-card" data-category="farsi" href="farsi-word-puzzle.html">
-                    <div class="card-top"><div class="icon">🧩</div><h3>Farsi Word Puzzle</h3></div>
-                    <p>Drag scattered Persian letters into their correct word positions with contextual letter shapes.</p>
-                    <div class="card-footer"><span>Open game</span><span>Drag & drop</span></div>
+                    <div class="icon">🧩</div>
+                    <h3>Farsi Word Puzzle</h3>
+                    <p class="sub">Build words from letters</p>
                 </a>
                 <a class="game-card" data-category="farsi" href="bilingual-word-puzzle.html">
-                    <div class="card-top"><div class="icon">🔤</div><h3>Bilingual Word Puzzle</h3></div>
-                    <p>Complete both the Persian and English spelling of each word by dragging letter tiles into place.</p>
-                    <div class="card-footer"><span>Open game</span><span>Drag & drop</span></div>
+                    <div class="icon">🔤</div>
+                    <h3>Two-Language Puzzle</h3>
+                    <p class="sub">Farsi and English</p>
                 </a>
                 <a class="game-card" data-category="farsi" href="farsi-english-match.html">
-                    <div class="card-top"><div class="icon">🌐</div><h3>Farsi English Match</h3></div>
-                    <p>Connect English words to their Persian translations with colorful dashed traces and progressive levels.</p>
-                    <div class="card-footer"><span>Open game</span><span>Matching</span></div>
+                    <div class="icon">🌐</div>
+                    <h3>Farsi ↔ English</h3>
+                    <p class="sub">Match the translation</p>
                 </a>
                 <a class="game-card" data-category="farsi" href="farsi-memory-game.html">
-                    <div class="card-top"><div class="icon">🧠</div><h3>Farsi Memory Game</h3></div>
-                    <p>Flip cards to find matching Farsi-English pairs. A classic memory game for vocabulary building.</p>
-                    <div class="card-footer"><span>Open game</span><span>Memory</span></div>
+                    <div class="icon">🧠</div>
+                    <h3>Farsi Memory</h3>
+                    <p class="sub">Find the pairs</p>
                 </a>
                 <a class="game-card" data-category="farsi" href="world-map-game.html">
-                    <div class="card-top"><div class="icon">🌍</div><h3>World Map Game</h3></div>
-                    <p>Find countries on the world map by clicking their Persian names. From big to small!</p>
-                    <div class="card-footer"><span>Open game</span><span>Find & click</span></div>
+                    <div class="icon">🗺️</div>
+                    <h3>Find the Country</h3>
+                    <p class="sub">Persian world map</p>
+                </a>
+            </div>
+        </section>
+
+        <section class="section" id="music">
+            <div class="section-header">
+                <div class="section-emoji">🎵</div>
+                <h2>Music &amp; Play</h2>
+                <div class="count-badge" data-count-target="music"></div>
+            </div>
+            <div class="game-grid">
+                <a class="game-card" data-category="music" href="piano-game.html">
+                    <div class="icon">🎹</div>
+                    <h3>Play Piano</h3>
+                    <p class="sub">Follow the song guides</p>
+                </a>
+                <a class="game-card" data-category="music" href="two-player-games.html">
+                    <div class="icon">🆚</div>
+                    <h3>Play Together</h3>
+                    <p class="sub">Two-player games</p>
+                </a>
+            </div>
+        </section>
+
+        <section class="section" id="art">
+            <div class="section-header">
+                <div class="section-emoji">🎨</div>
+                <h2>Art &amp; Drawing</h2>
+                <div class="count-badge" data-count-target="art"></div>
+            </div>
+            <div class="game-grid">
+                <a class="game-card" data-category="art" href="paint.html">
+                    <div class="icon">🖌️</div>
+                    <h3>Paint &amp; Draw</h3>
+                    <p class="sub">Make something pretty</p>
                 </a>
             </div>
         </section>
 
         <footer class="footer">
-            <span>All playable HTML entries currently in the repo are listed here.</span>
-            <a href="https://github.com/mohsen3/koochooloo" target="_blank" rel="noreferrer">View source on GitHub</a>
+            Made with ❤️ for little learners · <a href="https://github.com/mohsen3/koochooloo" target="_blank" rel="noreferrer">GitHub</a>
         </footer>
     </main>
     <script>
         const betaToggle = document.getElementById("show-beta-games");
-        const totalGamesCount = document.getElementById("total-games-count");
         const gameCards = Array.from(document.querySelectorAll(".game-card"));
         const countBadges = Array.from(document.querySelectorAll("[data-count-target]"));
         const searchInput = document.getElementById("game-search");
+        const noResults = document.getElementById("no-results");
+        const sections = Array.from(document.querySelectorAll(".section"));
         const betaPreferenceKey = "koochooloo-show-beta-games";
 
         function getSearchQuery() {
@@ -785,9 +629,8 @@
         function matchesSearch(card, query) {
             if (!query) return true;
             const name = (card.querySelector("h3") || {}).textContent || "";
-            const desc = (card.querySelector("p") || {}).textContent || "";
-            const tag = (card.querySelector(".card-footer span:last-child") || {}).textContent || "";
-            return name.toLowerCase().includes(query) || desc.toLowerCase().includes(query) || tag.toLowerCase().includes(query);
+            const desc = (card.querySelector(".sub") || {}).textContent || "";
+            return name.toLowerCase().includes(query) || desc.toLowerCase().includes(query);
         }
 
         function updateVisibleGames(showBeta) {
@@ -800,12 +643,18 @@
                 card.hidden = hiddenByBeta || hiddenBySearch;
             });
 
-            totalGamesCount.textContent = String(gameCards.filter((card) => !card.hidden).length);
+            const totalVisible = gameCards.filter((card) => !card.hidden).length;
+            noResults.style.display = totalVisible === 0 ? "block" : "none";
 
             countBadges.forEach((badge) => {
                 const category = badge.dataset.countTarget;
                 const visibleCount = gameCards.filter((card) => card.dataset.category === category && !card.hidden).length;
                 badge.textContent = `${visibleCount} ${visibleCount === 1 ? "game" : "games"}`;
+            });
+
+            sections.forEach((section) => {
+                const hasVisible = section.querySelectorAll(".game-card:not([hidden])").length > 0;
+                section.style.display = hasVisible ? "" : "none";
             });
         }
 
