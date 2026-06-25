@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Word Sorting Bubbles</title>
+    <style>
+        :root {
+            --bg: #f4efe6;
+            --ink: #18222f;
+            --muted: #566273;
+            --panel: #fffaf2;
+            --line: rgba(24, 34, 47, 0.12);
+            --warm: #ea7a3d;
+            --warm-deep: #c85b1f;
+            --green: #2f8f62;
+            --shadow: 0 18px 50px rgba(24, 34, 47, 0.16);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
+
+        body {
+            font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(247, 216, 168, 0.8), transparent 34%),
+                radial-gradient(circle at top right, rgba(45, 111, 147, 0.16), transparent 28%),
+                linear-gradient(180deg, #f8f1e5 0%, #f2ebe1 50%, #ece4d8 100%);
+            touch-action: none;
+        }
+
+        .app {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ---- Top bar ---- */
+        .topbar {
+            flex: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            min-height: 60px;
+        }
+
+        .title {
+            font-size: clamp(1rem, 2.4vw, 1.4rem);
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            color: var(--warm-deep);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title .dot { font-size: 1.2em; }
+
+        .spacer { flex: 1; }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            font-weight: 700;
+            font-size: clamp(0.8rem, 1.8vw, 1rem);
+            color: var(--muted);
+            box-shadow: 0 6px 16px rgba(24, 34, 47, 0.07);
+        }
+
+        .pill strong { color: var(--ink); }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+        }
+
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            font-size: 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 16px rgba(24, 34, 47, 0.07);
+            transition: transform 0.12s ease, background 0.12s ease;
+        }
+
+        .icon-btn:active { transform: scale(0.92); }
+
+        .next-btn {
+            padding: 10px 26px;
+            border-radius: 999px;
+            font-size: clamp(0.95rem, 2vw, 1.2rem);
+            font-weight: 800;
+            color: #fff;
+            background: linear-gradient(135deg, #c9c4ba, #b4afa5);
+            box-shadow: 0 8px 20px rgba(24, 34, 47, 0.12);
+            opacity: 0.7;
+            transition: transform 0.14s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+            pointer-events: none;
+        }
+
+        .next-btn.ready {
+            background: linear-gradient(135deg, var(--green), #1f6f49);
+            opacity: 1;
+            pointer-events: auto;
+            box-shadow: 0 10px 26px rgba(47, 143, 98, 0.4);
+            animation: nextGlow 1.4s ease-in-out infinite;
+        }
+
+        .next-btn.ready:active { transform: scale(0.95); }
+
+        @keyframes nextGlow {
+            0%, 100% { box-shadow: 0 10px 26px rgba(47, 143, 98, 0.35); }
+            50% { box-shadow: 0 14px 34px rgba(47, 143, 98, 0.6); }
+        }
+
+        /* ---- Stage ---- */
+        .stage {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            transform: translate(-50%, -50%);
+            transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 3px dashed var(--bub-edge);
+            background: var(--bub-fill);
+            box-shadow: inset 0 0 40px var(--bub-glow), 0 10px 30px rgba(24, 34, 47, 0.1);
+            padding: 4% 6% 0;
+            text-align: center;
+        }
+
+        .bubble.hot {
+            border-style: solid;
+            box-shadow: inset 0 0 50px var(--bub-glow), 0 0 0 6px var(--bub-ring), 0 12px 34px rgba(24, 34, 47, 0.16);
+        }
+
+        .bubble-pop { animation: bubblePop 0.4s ease; }
+
+        @keyframes bubblePop {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            45% { transform: translate(-50%, -50%) scale(1.08); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .bubble-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 800;
+            color: var(--bub-text);
+            font-size: clamp(0.85rem, 2.1vw, 1.25rem);
+            margin-top: 6%;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .bubble-label .emoji { font-size: 1.3em; }
+
+        .bubble-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 5px;
+            justify-content: center;
+            align-content: flex-start;
+            margin-top: 6px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .solved-word {
+            background: rgba(255, 255, 255, 0.82);
+            color: var(--bub-text);
+            border-radius: 999px;
+            padding: 2px 9px;
+            font-size: clamp(0.6rem, 1.5vw, 0.85rem);
+            font-weight: 700;
+            animation: dropIn 0.35s ease;
+        }
+
+        @keyframes dropIn {
+            from { transform: scale(0.2); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* ---- Word chips ---- */
+        .chip {
+            position: absolute;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 18px;
+            border-radius: 14px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            font-weight: 800;
+            font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+            box-shadow: 0 8px 18px rgba(24, 34, 47, 0.16);
+            white-space: nowrap;
+            touch-action: none;
+            cursor: grab;
+            z-index: 5;
+            will-change: transform, left, top;
+        }
+
+        .chip.dragging {
+            cursor: grabbing;
+            z-index: 50;
+            box-shadow: 0 18px 36px rgba(24, 34, 47, 0.28);
+            transform: scale(1.08);
+        }
+
+        .chip.returning {
+            transition: left 0.32s cubic-bezier(0.34, 1.3, 0.64, 1),
+                        top 0.32s cubic-bezier(0.34, 1.3, 0.64, 1);
+        }
+
+        .chip.wrong { animation: shake 0.34s ease; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-7px) rotate(-3deg); }
+            40% { transform: translateX(7px) rotate(3deg); }
+            60% { transform: translateX(-5px) rotate(-2deg); }
+            80% { transform: translateX(5px) rotate(2deg); }
+        }
+
+        .chip.absorbing {
+            transition: left 0.3s ease-in, top 0.3s ease-in, transform 0.3s ease-in, opacity 0.3s ease-in;
+            opacity: 0;
+            z-index: 60;
+        }
+
+        /* ---- Hint line ---- */
+        .hint {
+            position: absolute;
+            left: 50%;
+            top: 8px;
+            transform: translateX(-50%);
+            color: var(--muted);
+            font-weight: 600;
+            font-size: clamp(0.75rem, 1.7vw, 0.95rem);
+            background: rgba(255, 250, 242, 0.7);
+            padding: 4px 14px;
+            border-radius: 999px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .hint.show { opacity: 1; }
+
+        /* ---- Confetti / celebration ---- */
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            top: -20px;
+            pointer-events: none;
+            z-index: 80;
+            border-radius: 2px;
+        }
+
+        .toast {
+            position: absolute;
+            left: 50%;
+            top: 38%;
+            transform: translate(-50%, -50%) scale(0.4);
+            background: var(--green);
+            color: #fff;
+            font-weight: 800;
+            font-size: clamp(1.4rem, 4vw, 2.4rem);
+            padding: 14px 40px;
+            border-radius: 999px;
+            box-shadow: 0 14px 40px rgba(47, 143, 98, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 90;
+        }
+
+        .toast.show { animation: toastPop 1.2s ease forwards; }
+
+        @keyframes toastPop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -60%) scale(0.95); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="topbar">
+            <div class="title"><span class="dot">🫧</span><span>Word Sorting Bubbles</span></div>
+            <div class="spacer"></div>
+            <div class="pill">Level <strong id="levelNum">1</strong></div>
+            <button class="icon-btn" id="muteBtn" title="Sound on/off">🔊</button>
+            <button class="icon-btn" id="resetBtn" title="Start over">↻</button>
+            <button class="next-btn" id="nextBtn">Next →</button>
+        </div>
+        <div class="stage" id="stage">
+            <div class="hint" id="hint">Drag each word into its bubble</div>
+            <div class="toast" id="toast">Great! 🎉</div>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        "use strict";
+
+        // ---------- Word dictionary ----------
+        const CATEGORIES = [
+            { name: "Animals", emoji: "🐾", words: ["dog", "cat", "lion", "tiger", "bear", "horse", "rabbit", "monkey", "elephant", "zebra", "fox", "deer", "wolf", "cow", "pig", "sheep", "goat"] },
+            { name: "Fruits", emoji: "🍓", words: ["apple", "banana", "grape", "mango", "peach", "cherry", "lemon", "melon", "pear", "kiwi", "plum", "berry", "fig", "coconut"] },
+            { name: "Vehicles", emoji: "🚗", words: ["car", "bus", "truck", "train", "plane", "boat", "bike", "ship", "van", "jeep", "taxi", "tram", "scooter", "rocket"] },
+            { name: "Vegetables", emoji: "🥕", words: ["carrot", "potato", "onion", "pea", "corn", "bean", "tomato", "pepper", "celery", "spinach", "cabbage", "beet", "radish"] },
+            { name: "Colors", emoji: "🎨", words: ["red", "blue", "yellow", "pink", "purple", "brown", "black", "white", "gray", "gold", "violet", "teal"] },
+            { name: "Body Parts", emoji: "🖐️", words: ["head", "hand", "foot", "arm", "leg", "nose", "ear", "eye", "mouth", "knee", "hair", "chin", "neck", "toe"] },
+            { name: "Clothes", emoji: "👕", words: ["shirt", "pants", "hat", "sock", "shoe", "coat", "dress", "skirt", "glove", "scarf", "belt", "jacket"] },
+            { name: "Birds", emoji: "🐦", words: ["robin", "eagle", "owl", "duck", "swan", "crow", "dove", "hawk", "parrot", "penguin", "sparrow", "stork"] },
+            { name: "Sea Animals", emoji: "🐠", words: ["fish", "shark", "whale", "crab", "octopus", "seal", "dolphin", "jellyfish", "starfish", "squid", "turtle", "shrimp"] },
+            { name: "Insects", emoji: "🐞", words: ["ant", "bee", "fly", "moth", "beetle", "wasp", "cricket", "ladybug", "butterfly", "dragonfly"] },
+            { name: "Food", emoji: "🍞", words: ["bread", "rice", "cheese", "egg", "soup", "pasta", "pizza", "cake", "cookie", "butter", "jam", "honey"] },
+            { name: "Drinks", emoji: "🥤", words: ["water", "milk", "juice", "tea", "coffee", "soda", "cocoa", "lemonade", "smoothie", "shake"] },
+            { name: "Furniture", emoji: "🛋️", words: ["chair", "table", "bed", "sofa", "desk", "shelf", "stool", "bench", "dresser", "cabinet"] },
+            { name: "Sports", emoji: "⚽", words: ["soccer", "tennis", "hockey", "golf", "boxing", "skiing", "rugby", "baseball", "running", "diving"] },
+            { name: "Instruments", emoji: "🎵", words: ["piano", "guitar", "drum", "violin", "flute", "trumpet", "harp", "cello", "banjo", "tuba"] },
+            { name: "Tools", emoji: "🔧", words: ["hammer", "saw", "wrench", "drill", "nail", "screw", "pliers", "ruler", "shovel", "ladder"] },
+            { name: "Weather", emoji: "☀️", words: ["rain", "snow", "wind", "sun", "cloud", "storm", "fog", "hail", "thunder", "rainbow"] },
+            { name: "Jobs", emoji: "👩‍⚕️", words: ["doctor", "teacher", "pilot", "chef", "farmer", "nurse", "baker", "artist", "singer", "writer"] },
+            { name: "Toys", emoji: "🧸", words: ["ball", "doll", "kite", "blocks", "puzzle", "robot", "top", "marble", "yoyo", "teddy"] },
+            { name: "Shapes", emoji: "🔷", words: ["circle", "square", "triangle", "star", "heart", "oval", "diamond", "cube", "cone", "arrow"] }
+        ];
+
+        const PALETTE = [
+            { fill: "rgba(234, 122, 61, 0.16)", edge: "#ea7a3d", glow: "rgba(234, 122, 61, 0.22)", ring: "rgba(234, 122, 61, 0.35)", text: "#b34f15" },
+            { fill: "rgba(45, 111, 147, 0.15)", edge: "#2d6f93", glow: "rgba(45, 111, 147, 0.2)", ring: "rgba(45, 111, 147, 0.32)", text: "#1f5273" },
+            { fill: "rgba(47, 143, 98, 0.15)", edge: "#2f8f62", glow: "rgba(47, 143, 98, 0.2)", ring: "rgba(47, 143, 98, 0.32)", text: "#1f6f49" },
+            { fill: "rgba(123, 94, 167, 0.16)", edge: "#7b5ea7", glow: "rgba(123, 94, 167, 0.22)", ring: "rgba(123, 94, 167, 0.34)", text: "#5d3f87" },
+            { fill: "rgba(212, 82, 110, 0.15)", edge: "#d4526e", glow: "rgba(212, 82, 110, 0.2)", ring: "rgba(212, 82, 110, 0.32)", text: "#ad3050" }
+        ];
+
+        const STORE_KEY = "word-sorting-bubbles-level";
+
+        // ---------- State ----------
+        const stage = document.getElementById("stage");
+        const hint = document.getElementById("hint");
+        const toast = document.getElementById("toast");
+        const nextBtn = document.getElementById("nextBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const muteBtn = document.getElementById("muteBtn");
+        const levelNum = document.getElementById("levelNum");
+
+        let level = 1;
+        let bubbles = [];      // { el, wordsEl, cat, key, center:{x,y}, baseD, step, solved }
+        let chips = [];        // active loose chips
+        let remaining = 0;
+        let muted = false;
+
+        // ---------- Helpers ----------
+        function shuffle(a) {
+            const r = a.slice();
+            for (let i = r.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [r[i], r[j]] = [r[j], r[i]];
+            }
+            return r;
+        }
+        const sample = (a, n) => shuffle(a).slice(0, n);
+        const rand = (lo, hi) => lo + Math.random() * (hi - lo);
+
+        function roundConfig() {
+            let cats = 2;
+            if (level >= 15) cats = 4;
+            else if (level >= 10) cats = 3;
+
+            let per;
+            if (cats === 2) per = level <= 2 ? 3 : level <= 4 ? 4 : 5;
+            else if (cats === 3) per = level <= 12 ? 3 : 4;
+            else per = 3;
+
+            return { cats, per };
+        }
+
+        function gridCenters(count, W, H, landscape) {
+            let rows, cols;
+            if (count <= 2) { rows = landscape ? 1 : 2; cols = landscape ? 2 : 1; }
+            else if (count === 3) { rows = landscape ? 1 : 3; cols = landscape ? 3 : 1; }
+            else { rows = 2; cols = 2; }
+
+            let insetX, insetY;
+            if (rows > 1 && cols > 1) { insetX = 0.26; insetY = 0.24; }
+            else { insetX = cols > 1 ? 0.16 : 0.5; insetY = rows > 1 ? 0.16 : 0.5; }
+
+            const centers = [];
+            for (let i = 0; i < count; i++) {
+                const r = Math.floor(i / cols);
+                const c = i % cols;
+                const fx = cols === 1 ? 0.5 : insetX + (c / (cols - 1)) * (1 - 2 * insetX);
+                const fy = rows === 1 ? 0.52 : insetY + (r / (rows - 1)) * (1 - 2 * insetY);
+                centers.push({ x: W * fx, y: H * fy });
+            }
+            return centers;
+        }
+
+        // ---------- Sound ----------
+        let audioCtx = null;
+        function beep(freqs, dur, type) {
+            if (muted) return;
+            try {
+                audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                const now = audioCtx.currentTime;
+                freqs.forEach((f, i) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = type || "sine";
+                    o.frequency.value = f;
+                    const t = now + i * 0.07;
+                    g.gain.setValueAtTime(0.0001, t);
+                    g.gain.exponentialRampToValueAtTime(0.22, t + 0.02);
+                    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                    o.connect(g).connect(audioCtx.destination);
+                    o.start(t);
+                    o.stop(t + dur + 0.02);
+                });
+            } catch (e) { /* ignore */ }
+        }
+        const goodSound = () => beep([660, 880], 0.16, "triangle");
+        const winSound = () => beep([523, 659, 784, 1047], 0.22, "triangle");
+        const nopeSound = () => beep([180, 130], 0.16, "sine");
+
+        // ---------- Build a round ----------
+        function buildRound() {
+            // clear stage children except hint & toast
+            chips.forEach(c => c.el.remove());
+            bubbles.forEach(b => b.el.remove());
+            chips = [];
+            bubbles = [];
+
+            levelNum.textContent = level;
+            nextBtn.classList.remove("ready");
+
+            const rect = stage.getBoundingClientRect();
+            const W = rect.width, H = rect.height;
+            const unit = Math.min(W, H);
+            const landscape = W >= H * 1.05;
+
+            // pick non-overlapping categories (2, 3, or 4 depending on level)
+            const cfg = roundConfig();
+            const count = cfg.cats;
+            const n = cfg.per;
+            const picked = sample(CATEGORIES, count);
+
+            const sizeFrac = count === 2 ? 0.24 : count === 3 ? 0.20 : 0.18;
+            const stepFrac = count === 2 ? 0.03 : count === 3 ? 0.022 : 0.018;
+            const baseD = unit * sizeFrac;
+            const step = unit * stepFrac;
+            const maxR = (baseD + n * step) / 2;
+
+            const colors = sample(PALETTE, count);
+            const centers = gridCenters(count, W, H, landscape);
+
+            const roundChips = [];
+
+            picked.forEach((cat, idx) => {
+                const others = new Set();
+                picked.forEach((c2, j) => {
+                    if (j !== idx) c2.words.forEach(w => others.add(w));
+                });
+                const usable = cat.words.filter(w => !others.has(w));
+                const words = sample(usable, Math.min(n, usable.length));
+
+                const b = makeBubble(cat, idx, colors[idx], centers[idx], baseD, step);
+                bubbles.push(b);
+
+                words.forEach(w => roundChips.push({ word: w, bubbleIndex: idx }));
+            });
+
+            remaining = roundChips.length;
+
+            // create + scatter chips
+            const exclusion = bubbles.map(b => ({ x: b.center.x, y: b.center.y, r: maxR + unit * 0.04 }));
+            const placed = [];
+            shuffle(roundChips).forEach(item => {
+                const chip = makeChip(item);
+                stage.appendChild(chip.el);
+                const cw = chip.el.offsetWidth, ch = chip.el.offsetHeight;
+                const pos = findSpot(W, H, cw, ch, exclusion, placed);
+                chip.w = cw; chip.h = ch;
+                chip.ox = pos.x; chip.oy = pos.y;
+                placeChip(chip, pos.x, pos.y);
+                placed.push({ x: pos.x, y: pos.y, w: cw, h: ch });
+                chips.push(chip);
+            });
+
+            hint.classList.add("show");
+            setTimeout(() => hint.classList.remove("show"), 2600);
+        }
+
+        function makeBubble(cat, idx, color, center, baseD, step) {
+            const el = document.createElement("div");
+            el.className = "bubble";
+            el.style.setProperty("--bub-fill", color.fill);
+            el.style.setProperty("--bub-edge", color.edge);
+            el.style.setProperty("--bub-glow", color.glow);
+            el.style.setProperty("--bub-ring", color.ring);
+            el.style.setProperty("--bub-text", color.text);
+            el.style.left = center.x + "px";
+            el.style.top = center.y + "px";
+            el.style.width = baseD + "px";
+            el.style.height = baseD + "px";
+
+            const label = document.createElement("div");
+            label.className = "bubble-label";
+            label.innerHTML = '<span class="emoji">' + cat.emoji + '</span><span>' + cat.name + '</span>';
+            const wordsEl = document.createElement("div");
+            wordsEl.className = "bubble-words";
+            el.appendChild(label);
+            el.appendChild(wordsEl);
+            stage.appendChild(el);
+
+            return { el, wordsEl, cat, idx, center, baseD, step, solved: 0 };
+        }
+
+        function makeChip(item) {
+            const el = document.createElement("div");
+            el.className = "chip";
+            el.textContent = item.word;
+            const chip = { el, word: item.word, bubbleIndex: item.bubbleIndex };
+            attachDrag(chip);
+            return chip;
+        }
+
+        function placeChip(chip, x, y) {
+            chip.el.style.left = x + "px";
+            chip.el.style.top = y + "px";
+        }
+
+        function findSpot(W, H, cw, ch, exclusion, placed) {
+            const top = 6, padX = 6;
+            const minX = padX, maxX = W - cw - padX;
+            const minY = top, maxY = H - ch - 6;
+            let best = null, bestScore = -Infinity;
+            for (let tries = 0; tries < 260; tries++) {
+                const x = rand(minX, maxX);
+                const y = rand(minY, maxY);
+                const cx = x + cw / 2, cy = y + ch / 2;
+                const chipR = Math.max(cw, ch) / 2;
+                let ok = true, score = Infinity;
+                for (const ex of exclusion) {
+                    const d = Math.hypot(cx - ex.x, cy - ex.y) - ex.r - chipR;
+                    if (d < 0) { ok = false; break; }
+                    score = Math.min(score, d);
+                }
+                if (!ok) continue;
+                for (const p of placed) {
+                    const ox = Math.max(0, Math.min(x + cw, p.x + p.w) - Math.max(x, p.x));
+                    const oy = Math.max(0, Math.min(y + ch, p.y + p.h) - Math.max(y, p.y));
+                    if (ox > 0 && oy > 0) { ok = false; break; }
+                    const gap = Math.hypot(cx - (p.x + p.w / 2), cy - (p.y + p.h / 2));
+                    score = Math.min(score, gap);
+                }
+                if (!ok) continue;
+                return { x, y };
+            }
+            // fallback: relax overlap, just avoid bubbles
+            for (let tries = 0; tries < 260; tries++) {
+                const x = rand(minX, maxX), y = rand(minY, maxY);
+                const cx = x + cw / 2, cy = y + ch / 2;
+                const chipR = Math.max(cw, ch) / 2;
+                let ok = true;
+                for (const ex of exclusion) {
+                    if (Math.hypot(cx - ex.x, cy - ex.y) - ex.r - chipR < 0) { ok = false; break; }
+                }
+                if (ok) return { x, y };
+            }
+            return { x: rand(minX, maxX), y: rand(minY, maxY) };
+        }
+
+        // ---------- Dragging ----------
+        function attachDrag(chip) {
+            const el = chip.el;
+            let dragging = false, offX = 0, offY = 0;
+
+            el.addEventListener("pointerdown", e => {
+                if (chip.done) return;
+                e.preventDefault();
+                dragging = true;
+                el.setPointerCapture(e.pointerId);
+                el.classList.remove("returning", "wrong");
+                el.classList.add("dragging");
+                const r = stage.getBoundingClientRect();
+                offX = e.clientX - (r.left + parseFloat(el.style.left));
+                offY = e.clientY - (r.top + parseFloat(el.style.top));
+            });
+
+            el.addEventListener("pointermove", e => {
+                if (!dragging) return;
+                const r = stage.getBoundingClientRect();
+                let x = e.clientX - r.left - offX;
+                let y = e.clientY - r.top - offY;
+                x = Math.max(-chip.w * 0.3, Math.min(r.width - chip.w * 0.7, x));
+                y = Math.max(-chip.h * 0.3, Math.min(r.height - chip.h * 0.7, y));
+                el.style.left = x + "px";
+                el.style.top = y + "px";
+                highlightTarget(chip);
+            });
+
+            el.addEventListener("pointerup", e => {
+                if (!dragging) return;
+                dragging = false;
+                el.classList.remove("dragging");
+                try { el.releasePointerCapture(e.pointerId); } catch (err) {}
+                bubbles.forEach(b => b.el.classList.remove("hot"));
+                dropChip(chip);
+            });
+
+            el.addEventListener("pointercancel", () => {
+                if (!dragging) return;
+                dragging = false;
+                el.classList.remove("dragging");
+                bubbles.forEach(b => b.el.classList.remove("hot"));
+                returnChip(chip);
+            });
+        }
+
+        function chipCenter(chip) {
+            return {
+                x: parseFloat(chip.el.style.left) + chip.w / 2,
+                y: parseFloat(chip.el.style.top) + chip.h / 2
+            };
+        }
+
+        function bubbleHit(b, c) {
+            const r = b.el.offsetWidth / 2;
+            return Math.hypot(c.x - b.center.x, c.y - b.center.y) <= r;
+        }
+
+        function highlightTarget(chip) {
+            const c = chipCenter(chip);
+            bubbles.forEach(b => {
+                if (bubbleHit(b, c)) b.el.classList.add("hot");
+                else b.el.classList.remove("hot");
+            });
+        }
+
+        function dropChip(chip) {
+            const c = chipCenter(chip);
+            const target = bubbles.find(b => bubbleHit(b, c));
+            if (target && target.idx === chip.bubbleIndex) {
+                absorbChip(chip, target);
+            } else {
+                if (target) {
+                    chip.el.classList.add("wrong");
+                    nopeSound();
+                }
+                returnChip(chip);
+            }
+        }
+
+        function returnChip(chip) {
+            chip.el.classList.add("returning");
+            requestAnimationFrame(() => {
+                chip.el.style.left = chip.ox + "px";
+                chip.el.style.top = chip.oy + "px";
+            });
+            setTimeout(() => chip.el.classList.remove("returning", "wrong"), 360);
+        }
+
+        function absorbChip(chip, bubble) {
+            chip.done = true;
+            chip.el.style.pointerEvents = "none";
+            chip.el.classList.add("absorbing");
+            chip.el.style.left = (bubble.center.x - chip.w / 2) + "px";
+            chip.el.style.top = (bubble.center.y - chip.h / 2) + "px";
+            goodSound();
+
+            setTimeout(() => {
+                chip.el.remove();
+                const pill = document.createElement("div");
+                pill.className = "solved-word";
+                pill.textContent = chip.word;
+                bubble.wordsEl.appendChild(pill);
+                growBubble(bubble);
+                bubble.el.classList.remove("bubble-pop");
+                void bubble.el.offsetWidth;
+                bubble.el.classList.add("bubble-pop");
+            }, 280);
+
+            chips = chips.filter(c => c !== chip);
+            remaining--;
+            if (remaining <= 0) setTimeout(roundComplete, 320);
+        }
+
+        function growBubble(bubble) {
+            bubble.solved++;
+            const d = bubble.baseD + bubble.solved * bubble.step;
+            bubble.el.style.width = d + "px";
+            bubble.el.style.height = d + "px";
+        }
+
+        function roundComplete() {
+            nextBtn.classList.add("ready");
+            toast.classList.remove("show");
+            void toast.offsetWidth;
+            toast.classList.add("show");
+            winSound();
+            burstConfetti();
+        }
+
+        function burstConfetti() {
+            const colors = ["#ea7a3d", "#2d6f93", "#2f8f62", "#d4526e", "#f2b705", "#7b5ea7"];
+            const W = stage.getBoundingClientRect().width;
+            for (let i = 0; i < 70; i++) {
+                const c = document.createElement("div");
+                c.className = "confetti";
+                c.style.background = colors[i % colors.length];
+                c.style.left = Math.random() * W + "px";
+                if (Math.random() < 0.5) c.style.borderRadius = "50%";
+                stage.appendChild(c);
+                const dx = (Math.random() - 0.5) * 240;
+                const dy = stage.getBoundingClientRect().height + 60;
+                const rot = Math.random() * 720 - 360;
+                c.animate([
+                    { transform: "translate(0,0) rotate(0deg)", opacity: 1 },
+                    { transform: "translate(" + dx + "px," + dy + "px) rotate(" + rot + "deg)", opacity: 0.9 }
+                ], { duration: 1400 + Math.random() * 900, easing: "cubic-bezier(0.3,0.7,0.5,1)" })
+                    .onfinish = () => c.remove();
+            }
+        }
+
+        // ---------- Controls ----------
+        nextBtn.addEventListener("click", () => {
+            if (!nextBtn.classList.contains("ready")) return;
+            level++;
+            save();
+            buildRound();
+        });
+
+        resetBtn.addEventListener("click", () => {
+            level = 1;
+            save();
+            buildRound();
+        });
+
+        muteBtn.addEventListener("click", () => {
+            muted = !muted;
+            muteBtn.textContent = muted ? "🔇" : "🔊";
+        });
+
+        function save() {
+            try { localStorage.setItem(STORE_KEY, String(level)); } catch (e) {}
+        }
+        function load() {
+            try {
+                const v = parseInt(localStorage.getItem(STORE_KEY), 10);
+                if (v && v > 0) level = v;
+            } catch (e) {}
+        }
+
+        // ---------- Resize: reposition without changing solved state ----------
+        let resizeTimer = null;
+        window.addEventListener("resize", () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(buildRound, 250);
+        });
+
+        // prevent accidental scroll / context menu
+        document.addEventListener("contextmenu", e => e.preventDefault());
+        document.addEventListener("gesturestart", e => e.preventDefault());
+
+        // ---------- Go ----------
+        load();
+        buildRound();
+    })();
+    </script>
+</body>
+</html>
