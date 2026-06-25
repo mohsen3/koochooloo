@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1f2330">
+    <title>Paint</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+            background: #d9dde6;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        #board {
+            position: fixed;
+            inset: 0;
+            display: block;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        /* ---- Toolbar ---- */
+        .toolbar {
+            position: fixed;
+            left: 50%;
+            bottom: max(14px, env(safe-area-inset-bottom));
+            transform: translateX(-50%);
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 14px;
+            padding: 8px 12px;
+            border-radius: 22px;
+            max-width: calc(100vw - 12px);
+            background: rgba(28, 31, 41, 0.55);
+            backdrop-filter: blur(16px) saturate(1.4);
+            -webkit-backdrop-filter: blur(16px) saturate(1.4);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+            z-index: 10;
+        }
+
+        .colors {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 7px;
+        }
+
+        .swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            position: relative;
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.22);
+            transition: transform 0.12s ease;
+        }
+        .swatch[data-light="true"] {
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+        }
+        .swatch.active {
+            transform: scale(1.22);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.95), 0 2px 8px rgba(0, 0, 0, 0.35);
+        }
+
+        .divider {
+            width: 1px;
+            height: 26px;
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .sizes {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .size {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 12px;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.12s ease;
+        }
+        .size .dot {
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
+        .size.active {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .tool-btn {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 12px;
+            background: transparent;
+            color: #fff;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.12s ease;
+        }
+        .tool-btn:active {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        /* tiny hint that fades out */
+        .hint {
+            position: fixed;
+            top: max(12px, env(safe-area-inset-top));
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(28, 31, 41, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #fff;
+            font-size: 13px;
+            padding: 7px 14px;
+            border-radius: 16px;
+            z-index: 10;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.6s ease;
+        }
+        .hint.gone { opacity: 0; }
+
+        /* ----- Place the toolbar along the SHORTER screen edge ----- */
+        /* Landscape: shorter edge is vertical -> a column on the left side. */
+        @media (orientation: landscape) {
+            .toolbar {
+                left: max(12px, env(safe-area-inset-left));
+                top: 50%;
+                bottom: auto;
+                transform: translateY(-50%);
+                flex-direction: column;
+                max-width: none;
+                max-height: calc(100vh - 12px);
+            }
+            .colors { flex-direction: column; }
+            .sizes { flex-direction: column; }
+            .divider { width: 26px; height: 1px; }
+        }
+
+        /* Keep everything on ONE row/column by dropping the lowest-priority
+           colors first, keyed off whichever dimension the toolbar runs along.
+           Each swatch carries the minimum length (px) at which it stays. */
+        @media (orientation: portrait) and (max-width: 479.98px) { .swatch[data-min="480"] { display: none; } }
+        @media (orientation: portrait) and (max-width: 439.98px) { .swatch[data-min="440"] { display: none; } }
+        @media (orientation: portrait) and (max-width: 399.98px) { .swatch[data-min="400"] { display: none; } }
+        @media (orientation: portrait) and (max-width: 359.98px) { .swatch[data-min="360"] { display: none; } }
+
+        @media (orientation: landscape) and (max-height: 479.98px) { .swatch[data-min="480"] { display: none; } }
+        @media (orientation: landscape) and (max-height: 439.98px) { .swatch[data-min="440"] { display: none; } }
+        @media (orientation: landscape) and (max-height: 399.98px) { .swatch[data-min="400"] { display: none; } }
+        @media (orientation: landscape) and (max-height: 359.98px) { .swatch[data-min="360"] { display: none; } }
+
+        /* Compact spacing when the toolbar's running edge is short. */
+        @media (orientation: portrait) and (max-width: 420px),
+               (orientation: landscape) and (max-height: 420px) {
+            .swatch { width: 25px; height: 25px; }
+            .colors { gap: 5px; }
+            .toolbar { gap: 10px; padding: 7px 9px; }
+            .size, .tool-btn { width: 30px; height: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="board"></canvas>
+
+    <div class="hint" id="hint">Two fingers to move • right-drag on desktop</div>
+
+    <div class="toolbar">
+        <div class="colors" id="colors"></div>
+        <div class="divider"></div>
+        <div class="sizes" id="sizes"></div>
+        <div class="divider"></div>
+        <button class="tool-btn" id="clear" title="Clear">🗑️</button>
+    </div>
+
+    <script>
+    (function () {
+        "use strict";
+
+        const canvas = document.getElementById("board");
+        const ctx = canvas.getContext("2d", { alpha: false });
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        // ---- World (off-screen) canvas: the committed painting ----
+        const world = document.createElement("canvas");
+        const wctx = world.getContext("2d");
+
+        let dispW = 0, dispH = 0;     // display size in device pixels
+        let WORLD = 0;                // world size in device pixels (square)
+        let viewX = 0, viewY = 0;     // top-left of the view, in world device px
+
+        function buildWorld() {
+            const targetW = Math.ceil(window.innerWidth * dpr);
+            const targetH = Math.ceil(window.innerHeight * dpr);
+            // World big enough to pan around comfortably, capped for memory.
+            const want = Math.min(5000, Math.max(3600, targetW + 600, targetH + 600));
+
+            if (WORLD < want) {
+                const old = WORLD ? document.createElement("canvas") : null;
+                if (old) {
+                    old.width = world.width; old.height = world.height;
+                    old.getContext("2d").drawImage(world, 0, 0);
+                }
+                WORLD = want;
+                world.width = WORLD;
+                world.height = WORLD;
+                wctx.fillStyle = "#ffffff";
+                wctx.fillRect(0, 0, WORLD, WORLD);
+                if (old) wctx.drawImage(old, 0, 0);
+            }
+        }
+
+        function resize() {
+            dispW = Math.ceil(window.innerWidth * dpr);
+            dispH = Math.ceil(window.innerHeight * dpr);
+            canvas.width = dispW;
+            canvas.height = dispH;
+            canvas.style.width = window.innerWidth + "px";
+            canvas.style.height = window.innerHeight + "px";
+            buildWorld();
+            if (viewX === 0 && viewY === 0) {
+                // center the view on first layout
+                viewX = (WORLD - dispW) / 2;
+                viewY = (WORLD - dispH) / 2;
+            }
+            clampView();
+            redraw();
+        }
+
+        function clampView() {
+            viewX = Math.max(0, Math.min(WORLD - dispW, viewX));
+            viewY = Math.max(0, Math.min(WORLD - dispH, viewY));
+        }
+
+        function redraw() {
+            ctx.clearRect(0, 0, dispW, dispH);
+            ctx.drawImage(world, viewX, viewY, dispW, dispH, 0, 0, dispW, dispH);
+        }
+
+        // ---------- Brush ----------
+        // `min` = narrowest viewport (px) at which the swatch stays visible,
+        // so the toolbar always fits on a single row.
+        const COLORS = [
+            { c: "#2b2b2b", min: 0 },
+            { c: "#ff3b30", min: 0 },
+            { c: "#ff9500", min: 400 },
+            { c: "#ffcc00", min: 360, light: true },
+            { c: "#34c759", min: 0 },
+            { c: "#00b8d4", min: 480 },
+            { c: "#0a84ff", min: 0 },
+            { c: "#af52de", min: 400 },
+            { c: "#ff6eb4", min: 480 },
+            { c: "#8b5a2b", min: 480 },
+            { c: "#ffffff", min: 440, light: true }
+        ];
+        const SIZES = [5, 11, 22];   // brush radius in CSS px
+
+        let curColor = COLORS[0].c;
+        let curSize = 1;             // index into SIZES
+
+        function baseRadius() { return SIZES[curSize] * dpr; }
+
+        // ---- A pretty, velocity-tapered stamp brush ----
+        function stampSegment(g, x0, y0, r0, x1, y1, r1, color) {
+            const dx = x1 - x0, dy = y1 - y0;
+            const dist = Math.hypot(dx, dy);
+            const step = Math.max(0.8, Math.min(r0, r1) * 0.28);
+            const n = Math.max(1, Math.ceil(dist / step));
+            g.fillStyle = color;
+            for (let i = 1; i <= n; i++) {
+                const t = i / n;
+                g.beginPath();
+                g.arc(x0 + dx * t, y0 + dy * t, r0 + (r1 - r0) * t, 0, Math.PI * 2);
+                g.fill();
+            }
+        }
+
+        // ---------- Pointer handling ----------
+        const pointers = new Map();   // id -> {x, y}  (CSS coords)
+        let mode = null;              // "draw" | "pan" | null
+        let suppressDraw = false;     // after a pan, ignore the leftover finger
+
+        // current stroke state (screen device coords)
+        let drawing = false;
+        let lastX = 0, lastY = 0, lastR = 0;
+        let strokePts = null;         // [{x,y,r}] in screen device px, for committing
+
+        function toDevice(e) {
+            const r = canvas.getBoundingClientRect();
+            return {
+                x: (e.clientX - r.left) * dpr,
+                y: (e.clientY - r.top) * dpr
+            };
+        }
+
+        function startStroke(e) {
+            const p = toDevice(e);
+            const r = baseRadius() * pressureMul(e);
+            drawing = true;
+            lastX = p.x; lastY = p.y; lastR = r;
+            strokePts = [{ x: p.x, y: p.y, r: r }];
+            // initial dot
+            stampSegment(ctx, p.x, p.y, r, p.x, p.y, r, curColor);
+        }
+
+        function moveStroke(e) {
+            // coalesced events make fast strokes smoother
+            const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+            for (const ev of (events.length ? events : [e])) {
+                const p = toDevice(ev);
+                const v = Math.hypot(p.x - lastX, p.y - lastY);
+                const base = baseRadius() * pressureMul(ev);
+                // faster = thinner, eased toward the target for a smooth taper
+                const target = base * Math.max(0.42, 1 - v * 0.018);
+                const r = lastR + (target - lastR) * 0.4;
+                stampSegment(ctx, lastX, lastY, lastR, p.x, p.y, r, curColor);
+                strokePts.push({ x: p.x, y: p.y, r: r });
+                lastX = p.x; lastY = p.y; lastR = r;
+            }
+        }
+
+        function commitStroke() {
+            if (strokePts && strokePts.length) {
+                // replay the stroke into the world canvas at world coordinates
+                let prev = strokePts[0];
+                stampSegment(wctx, prev.x + viewX, prev.y + viewY, prev.r,
+                                   prev.x + viewX, prev.y + viewY, prev.r, curColor);
+                for (let i = 1; i < strokePts.length; i++) {
+                    const p = strokePts[i];
+                    stampSegment(wctx, prev.x + viewX, prev.y + viewY, prev.r,
+                                       p.x + viewX, p.y + viewY, p.r, curColor);
+                    prev = p;
+                }
+                redraw();
+                scheduleSave();
+            }
+            drawing = false;
+            strokePts = null;
+        }
+
+        function pressureMul(e) {
+            // Use stylus pressure when it is meaningful; ignore the 0.5 default.
+            if (e.pointerType === "pen" && e.pressure > 0 && e.pressure !== 0.5) {
+                return 0.35 + e.pressure * 0.9;
+            }
+            return 1;
+        }
+
+        // ----- pan -----
+        let panStart = null;          // {cx, cy, viewX, viewY}
+
+        function centroid() {
+            let sx = 0, sy = 0;
+            for (const p of pointers.values()) { sx += p.x; sy += p.y; }
+            const n = pointers.size;
+            return { x: sx / n, y: sy / n };
+        }
+
+        function beginPan() {
+            mode = "pan";
+            const c = centroid();
+            panStart = { cx: c.x, cy: c.y, vx: viewX, vy: viewY };
+        }
+
+        function updatePan() {
+            const c = centroid();
+            viewX = panStart.vx - (c.x - panStart.cx) * dpr;
+            viewY = panStart.vy - (c.y - panStart.cy) * dpr;
+            clampView();
+            redraw();
+        }
+
+        canvas.addEventListener("pointerdown", function (e) {
+            canvas.setPointerCapture(e.pointerId);
+            pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+            if (e.pointerType === "mouse") {
+                if (e.button === 2 || e.button === 1) {       // right / middle drag = pan
+                    beginPan();
+                } else if (e.button === 0) {
+                    mode = "draw";
+                    startStroke(e);
+                }
+                return;
+            }
+
+            // touch / pen
+            if (pointers.size >= 2) {
+                // second finger down: abandon any in-progress stroke and pan
+                if (drawing) { drawing = false; strokePts = null; redraw(); }
+                suppressDraw = true;
+                beginPan();
+            } else if (!suppressDraw) {
+                mode = "draw";
+                startStroke(e);
+            }
+            hideHint();
+        }, { passive: false });
+
+        canvas.addEventListener("pointermove", function (e) {
+            if (pointers.has(e.pointerId)) {
+                pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+            }
+            if (mode === "pan") {
+                updatePan();
+            } else if (mode === "draw" && drawing) {
+                moveStroke(e);
+            }
+        }, { passive: false });
+
+        function endPointer(e) {
+            pointers.delete(e.pointerId);
+            try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+
+            if (mode === "pan") {
+                if (pointers.size >= 2) {
+                    // re-anchor the pan to the remaining fingers
+                    const c = centroid();
+                    panStart = { cx: c.x, cy: c.y, vx: viewX, vy: viewY };
+                } else {
+                    mode = null;
+                    panStart = null;
+                }
+            } else if (mode === "draw") {
+                commitStroke();
+                mode = null;
+            }
+
+            if (pointers.size === 0) suppressDraw = false;
+        }
+
+        canvas.addEventListener("pointerup", endPointer);
+        canvas.addEventListener("pointercancel", endPointer);
+        canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+        // ---------- Persistence ----------
+        const KEY = "paint-canvas-v1";
+        let saveTimer = null;
+        function scheduleSave() {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(saveNow, 1200);
+        }
+        function saveNow() {
+            try {
+                localStorage.setItem(KEY, JSON.stringify({
+                    w: world.width,
+                    data: world.toDataURL("image/png")
+                }));
+            } catch (_) { /* quota or other: skip silently */ }
+        }
+        function restore() {
+            let saved;
+            try { saved = JSON.parse(localStorage.getItem(KEY) || "null"); }
+            catch (_) { saved = null; }
+            if (!saved || !saved.data) return;
+            const img = new Image();
+            img.onload = function () {
+                // place the saved image centered within the (possibly larger) world
+                const off = Math.round((WORLD - saved.w) / 2);
+                wctx.drawImage(img, Math.max(0, off), Math.max(0, off));
+                redraw();
+            };
+            img.src = saved.data;
+        }
+
+        // ---------- Toolbar ----------
+        const colorsEl = document.getElementById("colors");
+        COLORS.forEach(function (col, i) {
+            const b = document.createElement("button");
+            b.className = "swatch" + (col.c === curColor ? " active" : "");
+            b.style.background = col.c;
+            b.dataset.min = col.min;
+            if (col.light) b.dataset.light = "true";
+            b.addEventListener("click", function () {
+                curColor = col.c;
+                colorsEl.querySelectorAll(".swatch").forEach(function (s) { s.classList.remove("active"); });
+                b.classList.add("active");
+            });
+            colorsEl.appendChild(b);
+        });
+
+        const sizesEl = document.getElementById("sizes");
+        const dotPx = [9, 16, 26];
+        SIZES.forEach(function (_, i) {
+            const b = document.createElement("button");
+            b.className = "size" + (i === curSize ? " active" : "");
+            const dot = document.createElement("span");
+            dot.className = "dot";
+            dot.style.width = dotPx[i] + "px";
+            dot.style.height = dotPx[i] + "px";
+            b.appendChild(dot);
+            b.addEventListener("click", function () {
+                curSize = i;
+                sizesEl.querySelectorAll(".size").forEach(function (s) { s.classList.remove("active"); });
+                b.classList.add("active");
+            });
+            sizesEl.appendChild(b);
+        });
+
+        document.getElementById("clear").addEventListener("click", function () {
+            wctx.fillStyle = "#ffffff";
+            wctx.fillRect(0, 0, WORLD, WORLD);
+            redraw();
+            scheduleSave();
+        });
+
+        // ---------- Hint ----------
+        const hintEl = document.getElementById("hint");
+        let hintHidden = false;
+        function hideHint() {
+            if (hintHidden) return;
+            hintHidden = true;
+            hintEl.classList.add("gone");
+            setTimeout(function () { hintEl.remove(); }, 700);
+        }
+        setTimeout(hideHint, 4000);
+
+        // ---------- Go ----------
+        window.addEventListener("resize", resize);
+        window.addEventListener("orientationchange", resize);
+        resize();
+        restore();
+    })();
+    </script>
+</body>
+</html>

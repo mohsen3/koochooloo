@@ -22,6 +22,7 @@
             --cat-tracing: #c85b1f;
             --cat-music: #7b5ea7;
             --cat-farsi: #d4526e;
+            --cat-art: #d98324;
             --shadow: 0 24px 70px rgba(24, 34, 47, 0.14);
             --radius-xl: 32px;
             --radius-lg: 24px;
@@ -453,6 +454,10 @@
             border-left-color: var(--cat-farsi);
         }
 
+        .game-card[data-category="art"] {
+            border-left-color: var(--cat-art);
+        }
+
         .no-results {
             display: none;
             grid-column: 1 / -1;
@@ -503,6 +508,7 @@
                 <a href="#tracing">Tracing & Handwriting</a>
                 <a href="#farsi">Farsi & Bilingual</a>
                 <a href="#music">Music & Play</a>
+                <a href="#art">Art & Creativity</a>
             </nav>
         </section>
 
@@ -676,6 +682,23 @@
                     <div class="card-top"><div class="icon">🆚</div><h3>Two Player Games</h3></div>
                     <p>Take-turns games for a kid and a grown-up. Tic-tac-toe with undo/redo, turn indicator, and a celebration when you win.</p>
                     <div class="card-footer"><span>Open game</span><span>Two players</span></div>
+                </a>
+            </div>
+        </section>
+
+        <section class="section" id="art">
+            <div class="section-header">
+                <div>
+                    <h2>Art & Creativity</h2>
+                    <p>Open-ended creative play for drawing and painting on touch and desktop.</p>
+                </div>
+                <div class="count-badge" data-count-target="art">1 game</div>
+            </div>
+            <div class="game-grid">
+                <a class="game-card" data-category="art" href="paint.html">
+                    <div class="card-top"><div class="icon">🎨</div><h3>Paint</h3></div>
+                    <p>A simple full-screen paint canvas with a pretty brush, a few colors, and three sizes. Two fingers pan the canvas.</p>
+                    <div class="card-footer"><span>Open game</span><span>Creative</span></div>
                 </a>
             </div>
         </section>
