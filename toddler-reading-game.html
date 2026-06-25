@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Word Learning Game for Toddlers</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
+<style>
         @font-face {
             font-family: 'Koodak';
             src: url('public/koodak.ttf') format('truetype');
@@ -450,7 +449,17 @@
     <script src="data/icon-rules.js"></script>
     <script src="data/phrase-pairs.js"></script>
     <script src="data/level-milestones.js"></script>
-    <script src="data/story-phrases.js"></script></head>
+    <script src="data/story-phrases.js"></script>  <!-- pwa:head -->
+  <meta name="theme-color" content="#ea7a3d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Koochooloo">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <!-- /pwa:head -->
+</head>
 <body>
     <div class="container">
         <div class="header">
@@ -1657,5 +1666,6 @@
             document.getElementById('stopRecordBtn').disabled = true;
         }
     </script>
+  <script src="pwa.js" data-sw="sw.js" defer></script>
 </body>
 </html>

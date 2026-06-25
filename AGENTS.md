@@ -5,6 +5,8 @@ This repository is a static collection of educational web games. Most games live
 
 Shared content lives in `data/` for JSON and generated JS data files, `stories/` for phrase source markdown, and `public/` for static assets such as fonts. The only multi-file app is `multi-choice-game/`, with `index.html`, `styles.css`, and ES modules under `multi-choice-game/js/`.
 
+The site is an installable, offline-capable PWA. `manifest.json` describes the app, `sw.js` is the service worker (precaches the app shell and serves it offline), `pwa.js` registers the worker and drives auto-updates, and `icons/` holds the app icons. See "Progressive Web App & Releases" below before changing any of these.
+
 ## Build, Test, and Development Commands
 There is no build pipeline in this repo. Work from the repository root.
 
@@ -12,6 +14,27 @@ There is no build pipeline in this repo. Work from the repository root.
 - `python3 generate_stories_json.py` rebuilds `data/*.json` and `data/stories.json` from `stories/*.md`.
 - `python3 generate_js_data.py` regenerates JS data bundles from the JSON files in `data/`.
 - `python3 add_story.py` is a one-off content helper; review its edits before committing.
+
+## Progressive Web App & Releases
+The site installs to the home screen and runs fully offline. Three files drive this and must stay in sync:
+
+- `manifest.json` — app metadata and icons.
+- `sw.js` — service worker. Holds `VERSION` and the `PRECACHE` list (the app shell cached on install). HTML/JSON use a network-first strategy (fresh when online, cached when offline); other assets use stale-while-revalidate.
+- `pwa.js` — registers the worker and makes updates land fast: it calls `registration.update()` on load, on tab focus, and hourly; the new worker `skipWaiting()`s and takes control, and the page reloads itself once so users get the new version without any manual step.
+
+### Releasing a new version — REQUIRED every time you change shipped files
+Clients only pick up a changed `sw.js`, so a release is not complete until you bump the worker:
+
+1. **Bump `VERSION` in `sw.js`** to a new string (date-based, e.g. `2026-06-25.1`). This is what triggers every client to update; skipping it means users keep the old cached app.
+2. **If you added, renamed, or removed any precached file** (a new game page, data file, icon, etc.), update the `PRECACHE` array in `sw.js` to match. To regenerate the canonical list, see the file globs at the top of `sw.js`'s `PRECACHE` (root `*.html`, `data/*.{json,js,geojson}`, `multi-choice-game/**`, `public/koodak.ttf`, `icons/*`, plus `manifest.json` and `pwa.js`). Audio under `data/audio/` is intentionally NOT precached (runtime-cached on demand).
+3. **Every new HTML page must include the PWA wiring**: the `<!-- pwa:head -->` block in `<head>` (theme-color, apple-mobile meta, manifest + icon links) and `<script src="pwa.js" data-sw="sw.js" defer></script>` before `</body>`. Pages in a subfolder must prefix every PWA path with `../` (e.g. `../manifest.json`, `../pwa.js` with `data-sw="../sw.js"`).
+
+### Verifying the PWA
+- Serve over `http://localhost` (service workers require localhost or HTTPS; `file://` won't register).
+- In Chrome DevTools → Application: confirm the manifest loads, the service worker is "activated", and the cache name matches the current `VERSION`.
+- Test offline: load the app online once, then toggle DevTools → Network → Offline and confirm pages still load.
+- Test updates: bump `VERSION`, reload, and confirm the page auto-refreshes into the new version (old caches are deleted on activate).
+- Do not add external CDN dependencies; they break offline. All assets must be served from this repo (the unused Font Awesome CDN link was removed for this reason; icons are emoji).
 
 ## Git Workflow
 This is a personal project. By default, work directly on `main`, commit there, and push `main` without creating a separate branch or pull request unless explicitly requested.
@@ -47,6 +70,9 @@ Persian letters are context-shaped. In logical word order, `previous only` means
 `both`: `ب`, `پ`, `ت`, `ث`, `ج`, `چ`, `ح`, `خ`, `س`, `ش`, `ص`, `ض`, `ط`, `ظ`, `ع`, `غ`, `ف`, `ق`, `ک`, `گ`, `ل`, `م`, `ن`, `ه`, `ی`
 
 Standalone hamza (`ء`) is non-joining and is not part of the base 32-letter Persian alphabet.
+
+## Two Player Games
+When working on the two-player games feature (`two-player-games.html`) or adding new games to its picker, follow the dedicated guidelines in `~/.claude/projects/-Users-mohsen-Documents-Dev-koochooloo/memory/two_player_game_guidelines.md`. They cover the names → picker → game flow, persistence rules, per-game requirements (turn indicator, undo/redo, celebration, session win counts, mute), and how to add a new game.
 
 ## Save & Resume
 

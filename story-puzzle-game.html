@@ -550,6 +550,16 @@
             }
         }
     </style>
+  <!-- pwa:head -->
+  <meta name="theme-color" content="#ea7a3d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Koochooloo">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <!-- /pwa:head -->
 </head>
 <body>
     <main class="app">
@@ -4147,5 +4157,6 @@
 
         new StoryPuzzleGame(STORY_SET);
     </script>
+  <script src="pwa.js" data-sw="sw.js" defer></script>
 </body>
 </html>
