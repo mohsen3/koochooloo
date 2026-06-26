@@ -52,11 +52,24 @@
             display: flex;
             flex-wrap: nowrap;
             gap: 7px;
+            /* Absorb any overflow here so the size picker and clear button
+               always stay on screen, even on very narrow viewports. */
+            min-width: 0;
+            flex-shrink: 1;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
+        .colors::-webkit-scrollbar { display: none; }
+
+        /* Keep the size picker, dividers and clear button from shrinking
+           or being pushed off — they must remain visible. */
+        .divider, .sizes, .tool-btn { flex-shrink: 0; }
 
         .swatch {
-            width: 28px;
-            height: 28px;
+            width: 25px;
+            height: 25px;
             border-radius: 50%;
             border: none;
             padding: 0;
@@ -86,10 +99,10 @@
         }
 
         .size {
-            width: 34px;
-            height: 34px;
+            width: 30px;
+            height: 30px;
             border: none;
-            border-radius: 12px;
+            border-radius: 11px;
             background: transparent;
             cursor: pointer;
             display: flex;
@@ -107,10 +120,10 @@
         }
 
         .tool-btn {
-            width: 34px;
-            height: 34px;
+            width: 30px;
+            height: 30px;
             border: none;
-            border-radius: 12px;
+            border-radius: 11px;
             background: transparent;
             color: #fff;
             font-size: 18px;
@@ -157,7 +170,13 @@
                 max-width: none;
                 max-height: calc(100vh - 12px);
             }
-            .colors { flex-direction: column; }
+            .colors {
+                flex-direction: column;
+                min-height: 0;
+                min-width: 0;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
             .sizes { flex-direction: column; }
             .divider { width: 26px; height: 1px; }
         }
@@ -178,10 +197,10 @@
         /* Compact spacing when the toolbar's running edge is short. */
         @media (orientation: portrait) and (max-width: 420px),
                (orientation: landscape) and (max-height: 420px) {
-            .swatch { width: 25px; height: 25px; }
+            .swatch { width: 22px; height: 22px; }
             .colors { gap: 5px; }
             .toolbar { gap: 10px; padding: 7px 9px; }
-            .size, .tool-btn { width: 30px; height: 30px; }
+            .size, .tool-btn { width: 27px; height: 27px; }
         }
     </style>
   <!-- pwa:head -->
@@ -288,7 +307,7 @@
             { c: "#8b5a2b", min: 480 },
             { c: "#ffffff", min: 440, light: true }
         ];
-        const SIZES = [5, 11, 22];   // brush radius in CSS px
+        const SIZES = [5, 8, 13];   // brush radius in CSS px
 
         let curColor = COLORS[0].c;
         let curSize = 1;             // index into SIZES
@@ -515,7 +534,7 @@
         });
 
         const sizesEl = document.getElementById("sizes");
-        const dotPx = [9, 16, 26];
+        const dotPx = [9, 12, 16];
         SIZES.forEach(function (_, i) {
             const b = document.createElement("button");
             b.className = "size" + (i === curSize ? " active" : "");
