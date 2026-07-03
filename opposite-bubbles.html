@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Opposite Bubbles</title>
+    <style>
+        @font-face {
+            font-family: 'Koodak';
+            src: url("public/koodak.ttf") format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: block;
+        }
+
+        :root {
+            --app-height: 100dvh;
+            --board-bg: #0f0e1a;
+            --bubble-shadow: rgba(120, 80, 255, 0.35);
+            --bubble-glow: rgba(120, 80, 255, 0.15);
+            --accent: #8868ff;
+            --accent-soft: rgba(136, 104, 255, 0.15);
+            --ink: #1a1a2e;
+            --ink-soft: #6a6a8a;
+            --panel: rgba(255, 255, 255, 0.85);
+            --matched-line: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            width: 100%;
+            min-height: 100%;
+            overflow: hidden;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            min-height: var(--app-height);
+            height: var(--app-height);
+            display: grid;
+            place-items: center;
+            font-family: 'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif;
+            color: var(--ink);
+            padding: 8px;
+            -webkit-touch-callout: none;
+            background: radial-gradient(ellipse at 30% 20%, rgba(80, 40, 200, 0.3), transparent 50%),
+                        radial-gradient(ellipse at 70% 80%, rgba(200, 40, 180, 0.2), transparent 50%),
+                        radial-gradient(ellipse at 50% 50%, rgba(40, 60, 200, 0.15), transparent 60%),
+                        linear-gradient(160deg, #0b0a16 0%, #1a1530 40%, #0f0e1a 100%);
+        }
+
+        .app {
+            width: min(1240px, calc(100vw - 16px));
+            height: min(860px, calc(var(--app-height) - 16px));
+            border-radius: 36px;
+            padding: clamp(12px, 1.6vw, 18px);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .topbar {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 0 4px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .title-block h1 {
+            margin: 0;
+            font-size: clamp(22px, 2.8vw, 34px);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 2px 20px rgba(136, 104, 255, 0.4);
+        }
+        .title-block h1 span {
+            background: linear-gradient(135deg, #8868ff, #ff68b4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .title-block .subtitle {
+            margin: 3px 0 0;
+            font-size: clamp(11px, 1vw, 14px);
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .status-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .status-pill {
+            min-width: 56px;
+            padding: 5px 9px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            line-height: 1.1;
+            color: #fff;
+        }
+        .status-pill span {
+            display: block;
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.45);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .status-pill strong {
+            display: block;
+            margin-top: 1px;
+            font-size: clamp(14px, 1.2vw, 18px);
+            font-variant-numeric: tabular-nums;
+        }
+
+        #resetBtn {
+            cursor: pointer;
+            border: none;
+            font: inherit;
+            color: #fff;
+            background: rgba(255, 86, 115, 0.1);
+            transition: background 180ms ease, transform 180ms ease;
+            min-width: 38px;
+            display: grid;
+            place-items: center;
+            line-height: 1;
+            font-size: 18px;
+            border-radius: 10px;
+            padding: 5px 8px;
+        }
+        #resetBtn:hover,
+        #resetBtn:active {
+            background: rgba(255, 86, 115, 0.25);
+            transform: scale(1.06);
+        }
+
+        .board {
+            position: relative;
+            flex: 1 1 auto;
+            min-height: 0;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        #connectionCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .bubble {
+            position: absolute;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: grab;
+            touch-action: none;
+            will-change: transform, left, top;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        box-shadow 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .bubble::before {
+            content: "";
+            position: absolute;
+            top: 10%;
+            left: 18%;
+            width: 32%;
+            height: 22%;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 70%);
+            pointer-events: none;
+        }
+
+        .bubble::after {
+            content: "";
+            position: absolute;
+            bottom: 12%;
+            right: 15%;
+            width: 10%;
+            height: 8%;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            pointer-events: none;
+        }
+
+        .bubble .bubble-text {
+            font-weight: 900;
+            font-size: clamp(18px, 2vw, 28px);
+            letter-spacing: 0.02em;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            z-index: 1;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .bubble.is-dragging {
+            cursor: grabbing;
+            z-index: 20;
+            pointer-events: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, left 0s, top 0s;
+            animation: none;
+        }
+
+        .bubble.is-dragging::before {
+            opacity: 0.5;
+        }
+
+        .bubble.is-hover-target {
+            animation: pulseTarget 0.8s ease-in-out infinite;
+            z-index: 8;
+        }
+
+        .bubble.matched {
+            cursor: default;
+            pointer-events: none;
+            animation: matchBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .bubble.matched::before {
+            opacity: 0.3;
+        }
+
+        .bubble.wrong {
+            animation: wrongWobble 0.45s ease;
+        }
+
+        .bubble.returning {
+            transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+
+        @keyframes pulseTarget {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--bubble-glow); }
+            50% { transform: scale(1.08); box-shadow: 0 0 40px var(--bubble-glow), 0 0 60px var(--bubble-glow); }
+        }
+
+        @keyframes matchBounce {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.15); }
+            60% { transform: scale(0.95); }
+            100% { transform: scale(1.03); }
+        }
+
+        @keyframes wrongWobble {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            15% { transform: translateX(-8px) rotate(-3deg); }
+            30% { transform: translateX(8px) rotate(3deg); }
+            45% { transform: translateX(-6px) rotate(-2deg); }
+            60% { transform: translateX(6px) rotate(2deg); }
+            75% { transform: translateX(-3px) rotate(-1deg); }
+            90% { transform: translateX(3px) rotate(1deg); }
+        }
+
+        .particle-container {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFly 0.8s ease-out forwards;
+        }
+
+        @keyframes particleFly {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--px), var(--py)) scale(0.2);
+            }
+        }
+
+        .toast {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.7);
+            padding: 18px 40px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            font-size: clamp(28px, 3.5vw, 48px);
+            font-weight: 900;
+            line-height: 1.1;
+            color: #fff;
+            text-shadow: 0 2px 20px var(--toast-glow, rgba(136, 104, 255, 0.5));
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 30;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .pop-ripple {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            animation: rippleOut 0.5s ease-out forwards;
+            z-index: 4;
+        }
+
+        @keyframes rippleOut {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+
+        .match-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 3px solid var(--ring-color, #8868ff);
+            pointer-events: none;
+            animation: ringExpand 0.7s ease-out forwards;
+            z-index: 4;
+        }
+
+        @keyframes ringExpand {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            .status-strip {
+                justify-content: flex-start;
+            }
+            .app {
+                border-radius: 24px;
+                padding: 10px;
+            }
+            .board {
+                border-radius: 16px;
+            }
+            .bubble .bubble-text {
+                font-size: clamp(15px, 4vw, 20px);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .bubble .bubble-text {
+                font-size: clamp(13px, 3.5vw, 16px);
+            }
+        }
+    </style>
+  <!-- pwa:head -->
+  <meta name="theme-color" content="#8868ff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Koochooloo">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <!-- /pwa:head -->
+</head>
+<body>
+    <div class="app">
+        <div class="topbar">
+            <div class="title-block">
+                <h1>Opposite <span>Bubbles</span></h1>
+                <div class="subtitle" id="levelDescription">Level 1</div>
+            </div>
+            <div class="status-strip">
+                <div class="status-pill">
+                    <span>Level</span>
+                    <strong id="levelLabel">1</strong>
+                </div>
+                <div class="status-pill">
+                    <span>Matched</span>
+                    <strong id="matchLabel">0 of 2</strong>
+                </div>
+                <div class="status-pill">
+                    <span>Page</span>
+                    <strong id="pageLabel">1 of 4</strong>
+                </div>
+                <button class="status-pill" id="resetBtn" type="button" aria-label="Reset progress">↻</button>
+            </div>
+        </div>
+
+        <div class="board" id="board">
+            <canvas id="connectionCanvas"></canvas>
+            <div class="particle-container" id="particleContainer"></div>
+            <div class="toast" id="toast"></div>
+        </div>
+    </div>
+
+    <script>
+        function randInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function pick(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function lerp(a, b, t) {
+            return a + (b - a) * t;
+        }
+
+        function dist(x1, y1, x2, y2) {
+            return Math.hypot(x2 - x1, y2 - y1);
+        }
+
+        function clamp(v, min, max) {
+            return Math.max(min, Math.min(max, v));
+        }
+
+        const OPPOSITES = [
+            { left: "big", right: "small" },
+            { left: "hot", right: "cold" },
+            { left: "up", right: "down" },
+            { left: "day", right: "night" },
+            { left: "fast", right: "slow" },
+            { left: "loud", right: "quiet" },
+            { left: "happy", right: "sad" },
+            { left: "wet", right: "dry" },
+            { left: "open", right: "closed" },
+            { left: "full", right: "empty" },
+            { left: "tall", right: "short" },
+            { left: "hard", right: "soft" },
+            { left: "clean", right: "dirty" },
+            { left: "light", right: "heavy" },
+            { left: "push", right: "pull" },
+            { left: "in", right: "out" },
+            { left: "above", right: "below" },
+            { left: "start", right: "finish" },
+            { left: "near", right: "far" },
+            { left: "early", right: "late" },
+            { left: "old", right: "new" },
+            { left: "thick", right: "thin" },
+            { left: "smooth", right: "rough" },
+            { left: "right", right: "left" },
+            { left: "on", right: "off" },
+            { left: "high", right: "low" },
+            { left: "wake", right: "sleep" },
+            { left: "give", right: "take" },
+            { left: "brave", right: "scared" },
+            { left: "same", right: "different" },
+            { left: "bright", right: "dim" },
+            { left: "sweet", right: "sour" },
+            { left: "laugh", right: "cry" },
+            { left: "sit", right: "stand" },
+            { left: "go", right: "stop" },
+            { left: "front", right: "back" },
+            { left: "more", right: "less" },
+            { left: "many", right: "few" },
+            { left: "first", right: "last" },
+            { left: "young", right: "old" },
+            { left: "top", right: "bottom" },
+            { left: "straight", right: "crooked" },
+            { left: "strong", right: "weak" },
+            { left: "rich", right: "poor" },
+            { left: "sharp", right: "dull" },
+            { left: "noisy", right: "silent" },
+            { left: "buy", right: "sell" },
+            { left: "borrow", right: "lend" },
+            { left: "enter", right: "exit" },
+            { left: "build", right: "break" },
+            { left: "find", right: "lose" },
+            { left: "catch", right: "throw" },
+            { left: "together", right: "apart" },
+            { left: "safe", right: "dangerous" },
+            { left: "rainy", right: "sunny" },
+            { left: "round", right: "square" },
+            { left: "smile", right: "frown" },
+            { left: "whisper", right: "shout" },
+            { left: "polite", right: "rude" },
+            { left: "asleep", right: "awake" },
+            { left: "good", right: "bad" },
+            { left: "over", right: "under" },
+            { left: "inside", right: "outside" },
+            { left: "before", right: "after" },
+            { left: "hello", right: "goodbye" },
+            { left: "huge", right: "tiny" },
+            { left: "win", right: "lose" },
+            { left: "nice", right: "mean" },
+            { left: "love", right: "hate" },
+            { left: "boy", right: "girl" },
+            { left: "neat", right: "messy" },
+            { left: "remember", right: "forget" },
+            { left: "question", right: "answer" },
+            { left: "teach", right: "learn" },
+            { left: "correct", right: "wrong" },
+            { left: "dark", right: "light" },
+            { left: "wide", right: "narrow" },
+            { left: "deep", right: "shallow" },
+            { left: "float", right: "sink" },
+            { left: "freeze", right: "melt" },
+            { left: "alive", right: "dead" },
+            { left: "healthy", right: "sick" },
+            { left: "friend", right: "enemy" },
+            { left: "easy", right: "difficult" },
+            { left: "kind", right: "cruel" },
+        ];
+
+        const TIERS = [
+            { minLevel: 1, pairs: OPPOSITES.slice(0, 12) },
+            { minLevel: 2, pairs: OPPOSITES.slice(0, 20) },
+            { minLevel: 3, pairs: OPPOSITES.slice(0, 28) },
+            { minLevel: 4, pairs: OPPOSITES.slice(0, 36) },
+            { minLevel: 5, pairs: OPPOSITES.slice(0, 44) },
+            { minLevel: 7, pairs: OPPOSITES.slice(0, 52) },
+            { minLevel: 9, pairs: OPPOSITES.slice(0, 60) },
+            { minLevel: 11, pairs: OPPOSITES.slice(0, 68) },
+            { minLevel: 14, pairs: OPPOSITES.slice(0, 76) },
+            { minLevel: 18, pairs: OPPOSITES },
+        ];
+
+        const COLORS = [
+            { bg: 'linear-gradient(145deg, #ff6b8a, #d6346a)', shadow: 'rgba(255, 60, 110, 0.35)', glow: 'rgba(255, 60, 110, 0.25)' },
+            { bg: 'linear-gradient(145deg, #6bc8ff, #3488d6)', shadow: 'rgba(60, 140, 255, 0.35)', glow: 'rgba(60, 140, 255, 0.25)' },
+            { bg: 'linear-gradient(145deg, #6bffb8, #34d688)', shadow: 'rgba(60, 220, 140, 0.35)', glow: 'rgba(60, 220, 140, 0.25)' },
+            { bg: 'linear-gradient(145deg, #ffb86b, #d68834)', shadow: 'rgba(255, 160, 60, 0.35)', glow: 'rgba(255, 160, 60, 0.25)' },
+            { bg: 'linear-gradient(145deg, #c86bff, #8834d6)', shadow: 'rgba(160, 60, 255, 0.35)', glow: 'rgba(160, 60, 255, 0.25)' },
+            { bg: 'linear-gradient(145deg, #ff6be8, #d634b4)', shadow: 'rgba(255, 60, 200, 0.35)', glow: 'rgba(255, 60, 200, 0.25)' },
+            { bg: 'linear-gradient(145deg, #6bfff0, #34d6c8)', shadow: 'rgba(60, 220, 210, 0.35)', glow: 'rgba(60, 220, 210, 0.25)' },
+            { bg: 'linear-gradient(145deg, #ff8a6b, #d65a34)', shadow: 'rgba(255, 100, 60, 0.35)', glow: 'rgba(255, 100, 60, 0.25)' },
+        ];
+
+        class OppositeBubbles {
+            constructor() {
+                this.board = document.getElementById('board');
+                this.canvas = document.getElementById('connectionCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.particleContainer = document.getElementById('particleContainer');
+                this.levelLabel = document.getElementById('levelLabel');
+                this.pageLabel = document.getElementById('pageLabel');
+                this.matchLabel = document.getElementById('matchLabel');
+                this.levelDescription = document.getElementById('levelDescription');
+                this.toast = document.getElementById('toast');
+
+                this.level = 1;
+                this.pagesClearedInLevel = 0;
+                this.matchesMade = 0;
+                this.connectionSerial = 0;
+                this.activeDrag = null;
+                this.connections = [];
+                this.currentItems = [];
+                this.currentPairs = [];
+                this.bubbleEls = [];
+                this.hoverTarget = null;
+                this.resizeFrame = 0;
+                this.pageAdvanceTimeout = 0;
+                this.toastTimeout = 0;
+                this.audioCtx = null;
+
+                this.handleResize = this.handleResize.bind(this);
+                this.handlePointerMove = this.handlePointerMove.bind(this);
+                this.handlePointerUp = this.handlePointerUp.bind(this);
+
+                this.loadProgress();
+
+                const resetBtn = document.getElementById('resetBtn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => this.resetProgress());
+                }
+
+                this.init();
+            }
+
+            getAudioContext() {
+                if (!this.audioCtx) {
+                    try {
+                        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    } catch (_) {}
+                }
+                return this.audioCtx;
+            }
+
+            playMatchSound() {
+                try {
+                    const ctx = this.getAudioContext();
+                    if (!ctx) return;
+                    const now = ctx.currentTime;
+                    const notes = [523, 659, 784];
+                    notes.forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.12, now + i * 0.07);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.25);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + i * 0.07);
+                        osc.stop(now + i * 0.07 + 0.25);
+                    });
+                } catch (_) {}
+            }
+
+            playWrongSound() {
+                try {
+                    const ctx = this.getAudioContext();
+                    if (!ctx) return;
+                    const now = ctx.currentTime;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(160, now);
+                    osc.frequency.exponentialRampToValueAtTime(80, now + 0.15);
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                } catch (_) {}
+            }
+
+            playLevelUpSound() {
+                try {
+                    const ctx = this.getAudioContext();
+                    if (!ctx) return;
+                    const now = ctx.currentTime;
+                    const notes = [523, 659, 784, 1047];
+                    notes.forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.1, now + i * 0.12);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.35);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + i * 0.12);
+                        osc.stop(now + i * 0.12 + 0.35);
+                    });
+                } catch (_) {}
+            }
+
+            playPageClearSound() {
+                try {
+                    const ctx = this.getAudioContext();
+                    if (!ctx) return;
+                    const now = ctx.currentTime;
+                    const notes = [659, 784, 659];
+                    notes.forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.08, now + i * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.2);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + i * 0.08);
+                        osc.stop(now + i * 0.08 + 0.2);
+                    });
+                } catch (_) {}
+            }
+
+            playPopSound() {
+                try {
+                    const ctx = this.getAudioContext();
+                    if (!ctx) return;
+                    const now = ctx.currentTime;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(200, now + 0.08);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } catch (_) {}
+            }
+
+            async init() {
+                this.syncViewportHeight();
+                window.addEventListener('resize', this.handleResize, { passive: true });
+                window.addEventListener('orientationchange', this.handleResize, { passive: true });
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener('resize', this.handleResize, { passive: true });
+                }
+
+                const start = () => this.startPage();
+                if (document.fonts && document.fonts.ready) {
+                    Promise.race([
+                        document.fonts.ready,
+                        new Promise(resolve => setTimeout(resolve, 700))
+                    ]).then(start);
+                } else {
+                    start();
+                }
+            }
+
+            syncViewportHeight() {
+                const visualViewport = window.visualViewport;
+                const viewportHeight = Math.round((visualViewport ? visualViewport.height : 0) || window.innerHeight || 0);
+                if (viewportHeight > 0) {
+                    document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
+                }
+            }
+
+            handleResize() {
+                this.syncViewportHeight();
+                cancelAnimationFrame(this.resizeFrame);
+                this.resizeFrame = requestAnimationFrame(() => {
+                    this.resizeCanvas();
+                    this.redrawConnections();
+                });
+            }
+
+            loadProgress() {
+                try {
+                    const saved = localStorage.getItem('opposite-bubbles-progress');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        if (typeof data.level === 'number') this.level = data.level;
+                        if (typeof data.pagesClearedInLevel === 'number') this.pagesClearedInLevel = data.pagesClearedInLevel;
+                    }
+                } catch (_) {}
+            }
+
+            saveProgress() {
+                try {
+                    localStorage.setItem('opposite-bubbles-progress', JSON.stringify({
+                        level: this.level,
+                        pagesClearedInLevel: this.pagesClearedInLevel
+                    }));
+                } catch (_) {}
+            }
+
+            resetProgress() {
+                if (!confirm('Reset all progress? Your level will be set back to 1.')) return;
+                localStorage.removeItem('opposite-bubbles-progress');
+                this.level = 1;
+                this.pagesClearedInLevel = 0;
+                this.connections = [];
+                this.startPage();
+            }
+
+            wordsPerPage() {
+                return Math.min(2 + Math.floor((this.level - 1) / 2), 7);
+            }
+
+            totalPagesPerLevel() {
+                return 4;
+            }
+
+            getTier(level) {
+                let tier = TIERS[0];
+                for (const t of TIERS) {
+                    if (level >= t.minLevel) tier = t;
+                }
+                return tier;
+            }
+
+            getLevelUpMessage(level) {
+                if (level % 5 === 0) return `Level ${level} — On Fire!`;
+                if (level % 3 === 0) return `Level ${level} — Keep Going!`;
+                return `Level ${level}!`;
+            }
+
+            getPageClearMessage() {
+                const msgs = ['Brilliant!', 'Fantastic!', 'Nailed It!', 'Super!', 'Boom!', 'Splendid!', 'Stellar!'];
+                return pick(msgs);
+            }
+
+            generatePage(count) {
+                const tier = this.getTier(this.level);
+                const available = shuffle(tier.pairs);
+                const selected = available.slice(0, count);
+
+                const items = [];
+                for (const pair of selected) {
+                    items.push({
+                        word: pair.left,
+                        matchKey: pair.left,
+                        pairKey: pair.left,
+                        color: pick(COLORS),
+                    });
+                    items.push({
+                        word: pair.right,
+                        matchKey: pair.left,
+                        pairKey: pair.left,
+                        color: pick(COLORS),
+                    });
+                }
+
+                return shuffle(items);
+            }
+
+            startPage() {
+                clearTimeout(this.pageAdvanceTimeout);
+                this.clearToast();
+                this.matchesMade = 0;
+                this.connections = [];
+                this.activeDrag = null;
+                this.connectionSerial = 0;
+                this.bubbleEls = [];
+                this.hoverTarget = null;
+
+                const count = this.wordsPerPage();
+                const items = this.generatePage(count);
+                this.currentItems = items;
+
+                const pairMap = new Map();
+                for (const item of items) {
+                    const key = item.pairKey;
+                    if (!pairMap.has(key)) pairMap.set(key, []);
+                    pairMap.get(key).push(item);
+                }
+                this.currentPairs = Array.from(pairMap.values());
+
+                this.renderPage();
+                this.resizeCanvas();
+                this.redrawConnections();
+                this.updateStatus();
+                this.levelDescription.textContent = `Level ${this.level}`;
+            }
+
+            getBubbleSize(word) {
+                const len = word.length;
+                if (len <= 3) return { w: 100, h: 100 };
+                if (len <= 5) return { w: 120, h: 110 };
+                if (len <= 7) return { w: 140, h: 120 };
+                return { w: 160, h: 130 };
+            }
+
+            getRandomPosition(w, h, existingPositions, boardW, boardH) {
+                const margin = 10;
+                const maxAttempts = 200;
+                let attempts = 0;
+
+                while (attempts < maxAttempts) {
+                    const x = margin + Math.random() * (boardW - w - margin * 2);
+                    const y = margin + Math.random() * (boardH - h - margin * 2);
+                    let overlap = false;
+                    for (const pos of existingPositions) {
+                        if (x < pos.x + pos.w + 12 && x + w + 12 > pos.x &&
+                            y < pos.y + pos.h + 12 && y + h + 12 > pos.y) {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                    if (!overlap) return { x, y };
+                    attempts++;
+                }
+
+                return {
+                    x: margin + Math.random() * (boardW - w - margin * 2),
+                    y: margin + Math.random() * (boardH - h - margin * 2)
+                };
+            }
+
+            renderPage() {
+                this.particleContainer.innerHTML = '';
+                const existingBubbles = this.board.querySelectorAll('.bubble');
+                for (const b of existingBubbles) b.remove();
+
+                const rect = this.board.getBoundingClientRect();
+                const boardW = rect.width;
+                const boardH = rect.height;
+
+                const positions = [];
+                this.bubbleEls = [];
+
+                for (const item of this.currentItems) {
+                    const size = this.getBubbleSize(item.word);
+                    const pos = this.getRandomPosition(size.w, size.h, positions, boardW, boardH);
+                    positions.push({ x: pos.x, y: pos.y, w: size.w, h: size.h });
+
+                    const bubble = document.createElement('div');
+                    bubble.className = 'bubble';
+                    bubble.dataset.matchKey = item.matchKey;
+                    bubble.dataset.word = item.word;
+                    bubble.dataset.origX = pos.x;
+                    bubble.dataset.origY = pos.y;
+                    bubble.style.left = `${pos.x}px`;
+                    bubble.style.top = `${pos.y}px`;
+                    bubble.style.width = `${size.w}px`;
+                    bubble.style.height = `${size.h}px`;
+                    bubble.style.background = item.color.bg;
+                    bubble.style.setProperty('--bubble-shadow', item.color.shadow);
+                    bubble.style.setProperty('--bubble-glow', item.color.glow);
+                    bubble.style.boxShadow = `
+                        0 8px 32px ${item.color.shadow},
+                        0 2px 8px rgba(0,0,0,0.2),
+                        inset 0 -3px 8px rgba(0,0,0,0.1),
+                        inset 0 3px 8px rgba(255,255,255,0.15)
+                    `;
+                    bubble.style.animationDelay = `${Math.random() * 2}s`;
+
+                    const text = document.createElement('span');
+                    text.className = 'bubble-text';
+                    text.textContent = item.word;
+                    bubble.appendChild(text);
+
+                    bubble.addEventListener('pointerdown', event => this.beginDrag(event, bubble));
+
+                    this.board.appendChild(bubble);
+                    this.bubbleEls.push(bubble);
+                }
+            }
+
+            updateStatus() {
+                const pageNumber = this.pagesClearedInLevel + 1;
+                const totalPages = this.totalPagesPerLevel();
+                const words = this.currentPairs.length;
+
+                this.levelLabel.textContent = String(this.level);
+                this.pageLabel.textContent = `${pageNumber} of ${totalPages}`;
+                this.matchLabel.textContent = `${this.matchesMade} of ${words}`;
+            }
+
+            resizeCanvas() {
+                const rect = this.board.getBoundingClientRect();
+                const ratio = window.devicePixelRatio || 1;
+                this.canvas.width = Math.round(rect.width * ratio);
+                this.canvas.height = Math.round(rect.height * ratio);
+                this.canvas.style.width = `${rect.width}px`;
+                this.canvas.style.height = `${rect.height}px`;
+                this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+            }
+
+            getBubbleCenter(bubble) {
+                const rect = bubble.getBoundingClientRect();
+                const boardRect = this.board.getBoundingClientRect();
+                return {
+                    x: rect.left - boardRect.left + rect.width / 2,
+                    y: rect.top - boardRect.top + rect.height / 2
+                };
+            }
+
+            beginDrag(event, bubble) {
+                if (bubble.classList.contains('matched')) return;
+                if (this.activeDrag) return;
+
+                event.preventDefault();
+
+                const rect = this.board.getBoundingClientRect();
+                const bubbleRect = bubble.getBoundingClientRect();
+                const offsetX = event.clientX - bubbleRect.left;
+                const offsetY = event.clientY - bubbleRect.top;
+
+                bubble.classList.add('is-dragging');
+                bubble.style.animation = 'none';
+                bubble.style.transition = 'left 0s, top 0s, transform 0.15s ease, box-shadow 0.15s ease';
+
+                const color = COLORS[this.connectionSerial % COLORS.length];
+                this.connectionSerial += 1;
+
+                const origX = parseFloat(bubble.dataset.origX);
+                const origY = parseFloat(bubble.dataset.origY);
+
+                this.activeDrag = {
+                    bubble,
+                    offsetX,
+                    offsetY,
+                    origX,
+                    origY,
+                    matchKey: bubble.dataset.matchKey,
+                    color: color,
+                    boardRect: rect,
+                };
+
+                window.addEventListener('pointermove', this.handlePointerMove);
+                window.addEventListener('pointerup', this.handlePointerUp);
+                window.addEventListener('pointercancel', this.handlePointerUp);
+
+                this.handlePointerMove(event);
+            }
+
+            clientToBoardPoint(clientX, clientY) {
+                const rect = this.board.getBoundingClientRect();
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            handlePointerMove(event) {
+                if (!this.activeDrag) return;
+
+                const bubble = this.activeDrag.bubble;
+                const rect = this.activeDrag.boardRect;
+
+                const x = event.clientX - rect.left - this.activeDrag.offsetX;
+                const y = event.clientY - rect.top - this.activeDrag.offsetY;
+
+                const bubbleW = bubble.offsetWidth;
+                const bubbleH = bubble.offsetHeight;
+                const maxX = rect.width - bubbleW;
+                const maxY = rect.height - bubbleH;
+
+                bubble.style.left = `${clamp(x, 0, maxX)}px`;
+                bubble.style.top = `${clamp(y, 0, maxY)}px`;
+
+                const hovered = this.findBubbleAt(event.clientX, event.clientY);
+                this.setHoverTarget(hovered);
+                this.redrawConnections();
+            }
+
+            handlePointerUp(event) {
+                if (!this.activeDrag) return;
+
+                const drag = this.activeDrag;
+                const target = this.findBubbleAt(event.clientX, event.clientY);
+                const validTarget = target
+                    && target !== drag.bubble
+                    && !target.classList.contains('matched')
+                    && target.dataset.matchKey === drag.matchKey;
+
+                if (validTarget) {
+                    this.completeMatch(drag, target);
+                } else {
+                    if (target && target !== drag.bubble && !target.classList.contains('matched')) {
+                        this.flashWrong(drag.bubble);
+                        this.playWrongSound();
+                    } else {
+                        this.returnBubble(drag.bubble);
+                    }
+                    this.clearActiveDrag();
+                }
+
+                window.removeEventListener('pointermove', this.handlePointerMove);
+                window.removeEventListener('pointerup', this.handlePointerUp);
+                window.removeEventListener('pointercancel', this.handlePointerUp);
+            }
+
+            findBubbleAt(clientX, clientY) {
+                const el = document.elementFromPoint(clientX, clientY);
+                if (!el) return null;
+                const bubble = el.closest('.bubble');
+                if (!bubble) return null;
+                if (!this.activeDrag) return bubble;
+                if (bubble === this.activeDrag.bubble) return null;
+                return bubble;
+            }
+
+            setHoverTarget(bubble) {
+                if (this.hoverTarget === bubble) return;
+
+                if (this.hoverTarget) {
+                    this.hoverTarget.classList.remove('is-hover-target');
+                    this.hoverTarget.style.removeProperty('--bubble-glow');
+                }
+
+                this.hoverTarget = bubble;
+
+                if (bubble && this.activeDrag) {
+                    bubble.classList.add('is-hover-target');
+                    bubble.style.setProperty('--bubble-glow', this.activeDrag.color.glow || 'rgba(136, 104, 255, 0.25)');
+                }
+            }
+
+            clearHoverTarget() {
+                if (!this.hoverTarget) return;
+                this.hoverTarget.classList.remove('is-hover-target');
+                this.hoverTarget.style.removeProperty('--bubble-glow');
+                this.hoverTarget = null;
+            }
+
+            flashWrong(bubble) {
+                bubble.classList.remove('wrong');
+                void bubble.offsetWidth;
+                bubble.classList.add('wrong');
+                setTimeout(() => bubble.classList.remove('wrong'), 450);
+            }
+
+            returnBubble(bubble) {
+                const origX = parseFloat(bubble.dataset.origX);
+                const origY = parseFloat(bubble.dataset.origY);
+                bubble.classList.add('returning');
+                bubble.style.left = `${origX}px`;
+                bubble.style.top = `${origY}px`;
+                setTimeout(() => {
+                    bubble.classList.remove('returning');
+                }, 450);
+            }
+
+            completeMatch(drag, target) {
+                const b1 = drag.bubble;
+                const b2 = target;
+
+                this.spawnParticles(b1);
+                this.spawnParticles(b2);
+                this.spawnPopRipple(b1);
+                this.spawnPopRipple(b2);
+
+                this.playMatchSound();
+
+                b1.classList.remove('is-dragging');
+                b1.style.animation = 'none';
+                b2.style.animation = 'none';
+
+                this.activeDrag = null;
+                this.clearHoverTarget();
+
+                this.animateMerge(b1, b2).then(() => {
+                    this.createMergedBubble(b1, b2);
+                    b1.remove();
+                    b2.remove();
+
+                    this.matchesMade += 1;
+                    this.updateStatus();
+
+                    if (this.matchesMade === this.currentPairs.length) {
+                        this.finishPage();
+                    }
+                });
+            }
+
+            hexToRgb(hex) {
+                const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : [0, 0, 0];
+            }
+
+            rgbToHex(r, g, b) {
+                return '#' + [r, g, b].map(x => Math.round(clamp(x, 0, 255)).toString(16).padStart(2, '0')).join('');
+            }
+
+            extractGradientColors(gradient) {
+                return [...gradient.matchAll(/#[a-f\d]{6}/ig)].map(m => m[0]);
+            }
+
+            blendHexColors(hex1, hex2) {
+                const a = this.hexToRgb(hex1);
+                const b = this.hexToRgb(hex2);
+                return this.rgbToHex(
+                    (a[0] + b[0]) / 2,
+                    (a[1] + b[1]) / 2,
+                    (a[2] + b[2]) / 2
+                );
+            }
+
+            blendGradients(grad1, grad2) {
+                const s1 = this.extractGradientColors(grad1);
+                const s2 = this.extractGradientColors(grad2);
+                const blended = s1.map((s, i) =>
+                    this.blendHexColors(s, s2[i] || s2[s2.length - 1])
+                );
+                return `linear-gradient(145deg, ${blended.join(', ')})`;
+            }
+
+            animateMerge(b1, b2) {
+                return new Promise(resolve => {
+                    const boardRect = this.board.getBoundingClientRect();
+                    const r1 = b1.getBoundingClientRect();
+                    const r2 = b2.getBoundingClientRect();
+
+                    const mx = ((r1.left + r1.width / 2) + (r2.left + r2.width / 2)) / 2 - boardRect.left;
+                    const my = ((r1.top + r1.height / 2) + (r2.top + r2.height / 2)) / 2 - boardRect.top;
+
+                    const tx1 = mx - r1.width / 2;
+                    const ty1 = my - r1.height / 2;
+                    const tx2 = mx - r2.width / 2;
+                    const ty2 = my - r2.height / 2;
+
+                    b1.style.zIndex = '15';
+                    b2.style.zIndex = '15';
+                    b1.style.transition = 'left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s ease, height 0.4s ease, opacity 0.35s ease';
+                    b2.style.transition = 'left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s ease, height 0.4s ease, opacity 0.35s ease';
+
+                    b1.style.left = `${tx1}px`;
+                    b1.style.top = `${ty1}px`;
+                    b1.style.width = `${r1.width * 0.4}px`;
+                    b1.style.height = `${r1.height * 0.4}px`;
+                    b1.style.opacity = '0';
+
+                    b2.style.left = `${tx2}px`;
+                    b2.style.top = `${ty2}px`;
+                    b2.style.width = `${r2.width * 0.4}px`;
+                    b2.style.height = `${r2.height * 0.4}px`;
+                    b2.style.opacity = '0';
+
+                    setTimeout(resolve, 450);
+                });
+            }
+
+            createMergedBubble(b1, b2) {
+                const boardRect = this.board.getBoundingClientRect();
+                const r1 = b1.getBoundingClientRect();
+                const r2 = b2.getBoundingClientRect();
+
+                const mx = ((r1.left + r1.width / 2) + (r2.left + r2.width / 2)) / 2 - boardRect.left;
+                const my = ((r1.top + r1.height / 2) + (r2.top + r2.height / 2)) / 2 - boardRect.top;
+
+                const word1 = b1.querySelector('.bubble-text').textContent;
+                const word2 = b2.querySelector('.bubble-text').textContent;
+                const longer = word1.length > word2.length ? word1 : word2;
+
+                let w, h;
+                if (longer.length <= 3) { w = 140; h = 110; }
+                else if (longer.length <= 5) { w = 170; h = 120; }
+                else if (longer.length <= 7) { w = 190; h = 130; }
+                else { w = 210; h = 140; }
+
+                const grad1 = b1.style.background;
+                const grad2 = b2.style.background;
+                const blended = this.blendGradients(grad1, grad2);
+                const shadowHex = this.extractGradientColors(blended)[0] || '#8868ff';
+
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble merged';
+                bubble.style.left = `${mx - w / 2}px`;
+                bubble.style.top = `${my - h / 2}px`;
+                bubble.style.width = `${w}px`;
+                bubble.style.height = `${h}px`;
+                bubble.style.background = blended;
+                bubble.style.flexDirection = 'column';
+                bubble.style.gap = '1px';
+                bubble.style.cursor = 'default';
+                bubble.style.pointerEvents = 'none';
+                bubble.style.boxShadow = `0 8px 32px ${shadowHex}66, 0 2px 8px rgba(0,0,0,0.2), inset 0 -3px 8px rgba(0,0,0,0.1), inset 0 3px 8px rgba(255,255,255,0.15)`;
+                bubble.style.animation = 'none';
+                bubble.style.transform = 'scale(0)';
+                bubble.style.opacity = '0';
+
+                const t1 = document.createElement('span');
+                t1.className = 'bubble-text';
+                t1.textContent = word1;
+                t1.style.fontSize = 'clamp(13px, 1.5vw, 22px)';
+
+                const t2 = document.createElement('span');
+                t2.className = 'bubble-text';
+                t2.textContent = word2;
+                t2.style.fontSize = 'clamp(13px, 1.5vw, 22px)';
+
+                bubble.append(t1, t2);
+                this.board.appendChild(bubble);
+
+                requestAnimationFrame(() => {
+                    bubble.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease';
+                    bubble.style.transform = 'scale(1)';
+                    bubble.style.opacity = '1';
+                });
+            }
+
+            spawnParticles(bubble) {
+                const rect = bubble.getBoundingClientRect();
+                const boardRect = this.board.getBoundingClientRect();
+                const cx = rect.left - boardRect.left + rect.width / 2;
+                const cy = rect.top - boardRect.top + rect.height / 2;
+                const colors = this.extractGradientColors(bubble.style.background);
+                const color = colors[0] || '#8868ff';
+
+                for (let i = 0; i < 8; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'particle';
+                    const angle = (Math.PI * 2 * i) / 8;
+                    const dist = 40 + Math.random() * 30;
+                    p.style.left = `${cx}px`;
+                    p.style.top = `${cy}px`;
+                    p.style.width = `${6 + Math.random() * 8}px`;
+                    p.style.height = p.style.width;
+                    p.style.background = color;
+                    p.style.setProperty('--px', `${Math.cos(angle) * dist}px`);
+                    p.style.setProperty('--py', `${Math.sin(angle) * dist}px`);
+                    this.particleContainer.appendChild(p);
+                    setTimeout(() => p.remove(), 850);
+                }
+            }
+
+            spawnPopRipple(bubble) {
+                const rect = bubble.getBoundingClientRect();
+                const boardRect = this.board.getBoundingClientRect();
+                const cx = rect.left - boardRect.left + rect.width / 2;
+                const cy = rect.top - boardRect.top + rect.height / 2;
+                const size = Math.max(rect.width, rect.height) * 1.5;
+
+                const ring = document.createElement('div');
+                ring.className = 'pop-ripple';
+                ring.style.left = `${cx}px`;
+                ring.style.top = `${cy}px`;
+                ring.style.width = `${size}px`;
+                ring.style.height = `${size}px`;
+                this.board.appendChild(ring);
+                setTimeout(() => ring.remove(), 550);
+            }
+
+            finishPage() {
+                this.pagesClearedInLevel += 1;
+                const leveledUp = this.pagesClearedInLevel >= this.totalPagesPerLevel();
+
+                if (leveledUp) {
+                    this.level += 1;
+                    this.pagesClearedInLevel = 0;
+                    this.showToast(this.getLevelUpMessage(this.level));
+                    this.playLevelUpSound();
+                } else {
+                    this.showToast(this.getPageClearMessage());
+                    this.playPageClearSound();
+                }
+                this.saveProgress();
+
+                this.pageAdvanceTimeout = window.setTimeout(() => {
+                    this.startPage();
+                }, leveledUp ? 1800 : 1100);
+            }
+
+            showToast(text) {
+                clearTimeout(this.toastTimeout);
+                this.toast.textContent = text;
+                this.toast.style.setProperty('--toast-glow', `rgba(136, 104, 255, 0.5)`);
+                this.toast.classList.add('show');
+                this.toastTimeout = window.setTimeout(() => this.clearToast(), 900);
+            }
+
+            clearToast() {
+                this.toast.classList.remove('show');
+            }
+
+            clearActiveDrag() {
+                if (!this.activeDrag) return;
+
+                this.activeDrag.bubble.classList.remove('is-dragging');
+                this.activeDrag.bubble.style.removeProperty('animation');
+
+                this.activeDrag = null;
+                this.clearHoverTarget();
+                this.redrawConnections();
+            }
+
+            redrawConnections() {
+                const ctx = this.ctx;
+                if (!ctx) return;
+
+                const rect = this.board.getBoundingClientRect();
+                ctx.clearRect(0, 0, rect.width, rect.height);
+
+                for (const connection of this.connections) {
+                    const start = this.getBubbleCenter(connection.bubble1);
+                    const end = this.getBubbleCenter(connection.bubble2);
+                    this.drawConnectionLine(start, end, connection.color);
+                }
+
+                if (this.activeDrag && this.hoverTarget) {
+                    const start = this.getBubbleCenter(this.activeDrag.bubble);
+                    const end = this.getBubbleCenter(this.hoverTarget);
+                    this.drawConnectionLine(start, end, this.activeDrag.color, 0.5);
+                }
+            }
+
+            drawConnectionLine(start, end, color, alpha) {
+                const ctx = this.ctx;
+                const midX = (start.x + end.x) / 2;
+                const midY = (start.y + end.y) / 2;
+                const dx = end.x - start.x;
+                const dy = end.y - start.y;
+                const bendFactor = 0.15;
+                const cpx1 = midX - dy * bendFactor;
+                const cpy1 = midY + dx * bendFactor;
+                const cpx2 = midX + dy * bendFactor;
+                const cpy2 = midY - dx * bendFactor;
+
+                const bg = color.bg || color;
+
+                ctx.save();
+                ctx.globalAlpha = alpha || 0.7;
+                ctx.lineCap = 'round';
+
+                ctx.shadowColor = 'rgba(255,255,255,0.15)';
+                ctx.shadowBlur = 8;
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                ctx.lineWidth = 14;
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, end.x, end.y);
+                ctx.stroke();
+
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = 'rgba(255,255,255,0.08)';
+                ctx.strokeStyle = bg;
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, end.x, end.y);
+                ctx.stroke();
+
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, end.x, end.y);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+        }
+
+        new OppositeBubbles();
+    </script>
+  <script src="pwa.js" data-sw="sw.js" defer></script>
+</body>
+</html>

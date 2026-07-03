@@ -13,7 +13,7 @@
  *   - other assets (icons, fonts, css, audio, geojson) -> stale-while-revalidate
  */
 
-const VERSION = '2026-06-24.3';
+const VERSION = '2026-07-02.1';
 const CACHE = 'koochooloo-' + VERSION;
 
 // App shell precached on install so the whole app works fully offline.
@@ -41,6 +41,7 @@ const PRECACHE = [
   "multiplication-table.html",
   "multiplication-touch.html",
   "number-sequence-puzzle-game.html",
+  "opposite-bubbles.html",
   "opposite-words-match.html",
   "paint.html",
   "piano-game.html",
