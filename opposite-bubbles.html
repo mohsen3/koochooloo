@@ -1022,6 +1022,11 @@
                 const color = COLORS[this.connectionSerial % COLORS.length];
                 this.connectionSerial += 1;
 
+                const isMerged = bubble.classList.contains('merged');
+                if (isMerged) {
+                    bubble.dataset.origX = String(parseFloat(bubble.style.left) || 0);
+                    bubble.dataset.origY = String(parseFloat(bubble.style.top) || 0);
+                }
                 const origX = parseFloat(bubble.dataset.origX);
                 const origY = parseFloat(bubble.dataset.origY);
 
@@ -1034,6 +1039,7 @@
                     matchKey: bubble.dataset.matchKey,
                     color: color,
                     boardRect: rect,
+                    isMerged,
                 };
 
                 window.addEventListener('pointermove', this.handlePointerMove);
@@ -1074,6 +1080,17 @@
                 if (!this.activeDrag) return;
 
                 const drag = this.activeDrag;
+
+                if (drag.isMerged) {
+                    drag.bubble.dataset.origX = drag.bubble.style.left;
+                    drag.bubble.dataset.origY = drag.bubble.style.top;
+                    this.clearActiveDrag();
+                    window.removeEventListener('pointermove', this.handlePointerMove);
+                    window.removeEventListener('pointerup', this.handlePointerUp);
+                    window.removeEventListener('pointercancel', this.handlePointerUp);
+                    return;
+                }
+
                 const target = this.findBubbleAt(event.clientX, event.clientY);
                 const validTarget = target
                     && target !== drag.bubble
@@ -1270,21 +1287,22 @@
                 const blended = this.blendGradients(grad1, grad2);
                 const shadowHex = this.extractGradientColors(blended)[0] || '#8868ff';
 
+                const x = mx - w / 2;
+                const y = my - h / 2;
+
                 const bubble = document.createElement('div');
                 bubble.className = 'bubble merged';
-                bubble.style.left = `${mx - w / 2}px`;
-                bubble.style.top = `${my - h / 2}px`;
+                bubble.dataset.origX = String(x);
+                bubble.dataset.origY = String(y);
+                bubble.style.left = `${x}px`;
+                bubble.style.top = `${y}px`;
                 bubble.style.width = `${w}px`;
                 bubble.style.height = `${h}px`;
                 bubble.style.background = blended;
                 bubble.style.flexDirection = 'column';
                 bubble.style.gap = '1px';
-                bubble.style.cursor = 'default';
-                bubble.style.pointerEvents = 'none';
                 bubble.style.boxShadow = `0 8px 32px ${shadowHex}66, 0 2px 8px rgba(0,0,0,0.2), inset 0 -3px 8px rgba(0,0,0,0.1), inset 0 3px 8px rgba(255,255,255,0.15)`;
                 bubble.style.animation = 'none';
-                bubble.style.transform = 'scale(0)';
-                bubble.style.opacity = '0';
 
                 const t1 = document.createElement('span');
                 t1.className = 'bubble-text';
@@ -1297,13 +1315,8 @@
                 t2.style.fontSize = 'clamp(13px, 1.5vw, 22px)';
 
                 bubble.append(t1, t2);
+                bubble.addEventListener('pointerdown', event => this.beginDrag(event, bubble));
                 this.board.appendChild(bubble);
-
-                requestAnimationFrame(() => {
-                    bubble.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease';
-                    bubble.style.transform = 'scale(1)';
-                    bubble.style.opacity = '1';
-                });
             }
 
             spawnParticles(bubble) {
