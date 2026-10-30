@@ -1,3 +1,4 @@
+import { createIcon } from "./icons.js";
 import { QUESTION_TYPES } from "./questions.js";
 import { QuizManager } from "./manager.js";
 
@@ -218,8 +219,7 @@ function renderBody(bodyItems) {
       }
       questionBodyEl.appendChild(p);
     } else if (item.kind === "icon") {
-      const icon = document.createElement("i");
-      icon.className = `q-icon ${item.value}`;
+      const icon = createIcon(item.value, "q-icon");
       if (item.color) {
         icon.style.color = item.color;
       }
@@ -256,15 +256,11 @@ function renderBody(bodyItems) {
       const items = item.value?.items || [];
 
       items.forEach((scatterItem) => {
-        const icon = document.createElement("i");
-        icon.className = `scatter-item ${scatterItem.iconClass}`;
+        const icon = createIcon(scatterItem.icon, "scatter-item", scatterItem.label);
         icon.style.left = `${scatterItem.x}%`;
         icon.style.top = `${scatterItem.y}%`;
         if (scatterItem.color) {
           icon.style.color = scatterItem.color;
-        }
-        if (scatterItem.label) {
-          icon.setAttribute("aria-label", scatterItem.label);
         }
         field.appendChild(icon);
       });
@@ -282,7 +278,7 @@ function renderBody(bodyItems) {
         if (position === row.dataset.position) {
           const marker = document.createElement("div");
           marker.className = "direction-marker";
-          marker.innerHTML = '<i class="fa-solid fa-star"></i>';
+          marker.appendChild(createIcon("star"));
           slot.appendChild(marker);
         }
         row.appendChild(slot);
@@ -307,9 +303,8 @@ function renderOptions(question) {
       button.classList.add("option--icon-only");
     }
 
-    if (option.iconClass) {
-      const icon = document.createElement("i");
-      icon.className = `opt-icon ${option.iconClass} fa-fw`;
+    if (option.icon) {
+      const icon = createIcon(option.icon, "opt-icon");
       if (option.color) {
         icon.style.color = option.color;
       }
@@ -565,6 +560,7 @@ settingsSelectNone.addEventListener("click", () => {
   setAllTypes(false);
 });
 
+settingsToggleBtn.appendChild(createIcon("gear"));
 renderSettings();
 applyTheme(selectedThemeId);
 renderThemePicker();

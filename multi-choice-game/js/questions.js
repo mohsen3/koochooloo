@@ -72,23 +72,23 @@ const COLORS = [
 ];
 
 const SHAPES = [
-  { name: "circle", icon: "fa-solid fa-circle" },
-  { name: "square", icon: "fa-solid fa-square" },
-  { name: "triangle", icon: "fa-solid fa-caret-up" },
-  { name: "diamond", icon: "fa-solid fa-diamond" },
+  { name: "circle", icon: "circle" },
+  { name: "square", icon: "square" },
+  { name: "triangle", icon: "triangle" },
+  { name: "diamond", icon: "diamond" },
 ];
 
 const COUNT_ICONS = [
-  { name: "frog", plural: "frogs", icon: "fa-solid fa-frog" },
-  { name: "bird", plural: "birds", icon: "fa-solid fa-dove" },
-  { name: "butterfly", plural: "butterflies", icon: "fa-solid fa-butterfly" },
-  { name: "cat", plural: "cats", icon: "fa-solid fa-cat" },
-  { name: "dog", plural: "dogs", icon: "fa-solid fa-dog" },
-  { name: "fish", plural: "fish", icon: "fa-solid fa-fish" },
-  { name: "apple", plural: "apples", icon: "fa-solid fa-apple-whole" },
-  { name: "carrot", plural: "carrots", icon: "fa-solid fa-carrot" },
-  { name: "ice cream", plural: "ice creams", icon: "fa-solid fa-ice-cream" },
-  { name: "star", plural: "stars", icon: "fa-solid fa-star" },
+  { name: "frog", plural: "frogs", icon: "frog" },
+  { name: "bird", plural: "birds", icon: "bird" },
+  { name: "butterfly", plural: "butterflies", icon: "butterfly" },
+  { name: "cat", plural: "cats", icon: "cat" },
+  { name: "dog", plural: "dogs", icon: "dog" },
+  { name: "fish", plural: "fish", icon: "fish" },
+  { name: "apple", plural: "apples", icon: "apple" },
+  { name: "carrot", plural: "carrots", icon: "carrot" },
+  { name: "ice cream", plural: "ice creams", icon: "ice-cream" },
+  { name: "star", plural: "stars", icon: "star" },
 ];
 
 const COUNT_COLORS = ["#ff7043", "#29b6f6", "#66bb6a", "#ffee58", "#ab47bc", "#8d6e63"];
@@ -280,19 +280,19 @@ const DIRECTIONS = [
   {
     id: "left",
     label: "left",
-    iconClass: "fa-solid fa-arrow-left",
+    icon: "arrow-left",
     prompt: "Tap the arrow that points left.",
   },
   {
     id: "center",
     label: "center",
-    iconClass: "fa-solid fa-square",
+    icon: "square",
     prompt: "Which one is in the middle?",
   },
   {
     id: "right",
     label: "right",
-    iconClass: "fa-solid fa-arrow-right",
+    icon: "arrow-right",
     prompt: "Tap the arrow that points right.",
   },
 ];
@@ -333,7 +333,7 @@ export function coloredShapeQuestion() {
   const used = new Set([targetKey]);
   const options = [{
     id: "opt-0",
-    iconClass: shape.icon,
+    icon: shape.icon,
     color: color.value,
     label: "",
     ariaLabel: `${color.name} ${shape.name}`,
@@ -348,7 +348,7 @@ export function coloredShapeQuestion() {
       used.add(key);
       options.push({
         id: `opt-${optionIndex++}`,
-        iconClass: nextShape.icon,
+        icon: nextShape.icon,
         color: nextColor.value,
         label: "",
         ariaLabel: `${nextColor.name} ${nextShape.name}`,
@@ -692,7 +692,7 @@ export function countObjectsQuestion() {
   const addItems = (icon, count) => {
     for (let i = 0; i < count; i += 1) {
       items.push({
-        iconClass: icon.icon,
+        icon: icon.icon,
         label: icon.name,
         color: COUNT_COLORS[randInt(0, COUNT_COLORS.length - 1)],
       });
@@ -825,7 +825,7 @@ export function directionQuestion() {
   const answer = DIRECTIONS[randInt(0, DIRECTIONS.length - 1)];
   const options = DIRECTIONS.map((direction, index) => ({
     id: `opt-${index}`,
-    iconClass: direction.iconClass,
+    icon: direction.icon,
     color: "#1a73e8",
     label: "",
     ariaLabel: direction.label,

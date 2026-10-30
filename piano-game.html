@@ -7,13 +7,18 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html, body {
+            touch-action: none;
+            overscroll-behavior: none;
+        }
+
         body {
             font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #2980b9 100%);
             min-height: 100vh;
             min-height: 100dvh;
             overflow: hidden;
-            touch-action: manipulation;
+            touch-action: none;
             -webkit-user-select: none;
             user-select: none;
             -webkit-touch-callout: none;
@@ -953,9 +958,14 @@
             }
         });
 
-        document.addEventListener('gesturestart', (e) => e.preventDefault());
-        document.addEventListener('gesturechange', (e) => e.preventDefault());
-        document.addEventListener('gestureend', (e) => e.preventDefault());
+        // Safari can recognize repeated taps independently of pointer events.
+        // Cancel native piano touches from the first tap; notes use pointerdown.
+        pianoEl.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+        pianoEl.addEventListener('touchend', (e) => e.preventDefault(), { passive: false });
+
+        ['gesturestart', 'gesturechange', 'gestureend', 'dblclick'].forEach((eventName) => {
+            document.addEventListener(eventName, (e) => e.preventDefault(), { passive: false });
+        });
 
         document.addEventListener('touchstart', (e) => {
             if (e.touches.length > 1) e.preventDefault();

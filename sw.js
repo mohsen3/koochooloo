@@ -13,7 +13,7 @@
  *   - other assets (icons, fonts, css, audio, geojson) -> stale-while-revalidate
  */
 
-const VERSION = '2026-07-02.1';
+const VERSION = '2026-10-30.1';
 const CACHE = 'koochooloo-' + VERSION;
 
 // App shell precached on install so the whole app works fully offline.
@@ -75,6 +75,7 @@ const PRECACHE = [
   "data/three_little_pigs.json",
   "data/world-countries.js",
   "multi-choice-game/index.html",
+  "multi-choice-game/js/icons.js",
   "multi-choice-game/js/main.js",
   "multi-choice-game/js/manager.js",
   "multi-choice-game/js/questions.js",
