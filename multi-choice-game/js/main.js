@@ -9,7 +9,7 @@ const THEMES = [
   {
     id: "default",
     label: "Classic",
-    swatch: "linear-gradient(135deg, #1a73e8 0%, #f7f7f5 100%)",
+    swatch: "linear-gradient(135deg, #356f67 0%, #faf7f0 100%)",
   },
   {
     id: "ocean",
@@ -291,6 +291,7 @@ function renderBody(bodyItems) {
 
 function renderOptions(question) {
   optionsEl.innerHTML = "";
+  optionsEl.classList.toggle("options--pictures", question.options.every((option) => option.icon && !option.label));
   selected = new Set();
 
   question.options.forEach((option) => {
