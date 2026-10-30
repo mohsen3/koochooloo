@@ -91,7 +91,7 @@ const COUNT_ICONS = [
   { name: "star", plural: "stars", icon: "star" },
 ];
 
-const COUNT_COLORS = ["#ff7043", "#29b6f6", "#66bb6a", "#ffee58", "#ab47bc", "#8d6e63"];
+const COUNT_COLORS = ["#c94732", "#1675b6", "#268248", "#b66b12", "#9146b0", "#a54470"];
 
 const OPPOSITES = [
   { left: "big", right: "small" },
@@ -667,8 +667,8 @@ function buildScatterPositions(total) {
   }
 
   return shuffle(cells).slice(0, total).map((cell) => ({
-    x: Math.min(95, Math.max(5, cell.x + randInt(-6, 6))),
-    y: Math.min(90, Math.max(10, cell.y + randInt(-6, 6))),
+    x: Math.min(95, Math.max(5, cell.x + randInt(-2, 2))),
+    y: Math.min(90, Math.max(10, cell.y + randInt(-1, 1))),
   }));
 }
 

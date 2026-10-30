@@ -413,14 +413,14 @@ button:focus-visible {
   min-height: 220px;
   border-radius: 12px;
   border: 1px dashed var(--border);
-  background: linear-gradient(135deg, var(--scatter-a), var(--scatter-b));
+  background: var(--surface);
   overflow: hidden;
 }
 
 .scatter-item {
   position: absolute;
   transform: translate(-50%, -50%);
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-size: clamp(2rem, 3.6vw, 2.8rem);
   line-height: 1;
 }
 
