@@ -46,6 +46,7 @@
 
         .header {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             justify-content: center;
             gap: 10px;
@@ -304,6 +305,25 @@
             .celebration {
                 font-size: 1.5em;
             }
+        }
+        @media (orientation: landscape) and (max-height: 500px) {
+            body { padding: 6px; }
+            .container {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
+                grid-template-areas: "head head" "problem options" "message message";
+                padding: 8px 14px;
+                gap: 4px 16px;
+            }
+            .header { grid-area: head; }
+            .problem { grid-area: problem; }
+            .carry-row, .carry-cell { min-height: 0; height: 22px; font-size: 1.1rem; }
+            .digit-cell, .op-sign { height: 40px; font-size: 2.4rem; }
+            .ans-row { min-height: 0; }
+            .blank { width: 60px; height: 52px; font-size: 2.4rem; }
+            .options { grid-area: options; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .option { width: 58px; height: 56px; font-size: 2.2rem; }
+            .celebration { grid-area: message; padding: 0; font-size: 1.25rem; }
         }
     </style>
   <!-- pwa:head -->

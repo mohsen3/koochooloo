@@ -158,7 +158,8 @@
             border: 3px dashed var(--bub-edge);
             background: var(--bub-fill);
             box-shadow: inset 0 0 40px var(--bub-glow), 0 10px 30px rgba(24, 34, 47, 0.1);
-            padding: 4% 6% 0;
+            padding: 8px;
+            justify-content: center;
             text-align: center;
         }
 
@@ -182,7 +183,7 @@
             font-weight: 800;
             color: var(--bub-text);
             font-size: clamp(0.85rem, 2.1vw, 1.25rem);
-            margin-top: 6%;
+            margin-top: 0;
             pointer-events: none;
             white-space: nowrap;
         }
@@ -282,6 +283,19 @@
         }
 
         .hint.show { opacity: 1; }
+        .hint { top: 0; white-space: nowrap; }
+
+        @media (max-width: 520px), (max-height: 460px) {
+            .topbar { gap: 5px; padding: 5px 8px; min-height: 46px; }
+            .title { gap: 3px; line-height: 1.05; }
+            .pill, .next-btn { padding: 7px 9px; white-space: nowrap; }
+            .icon-btn { width: 38px; height: 38px; flex: none; }
+            .chip { padding: 5px; font-size: 15px; min-height: 36px; }
+            .bubble { padding: 5px; }
+            .bubble-label { font-size: 13px; gap: 2px; }
+            .bubble-words { gap: 1px 2px; margin-top: 2px; }
+            .solved-word { padding: 1px 4px; font-size: 10px; }
+        }
 
         /* ---- Confetti / celebration ---- */
         .confetti {
@@ -425,27 +439,6 @@
             return { cats, per };
         }
 
-        function gridCenters(count, W, H, landscape) {
-            let rows, cols;
-            if (count <= 2) { rows = landscape ? 1 : 2; cols = landscape ? 2 : 1; }
-            else if (count === 3) { rows = landscape ? 1 : 3; cols = landscape ? 3 : 1; }
-            else { rows = 2; cols = 2; }
-
-            let insetX, insetY;
-            if (rows > 1 && cols > 1) { insetX = 0.26; insetY = 0.24; }
-            else { insetX = cols > 1 ? 0.16 : 0.5; insetY = rows > 1 ? 0.16 : 0.5; }
-
-            const centers = [];
-            for (let i = 0; i < count; i++) {
-                const r = Math.floor(i / cols);
-                const c = i % cols;
-                const fx = cols === 1 ? 0.5 : insetX + (c / (cols - 1)) * (1 - 2 * insetX);
-                const fy = rows === 1 ? 0.52 : insetY + (r / (rows - 1)) * (1 - 2 * insetY);
-                centers.push({ x: W * fx, y: H * fy });
-            }
-            return centers;
-        }
-
         // ---------- Sound ----------
         let audioCtx = null;
         function beep(freqs, dur, type) {
@@ -483,25 +476,13 @@
             levelNum.textContent = level;
             nextBtn.classList.remove("ready");
 
-            const rect = stage.getBoundingClientRect();
-            const W = rect.width, H = rect.height;
-            const unit = Math.min(W, H);
-            const landscape = W >= H * 1.05;
-
             // pick non-overlapping categories (2, 3, or 4 depending on level)
             const cfg = roundConfig();
             const count = cfg.cats;
             const n = cfg.per;
             const picked = sample(CATEGORIES, count);
 
-            const sizeFrac = count === 2 ? 0.24 : count === 3 ? 0.20 : 0.18;
-            const stepFrac = count === 2 ? 0.03 : count === 3 ? 0.022 : 0.018;
-            const baseD = unit * sizeFrac;
-            const step = unit * stepFrac;
-            const maxR = (baseD + n * step) / 2;
-
             const colors = sample(PALETTE, count);
-            const centers = gridCenters(count, W, H, landscape);
 
             const roundChips = [];
 
@@ -513,7 +494,7 @@
                 const usable = cat.words.filter(w => !others.has(w));
                 const words = sample(usable, Math.min(n, usable.length));
 
-                const b = makeBubble(cat, idx, colors[idx], centers[idx], baseD, step);
+                const b = makeBubble(cat, idx, colors[idx]);
                 bubbles.push(b);
 
                 words.forEach(w => roundChips.push({ word: w, bubbleIndex: idx }));
@@ -522,25 +503,18 @@
             remaining = roundChips.length;
 
             // create + scatter chips
-            const exclusion = bubbles.map(b => ({ x: b.center.x, y: b.center.y, r: maxR + unit * 0.04 }));
-            const placed = [];
             shuffle(roundChips).forEach(item => {
                 const chip = makeChip(item);
                 stage.appendChild(chip.el);
-                const cw = chip.el.offsetWidth, ch = chip.el.offsetHeight;
-                const pos = findSpot(W, H, cw, ch, exclusion, placed);
-                chip.w = cw; chip.h = ch;
-                chip.ox = pos.x; chip.oy = pos.y;
-                placeChip(chip, pos.x, pos.y);
-                placed.push({ x: pos.x, y: pos.y, w: cw, h: ch });
                 chips.push(chip);
             });
+            layoutRound();
 
             hint.classList.add("show");
             setTimeout(() => hint.classList.remove("show"), 2600);
         }
 
-        function makeBubble(cat, idx, color, center, baseD, step) {
+        function makeBubble(cat, idx, color) {
             const el = document.createElement("div");
             el.className = "bubble";
             el.style.setProperty("--bub-fill", color.fill);
@@ -548,10 +522,6 @@
             el.style.setProperty("--bub-glow", color.glow);
             el.style.setProperty("--bub-ring", color.ring);
             el.style.setProperty("--bub-text", color.text);
-            el.style.left = center.x + "px";
-            el.style.top = center.y + "px";
-            el.style.width = baseD + "px";
-            el.style.height = baseD + "px";
 
             const label = document.createElement("div");
             label.className = "bubble-label";
@@ -562,7 +532,7 @@
             el.appendChild(wordsEl);
             stage.appendChild(el);
 
-            return { el, wordsEl, cat, idx, center, baseD, step, solved: 0 };
+            return { el, wordsEl, cat, idx, solved: 0 };
         }
 
         function makeChip(item) {
@@ -579,45 +549,35 @@
             chip.el.style.top = y + "px";
         }
 
-        function findSpot(W, H, cw, ch, exclusion, placed) {
-            const top = 6, padX = 6;
-            const minX = padX, maxX = W - cw - padX;
-            const minY = top, maxY = H - ch - 6;
-            let best = null, bestScore = -Infinity;
-            for (let tries = 0; tries < 260; tries++) {
-                const x = rand(minX, maxX);
-                const y = rand(minY, maxY);
-                const cx = x + cw / 2, cy = y + ch / 2;
-                const chipR = Math.max(cw, ch) / 2;
-                let ok = true, score = Infinity;
-                for (const ex of exclusion) {
-                    const d = Math.hypot(cx - ex.x, cy - ex.y) - ex.r - chipR;
-                    if (d < 0) { ok = false; break; }
-                    score = Math.min(score, d);
-                }
-                if (!ok) continue;
-                for (const p of placed) {
-                    const ox = Math.max(0, Math.min(x + cw, p.x + p.w) - Math.max(x, p.x));
-                    const oy = Math.max(0, Math.min(y + ch, p.y + p.h) - Math.max(y, p.y));
-                    if (ox > 0 && oy > 0) { ok = false; break; }
-                    const gap = Math.hypot(cx - (p.x + p.w / 2), cy - (p.y + p.h / 2));
-                    score = Math.min(score, gap);
-                }
-                if (!ok) continue;
-                return { x, y };
-            }
-            // fallback: relax overlap, just avoid bubbles
-            for (let tries = 0; tries < 260; tries++) {
-                const x = rand(minX, maxX), y = rand(minY, maxY);
-                const cx = x + cw / 2, cy = y + ch / 2;
-                const chipR = Math.max(cw, ch) / 2;
-                let ok = true;
-                for (const ex of exclusion) {
-                    if (Math.hypot(cx - ex.x, cy - ex.y) - ex.r - chipR < 0) { ok = false; break; }
-                }
-                if (ok) return { x, y };
-            }
-            return { x: rand(minX, maxX), y: rand(minY, maxY) };
+        function layoutRound() {
+            const W = stage.clientWidth, H = stage.clientHeight;
+            const top = 26, wide = W > H;
+            const targetW = wide ? W * 0.5 : W;
+            const targetH = (H - top) * (wide ? 1 : 0.5);
+            const cols = bubbles.length === 2 && targetW < targetH ? 1 : 2;
+            const rows = Math.ceil(bubbles.length / cols);
+            const cellW = targetW / cols, cellH = targetH / rows;
+            const maxD = Math.min(cellW - 8, cellH - 8, 280);
+            bubbles.forEach((b, i) => {
+                b.center = { x: (i % cols + 0.5) * cellW, y: top + (Math.floor(i / cols) + 0.5) * cellH };
+                b.baseD = maxD * 0.85;
+                b.step = (maxD - b.baseD) / roundConfig().per;
+                b.el.style.left = b.center.x + "px";
+                b.el.style.top = b.center.y + "px";
+                b.el.style.width = b.el.style.height = (b.baseD + b.solved * b.step) + "px";
+            });
+            if (!chips.length) return;
+            const x0 = wide ? targetW : 0, y0 = wide ? top : top + targetH;
+            const maxChipW = Math.max(...chips.map(c => c.el.offsetWidth));
+            const chipCols = Math.max(1, Math.min(Math.ceil(Math.sqrt(chips.length * (W - x0) / (H - y0))),
+                Math.floor((W - x0) / (maxChipW + 6))));
+            const cw = (W - x0) / chipCols, ch = (H - y0) / Math.ceil(chips.length / chipCols);
+            chips.forEach((c, i) => {
+                c.w = c.el.offsetWidth; c.h = c.el.offsetHeight;
+                c.ox = x0 + (i % chipCols) * cw + (cw - c.w) * rand(0.25, 0.75);
+                c.oy = y0 + Math.floor(i / chipCols) * ch + (ch - c.h) * rand(0.25, 0.75);
+                placeChip(c, c.ox, c.oy);
+            });
         }
 
         // ---------- Dragging ----------
@@ -805,7 +765,7 @@
         let resizeTimer = null;
         window.addEventListener("resize", () => {
             clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(buildRound, 250);
+            resizeTimer = setTimeout(layoutRound, 100);
         });
 
         // prevent accidental scroll / context menu

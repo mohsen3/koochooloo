@@ -111,7 +111,7 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            max-width: 620px;
+            max-width: 720px;
             margin: 0 auto;
         }
 
@@ -151,7 +151,7 @@
             pointer-events: none;
         }
 
-        .beta-toggle {
+        .filter-toggle {
             display: inline-flex;
             align-items: center;
             gap: 9px;
@@ -166,7 +166,7 @@
             box-shadow: 0 10px 24px rgba(43, 33, 80, 0.08);
         }
 
-        .beta-toggle input {
+        .filter-toggle input {
             width: 18px;
             height: 18px;
             accent-color: var(--music);
@@ -349,7 +349,7 @@
             background: var(--tracing);
         }
 
-        .game-card[hidden] { display: none; }
+        .game-card[hidden], .chip[hidden] { display: none; }
 
         /* per-category coloring */
         .game-card[data-category="math"] .icon { background: linear-gradient(150deg, #5b9dff, var(--math)); }
@@ -507,7 +507,11 @@
                 <div class="search-wrap">
                     <input type="text" id="game-search" placeholder="Find a game…" autocomplete="off">
                 </div>
-                <label class="beta-toggle" for="show-beta-games">
+                <label class="filter-toggle" for="hide-keyboard-games">
+                    <input type="checkbox" id="hide-keyboard-games">
+                    <span>Hide keyboard games</span>
+                </label>
+                <label class="filter-toggle" for="show-beta-games">
                     <input type="checkbox" id="show-beta-games">
                     <span>Beta games</span>
                 </label>
@@ -522,7 +526,7 @@
             </nav>
         </header>
 
-        <p class="no-results" id="no-results">No games found 🙈 Try another word.</p>
+        <p class="no-results" id="no-results" role="status">No games found 🙈 Try another word or change a filter.</p>
 
         <section class="section" id="math">
             <div class="section-header">
@@ -531,7 +535,7 @@
                 <div class="count-badge" data-count-target="math"></div>
             </div>
             <div class="game-grid">
-                <a class="game-card" data-category="math" href="counting-fruits.html">
+                <a class="game-card" data-category="math" data-keyboard href="counting-fruits.html">
                     <div class="icon">🍎</div>
                     <h3>Count the Fruit</h3>
                     <p class="sub">How many do you see?</p>
@@ -541,7 +545,7 @@
                     <h3>Bigger or Smaller?</h3>
                     <p class="sub">Compare the numbers</p>
                 </a>
-                <a class="game-card" data-category="math" href="math-addition-game.html">
+                <a class="game-card" data-category="math" data-keyboard href="math-addition-game.html">
                     <div class="icon">➕</div>
                     <h3>Add It Up</h3>
                     <p class="sub">Simple adding</p>
@@ -566,17 +570,17 @@
                     <h3>Two-Digit Adding</h3>
                     <p class="sub">Adding with carries</p>
                 </a>
-                <a class="game-card" data-category="math" href="addition-table.html">
+                <a class="game-card" data-category="math" data-keyboard href="addition-table.html">
                     <div class="icon">📊</div>
                     <h3>Addition Grid</h3>
                     <p class="sub">Fill the whole table</p>
                 </a>
-                <a class="game-card" data-category="math" href="subtraction-table.html">
+                <a class="game-card" data-category="math" data-keyboard href="subtraction-table.html">
                     <div class="icon">➖</div>
                     <h3>Take-Away Grid</h3>
                     <p class="sub">Practice subtraction</p>
                 </a>
-                <a class="game-card" data-category="math" href="multiplication-table.html">
+                <a class="game-card" data-category="math" data-keyboard href="multiplication-table.html">
                     <div class="icon">✖️</div>
                     <h3>Times Tables</h3>
                     <p class="sub">Learn to multiply</p>
@@ -586,7 +590,7 @@
                     <h3>Tap to Multiply</h3>
                     <p class="sub">Drag digit tiles</p>
                 </a>
-                <a class="game-card" data-category="math" href="skip-counting-game.html">
+                <a class="game-card" data-category="math" data-keyboard href="skip-counting-game.html">
                     <div class="icon">🐸</div>
                     <h3>Skip Counting</h3>
                     <p class="sub">Count by 2s, 5s, 10s</p>
@@ -631,7 +635,7 @@
                     <h3>Missing Letters</h3>
                     <p class="sub">Complete the word</p>
                 </a>
-                <a class="game-card" data-category="reading" href="english-words.html">
+                <a class="game-card" data-category="reading" data-keyboard href="english-words.html">
                     <div class="icon">⌨️</div>
                     <h3>Type the Word</h3>
                     <p class="sub">Spell as you type</p>
@@ -641,7 +645,7 @@
                     <h3>Say the Word</h3>
                     <p class="sub">Speak out loud</p>
                 </a>
-                <a class="game-card" data-category="reading" href="conversation-game.html">
+                <a class="game-card" data-category="reading" data-keyboard href="conversation-game.html">
                     <div class="icon">💬</div>
                     <h3>Let's Talk</h3>
                     <p class="sub">Everyday phrases</p>
@@ -687,7 +691,7 @@
                 <div class="count-badge" data-count-target="farsi"></div>
             </div>
             <div class="game-grid">
-                <a class="game-card" data-category="farsi" href="farsi-words.html">
+                <a class="game-card" data-category="farsi" data-keyboard href="farsi-words.html">
                     <div class="icon farsi-text">ف</div>
                     <h3>Farsi Words</h3>
                     <p class="sub">Type Persian words</p>
@@ -766,12 +770,14 @@
     </main>
     <script>
         const betaToggle = document.getElementById("show-beta-games");
+        const keyboardToggle = document.getElementById("hide-keyboard-games");
         const gameCards = Array.from(document.querySelectorAll(".game-card"));
         const countBadges = Array.from(document.querySelectorAll("[data-count-target]"));
         const searchInput = document.getElementById("game-search");
         const noResults = document.getElementById("no-results");
         const sections = Array.from(document.querySelectorAll(".section"));
         const betaPreferenceKey = "koochooloo-show-beta-games";
+        const keyboardPreferenceKey = "koochooloo-hide-keyboard-games";
 
         function getSearchQuery() {
             return (searchInput ? searchInput.value : "").trim().toLowerCase();
@@ -784,14 +790,15 @@
             return name.toLowerCase().includes(query) || desc.toLowerCase().includes(query);
         }
 
-        function updateVisibleGames(showBeta) {
+        function updateVisibleGames() {
             const query = getSearchQuery();
 
             gameCards.forEach((card) => {
                 const isBeta = card.dataset.beta === "true";
-                const hiddenByBeta = isBeta && !showBeta;
+                const hiddenByBeta = isBeta && !betaToggle.checked;
+                const hiddenByKeyboard = keyboardToggle.checked && card.hasAttribute("data-keyboard");
                 const hiddenBySearch = query && !matchesSearch(card, query);
-                card.hidden = hiddenByBeta || hiddenBySearch;
+                card.hidden = hiddenByBeta || hiddenByKeyboard || hiddenBySearch;
             });
 
             const totalVisible = gameCards.filter((card) => !card.hidden).length;
@@ -805,22 +812,29 @@
 
             sections.forEach((section) => {
                 const hasVisible = section.querySelectorAll(".game-card:not([hidden])").length > 0;
-                section.style.display = hasVisible ? "" : "none";
+                section.hidden = !hasVisible;
+                document.querySelector(`.chip[href="#${section.id}"]`).hidden = !hasVisible;
             });
         }
 
-        const storedPreference = window.localStorage.getItem(betaPreferenceKey);
-        const showBeta = storedPreference === "true";
-        betaToggle.checked = showBeta;
-        updateVisibleGames(showBeta);
+        function initFilter(toggle, key, defaultValue) {
+            toggle.checked = defaultValue;
+            try {
+                const stored = localStorage.getItem(key);
+                if (stored !== null) toggle.checked = stored === "true";
+            } catch { /* Keep the device default if storage is unavailable. */ }
+            toggle.addEventListener("change", () => {
+                updateVisibleGames();
+                try { localStorage.setItem(key, String(toggle.checked)); } catch { /* Session only. */ }
+            });
+        }
 
-        betaToggle.addEventListener("change", () => {
-            const enabled = betaToggle.checked;
-            window.localStorage.setItem(betaPreferenceKey, String(enabled));
-            updateVisibleGames(enabled);
-        });
-
-        searchInput.addEventListener("input", () => updateVisibleGames(betaToggle.checked));
+        // Browsers don't expose physical keyboard presence. Use the primary
+        // input as a default; an explicit choice also works for attached keyboards.
+        initFilter(keyboardToggle, keyboardPreferenceKey, matchMedia("(pointer: coarse), (hover: none)").matches);
+        initFilter(betaToggle, betaPreferenceKey, false);
+        updateVisibleGames();
+        searchInput.addEventListener("input", updateVisibleGames);
     </script>
   <script src="pwa.js" data-sw="sw.js" defer></script>
 </body>

@@ -334,7 +334,6 @@
             flex-wrap: wrap;
             align-content: flex-start;
             gap: 18px;
-            min-height: var(--bank-height, 0px);
         }
 
         .number-tile {
@@ -367,7 +366,7 @@
         }
 
         .number-tile.used {
-            display: none;
+            visibility: hidden;
         }
 
         .number-tile.correct-flash {
@@ -511,6 +510,25 @@
             .bank-panel {
                 grid-template-columns: minmax(0, 1fr);
             }
+        }
+        @media (max-width: 600px), (max-height: 540px) {
+            .app { padding: 6px; }
+            .paper-board { min-height: calc(100dvh - 12px); padding: 6px; min-width: 0; }
+            .game-card { gap: 6px; }
+            .status-panel, .board-panel, .bank-panel { padding: 8px; gap: 6px; min-width: 0; }
+            .status-row, .number-bank, .mix-strip, #mixNumbers { gap: 6px; }
+            .level-badge, .instruction-pill { padding: 4px 9px; }
+            .helper-text { font-size: .92rem; }
+            .board-panel { align-content: center; }
+            .sequence-track { min-height: 0; gap: 5px; }
+            .arrow { font-size: 1rem; }
+            .sequence-slot, .number-tile, .next-button {
+                min-width: 44px; min-height: 44px; padding: 5px;
+                border-width: 3px; font-size: 1.35rem;
+            }
+            .mix-chip { min-width: 30px; min-height: 30px; padding: 2px 5px; font-size: 1rem; }
+            .bank-panel { grid-template-columns: minmax(0, 1fr) auto; }
+            .next-button { padding-inline: 9px; font-size: 1rem; }
         }
     </style>
   <!-- pwa:head -->
@@ -769,7 +787,6 @@
                 this.levelIndex = 0;
                 this.selectedTileId = null;
                 this.dragState = null;
-                this.bankHeight = 0;
                 this.completed = false;
 
                 this.gameTitle = document.getElementById("gameTitle");
@@ -835,7 +852,6 @@
                 this.updateNextButton();
                 this.selectedTileId = null;
                 this.clearDragState();
-                this.numberBank.style.removeProperty("--bank-height");
 
                 const level = this.currentLevel;
                 const { renderSlots, blanks, tiles } = this.prepareLevel(level);
@@ -940,10 +956,6 @@
 
                 this.syncSelectedTile();
 
-                requestAnimationFrame(() => {
-                    this.bankHeight = this.numberBank.getBoundingClientRect().height;
-                    this.numberBank.style.setProperty("--bank-height", `${this.bankHeight}px`);
-                });
             }
 
             getTile(tileId) {

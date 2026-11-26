@@ -195,16 +195,29 @@
         }
 
         .numbers-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
+            display: grid;
+            grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+            place-items: center;
+            gap: 8px;
+            container-type: inline-size;
             margin-bottom: 20px;
-            flex-wrap: wrap;
             perspective: 600px;
         }
 
+        .numbers-container.pair {
+            grid-template-columns: 1fr auto 1fr;
+        }
+        .comparison-sign {
+            font-size: min(14cqw, 14dvh, 112px);
+            font-weight: 900;
+            color: rgba(255,255,255,0.45);
+            line-height: 1;
+        }
         .number-box {
+            --base: min(120px, 22dvh, calc((100cqw / var(--columns) - 14px) / 1.65));
+            width: max(42px, calc(var(--base) * var(--scale)));
+            aspect-ratio: 1;
+            container-type: inline-size;
             border-radius: 20px;
             cursor: pointer;
             border: none;
@@ -305,6 +318,7 @@
         }
 
         .number {
+            font-size: 62cqw;
             font-weight: 900;
             color: #ffffff;
             line-height: 1;
@@ -440,9 +454,21 @@
         }
 
         @media (max-width: 500px) {
-            .container { padding: 24px 18px; }
+            body { padding: 8px; }
+            .container { padding: 20px 12px; width: 100%; }
             h1 { font-size: 1.1em; }
             .question { font-size: 1.2em; }
+        }
+        @media (max-height: 500px) {
+            body { padding: 4px; }
+            .container { padding: 8px 14px; width: 100%; }
+            .header, .question, .numbers-container { margin-bottom: 4px; }
+            .header h1, .question { font-size: 1.1rem; }
+            .number-box { --base: min(11dvh, 70px); }
+            .pair .number-box { --base: min(20dvh, 100px); }
+            .feedback { margin: 0; min-height: 28px; font-size: 1rem; }
+            .progress-label, .instructions { margin-top: 3px; }
+            .instructions { padding: 2px; }
         }
     </style>
   <!-- pwa:head -->
@@ -612,37 +638,29 @@
             const container = document.getElementById('numbersContainer');
             const count = numbers.length;
             container.innerHTML = '';
+            container.style.setProperty('--columns', Math.min(4, count));
+            container.classList.toggle('pair', count === 2);
 
             numbers.forEach((num, idx) => {
                 const scale = getSizeScale(num, numbers);
-                const baseSize = Math.min(80, 200 / Math.sqrt(count));
-                const fontSize = Math.round(baseSize * scale);
-                const boxSize = Math.round((baseSize + 40) * scale);
 
                 if (count === 2 && idx === 1) {
                     const op = numbers[0] > numbers[1] ? '>' : '<';
                     const opEl = document.createElement('div');
                     opEl.textContent = op;
-                    Object.assign(opEl.style, {
-                        fontSize: '112px', fontWeight: '900',
-                        color: 'rgba(255,255,255,0.35)',
-                        textShadow: '0 2px 12px rgba(0,0,0,0.2)',
-                        lineHeight: '1'
-                    });
+                    opEl.className = 'comparison-sign';
                     container.appendChild(opEl);
                 }
 
                 const box = document.createElement('div');
                 box.className = 'number-box';
-                box.style.width = boxSize + 'px';
-                box.style.height = boxSize + 'px';
+                box.style.setProperty('--scale', scale);
                 box.style.background = getGradientForIndex(idx, count);
                 box.style.boxShadow = `0 6px 24px rgba(0,0,0,0.25), 0 0 30px -5px rgba(255,255,255,0.08)`;
                 box.onclick = () => selectNumber(num, box);
 
                 const numberDiv = document.createElement('div');
                 numberDiv.className = 'number';
-                numberDiv.style.fontSize = fontSize + 'px';
                 numberDiv.textContent = num;
 
                 box.appendChild(numberDiv);

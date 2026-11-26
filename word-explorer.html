@@ -500,8 +500,16 @@
         }
 
         @media (max-width: 1024px) and (orientation: portrait) {
-            .game { width: min(100vw - 10px, 900px); height: min(900px, calc(var(--app-height) - 10px)); border-radius: 22px; padding: 12px; }
+            .game { width: min(100%, 900px); height: min(900px, calc(var(--app-height) - 16px)); border-radius: 22px; padding: 12px; }
             .topbar { margin-bottom: 6px; }
+        }
+        .play-area { container-type: inline-size; }
+        .slots-row { padding-inline: 0; flex-wrap: nowrap; gap: 4px; }
+        .tile, .slot {
+            --piece: min(13vmin, 140px, calc((100cqw - (var(--letters) - 1) * 4px) / var(--letters)));
+            width: var(--piece);
+            height: min(calc(var(--piece) * 1.15), 16dvh);
+            font-size: calc(var(--piece) * 0.72);
         }
     </style>
   <!-- pwa:head -->
@@ -858,13 +866,14 @@
 
                 const wordIndex = this.levelIndex % WORDS.length;
                 this.word = WORDS[wordIndex];
+                this.playArea.style.setProperty('--letters', this.word.length);
                 this.hiddenIndices = this.selectHiddenPositions(this.word);
 
                 const levelNum = this.levelIndex + 1;
                 this.status.textContent = `Level ${levelNum}`;
 
                 this.setupPuzzle();
-                this.relayoutLevel({ randomizeUnlocked: true });
+                this.relayoutLevel();
                 this.updateDifficultyDisplay();
             }
 
@@ -995,45 +1004,18 @@
             returnToHome(tile) {
                 tile.style.left = `${tile.dataset.homeX}px`;
                 tile.style.top = `${tile.dataset.homeY}px`;
-                this.storeRelativeTilePosition(tile);
             }
 
-            getTilesBounds() {
-                const tilesSection = document.getElementById('tilesSection');
-                const areaRect = this.playArea.getBoundingClientRect();
-                const secRect = tilesSection.getBoundingClientRect();
-                const margin = 12;
-
-                return {
-                    minX: margin,
-                    maxX: areaRect.width - margin,
-                    minY: secRect.top - areaRect.top + 30,
-                    maxY: secRect.bottom - areaRect.top - margin
-                };
-            }
-
-            storeRelativeTilePosition(tile) {
-                const bounds = this.tilesMetrics;
-                if (!bounds) return;
-                const left = this.readNumber(tile.style.left, 0);
-                const top = this.readNumber(tile.style.top, 0);
-                const w = bounds.maxX - bounds.minX;
-                const h = bounds.maxY - bounds.minY;
-                const relX = w > 0 ? (left - bounds.minX) / w : 0.5;
-                const relY = h > 0 ? (top - bounds.minY) / h : 0.5;
-                tile.dataset.relX = String(this.clamp(relX, 0, 1));
-                tile.dataset.relY = String(this.clamp(relY, 0, 1));
-            }
-
-            relayoutLevel({ randomizeUnlocked = false } = {}) {
+            relayoutLevel() {
                 if (!this.playArea || this.tiles.length === 0) return;
                 const areaRect = this.playArea.getBoundingClientRect();
                 if (!areaRect.width || !areaRect.height) return;
 
-                this.tilesMetrics = this.getTilesBounds();
-                const bounds = this.tilesMetrics;
+                const section = document.getElementById('tilesSection').getBoundingClientRect();
+                const labelBottom = this.diffTrack.getBoundingClientRect().bottom;
+                const cellWidth = section.width / this.tiles.length;
 
-                this.tiles.forEach(tile => {
+                this.tiles.forEach((tile, i) => {
                     if (tile.classList.contains('locked')) {
                         const slot = this.slots.find(s =>
                             s.dataset.index === tile.dataset.lockedSlot
@@ -1047,22 +1029,13 @@
                         return;
                     }
 
-                    const spanX = bounds.maxX - bounds.minX;
-                    const spanY = bounds.maxY - bounds.minY;
-                    const relX = randomizeUnlocked || tile.dataset.relX === undefined
-                        ? Math.random()
-                        : this.clamp(this.readNumber(tile.dataset.relX, 0.5), 0, 1);
-                    const relY = randomizeUnlocked || tile.dataset.relY === undefined
-                        ? Math.random()
-                        : this.clamp(this.readNumber(tile.dataset.relY, 0.5), 0, 1);
-                    const x = bounds.minX + spanX * relX;
-                    const y = bounds.minY + spanY * relY;
+                    const x = section.left - areaRect.left + (i + 0.5) * cellWidth;
+                    const y = (labelBottom + section.bottom) / 2 - areaRect.top;
 
                     tile.style.left = `${x}px`;
                     tile.style.top = `${y}px`;
                     tile.dataset.homeX = String(x);
                     tile.dataset.homeY = String(y);
-                    this.storeRelativeTilePosition(tile);
                 });
             }
 

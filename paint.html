@@ -30,6 +30,7 @@
 
         /* ---- Toolbar ---- */
         .toolbar {
+            --target: 44px;
             position: fixed;
             left: 50%;
             bottom: max(14px, env(safe-area-inset-bottom));
@@ -37,8 +38,8 @@
             display: flex;
             flex-wrap: nowrap;
             align-items: center;
-            gap: 14px;
-            padding: 8px 12px;
+            gap: 4px;
+            padding: 5px;
             border-radius: 22px;
             max-width: calc(100vw - 12px);
             background: rgba(28, 31, 41, 0.55);
@@ -51,38 +52,37 @@
         .colors {
             display: flex;
             flex-wrap: nowrap;
-            gap: 7px;
-            /* Absorb any overflow here so the size picker and clear button
-               always stay on screen, even on very narrow viewports. */
-            min-width: 0;
-            flex-shrink: 1;
-            overflow-x: auto;
-            overflow-y: hidden;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            gap: 0;
         }
-        .colors::-webkit-scrollbar { display: none; }
 
         /* Keep the size picker, dividers and clear button from shrinking
            or being pushed off — they must remain visible. */
         .divider, .sizes, .tool-btn { flex-shrink: 0; }
 
         .swatch {
-            width: 25px;
-            height: 25px;
+            width: var(--target);
+            height: var(--target);
             border-radius: 50%;
             border: none;
             padding: 0;
             cursor: pointer;
             position: relative;
+            background: transparent;
+        }
+        .swatch::before {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border-radius: 50%;
+            background: var(--color);
             box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.22);
             transition: transform 0.12s ease;
         }
-        .swatch[data-light="true"] {
+        .swatch[data-light="true"]::before {
             box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
         }
-        .swatch.active {
-            transform: scale(1.22);
+        .swatch.active::before {
+            transform: scale(1.08);
             box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.95), 0 2px 8px rgba(0, 0, 0, 0.35);
         }
 
@@ -95,12 +95,12 @@
         .sizes {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 0;
         }
 
         .size {
-            width: 30px;
-            height: 30px;
+            width: var(--target);
+            height: var(--target);
             border: none;
             border-radius: 11px;
             background: transparent;
@@ -120,8 +120,8 @@
         }
 
         .tool-btn {
-            width: 30px;
-            height: 30px;
+            width: var(--target);
+            height: var(--target);
             border: none;
             border-radius: 11px;
             background: transparent;
@@ -170,37 +170,33 @@
                 max-width: none;
                 max-height: calc(100vh - 12px);
             }
-            .colors {
-                flex-direction: column;
-                min-height: 0;
-                min-width: 0;
-                overflow-x: hidden;
-                overflow-y: auto;
-            }
+            .colors { flex-direction: column; }
             .sizes { flex-direction: column; }
             .divider { width: 26px; height: 1px; }
         }
 
-        /* Keep everything on ONE row/column by dropping the lowest-priority
-           colors first, keyed off whichever dimension the toolbar runs along.
-           Each swatch carries the minimum length (px) at which it stays. */
-        @media (orientation: portrait) and (max-width: 479.98px) { .swatch[data-min="480"] { display: none; } }
-        @media (orientation: portrait) and (max-width: 439.98px) { .swatch[data-min="440"] { display: none; } }
-        @media (orientation: portrait) and (max-width: 399.98px) { .swatch[data-min="400"] { display: none; } }
-        @media (orientation: portrait) and (max-width: 359.98px) { .swatch[data-min="360"] { display: none; } }
-
-        @media (orientation: landscape) and (max-height: 479.98px) { .swatch[data-min="480"] { display: none; } }
-        @media (orientation: landscape) and (max-height: 439.98px) { .swatch[data-min="440"] { display: none; } }
-        @media (orientation: landscape) and (max-height: 399.98px) { .swatch[data-min="400"] { display: none; } }
-        @media (orientation: landscape) and (max-height: 359.98px) { .swatch[data-min="360"] { display: none; } }
-
-        /* Compact spacing when the toolbar's running edge is short. */
-        @media (orientation: portrait) and (max-width: 420px),
-               (orientation: landscape) and (max-height: 420px) {
-            .swatch { width: 22px; height: 22px; }
-            .colors { gap: 5px; }
-            .toolbar { gap: 10px; padding: 7px 9px; }
-            .size, .tool-btn { width: 27px; height: 27px; }
+        @media (orientation: portrait) and (max-width: 710px),
+               (orientation: landscape) and (max-height: 710px) {
+            .toolbar {
+                --target: clamp(28px, calc((100vmin - 24px) / 8), 44px);
+                display: grid;
+                gap: 0;
+                grid-template-columns: auto repeat(2, var(--target));
+                grid-template-rows: repeat(2, var(--target));
+            }
+            .colors { display: grid; grid-template-columns: repeat(6, var(--target)); grid-row: span 2; }
+            .divider { display: none; }
+            .sizes { display: contents; }
+        }
+        @media (orientation: landscape) and (max-height: 710px) {
+            .toolbar {
+                grid-template-columns: repeat(2, var(--target));
+                grid-template-rows: auto repeat(2, var(--target));
+            }
+            .colors {
+                grid-area: 1 / 1 / 2 / 3;
+                grid-template-columns: repeat(2, var(--target));
+            }
         }
     </style>
   <!-- pwa:head -->
@@ -265,6 +261,7 @@
         }
 
         function resize() {
+            const oldW = dispW, oldH = dispH;
             dispW = Math.ceil(window.innerWidth * dpr);
             dispH = Math.ceil(window.innerHeight * dpr);
             canvas.width = dispW;
@@ -272,10 +269,13 @@
             canvas.style.width = window.innerWidth + "px";
             canvas.style.height = window.innerHeight + "px";
             buildWorld();
-            if (viewX === 0 && viewY === 0) {
+            if (!oldW || !oldH) {
                 // center the view on first layout
                 viewX = (WORLD - dispW) / 2;
                 viewY = (WORLD - dispH) / 2;
+            } else {
+                viewX += (oldW - dispW) / 2;
+                viewY += (oldH - dispH) / 2;
             }
             clampView();
             redraw();
@@ -292,20 +292,18 @@
         }
 
         // ---------- Brush ----------
-        // `min` = narrowest viewport (px) at which the swatch stays visible,
-        // so the toolbar always fits on a single row.
         const COLORS = [
-            { c: "#2b2b2b", min: 0 },
-            { c: "#ff3b30", min: 0 },
-            { c: "#ff9500", min: 400 },
-            { c: "#ffcc00", min: 360, light: true },
-            { c: "#34c759", min: 0 },
-            { c: "#00b8d4", min: 480 },
-            { c: "#0a84ff", min: 0 },
-            { c: "#af52de", min: 400 },
-            { c: "#ff6eb4", min: 480 },
-            { c: "#8b5a2b", min: 480 },
-            { c: "#ffffff", min: 440, light: true }
+            { c: "#2b2b2b", name: "Black" },
+            { c: "#ff3b30", name: "Red" },
+            { c: "#ff9500", name: "Orange" },
+            { c: "#ffcc00", name: "Yellow", light: true },
+            { c: "#34c759", name: "Green" },
+            { c: "#00b8d4", name: "Teal" },
+            { c: "#0a84ff", name: "Blue" },
+            { c: "#af52de", name: "Purple" },
+            { c: "#ff6eb4", name: "Pink" },
+            { c: "#8b5a2b", name: "Brown" },
+            { c: "#ffffff", name: "White", light: true }
         ];
         const SIZES = [5, 8, 13];   // brush radius in CSS px
 
@@ -519,11 +517,11 @@
 
         // ---------- Toolbar ----------
         const colorsEl = document.getElementById("colors");
-        COLORS.forEach(function (col, i) {
+        COLORS.forEach(function (col) {
             const b = document.createElement("button");
             b.className = "swatch" + (col.c === curColor ? " active" : "");
-            b.style.background = col.c;
-            b.dataset.min = col.min;
+            b.style.setProperty("--color", col.c);
+            b.setAttribute("aria-label", col.name);
             if (col.light) b.dataset.light = "true";
             b.addEventListener("click", function () {
                 curColor = col.c;
@@ -538,6 +536,7 @@
         SIZES.forEach(function (_, i) {
             const b = document.createElement("button");
             b.className = "size" + (i === curSize ? " active" : "");
+            b.setAttribute("aria-label", ["Small brush", "Medium brush", "Large brush"][i]);
             const dot = document.createElement("span");
             dot.className = "dot";
             dot.style.width = dotPx[i] + "px";

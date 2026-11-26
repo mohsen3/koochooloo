@@ -694,6 +694,44 @@
                 font-size: clamp(0.95rem, 4.6vw, 1.2rem);
             }
         }
+        .slot, .digit-tile { container-type: size; }
+        .slot .hint-digit, .slot .digit-glyph, .digit-tile .digit-glyph {
+            font-size: min(92cqw, 84cqh);
+        }
+        .equation-card { container-type: inline-size; }
+        .equation-board {
+            --slot-width: min(120px, calc((100cqw - 88px) / var(--digit-columns)), 17dvh);
+            padding: 6px;
+        }
+        .carry-row, .number-row { grid-template-columns: repeat(var(--digit-columns), var(--slot-width)); }
+        .slot { width: var(--slot-width); height: min(145px, calc(var(--slot-width) * 1.18), 18dvh); }
+        @media (max-width: 760px), (max-height: 540px) {
+            body { padding: 6px; }
+            .screen { height: calc(100dvh - 12px); grid-template-rows: auto minmax(0, 1fr) auto; }
+            .header, .footer { padding: 3px; }
+            .header-controls, .badges { justify-content: center; gap: 4px; flex-wrap: wrap; }
+            .badge { min-width: 0; font-size: .82rem; padding: 5px 8px; }
+            .sound-toggle { min-width: 0; min-height: 44px; padding: 4px 9px; font-size: .86rem; }
+            .play-area { padding: 3px; gap: 8px; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1.2fr) minmax(0, 1fr); }
+            .digit-pool { min-height: 0; }
+            .equation-card { min-height: 0; padding: 0; gap: 0; }
+            .equation-board {
+                --slot-width: min(78px, calc((100cqw - 52px) / var(--digit-columns)), 16dvh);
+                grid-template-columns: 24px auto; gap: 2px 4px; padding: 2px;
+            }
+            .slot { border-radius: 12px; height: min(80px, 10dvh); }
+            .carry-row, .number-row { gap: 4px; }
+            .carry-row { min-height: 18px; }
+            .carry-cell { font-size: 1rem; line-height: 1; }
+            .plus-cell { font-size: 2rem; line-height: 1; }
+            .answer-row { padding-top: 4px; border-width: 3px; }
+            .equation-cheer { min-height: 20px; font-size: .92rem; }
+            .progress-dot { width: 12px; height: 12px; }
+        }
+        @media (orientation: landscape) and (max-height: 540px) {
+            .play-area { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+            .slot { height: min(66px, 17dvh); }
+        }
     </style>
   <!-- pwa:head -->
   <meta name="theme-color" content="#ea7a3d">
@@ -820,6 +858,7 @@
                 this.groupB = document.getElementById("groupB");
                 this.groupC = document.getElementById("groupC");
                 this.digitPool = document.getElementById("digitPool");
+                new ResizeObserver(() => this.layoutTiles()).observe(this.digitPool);
                 this.cheerLayer = document.getElementById("cheerLayer");
                 this.cheerBanner = document.getElementById("cheerBanner");
                 this.equationCheer = document.getElementById("equationCheer");
@@ -1476,49 +1515,57 @@
                 this.physicsTiles = [];
                 Array.from(this.digitPool.querySelectorAll(".digit-tile")).forEach((tile) => tile.remove());
 
-                const poolRect = this.digitPool.getBoundingClientRect();
-                const cols = Math.max(3, Math.min(6, this.question.digits.length));
-                const rows = Math.ceil(this.question.digits.length / cols);
-                const tileWidth = Math.min(112, Math.max(78, (poolRect.width - 60) / cols - 14));
-                const tileHeight = tileWidth * 1.18;
-                const gapX = Math.max(10, (poolRect.width - cols * tileWidth - 40) / Math.max(1, cols - 1));
-                const gapY = Math.max(16, Math.min(32, (poolRect.height - rows * tileHeight - 70) / Math.max(1, rows)));
-
                 this.question.digits.forEach((digit, index) => {
                     const tile = document.createElement("div");
                     tile.className = "digit-tile";
                     tile.dataset.digit = digit;
                     tile.dataset.tileId = `tile-${this.questionId}-${index}`;
                     tile.appendChild(this.createFancyDigit(digit, "tile"));
-                    tile.style.width = `${tileWidth}px`;
-                    tile.style.height = `${tileHeight}px`;
-
-                    const col = index % cols;
-                    const row = Math.floor(index / cols);
-                    const homeX = 20 + col * (tileWidth + gapX);
-                    const homeY = 58 + row * (tileHeight + gapY);
 
                     const physics = {
                         id: tile.dataset.tileId,
                         element: tile,
                         digit,
-                        x: homeX,
-                        y: homeY,
                         vx: 0,
                         vy: 0,
-                        homeX,
-                        homeY,
-                        width: tileWidth,
-                        height: tileHeight,
                         dragging: false,
                         assignedSlotId: null,
                         bounce: 0.68
                     };
 
                     tile.addEventListener("pointerdown", (event) => this.handlePointerDown(event, physics));
-                    tile.style.transform = `translate(${homeX}px, ${homeY}px)`;
                     this.digitPool.appendChild(tile);
                     this.physicsTiles.push(physics);
+                });
+                this.layoutTiles();
+            }
+
+            layoutTiles() {
+                const { width, height } = this.digitPool.getBoundingClientRect();
+                const count = this.physicsTiles.length;
+                if (!count || !width || !height) return;
+
+                let cols = 1, best = 0;
+                for (let n = 1; n <= count; n++) {
+                    const fit = Math.min(width / n - 8, (height / Math.ceil(count / n) - 8) / 1.18);
+                    if (fit > best) { cols = n; best = fit; }
+                }
+                const w = Math.min(112, best), h = w * 1.18;
+                const rows = Math.ceil(count / cols);
+                this.physicsTiles.forEach((tile, i) => {
+                    const row = Math.floor(i / cols);
+                    const rowCount = Math.min(cols, count - row * cols);
+                    tile.homeX = width / 2 + (i % cols - (rowCount - 1) / 2) * (w + 8) - w / 2;
+                    tile.homeY = height / 2 + (row - (rows - 1) / 2) * (h + 8) - h / 2;
+                    tile.width = w;
+                    tile.height = h;
+                    tile.element.style.width = `${w}px`;
+                    tile.element.style.height = `${h}px`;
+                    if (!tile.dragging && !tile.assignedSlotId) {
+                        tile.x = tile.homeX;
+                        tile.y = tile.homeY;
+                        tile.element.style.transform = `translate(${tile.x}px, ${tile.y}px)`;
+                    }
                 });
             }
 
@@ -1844,7 +1891,7 @@
                         tile.y += tile.vy;
 
                         const minX = 0;
-                        const minY = 40;
+                        const minY = 0;
                         const maxX = poolRect.width - tile.width;
                         const maxY = poolRect.height - tile.height;
 

@@ -125,6 +125,7 @@
 
         .word-slots {
             position: absolute;
+            width: max-content;
             top: clamp(18px, 7vmin, 120px);
             left: 50%;
             transform: translateX(-50%);
@@ -138,15 +139,15 @@
 
         .slot {
             position: relative;
-            height: clamp(200px, 32vmin, 420px);
-            min-width: 120px;
-            padding: 52px var(--pad-right, 28px) 60px var(--pad-left, 28px);
+            height: calc(clamp(200px, 32vmin, 420px) * var(--fit, 1));
+            min-width: calc(120px * var(--fit, 1));
+            padding: calc(52px * var(--fit, 1)) calc(var(--pad-right, 28px) * var(--fit, 1)) calc(60px * var(--fit, 1)) calc(var(--pad-left, 28px) * var(--fit, 1));
             border: 8px dashed #c99757;
             border-radius: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(170px, 28vmin, 400px);
+            font-size: calc(clamp(170px, 28vmin, 400px) * var(--fit, 1));
             line-height: 1;
             color: rgba(110, 75, 40, 0.45);
             background: rgba(255, 251, 243, 0.9);
@@ -188,16 +189,16 @@
 
         .tile {
             position: absolute;
-            height: clamp(200px, 32vmin, 420px);
-            min-width: 120px;
-            padding: 52px var(--pad-right, 28px) 60px var(--pad-left, 28px);
+            height: calc(clamp(200px, 32vmin, 420px) * var(--fit, 1));
+            min-width: calc(120px * var(--fit, 1));
+            padding: calc(52px * var(--fit, 1)) calc(var(--pad-right, 28px) * var(--fit, 1)) calc(60px * var(--fit, 1)) calc(var(--pad-left, 28px) * var(--fit, 1));
             border-radius: 40px;
             border: 7px solid rgba(177, 114, 45, 0.45);
             box-shadow: 0 18px 27px rgba(62, 44, 26, 0.24);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(170px, 28vmin, 400px);
+            font-size: calc(clamp(170px, 28vmin, 400px) * var(--fit, 1));
             line-height: 1;
             user-select: none;
             touch-action: none;
@@ -214,7 +215,7 @@
         .tile .char {
             display: block;
             line-height: 1.08;
-            transform: translate(var(--char-shift-x, 0px), var(--char-shift-y, 1px));
+            transform: translate(var(--char-shift-x, 0px), calc(var(--char-shift-y, 1px) * var(--fit, 1)));
             transform-origin: center;
         }
 
@@ -376,19 +377,11 @@
             }
 
             .slot {
-                height: clamp(140px, 22vmin, 300px);
-                font-size: clamp(120px, 20vmin, 280px);
-                min-width: 90px;
-                padding: 36px var(--pad-right, 20px) 42px var(--pad-left, 20px);
                 border-width: 6px;
                 border-radius: 28px;
             }
 
             .tile {
-                height: clamp(140px, 22vmin, 300px);
-                font-size: clamp(120px, 20vmin, 280px);
-                min-width: 90px;
-                padding: 36px var(--pad-right, 20px) 42px var(--pad-left, 20px);
                 border-radius: 28px;
                 border-width: 6px;
             }
@@ -430,16 +423,6 @@
 
             .word-slots {
                 top: clamp(10px, 3.5vmin, 28px);
-            }
-
-            .slot {
-                height: clamp(160px, 24vmin, 320px);
-                font-size: clamp(140px, 22vmin, 300px);
-            }
-
-            .tile {
-                height: clamp(160px, 24vmin, 320px);
-                font-size: clamp(140px, 22vmin, 300px);
             }
         }
     </style>
@@ -494,7 +477,7 @@
             let lastTouchEnd = 0;
             document.addEventListener('touchend', function (e) {
                 const now = Date.now();
-                if (now - lastTouchEnd <= 300) e.preventDefault();
+                if (now - lastTouchEnd <= 300 && e.cancelable) e.preventDefault();
                 lastTouchEnd = now;
             }, { passive: false });
         }
@@ -1006,8 +989,10 @@
             }
 
             getTileBounds(tile, rect, trayTop, bottomMargin = 16) {
-                const tileHalfWidth = tile.offsetWidth / 2;
-                const tileHalfHeight = tile.offsetHeight / 2;
+                const angle = parseFloat(tile.style.getPropertyValue('--rot')) * Math.PI / 180;
+                const sin = Math.abs(Math.sin(angle)), cos = Math.cos(angle);
+                const tileHalfWidth = (tile.offsetWidth * cos + tile.offsetHeight * sin) / 2;
+                const tileHalfHeight = (tile.offsetHeight * cos + tile.offsetWidth * sin) / 2;
                 const marginX = Math.max(12, Math.min(22, rect.width * 0.03));
                 const marginY = Math.max(10, bottomMargin);
                 const minX = tileHalfWidth + marginX;
@@ -1039,11 +1024,35 @@
                 tile.dataset.relY = String(this.clamp(relY, 0, 1));
             }
 
+            fitWordRow(rect) {
+                // Scale the whole word row (slots + tiles) down so it always fits the
+                // play area, regardless of how many letters the word has or how small
+                // the screen is. Keeps the playable letters as large as possible.
+                const root = document.documentElement;
+                root.style.setProperty('--fit', '1');
+                if (!this.slots.length) return;
+
+                const availableWidth = rect.width - 28;
+                const maxRowHeight = (rect.height - this.wordSlots.offsetTop - 40) / 2.3;
+                const fits = () => this.wordSlots.offsetWidth <= availableWidth && this.wordSlots.offsetHeight <= maxRowHeight;
+                if (fits()) return;
+                let low = 0, high = 1;
+                for (let i = 0; i < 7; i++) {
+                    const fit = (low + high) / 2;
+                    root.style.setProperty('--fit', String(fit));
+                    if (fits()) low = fit;
+                    else high = fit;
+                }
+                root.style.setProperty('--fit', String(low));
+            }
+
             relayoutLevel({ randomizeUnlocked = false } = {}) {
                 if (!this.playArea || this.tiles.length === 0 || this.slots.length === 0) return;
 
                 const rect = this.playArea.getBoundingClientRect();
                 if (!rect.width || !rect.height) return;
+
+                this.fitWordRow(rect);
 
                 const slotsRect = this.wordSlots.getBoundingClientRect();
                 const trayGap = Math.max(12, Math.min(28, rect.height * 0.05));

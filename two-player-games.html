@@ -59,7 +59,7 @@
         }
         .app {
             height: 100dvh;
-            width: 100vw;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
             display: flex;
             flex-direction: column;
         }
@@ -333,13 +333,14 @@
             align-items: center;
             justify-content: center;
             min-height: 0;
+            container-type: size;
         }
         .ttt-board {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-rows: repeat(3, minmax(0, 1fr));
             gap: 10px;
-            width: min(70vh, 92vw, 560px);
+            width: min(100cqw, 100cqh, 560px);
             aspect-ratio: 1;
             padding: 12px;
             background: var(--card);
@@ -362,7 +363,7 @@
         .ttt-cell:not(.filled):hover { background: rgba(229, 231, 235, 0.8); }
         .ttt-cell:not(.filled):active { transform: scale(0.95); }
         .ttt-cell .mark {
-            font-size: clamp(60px, 14vw, 130px);
+            font-size: min(24cqw, 24cqh, 130px);
             font-weight: 900;
             line-height: 1;
         }
@@ -480,6 +481,41 @@
         @keyframes burst {
             0% { transform: translate(0,0) scale(0.4); opacity: 1; }
             100% { transform: translate(var(--dx), var(--dy)) scale(1.4) rotate(var(--rot)); opacity: 0; }
+        }
+        #view-names { overflow-y: auto; }
+        .winner-name, .player-pill .who, #pickerTitle { overflow-wrap: anywhere; }
+        @media (max-width: 540px), (max-height: 540px) {
+            .view { padding: 10px; }
+            .names-wrap { justify-content: safe center; gap: 10px; }
+            .names-title { font-size: 30px; }
+            .names-sub { margin: 0; }
+            .player-cards { gap: 10px; }
+            .player-card { padding: 10px; gap: 6px; }
+            .name-input { font-size: 18px; padding: 8px; }
+            .chips { gap: 4px; }
+            .chip { min-height: 40px; padding: 6px 10px; }
+            .primary-btn { padding: 12px 24px; }
+            .picker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+            .game-card { padding: 12px 6px; gap: 6px; }
+            .game-emoji { font-size: 46px; }
+        }
+        @media (orientation: landscape) and (max-height: 540px) {
+            #view-ttt.active {
+                display: grid;
+                grid-template-columns: minmax(190px, 1fr) 2fr;
+                grid-template-rows: auto minmax(0, 1fr);
+                gap: 10px;
+            }
+            #view-ttt .topbar { margin: 0; }
+            .turn-banner { flex-direction: column; justify-content: center; margin: 0; gap: 6px; }
+            .player-pill { flex: 0; width: 100%; }
+            .vs { align-self: center; padding: 0; }
+            .board-wrap { grid-area: 1 / 2 / 3 / 3; }
+            .picker-grid .game-card { aspect-ratio: auto; min-height: 136px; }
+            .celebration { padding: 14px; }
+            .trophy { font-size: 58px; }
+            .winner-name { font-size: 28px; }
+            .winner-sub { margin-bottom: 10px; }
         }
     </style>
   <!-- pwa:head -->

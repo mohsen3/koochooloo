@@ -44,6 +44,7 @@
         /* Background dots pattern */
         .dots-background {
             position: absolute;
+            overflow: hidden;
             top: 0;
             left: 0;
             width: 100%;
@@ -90,7 +91,7 @@
 
         .canvas-container {
             position: relative;
-            display: inline-block;
+            width: min(606px, 100%);
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -100,6 +101,8 @@
 
         canvas {
             display: block;
+            width: 100%;
+            height: auto;
             border-radius: 15px;
             touch-action: none;
             cursor: crosshair;
@@ -191,6 +194,33 @@
 
         .pulse {
             animation: pulse 0.5s ease-in-out;
+        }
+
+        @media (max-width: 560px) {
+            body { padding: 10px; }
+            .container { width: 100%; padding: 16px 10px; }
+            h1 { font-size: 1.6em; }
+        }
+
+        @media (orientation: landscape) and (max-height: 600px) {
+            body { padding: 8px; }
+            .container {
+                width: 100%;
+                padding: 8px;
+                display: grid;
+                grid-template-columns: minmax(150px, 1fr) minmax(0, 2fr);
+                align-items: center;
+                align-content: center;
+                gap: 4px 12px;
+            }
+            .canvas-container {
+                grid-column: 2;
+                grid-row: 1 / 5;
+                width: min(100%, 606px, calc(150dvh - 64px));
+            }
+            h1, .instructions, .shape-indicator, .score-info { grid-column: 1; margin: 0; }
+            h1 { font-size: 1.5em; }
+            .score-info { justify-self: center; padding: 4px 16px; }
         }
     </style>
   <!-- pwa:head -->

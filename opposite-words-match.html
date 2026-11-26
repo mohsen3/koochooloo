@@ -272,6 +272,7 @@
         }
 
         .word-card {
+            touch-action: none;
             position: relative;
             display: flex;
             align-items: center;
@@ -586,23 +587,37 @@
         }
 
         @media (max-width: 480px) {
+            .app { padding: 8px; }
+            .board { gap: 5px; padding: 4px; }
             .word-card {
-                padding: 6px 12px;
+                container-type: inline-size;
+                padding: 6px 4px;
             }
             .word-card[data-side="left"] {
-                padding-right: 52px;
+                padding-right: 32px;
             }
             .word-card[data-side="right"] {
-                padding-left: 52px;
+                padding-left: 32px;
             }
             .word-text {
-                font-size: clamp(18px, 5.5vw, 24px);
+                font-size: min(22px, calc(100cqw / (var(--length) * 0.71)));
             }
             .connector {
                 --connector-size: clamp(28px, 8vw, 34px);
             }
-            .connector.left { left: 8px; }
-            .connector.right { right: 8px; }
+            .connector.left { left: 2px; }
+            .connector.right { right: 2px; }
+        }
+        @media (max-height: 460px) and (orientation: landscape) {
+            .app { padding: 6px; gap: 5px; }
+            .topbar { grid-template-columns: 1fr auto; }
+            .title-block .subtitle, .column-header { display: none; }
+            .board { padding: 4px 8px; }
+            .word-list { gap: 4px; }
+            .word-card { min-height: 0; padding-block: 0; }
+            .word-text { font-size: 18px; }
+            .connector { --connector-size: 26px; }
+            .word-card::after { width: 16px; height: 16px; bottom: 1px; font-size: 12px; }
         }
     </style>
   <!-- pwa:head -->
@@ -992,6 +1007,7 @@
                 const word = document.createElement('div');
                 word.className = 'word-text';
                 word.textContent = item.display;
+                word.style.setProperty('--length', item.display.length);
 
                 const badge = document.createElement('span');
                 badge.className = 'badge';

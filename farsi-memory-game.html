@@ -512,7 +512,7 @@
             box-shadow: var(--glow);
             padding: clamp(16px, 2vw, 28px);
             width: min(520px, calc(100vw - 40px));
-            max-height: calc(var(--app-height) - 60px);
+            max-height: 100%;
             overflow-y: auto;
             direction: rtl;
         }
@@ -828,7 +828,6 @@
             { pairs: 10, cards: 20, emoji: '🦍', nameFa: 'شامپانزه',     nameEn: 'Chimpanzee',  desc: 'نزدیک به انسان' },
         ];
 
-        const LEVEL_COLS_MAP = { 4: 2, 6: 3, 8: 4, 10: 5, 12: 4, 16: 4, 20: 5 };
 
         const MATCH_COLORS = [
             '#34c759',  // green
@@ -908,6 +907,7 @@
                 this.syncViewportHeight();
                 const onResize = () => {
                     this.syncViewportHeight();
+                    this.applyGridLayout();
                     this.fitCardText();
                 };
                 window.addEventListener('resize', onResize, { passive: true });
@@ -1073,8 +1073,32 @@
                 return animal.pairs;
             }
 
-            colsForLevel() {
-                return LEVEL_COLS_MAP[this.cardCount] || 4;
+            applyGridLayout() {
+                if (!this.cards || !this.cards.length) return;
+                const n = this.cards.length;
+                const gap = parseFloat(getComputedStyle(this.grid).gap) || 12;
+                const W = this.grid.clientWidth;
+                const H = this.grid.clientHeight;
+                if (!W || !H) return;
+
+                // Choose the column count that makes the (square) cards as large as
+                // possible for the current board shape, so the grid adapts to portrait
+                // phones and landscape tablets alike. Break ties toward fuller grids.
+                let best = null;
+                for (let cols = 1; cols <= n; cols++) {
+                    const rows = Math.ceil(n / cols);
+                    const cellW = (W - gap * (cols - 1)) / cols;
+                    const cellH = (H - gap * (rows - 1)) / rows;
+                    const size = Math.min(cellW, cellH);
+                    const empties = cols * rows - n;
+                    if (!best || size > best.size + 0.5 ||
+                        (Math.abs(size - best.size) <= 0.5 && empties < best.empties)) {
+                        best = { cols, rows, size, empties };
+                    }
+                }
+
+                this.grid.style.gridTemplateColumns = `repeat(${best.cols}, 1fr)`;
+                this.grid.style.gridTemplateRows = `repeat(${best.rows}, 1fr)`;
             }
 
             pickWordsForLevel() {
@@ -1139,11 +1163,7 @@
 
                 this.cards = shuffle(pairs);
 
-                const cols = this.colsForLevel();
-                const rows = Math.ceil(this.cards.length / cols);
-
-                this.grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-                this.grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+                this.applyGridLayout();
                 this.grid.innerHTML = '';
 
                 for (let i = 0; i < this.cards.length; i++) {

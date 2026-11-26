@@ -35,6 +35,7 @@
             background: var(--bg-sky);
             min-height: 100vh;
             min-height: 100dvh;
+            height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: stretch;
@@ -50,7 +51,7 @@
         body::before {
             content: '';
             position: absolute;
-            inset: -20%;
+            inset: 0;
             background: rgba(255, 255, 255, 0.2);
             pointer-events: none;
         }
@@ -60,6 +61,8 @@
             padding: 20px;
             max-width: 1200px;
             width: 100%;
+            min-width: 0;
+            min-height: 0;
             position: relative;
             z-index: 1;
             display: flex;
@@ -86,7 +89,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
             overflow: hidden;
             box-shadow: 0 12px 24px var(--shadow-soft);
             flex: 1 1 auto;
@@ -104,6 +107,7 @@
         }
 
         .word-display span {
+            flex: none;
             line-height: 1.2;
             word-wrap: break-word;
             max-width: 100%;
@@ -443,6 +447,20 @@
             .word-display.very-long {
                 font-size: 6.5vw;
             }
+        }
+        .header { max-width: 100%; }
+        .story-select { max-width: 100%; min-width: 0; }
+        .feedback-message { max-width: 90vw; font-size: clamp(26px, 6vmin, 60px); text-align: center; }
+        @media (max-width: 600px), (max-height: 500px) {
+            body { padding: 8px; }
+            .container { padding: 4px; gap: 8px; }
+            .header, .footer { min-height: 0; gap: 6px; }
+            .word-display { min-height: 0; margin: 0; padding: 12px; gap: 4px; }
+            .controls { gap: 6px; }
+            button { padding: 8px 12px; font-size: 16px; min-height: 40px; }
+            .story-select { font-size: 16px; padding: 6px; }
+            .character { bottom: 2px; right: 6px; font-size: 24px; min-width: 0; min-height: 0; }
+            .character i { font-size: inherit; }
         }
     </style>
 
@@ -1311,34 +1329,25 @@
         function adjustWordSizing() {
             const wordDisplay = document.getElementById('wordDisplay');
             const wordSpan = document.getElementById('currentWord');
-            wordDisplay.classList.remove('multi-line', 'very-long');
-
             requestAnimationFrame(() => {
-                const styles = window.getComputedStyle(wordSpan);
-                let lineHeight = parseFloat(styles.lineHeight);
-                if (Number.isNaN(lineHeight)) {
-                    const fontSize = parseFloat(styles.fontSize) || 16;
-                    lineHeight = fontSize * 1.2;
+                const translation = document.getElementById('currentWordFa');
+                const styles = getComputedStyle(wordDisplay);
+                const room = wordDisplay.clientHeight - parseFloat(styles.paddingTop) - parseFloat(styles.paddingBottom);
+                let low = 14, high = Math.min(140, Math.round(wordDisplay.clientWidth * 0.14));
+                while (low < high) {
+                    const size = Math.ceil((low + high) / 2);
+                    wordDisplay.style.fontSize = `${size}px`;
+                    const needed = wordSpan.offsetHeight + translation.offsetHeight
+                        + (translation.offsetHeight ? parseFloat(styles.rowGap) : 0);
+                    if (needed <= room) low = size;
+                    else high = size - 1;
                 }
-                const height = wordSpan.getBoundingClientRect().height;
-                const lines = Math.round(height / lineHeight);
-                if (lines > 1) {
-                    wordDisplay.classList.add('multi-line');
-                }
-                if (lines > 2) {
-                    wordDisplay.classList.add('very-long');
-                }
-                
-                // Ensure text fits within the frame
-                const containerHeight = wordDisplay.getBoundingClientRect().height;
-                const textHeight = wordSpan.getBoundingClientRect().height;
-                const padding = 60; // Account for padding and borders
-                
-                if (textHeight > containerHeight - padding) {
-                    wordDisplay.classList.add('very-long');
-                }
+                wordDisplay.style.fontSize = `${low}px`;
             });
         }
+
+        new ResizeObserver(adjustWordSizing).observe(document.getElementById('wordDisplay'));
+        document.fonts.ready.then(adjustWordSizing);
 
         function skipWord() {
             // Log debug summary before skipping

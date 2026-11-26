@@ -93,8 +93,11 @@
 
         .canvas-container {
             position: relative;
-            display: inline-block;
+            display: block;
             margin: 0 auto;
+            width: 100%;
+            max-width: min(600px, 90vw, 150vh);
+            aspect-ratio: 600 / 400;
             background: white;
             border-radius: 15px;
             box-shadow: var(--shadow);
@@ -106,12 +109,11 @@
             display: block;
             touch-action: none;
             cursor: crosshair;
-        }
-
-        #draw-canvas {
             position: absolute;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
         }
 
         .controls {
@@ -228,6 +230,7 @@
 
         .dots-background {
             position: absolute;
+            overflow: hidden;
             top: 0;
             left: 0;
             width: 100%;
@@ -245,9 +248,7 @@
         }
 
         .reset-link {
-            position: absolute;
-            top: 8px;
-            left: 12px;
+            padding: 0 8px;
             color: #ccc;
             text-decoration: none;
             font-size: 1.5em;
@@ -261,10 +262,31 @@
         }
 
         @media (max-width: 500px) {
-            .container { padding: 15px 15px 12px; }
+            .container { padding: 15px 15px 12px; width: 96%; }
             h1 { font-size: 1.3em; }
             .word-display { font-size: 1em; }
             .controls button { font-size: 1.1em; padding: 8px 22px; }
+        }
+
+        /* Landscape / short screens: keep everything on one screen */
+        @media (orientation: landscape) and (max-height: 600px) {
+            body { padding: 8px; }
+            .container {
+                width: 100%;
+                padding: 8px;
+                display: grid;
+                grid-template-columns: minmax(180px, 1fr) minmax(0, 1.6fr);
+                align-items: center;
+                align-content: center;
+                gap: 4px 12px;
+            }
+            .header, .word-display, .controls, .feedback { grid-column: 1; }
+            .header { margin-bottom: 6px; }
+            .word-display { margin-bottom: 6px; }
+            .canvas-container { grid-column: 2; grid-row: 1 / 5; max-width: min(600px, calc(150dvh - 64px)); }
+            .controls { margin: 0; gap: 6px; }
+            .controls button { padding: 6px 14px; font-size: 1.1em; }
+            .feedback { margin-top: 6px; min-height: 1.4em; }
         }
     </style>
   <!-- pwa:head -->
@@ -282,11 +304,10 @@
     <div class="dots-background" id="dots-background"></div>
 
     <div class="container">
-        <a class="reset-link" id="reset-link" title="شروع از اول">↻</a>
-
         <div class="header">
             <h1>ردیابی کلمات</h1>
             <div class="progress" id="progress">۱ / ۱</div>
+            <a class="reset-link" id="reset-link" title="شروع از اول">↻</a>
         </div>
 
         <div class="word-display" id="word-display">کلمه را دنبال کن</div>

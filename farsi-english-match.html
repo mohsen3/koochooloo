@@ -236,11 +236,11 @@
         }
 
         .word-card[data-side="left"] {
-            padding-right: 56px;
+            padding-right: clamp(40px, 11vw, 56px);
         }
 
         .word-card[data-side="right"] {
-            padding-left: 56px;
+            padding-left: clamp(40px, 11vw, 56px);
         }
 
         .word-card.is-origin {
@@ -541,6 +541,44 @@
             .column {
                 max-width: 260px;
             }
+        }
+
+        /* Narrow phones: shrink the status row to one compact line so the board gets the space */
+        @media (max-width: 520px) {
+            .status-strip {
+                gap: 5px;
+            }
+            .status-pill {
+                min-width: 0;
+                padding: 4px 7px;
+                border-radius: 12px;
+            }
+            .status-pill span {
+                font-size: 8px;
+            }
+            .status-pill strong {
+                font-size: 15px;
+            }
+            .word-card {
+                padding: 8px 12px;
+                border-radius: 18px;
+            }
+            .board {
+                padding: 6px;
+            }
+            .column {
+                gap: 6px;
+            }
+        }
+        @media (orientation: landscape) and (max-height: 500px) {
+            .app { padding: 6px; gap: 4px; }
+            .topbar { grid-template-columns: minmax(0, 1fr) auto; padding: 0 4px; }
+            .status-pill { min-width: 42px; padding: 2px 6px; }
+            .board { padding: 5px; }
+            .word-list { gap: 3px; }
+            .word-card { padding-block: 1px; }
+            .word-text, .word-text[lang="fa"] { font-size: clamp(16px, 4.8dvh, 20px); }
+            .connector { width: 26px; height: 26px; }
         }
     </style>
   <!-- pwa:head -->

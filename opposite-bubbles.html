@@ -878,6 +878,7 @@
                 this.syncViewportHeight();
                 cancelAnimationFrame(this.resizeFrame);
                 this.resizeFrame = requestAnimationFrame(() => {
+                    this.layoutBubbles();
                     this.resizeCanvas();
                     this.redrawConnections();
                 });
@@ -1013,38 +1014,40 @@
                     `inset 0 4px 10px rgba(255,255,255,0.28)`;
             }
 
-            getBubbleSize(word) {
-                const len = word.length;
+            getBubbleSize(len) {
                 if (len <= 3) return { w: 100, h: 100 };
                 if (len <= 5) return { w: 120, h: 110 };
                 if (len <= 7) return { w: 140, h: 120 };
                 return { w: 160, h: 130 };
             }
 
-            getRandomPosition(w, h, existingPositions, boardW, boardH) {
-                const margin = 10;
-                const maxAttempts = 200;
-                let attempts = 0;
-
-                while (attempts < maxAttempts) {
-                    const x = margin + Math.random() * (boardW - w - margin * 2);
-                    const y = margin + Math.random() * (boardH - h - margin * 2);
-                    let overlap = false;
-                    for (const pos of existingPositions) {
-                        if (x < pos.x + pos.w + 12 && x + w + 12 > pos.x &&
-                            y < pos.y + pos.h + 12 && y + h + 12 > pos.y) {
-                            overlap = true;
-                            break;
-                        }
-                    }
-                    if (!overlap) return { x, y };
-                    attempts++;
+            layoutBubbles() {
+                if (!this.currentItems?.length) return;
+                const W = this.board.clientWidth, H = this.board.clientHeight;
+                const count = this.currentItems.length;
+                let cols = 1, best = 0;
+                for (let k = 1; k <= count; k++) {
+                    const scale = Math.min(W / k / 140, H / Math.ceil(count / k) / 110);
+                    if (scale > best) { best = scale; cols = k; }
                 }
-
-                return {
-                    x: margin + Math.random() * (boardW - w - margin * 2),
-                    y: margin + Math.random() * (boardH - h - margin * 2)
-                };
+                const cw = W / cols, ch = H / Math.ceil(count / cols);
+                this.board.querySelectorAll('.bubble[data-cell]').forEach(b => {
+                    const i = Number(b.dataset.cell);
+                    const text = [...b.querySelectorAll('.bubble-text')];
+                    const len = Math.max(...text.map(t => t.textContent.length));
+                    const size = this.getBubbleSize(len);
+                    const w = Math.min(cw - 10, size.w + (text.length > 1 ? 24 : 0));
+                    const h = Math.min(ch - 16, size.h);
+                    const x = (i % cols + 0.5) * cw - w / 2;
+                    const y = (Math.floor(i / cols) + 0.5) * ch - h / 2;
+                    b.style.width = `${w}px`;
+                    b.style.height = `${h}px`;
+                    b.style.left = `${x}px`;
+                    b.style.top = `${y}px`;
+                    b.dataset.origX = x;
+                    b.dataset.origY = y;
+                    text.forEach(t => t.style.fontSize = `min(clamp(15px, 2vw, 26px), ${w / (len * 0.71 + 1)}px)`);
+                });
             }
 
             renderPage() {
@@ -1052,29 +1055,15 @@
                 const existingBubbles = this.board.querySelectorAll('.bubble');
                 for (const b of existingBubbles) b.remove();
 
-                const rect = this.board.getBoundingClientRect();
-                const boardW = rect.width;
-                const boardH = rect.height;
-
-                const positions = [];
                 this.bubbleEls = [];
 
                 this.currentItems.forEach((item, i) => {
-                    const size = this.getBubbleSize(item.word);
-                    const pos = this.getRandomPosition(size.w, size.h, positions, boardW, boardH);
-                    positions.push({ x: pos.x, y: pos.y, w: size.w, h: size.h });
-
                     const bubble = document.createElement('div');
                     bubble.className = 'bubble';
                     bubble._color = item.color;
                     bubble.dataset.matchKey = item.matchKey;
                     bubble.dataset.word = item.word;
-                    bubble.dataset.origX = pos.x;
-                    bubble.dataset.origY = pos.y;
-                    bubble.style.left = `${pos.x}px`;
-                    bubble.style.top = `${pos.y}px`;
-                    bubble.style.width = `${size.w}px`;
-                    bubble.style.height = `${size.h}px`;
+                    bubble.dataset.cell = i;
                     this.applyBubbleColor(bubble, item.color);
 
                     // Staggered "pop-in" birth, then drift into the idle float.
@@ -1094,6 +1083,7 @@
                     this.board.appendChild(bubble);
                     this.bubbleEls.push(bubble);
                 });
+                this.layoutBubbles();
             }
 
             updateStatus() {
@@ -1224,6 +1214,7 @@
                     if (target && target !== drag.bubble && !target.classList.contains('matched')) {
                         this.flashWrong(drag.bubble);
                         this.playWrongSound();
+                        this.returnBubble(drag.bubble);
                     } else {
                         this.returnBubble(drag.bubble);
                     }
@@ -1312,9 +1303,9 @@
                     this.spawnMatchRing(center, blended);
                     this.spawnSparkles(center, blended);
                     this.playPopSound();
-                    this.createMergedBubble(b1, b2, center, blended);
                     b1.remove();
                     b2.remove();
+                    this.createMergedBubble(b1, b2, blended);
 
                     this.matchesMade += 1;
                     this.updateStatus();
@@ -1420,28 +1411,12 @@
                 });
             }
 
-            createMergedBubble(b1, b2, center, blended) {
+            createMergedBubble(b1, b2, blended) {
                 const word1 = b1.querySelector('.bubble-text').textContent;
                 const word2 = b2.querySelector('.bubble-text').textContent;
-                const longer = word1.length > word2.length ? word1 : word2;
-
-                let w, h;
-                if (longer.length <= 3) { w = 140; h = 110; }
-                else if (longer.length <= 5) { w = 170; h = 120; }
-                else if (longer.length <= 7) { w = 190; h = 130; }
-                else { w = 210; h = 140; }
-
-                const x = center.x - w / 2;
-                const y = center.y - h / 2;
-
                 const bubble = document.createElement('div');
                 bubble.className = 'bubble merged';
-                bubble.dataset.origX = String(x);
-                bubble.dataset.origY = String(y);
-                bubble.style.left = `${x}px`;
-                bubble.style.top = `${y}px`;
-                bubble.style.width = `${w}px`;
-                bubble.style.height = `${h}px`;
+                bubble.dataset.cell = b2.dataset.cell;
                 bubble.style.flexDirection = 'column';
                 bubble.style.gap = '1px';
                 this.applyBubbleColor(bubble, blended);
@@ -1464,6 +1439,7 @@
                 bubble.append(t1, t2);
                 bubble.addEventListener('pointerdown', event => this.beginDrag(event, bubble));
                 this.board.appendChild(bubble);
+                this.layoutBubbles();
             }
 
             spawnParticles(bubble) {
