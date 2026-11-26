@@ -13,7 +13,7 @@
  *   - other assets (icons, fonts, css, audio, geojson) -> stale-while-revalidate
  */
 
-const VERSION = '2026-11-25.1';
+const VERSION = '2026-11-26.1';
 const CACHE = 'koochooloo-' + VERSION;
 
 // App shell precached on install so the whole app works fully offline.
